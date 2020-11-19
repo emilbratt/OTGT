@@ -6,7 +6,7 @@
 <p>python-barcode</p>
 <p>Pillow</p>
 
-<h3>Included:</h3>
+<h3>Inkluderer:</h3>
 <p>FreeSans font</p>
 <p>License: Public domain, GPL, OFL</p>
 <p>Designer: GNU FreeFont</p>
