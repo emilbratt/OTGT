@@ -131,20 +131,19 @@ def generateBarcodes(values):
         fontUsed = ImageFont.truetype(os.path.join(path, 'FreeSans.ttf'), 72)
 
     for iterate,barValue in enumerate(values):
-        # print(f'\t{barValue}\n\n')
-
+    
         fileName = os.path.join(path, 'Strekkoder', barValue)
 
-        # convert value to barValue
+        # convert value to barcode value
         Code128(barValue, writer=ImageWriter()).save(fileName)
 
-        # open the barValue as image and start
+        # open the barcode value as image and start
         openBarcode = Image.open('%s.png' % fileName).convert('LA')
 
 
         if iterate%19 == 0:
             if iterate%38 == 0:
-                # open a A4 size to pasted cropped versions
+                # open an A4 size to pasted cropped versions
                 A4sheet = Image.new('RGB', (1240,1754), (255, 255, 255))
                 saveA4sheet = str(int(iterate/38)).zfill(len(str(int(len(values)/38))))
                 pasteLeft = 50
@@ -165,7 +164,6 @@ def generateBarcodes(values):
         cropped.paste(croppedRegion, (250,0))
         # paste values represents: (pxiels from left, pixels from top)
 
-        # add text next to barcode (left side)
         textInput = ImageDraw.Draw(cropped)
         textInput.text((0,0), barValue, font=fontUsed, fill=(0, 0, 0))
 
@@ -193,10 +191,6 @@ def openFolder(path):
         subprocess.Popen('explorer "%s"' % path)
     elif sys.platform.startswith('darwin'):
         os.system('xdg-open "%s"' % path)
-
-        # os.system('xdg-open "%s"' % os.path.join(path, 'Strekkoder'))
-        # # subprocess.Popen('explorer "C:\temp"')
-        # subprocess.Popen('explorer "%s"' % os.path.join(path, 'Strekkoder'))
 
 
 
