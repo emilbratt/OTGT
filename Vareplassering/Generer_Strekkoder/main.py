@@ -120,6 +120,10 @@ def generateBarcodeValues(choice):
             readerobject = csv.reader(readCSV,delimiter=separation) # open csv file and store into reader
             values = []
             for row in readerobject: # for every row in reader do:
+                if len(''.join(row)) > 7:
+                    input('\tcsv-filen inneholder strekkoder som har mere enn 7 tegn\
+                    \n\tGjør om på csv-filen eller prøv en annen csv-fil\n\tAvslutter..')
+                    exit()
                 values.append(''.join(row))
 
     generateBarcodes(values)
