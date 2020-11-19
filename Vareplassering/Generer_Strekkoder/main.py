@@ -42,13 +42,15 @@ def generateBarcodeValues(choice):
 
         print('\n\tNå skal vi laste inn alle verdiene vi ønsker å ha med')
         print('\tAlle bokstaver blir gjort om til store bokstaver')
-        print('\tSkriv inn verdien du ønsker og trykk Enter (Maks 8 tegn)\n\t\
+        print('\tSkriv inn verdien du ønsker og trykk Enter (Maks 7 tegn)\n\t\
     Når du er ferdig så lar du feltet stå tomt og trykker Enter')
         while True:
             values = []
             while True:
                 value = input('\t\t' + 'Strekkode: ').upper()
-                value = value
+                if len(value) > 7:
+                    print('\t\tKan ikke ha mere enn 7 tegn')
+                    continue
                 values.append(value)
                 if values[-1] == '':
                     values.remove('')
@@ -56,14 +58,16 @@ def generateBarcodeValues(choice):
 
             while True:
                 print(f'\n\tVerdiene du har skrevet inn er:\n')
-                dummy = len(values)%6
-                for i in range(6-dummy):
+                fitLength = len(values)%6
+                for i in range(6-fitLength):
                     values.append(' ')
                 for i in range(len(values)-1):
                     if i%6 == 0:
-                        print(f'\t{values[i].ljust(8)}{values[i+1].ljust(8)}{values[i+2].ljust(8)}\
-    {values[i+3].ljust(8)}{values[i+4].ljust(8)}{values[i+5].ljust(8)}')
-                for i in range(6-dummy):
+                        print('\t'+'-'*61)
+                        print(f'\t|{values[i].center(9)}|{values[i+1].center(9)}|{values[i+2].center(9)}|\
+{values[i+3].center(9)}|{values[i+4].center(9)}|{values[i+5].center(9)}|')
+                print('\t'+'-'*61)
+                for i in range(6-fitLength):
                     values.remove(' ')
                 print('\n\tEr disse riktige?\n')
                 choice = input('\t0. Start på nytt\n\t1. Fortsett\n\t2. Avslutt\n\t\tSkriv: ')
@@ -131,7 +135,7 @@ def generateBarcodes(values):
         fontUsed = ImageFont.truetype(os.path.join(path, 'FreeSans.ttf'), 72)
 
     for iterate,barValue in enumerate(values):
-    
+
         fileName = os.path.join(path, 'Strekkoder', barValue)
 
         # convert value to barcode value
@@ -165,7 +169,7 @@ def generateBarcodes(values):
         # paste values represents: (pxiels from left, pixels from top)
 
         textInput = ImageDraw.Draw(cropped)
-        textInput.text((0,0), barValue, font=fontUsed, fill=(0, 0, 0))
+        textInput.text((0,0), barValue.rjust(7), font=fontUsed, fill=(0, 0, 0))
 
         A4sheet.paste(cropped, (pasteLeft,pasteTop))
 
