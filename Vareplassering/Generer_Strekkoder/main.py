@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
+import webbrowser
 import csv
 from barcode import Code128
 from barcode.writer import ImageWriter
 from PIL import Image, ImageDraw, ImageFont
 import os
+from loading import loading_bar
+import subprocess
+import sys
 
-# set working directory in a variable
+# set working directory
 path = os.path.dirname(os.path.realpath(__file__))
+
 
 def mainMenu():
     os.makedirs('%s/Strekkoder' % path, exist_ok=True)
@@ -22,49 +27,96 @@ def mainMenu():
 ''')
         print('\t\tHva ønsker du å gjøre?\n')
         print('''\t1. Generer strekkoder interaktivt
-\t2. Avslutte''')
+\t2. Generer strekkoder fra csv-fil
+\t3. Avslutte''')
         choice = input('\t\t' + 'Skriv: ')
         if choice.isdecimal() and int(choice) >= 1 and int(choice) <= 3:
             return int(choice)
 
 
 
+
 def generateBarcodeValues(choice):
 
-    print('\n\tNå skal vi laste inn alle verdiene vi ønsker å ha med')
-    print('\tAlle bokstaver blir gjort om til store bokstaver')
-    print('\tSkriv inn verdien du ønsker og trykk Enter (Maks 8 tegn)\n\t\
-Når du er ferdig så lar du feltet stå tomt og trykker Enter')
-    while True:
-        values = []
+    if choice == 1:
+
+        print('\n\tNå skal vi laste inn alle verdiene vi ønsker å ha med')
+        print('\tAlle bokstaver blir gjort om til store bokstaver')
+        print('\tSkriv inn verdien du ønsker og trykk Enter (Maks 8 tegn)\n\t\
+    Når du er ferdig så lar du feltet stå tomt og trykker Enter')
         while True:
-            value = input('\t\t' + 'Strekkode: ').upper()
-            value = value
-            values.append(value)
-            if values[-1] == '':
-                values.remove('')
+            values = []
+            while True:
+                value = input('\t\t' + 'Strekkode: ').upper()
+                value = value
+                values.append(value)
+                if values[-1] == '':
+                    values.remove('')
+                    break
+
+            while True:
+                print(f'\n\tVerdiene du har skrevet inn er:\n')
+                dummy = len(values)%6
+                for i in range(6-dummy):
+                    values.append(' ')
+                for i in range(len(values)-1):
+                    if i%6 == 0:
+                        print(f'\t{values[i].ljust(8)}{values[i+1].ljust(8)}{values[i+2].ljust(8)}\
+    {values[i+3].ljust(8)}{values[i+4].ljust(8)}{values[i+5].ljust(8)}')
+                for i in range(6-dummy):
+                    values.remove(' ')
+                print('\n\tEr disse riktige?\n')
+                choice = input('\t0. Start på nytt\n\t1. Fortsett\n\t2. Avslutt\n\t\tSkriv: ')
+                if choice == '2':
+                    exit()
+                if choice == '1' or choice == '0':
+                    break
+
+            if choice == '1':
                 break
 
-        while True:
-            print(f'\n\tVerdiene du har skrevet inn er:\n')
-            dummy = len(values)%6
-            for i in range(6-dummy):
-                values.append(' ')
-            for i in range(len(values)-1):
-                if i%6 == 0:
-                    print(f'\t{values[i].ljust(8)}{values[i+1].ljust(8)}{values[i+2].ljust(8)}\
-{values[i+3].ljust(8)}{values[i+4].ljust(8)}{values[i+5].ljust(8)}')
-            for i in range(6-dummy):
-                values.remove(' ')
-            print('\n\tEr disse riktige?\n')
-            choice = input('\t0. Start på nytt\n\t1. Fortsett\n\t3. Avslutt\n\t\tSkriv: ')
-            if choice == '3':
-                exit()
-            if choice == '1' or choice == '0':
-                break
+    elif choice == 2:
+        print(f'\n\tLegg csv filen i mappen:\n\t{os.path.join(path, "CSV")}')
+        input('\n\tFor å åpne mappen trykk Enter: ')
+        if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            os.system('xdg-open "%s"' % os.path.join(path, "CSV"))
+        elif sys.platform.startswith('win32'):
+            subprocess.Popen('explorer "%s"' % os.path.join(path, "CSV"))
 
-        if choice == '1':
-            break
+        input('\n\tNår du har lagt csv-filen i mappen så trykker du Enter: ')
+
+        while True:
+            listCSV = [f for f in os.listdir(os.path.join(path, 'CSV')) if os.path.splitext(f)[-1] == '.csv']
+            if len(listCSV) == 0:
+                input('\n\tFant ingen filer\n\t0. Søke på nytt\n\t1.Avslutte\n\tSkriv: ')
+                if choice == '0':
+                    continue
+                elif choice == '1':
+                    exit()
+            elif len(listCSV) != 0:
+                print(f'\n\t{len(listCSV)} filer ble funnet:')
+                for iterate,file in enumerate(listCSV):
+                    print(f'\t\t{iterate+1} -> {file}')
+                choice = input('\n\tVelg nummeret på filen du ønsker å bruke\n\t0. Avslutt\n\t\tSkriv: ')
+                if int(choice) > len(listCSV) or int(choice) < 0:
+                    input('\n\tNummeret finnes ikke\n\t\tTrykk Enter: ')
+                elif choice == '0':
+                    exit()
+                elif int(choice) <= len(listCSV) or int(choice) > 0:
+                    break
+
+
+        readCSV = open(os.path.join(path, 'CSV', str(listCSV[(int(choice)-1)])), encoding='utf-8')
+        if ';' in readCSV.readline():
+            separation = ';'
+        else:
+            separation = ','
+        readCSV.close()
+        with open(os.path.join(path, 'CSV', str(listCSV[(int(choice)-1)])), encoding='utf-8') as readCSV:
+            readerobject = csv.reader(readCSV,delimiter=separation) # open csv file and store into reader
+            values = []
+            for row in readerobject: # for every row in reader do:
+                values.append(''.join(row))
 
     generateBarcodes(values)
 
@@ -72,14 +124,14 @@ Når du er ferdig så lar du feltet stå tomt og trykker Enter')
 def generateBarcodes(values):
 
 
-    print('\tGenererer strekkoder...\n')
+    print('\n\tGenererer strekkoder...\n')
     try:
         fontUsed = ImageFont.truetype('arial.ttf', 72)
     except OSError:
         fontUsed = ImageFont.truetype(os.path.join(path, 'FreeSans.ttf'), 72)
 
     for iterate,barValue in enumerate(values):
-        print(f'\t{barValue}')
+        # print(f'\t{barValue}\n\n')
 
         fileName = os.path.join(path, 'Strekkoder', barValue)
 
@@ -127,13 +179,29 @@ def generateBarcodes(values):
         if iterate%38 == 37 or iterate == len(values)-1:
             A4sheet.save('%s.png' % os.path.join(path, 'Strekkoder', saveA4sheet))
             A4sheet.close()
+        if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+            loading_bar(iterate, len(values),barValue)
+        elif sys.platform.startswith('win32'):
+            print(fileName)
 
-    print('Ferdig')
+    openFolder(os.path.join(path, 'Strekkoder'))
+
+def openFolder(path):
+    if sys.platform.startswith('linux'):
+        os.system('xdg-open "%s"' % path)
+    elif sys.platform.startswith('win32'):
+        subprocess.Popen('explorer "%s"' % path)
+    elif sys.platform.startswith('darwin'):
+        os.system('xdg-open "%s"' % path)
+
+        # os.system('xdg-open "%s"' % os.path.join(path, 'Strekkoder'))
+        # # subprocess.Popen('explorer "C:\temp"')
+        # subprocess.Popen('explorer "%s"' % os.path.join(path, 'Strekkoder'))
 
 
 
 if __name__ == '__main__':
     choice = mainMenu()
-    if choice == 2:
+    if choice == 3:
         exit()
     generateBarcodeValues(choice)
