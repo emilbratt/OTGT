@@ -152,7 +152,7 @@ def generateBarcodes(values):
         if iterate%19 == 0:
             if iterate%38 == 0:
                 # open an A4 size to pasted cropped versions
-                A4sheet = Image.new('RGB', (1240,1754), (255, 255, 255))
+                A4sheet = Image.new('RGB', (1240,1754), (255, 255, 255)).convert('LA')
                 saveA4sheet = str(int(iterate/38)).zfill(len(str(int(len(values)/38))))
                 pasteLeft = 50
             else:
