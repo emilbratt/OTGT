@@ -40,10 +40,9 @@ def generateBarcodeValues(choice):
 
     if choice == 1:
 
-        print('\n\tNå skal vi laste inn alle verdiene vi ønsker å ha med')
-        print('\tAlle bokstaver blir gjort om til store bokstaver')
         print('\tSkriv inn verdien du ønsker og trykk Enter (Maks 7 tegn)\n\t\
-    Når du er ferdig så lar du feltet stå tomt og trykker Enter')
+Når du er ferdig så lar du feltet stå tomt og trykker Enter')
+        print('\tAlle bokstaver blir gjort om til store bokstaver')
         while True:
             values = []
             while True:
@@ -59,7 +58,8 @@ def generateBarcodeValues(choice):
             while True:
                 print(f'\n\tVerdiene du har skrevet inn er:\n')
                 fitLength = len(values)%6
-                for i in range(6-fitLength):
+                # while fitLength != 6:
+                while len(values)%6 != 0:
                     values.append(' ')
                 for i in range(len(values)-1):
                     if i%6 == 0:
@@ -67,8 +67,9 @@ def generateBarcodeValues(choice):
                         print(f'\t|{values[i].center(9)}|{values[i+1].center(9)}|{values[i+2].center(9)}|\
 {values[i+3].center(9)}|{values[i+4].center(9)}|{values[i+5].center(9)}|')
                 print('\t'+'-'*61)
-                for i in range(6-fitLength):
+                for i in range(6 - fitLength):
                     values.remove(' ')
+                print(values)
                 print('\n\tEr disse riktige?\n')
                 choice = input('\t0. Start på nytt\n\t1. Fortsett\n\t2. Avslutt\n\t\tSkriv: ')
                 if choice == '2':
