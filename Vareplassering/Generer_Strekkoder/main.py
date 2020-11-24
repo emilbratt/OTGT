@@ -50,7 +50,10 @@ Når du er ferdig så lar du feltet stå tomt og trykker Enter')
                 if len(value) > 7:
                     print('\t\tKan ikke ha mere enn 7 tegn')
                     continue
+                if values == [] and value == '':
+                    continue
                 values.append(value)
+
                 if values[-1] == '':
                     values.remove('')
                     break
@@ -59,16 +62,22 @@ Når du er ferdig så lar du feltet stå tomt og trykker Enter')
                 print(f'\n\tVerdiene du har skrevet inn er:\n')
                 fitLength = len(values)%6
                 # while fitLength != 6:
+
+                # add dummy values so that the matrix will display correctly
                 while len(values)%6 != 0:
-                    values.append(' ')
+                    values.append('')
+
+                # show matrix (grid) and iterate 6 items for each row
                 for i in range(len(values)-1):
                     if i%6 == 0:
                         print('\t'+'-'*61)
                         print(f'\t|{values[i].center(9)}|{values[i+1].center(9)}|{values[i+2].center(9)}|\
 {values[i+3].center(9)}|{values[i+4].center(9)}|{values[i+5].center(9)}|')
                 print('\t'+'-'*61)
-                for i in range(6 - fitLength):
-                    values.remove(' ')
+
+                # remove dummy values
+                while values[-1] == '':
+                    del values[-1]
                 print(values)
                 print('\n\tEr disse riktige?\n')
                 choice = input('\t0. Start på nytt\n\t1. Fortsett\n\t2. Avslutt\n\t\tSkriv: ')
