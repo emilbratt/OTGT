@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import webbrowser
 import csv
-from barcode import Code128
-from barcode.writer import ImageWriter
-from PIL import Image, ImageDraw, ImageFont
 import os
 from loading import loading_bar
 import subprocess
 import sys
+from barcode.writer import ImageWriter
+from barcode import Code128
+from PIL import Image, ImageDraw, ImageFont
 
 # set working directory
 path = os.path.dirname(os.path.realpath(__file__))
