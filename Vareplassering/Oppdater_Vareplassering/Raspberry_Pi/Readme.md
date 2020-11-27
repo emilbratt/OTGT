@@ -2,7 +2,7 @@
 <p>Bruk Raspberry Pi sammen med en strekkode-leser som du kobler til med USB-kabel.</p>
 <p>Skann varen sin strekkode og strekkoden på hyllen for å oppdatere vareplassering i databasen.</p>
 
-<h2>Hvordan bruke denne</h2>
+<h3>Hvordan bruke denne</h3>
 <p>Kjør filen main.py for å starte applikasjonen. Bruke flaggene beskrevet i main.py for tilleggsfunksjoner</p>
 <p>Det kommer nærmere beskrivelse etter hvert</p>
 
