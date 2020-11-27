@@ -26,9 +26,9 @@ def mainMenu():
                   ------------------
 ''')
         print('\t\tHva ønsker du å gjøre?\n')
-        print('''\t1. Generer strekkoder interaktivt
-\t2. Generer strekkoder fra csv-fil
-\t3. Avslutte''')
+        print('\t1. Generer strekkoder interaktivt'
+        + '\n\t2. Generer strekkoder fra csv-fil'
+        + '\n\t3. Avslutte')
         choice = input('\t\t' + 'Skriv: ')
         if choice.isdecimal() and int(choice) >= 1 and int(choice) <= 3:
             return int(choice)
@@ -40,8 +40,8 @@ def generateBarcodeValues(choice):
 
     if choice == 1:
 
-        print('\tSkriv inn verdien du ønsker og trykk Enter (Maks 7 tegn)\n\t\
-Når du er ferdig så lar du feltet stå tomt og trykker Enter')
+        print('\tSkriv inn verdien du ønsker og trykk Enter (Maks 7 tegn)'
+        +'\n\tNår du er ferdig så lar du feltet stå tomt og trykker Enter')
         print('\tAlle bokstaver blir gjort om til store bokstaver')
         while True:
             values = []
@@ -61,7 +61,6 @@ Når du er ferdig så lar du feltet stå tomt og trykker Enter')
             while True:
                 print(f'\n\tVerdiene du har skrevet inn er:\n')
                 fitLength = len(values)%6
-                # while fitLength != 6:
 
                 # add dummy values so that the matrix will display correctly
                 while len(values)%6 != 0:
@@ -71,14 +70,14 @@ Når du er ferdig så lar du feltet stå tomt og trykker Enter')
                 for i in range(len(values)-1):
                     if i%6 == 0:
                         print('\t'+'-'*61)
-                        print(f'\t|{values[i].center(9)}|{values[i+1].center(9)}|{values[i+2].center(9)}|\
-{values[i+3].center(9)}|{values[i+4].center(9)}|{values[i+5].center(9)}|')
+                        print(f'\t|{values[i].center(9)}|{values[i+1].center(9)}'
+                        + f'|{values[i+2].center(9)}|{values[i+3].center(9)}'
+                        +f'|{values[i+4].center(9)}|{values[i+5].center(9)}|')
                 print('\t'+'-'*61)
 
                 # remove dummy values
                 while values[-1] == '':
                     del values[-1]
-                print(values)
                 print('\n\tEr disse riktige?\n')
                 choice = input('\t0. Start på nytt\n\t1. Fortsett\n\t2. Avslutt\n\t\tSkriv: ')
                 if choice == '2':
@@ -100,7 +99,9 @@ Når du er ferdig så lar du feltet stå tomt og trykker Enter')
         input('\n\tNår du har lagt csv-filen i mappen så trykker du Enter: ')
 
         while True:
-            listCSV = [f for f in os.listdir(os.path.join(path, 'CSV')) if os.path.splitext(f)[-1] == '.csv']
+            listCSV = [f for f in os.listdir(os.path.join(path, 'CSV'))
+            if os.path.splitext(f)[-1] == '.csv']
+
             if len(listCSV) == 0:
                 input('\n\tFant ingen filer\n\t0. Søke på nytt\n\t1.Avslutte\n\tSkriv: ')
                 if choice == '0':
@@ -111,28 +112,33 @@ Når du er ferdig så lar du feltet stå tomt og trykker Enter')
                 print(f'\n\t{len(listCSV)} filer ble funnet:')
                 for iterate,file in enumerate(listCSV):
                     print(f'\t\t{iterate+1} -> {file}')
-                choice = input('\n\tVelg nummeret på filen du ønsker å bruke\n\t0. Avslutt\n\t\tSkriv: ')
+                choice = input('\n\tVelg fil\n\t0. Avslutt\n\t\tSkriv: ')
                 if int(choice) > len(listCSV) or int(choice) < 0:
                     input('\n\tNummeret finnes ikke\n\t\tTrykk Enter: ')
                 elif choice == '0':
                     exit()
                 elif int(choice) <= len(listCSV) or int(choice) > 0:
                     break
+                    # continues if valid file was selected
 
+        readCSV = open(os.path.join(path,
+        'CSV', str(listCSV[(int(choice)-1)])),
+        encoding='utf-8')
 
-        readCSV = open(os.path.join(path, 'CSV', str(listCSV[(int(choice)-1)])), encoding='utf-8')
         if ';' in readCSV.readline():
             separation = ';'
         else:
             separation = ','
         readCSV.close()
-        with open(os.path.join(path, 'CSV', str(listCSV[(int(choice)-1)])), encoding='utf-8') as readCSV:
-            readerobject = csv.reader(readCSV,delimiter=separation) # open csv file and store into reader
+        with open(os.path.join(path, 'CSV', str(listCSV[(int(choice)-1)])),
+        encoding='utf-8') as readCSV:
+            readerobject = csv.reader(readCSV,delimiter=separation)
             values = []
-            for row in readerobject: # for every row in reader do:
+            for row in readerobject:
                 if len(''.join(row)) > 7:
-                    input('\tcsv-filen inneholder strekkoder som har mere enn 7 tegn\
-                    \n\tGjør om på csv-filen eller prøv en annen csv-fil\n\tAvslutter..')
+                    print('\tcsv-filen har strekkoder som er lengre enn 7 tegn'
+                    +'\n\trett opp csv-filen før du prøver igjen'
+                    +'\n\tavslutter..')
                     exit()
                 values.append(''.join(row))
 
@@ -156,14 +162,20 @@ def generateBarcodes(values):
         Code128(barValue, writer=ImageWriter()).save(fileName)
 
         # open the barcode value as image and start
-        openBarcode = Image.open('%s.png' % fileName).convert('LA')
+        openBarcode = Image.open('%s.png' % fileName).convert('L')
 
 
         if iterate%19 == 0:
             if iterate%38 == 0:
                 # open an A4 size to pasted cropped versions
-                A4sheet = Image.new('RGB', (1240,1754), (255, 255, 255)).convert('LA')
-                saveA4sheet = str(int(iterate/38)).zfill(len(str(int(len(values)/38))))
+                A4sheet = Image.new('RGB',(1240,1754),
+                (255, 255, 255)
+                ).convert('L')
+                saveA4sheet = str(
+                int(iterate/38)
+                ).zfill(len(str(int(
+                len(values)/38
+                ))))
                 pasteLeft = 50
             else:
                 pasteLeft = 680
@@ -176,7 +188,9 @@ def generateBarcodes(values):
         # Horizontal = openBarcode.size[0]
         # Vertical = openBarcode.size[1]
         cropValue = (0, 80, openBarcode.size[0], 160)
-        # cropValue params: start pixel left, start pixel top, end pixel right, end pixel bottom
+            # params:
+                # start pixel left, start pixel top
+                # end pixel right, end pixel bottom
 
         croppedRegion = openBarcode.crop(cropValue)
         cropped.paste(croppedRegion, (250,0))
@@ -193,11 +207,19 @@ def generateBarcodes(values):
         os.remove('%s.png' % fileName)
 
         if iterate%38 == 37 or iterate == len(values)-1:
-            A4sheet.save('%s.png' % os.path.join(path, 'Strekkoder', saveA4sheet))
+            A4sheet.save('%s.png' % os.path.join(
+            path, 'Strekkoder', saveA4sheet))
             A4sheet.close()
-        if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+
+        if sys.platform.startswith(
+        'linux'
+        ) or sys.platform.startswith(
+        'darwin'
+        ):
             loading_bar(iterate, len(values),barValue)
-        elif sys.platform.startswith('win32'):
+        elif sys.platform.startswith(
+        'win32'
+        ):
             print(fileName)
 
     openFolder(os.path.join(path, 'Strekkoder'))
