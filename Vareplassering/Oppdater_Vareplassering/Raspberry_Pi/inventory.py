@@ -250,14 +250,49 @@ class Inventory:
 
     # update only newest shelf values with sql using the byitem.json
     def byitemExecuteUpdate(self, sqlCredentials):
+        '''
+            read values from byitem and update item and the newest shelf value
+        '''
 
+        if self.debug['sql'] == False:
+            Log('sql is not activated, skipping update and exiting', 2)
+            return None
         Log('executing byitemExecuteUpdate')
         Log('updating from inventory byitem.json to database '
         + sqlCredentials['database'] + ' at '
         + sqlCredentials['server'])
-        for key in self.byitem:
-            print(f'item {key} shelf {self.byitem[key][-1]}')
-            # the last index represent the latest shelf value
+
+
+        try:
+            cnxn = pyodbc.connect(
+            'DRIVER={FreeTDS};SERVER=%s;PORT=%s;DATABASE=%s;UID=%s;PWD=%s' %(
+                sqlCredentials['server'],
+                sqlCredentials['port'],
+                sqlCredentials['database'],
+                sqlCredentials['user'],
+                sqlCredentials['password']
+                )
+            )
+            Log('sql database connected succesfully')
+            cursor = cnxn.cursor()
+
+            Log(f'reading values from {self.file}/byitem.json.csv')
+            for key in self.byitem:
+                print(f'item {key} shelf {self.byitem[key][-1]}')
+                # the last index represent the latest shelf value
+
+            # power off
+            try:
+                call("echo", shell=True)
+                Log('powering off', 5)
+                sleep(2)
+                call("sudo nohup shutdown -h now", shell=True)
+            except NameError:
+                Log('exiting', 5)
+                exit()
+        except pyodbc.OperationalError:
+            Log('sql database connection failed with pyodbc.OperationalError', 1)
+            return None
 
 
         # power off after update
