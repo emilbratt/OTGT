@@ -4,9 +4,7 @@ from datetime import datetime
 import os
 import json
 
-# declare time, date and path
-# timeStart = datetime.now().strftime("%H:%M:%S")
-# startTime = datetime.now().strftime("%H:%M:%S")
+# declare timestamp for start time, start date and absolute path for ./log
 timeStampBegin = datetime.now().strftime("%Y-%m-%d_%H:%M:%S.%f")[:-4]
 startDate = datetime.now().strftime("%Y-%m-%d")
 logPath = os.path.join(os.path.dirname(os.path.realpath(__file__)), "log")
@@ -26,21 +24,17 @@ class Log:
             self.ID = datetime.now().strftime("%Y-%m-%d")
 
 
-        # self.timeStamp = datetime.now().strftime(
-        #     "%H:%M:%S.%f")[:-4]
-
-        # initialize json file
         try:
-            json_file = open(self.filePath,encoding='utf-8')
+            loadFile = open(self.filePath,encoding='utf-8')
             try:
-                self.log = json.load(json_file)
+                self.log = json.load(loadFile)
             except json.decoder.JSONDecodeError:
-                    self.log = {self.ID:{
-                    timeStampBegin:'json.decoder.JSONDecodeError, new file created'
+                self.log = {self.ID:{
+                timeStampBegin:'json.decoder.JSONDecodeError, new file created'
                     }
                 }
 
-            json_file.close()
+            loadFile.close()
         except FileNotFoundError:
             self.log = {self.ID:{
                 timeStampBegin:'FileNotFoundError, new file created'}
@@ -70,9 +64,9 @@ class Log:
             self.log[self.ID] = {self.timeStamp:data}
 
 
-        json_file = open(self.filePath, 'w',encoding='utf-8')
-        json.dump(self.log, json_file, indent=2)
-        json_file.close()
+        loadFile = open(self.filePath, 'w',encoding='utf-8')
+        json.dump(self.log, loadFile, indent=2)
+        loadFile.close()
 
 
 # example usage

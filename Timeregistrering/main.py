@@ -9,12 +9,16 @@ import json
 '''
 
 
-def addUser():
-    # try:
-    pass
-        # mode = open('%s/data/users.json'%path,encoding='utf-8')
-        # debug = json.load(mode)
-        # mode.close()
+def leggTil():
+    print('\n\tSkriv inn brukernavn (helst kun fornavn)\n\t'+
+        'som du ønsker å legge til å trykk Enter')
+    nameInput = input('\tskriv: ')
+    print(nameInput)
+    exit()
+
+
+
+
 
 
 def mainLoop():
@@ -48,17 +52,19 @@ def mainLoop():
 
     clearScreen()
     '''initialize finish'''
-    # main options
-    print('''
-        C.I.Pedersen
-        Timeregistrering
-    ''')
-    print('\t1. Legg til bruker\n\t2. Registrer timer\n\t3. Vis alle brukere\n\t4. Avslutt')
-    V = input('\tVelg: ')
+
+    # main menu
     while True:
+        clearScreen()
+        print('''
+            C.I.Pedersen
+            Timeregistrering
+        ''')
+        print('\t1. Legg til bruker\n\t2. Registrer timer\n\t3. Vis alle brukere\n\t4. Avslutt')
+        V = input('\tVelg: ')
         try:
             if int(V) == 1:
-                addUser()
+                leggTil()
                 break
             elif int(V) == 2:
                 break
