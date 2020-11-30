@@ -13,21 +13,24 @@ dataPath = os.path.join(mainPath, "data")
 dataJson = os.path.join(mainPath, "data", "db.json")
 
 
-# create new db.json if none
-if os.path.isfile(dataJson) == False:
-    with open(dataJson, 'a') as newJsonFile:
-        newJsonFile.write("{}")
+def createDB():
+    # create new db.json if none
+    if os.path.isfile(dataJson) == False:
+        with open(dataJson, 'a') as newJsonFile:
+            newJsonFile.write("{}")
 
 # write changes to database
 def updateDB(db):
     with open(dataJson, 'w',encoding='utf-8') as loadFile:
         json.dump(db, loadFile, indent=2)
-    # loadFile.close()
 
 class Database:
     def __init__(self,user='main'):
         # if no datadir, create
         os.makedirs(dataPath, exist_ok=True)
+
+        # force create db.json if none
+        createDB()
 
         # load db
         with open(dataJson,encoding='UTF-8') as jsonFile:
@@ -54,26 +57,41 @@ class Database:
 
 
     def showUsers(self):
-        print('\t    Alle Navn:')
         for key in self.db:
-            print(f'\t\tBruker ID: {key} {self.db[key]["user"]}')
+            print(f'\t\t{key} {self.db[key]["user"]}')
 
 
+    def choseUser(self, id):
+        while True:
+            # self.dataLog = Log(id)
+
+            try:
+                self.dataLog = Log(self.db[id]["user"])
+                return self.db[id]["user"]
+            except KeyError:
+                return None
 
     def addWork(self):
         pass
 
     def addUser(self, name):
-        print(type(str(int(max(self.db)))))
         for value in self.db.values():
             if name in value['user']:
                 print(f'\tBrukernavn {name} eksisterer allerede')
                 return None
+
         self.dataLog.add(f'Added user {name}')
-        self.db.setdefault(str(int(max(self.db))+1),{'user':name})
+        if self.db == {}:
+            self.db['1'] = {'user':name}
+            # self.dataLog.add(f'Added user {name}')
+            # print(f'\tBrukernavn {name} ble lagt til med ID nr {max(self.db)} ')
+        else:
+            self.db.setdefault(str(int(max(self.db))+1),{'user':name})
         # self.db.setdefault(len(self.db)+1,{'user':name})
         print(f'\tBrukernavn {name} ble lagt til med ID nr {max(self.db)} ')
+
         updateDB(self.db)
+
 
     # def removeUser()
 
