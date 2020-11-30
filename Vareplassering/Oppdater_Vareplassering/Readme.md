@@ -1,1 +1,1 @@
-<h3>I denne mappen ligger front-end applikasjonene for vareplassering</h3>
+<h3>I denne mappen ligger applikasjonene for vareplassering</h3>
