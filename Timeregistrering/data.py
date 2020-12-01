@@ -4,6 +4,17 @@ from datetime import datetime
 import os
 import json
 from log import Log
+import calendar
+
+def getWeekDay(date):
+    weekDays=["Mandag","Tirsdag","Onsdag","Torsdag",
+        "Fredag","Lørdag","Søndag"]
+    try:
+        dayNumber = calendar.weekday(int(date[6:]), int(date[3:5]), int(date[:2]))
+    except TypeError:
+        dayNumber = date.weekday()
+    return weekDays[dayNumber]
+
 
 # create clear screen function
 clearScreen = lambda : os.system(
@@ -14,7 +25,6 @@ startDate = datetime.now().strftime("%Y-%m-%d")
 mainPath = os.path.dirname(os.path.realpath(__file__))
 dataPath = os.path.join(mainPath, "data")
 dataJson = os.path.join(mainPath, "data", "db.json")
-
 
 
 
@@ -101,8 +111,59 @@ class Database:
 
 
     def addWork(self):
-        pass
+        while True:
+            clearScreen()
+            print(f'\n\tDato i dag:\t')
+            print('\t' + getWeekDay(datetime.now())+ ' ' +
+                datetime.now().strftime("%d.%m.%Y"))
+            print('\n\tSkriv 1 for å bruke dagens dato\n\teller tast inn egen dato')
+            while True:
+                date = input('\tFromatet må være slik: 01.01.2020\n\tskriv: ')
+                if date == '1':
+                    date = datetime.now().strftime("%d.%m.%Y")
+                    break
+                else:
+                    try:
+                        datetime.strptime(date, '%d.%m.%Y')
+                        print('\n\tDato som er registrert:')
+                        print('\t' +getWeekDay(date)+ ' ' +date)
+                        print('\ter dette OK?')
+                        isOK = input('\t1. ja\n\t2. nei\n\tskriv: ')
+                        if isOK == '1':
+                            break
+                    except ValueError:
+                        input('\tUgyldig format\n\tTrykk Enter for å fortsette')
+                        clearScreen()
+            while True:
+                clearScreen()
+                print('\n\tSkriv start tid\n\tFormatet må være slik:')
+                start = input('\t08:00\n\tskriv: ')
+                try:
+                    datetime.strptime(start, '%H:%M')
+                    break
+                except ValueError:
+                    input('\tUgyldig format\n\tTrykk Enter for å fortsette')
+                    continue
+            while True:
+                clearScreen()
+                print('\n\tSkriv slutt tid\n\tFormatet må være slik:')
+                end = input('\t16:00\n\tskriv: ')
+                try:
+                    datetime.strptime(end, '%H:%M')
+                    break
+                except ValueError:
+                    input('\tUgyldig format\n\tTrykk Enter for å fortsette')
+                    continue
 
+            clearScreen()
+            print(f'\n\tRegistrert tid:\n\t{getWeekDay(date)} {date}\n\tfra {start}\n\ttil {end}')
+            isOK = input('\n\tStemmer dette?\n\t1. ja\n\t2. nei\n\tskriv: ')
+            if isOK == '1':
+                break
+            else:
+                continue
+        # continue
+        print('\tok')
 
     def addUser(self):
         while True:
@@ -157,6 +218,8 @@ class Database:
 
 # example usage
 if __name__ == '__main__':
+    Database().addWork()
+    exit()
     def example():
         db = Database() # db object with no users chosen
         db.addUser('mike')

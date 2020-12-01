@@ -32,8 +32,8 @@ def mainLoop():
             print('\tIngen bruker valgt\n')
         else:
             print(f'\tValgt bruker: {dataFile.getCurrentUser()}\n')
-        print('\t1. Velg bruker\n\t2. Legg til bruker'+
-            '\n\t3. Fjern bruker\n\t0. Avslutt')
+        print('\t1. Velg bruker\n\t2. Registrer timer\n\t3. Se oversikt'+
+            '\n\t4. Legg til bruker\n\t5. Fjern bruker\n\t0. Avslutt')
         choice = input('\tVelg: ')
         try:
             if int(choice) == 1:
@@ -54,20 +54,25 @@ def mainLoop():
                     else:
                         dataFile = Database(userName)
                         break
-
             elif int(choice) == 2:
                 clearScreen()
                 if dataFile.getCurrentUser() == 'main':
-                    input('\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
+                    input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
+                    continue
+                dataFile.addWork()
+            elif int(choice) == 4:
+                clearScreen()
+                if dataFile.getCurrentUser() == 'main':
+                    input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
                     continue
                 print('\n\tEksisterende brukere')
                 dataFile.showUsers()
                 dataFile.addUser()
 
-            elif int(choice) == 3:
+            elif int(choice) == 5:
                 clearScreen()
                 if dataFile.getCurrentUser() == 'main':
-                    input('\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
+                    input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
                     continue
                 print('\n\tFjern bruker fra listen')
                 while True:
@@ -81,9 +86,9 @@ def mainLoop():
                         dataFile.removeUser(choice)
                     break
 
-            elif int(choice) == 4:
-                pass
-                # showUsers()
+            # elif int(choice) == 4:
+            #     pass
+            #     # showUsers()
             elif int(choice) == 0:
                 clearScreen()
                 exit()
