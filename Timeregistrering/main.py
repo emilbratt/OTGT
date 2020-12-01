@@ -12,79 +12,84 @@ from data import Database
 clearScreen = lambda : os.system(
     'cls' if os.name == 'nt' else 'clear')
 
-def velgBruker(dataFile):
-    clearScreen()
-    print('\n\tVelg bruker fra listen')
-    while True:
-
-
-        print('\t    0 Avslutt')
-        dataFile.showUsers()
-        choice = input('\tSkriv: ')
-        userName = dataFile.choseUser(choice)
-        if userName == None:
-            print(f'\tIngen bruker med id nr {choice}')
-        else:
-            print(f'\tBruker {userName} er valgt')
-            return userName
-
-def leggTilBruker():
-    print('\n\tSkriv inn brukernavn (helst kun fornavn)\n\t'+
-        'som du ønsker å legge til å trykk Enter')
-    nameInput = input('\tskriv: ')
-    dataFile.addUser(nameInput)
-
-
 
 
 # load database object
-dataFile = Database()
+
 def mainLoop():
-    '''initialize start'''
-    # # fetch full path for __file__, data and log
-    # mainPath = os.path.dirname(os.path.realpath(__file__))
-    # dataPath = os.path.join(mainPath, "data")
-    # logPath = os.path.join(mainPath, "log")
 
-    # # force create data and log directory if none
-    # os.makedirs(dataPath, exist_ok=True)
-    # os.makedirs(logPath, exist_ok=True)
+    dataFile = Database()
 
-
-
-    '''initialize finish'''
-
-
-        # '\n\t3. Registrer timer\n\t4. Vis alle brukere\n\t5. Avslutt')
     # main menu
     while True:
+
         clearScreen()
         print('''
               C.I.Pedersen
             Timeregistrering
         ''')
-        print('\t1. Velg bruker \n\t2. Legg til bruker')
+        if dataFile.getCurrentUser() == 'main':
+            print('\tIngen bruker valgt\n')
+        else:
+            print(f'\tValgt bruker: {dataFile.getCurrentUser()}\n')
+        print('\t1. Velg bruker\n\t2. Legg til bruker'+
+            '\n\t3. Fjern bruker\n\t0. Avslutt')
         choice = input('\tVelg: ')
         try:
             if int(choice) == 1:
-                currentUser = velgBruker(dataFile)
-                # currentUser = Database(choice)
+                clearScreen()
+
+                while True:
+                    print('\n\tVelg bruker fra listen')
+                    dataFile.showUsers()
+                    print('\n\t\t0 Gå tilbake')
+                    choice = input('\tSkriv inn id: ')
+                    if choice == '0':
+                        break
+                    userName = dataFile.choseUser(choice)
+                    if userName == None:
+                        print(f'\tIngen bruker med id nr {choice}')
+                        input('\tTrykk Enter for å gå videre')
+                        clearScreen()
+                    else:
+                        dataFile = Database(userName)
+                        break
+
             elif int(choice) == 2:
-                leggTilBruker()
-                # break
+                clearScreen()
+                if dataFile.getCurrentUser() == 'main':
+                    input('\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
+                    continue
+                print('\n\tEksisterende brukere')
+                dataFile.showUsers()
+                dataFile.addUser()
+
             elif int(choice) == 3:
-                break
-                # regHour()
+                clearScreen()
+                if dataFile.getCurrentUser() == 'main':
+                    input('\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
+                    continue
+                print('\n\tFjern bruker fra listen')
+                while True:
+
+                    dataFile.showUsers()
+                    print('\t0 Gå tilbake')
+                    choice = input('\tSkriv: ')
+                    if choice == '0':
+                        break
+                    else:
+                        dataFile.removeUser(choice)
+                    break
+
             elif int(choice) == 4:
-                break
+                pass
                 # showUsers()
-            elif int(choice) == 5:
+            elif int(choice) == 0:
                 clearScreen()
                 exit()
-            input('\tTrykk Enter for å gå videre')
-        except ValueError: # handle int error if input = str
+        except ValueError: # ignore all invalid values
             pass
-        # choice = input('\tVelg et alternativ')
+
 
 
 
