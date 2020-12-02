@@ -7,25 +7,29 @@ import calendar
 from log import Log
 
 
-# create clear screen function
-clearScreen = lambda : os.system(
-    'cls' if os.name == 'nt' else 'clear')
-
 timeStampBegin = datetime.now().strftime("%Y-%m-%d_%H:%M:%S.%f")[:-4]
 startDate = datetime.now().strftime("%Y-%m-%d")
 mainPath = os.path.dirname(os.path.realpath(__file__))
 dataPath = os.path.join(mainPath, "data")
 dataJson = os.path.join(mainPath, "data", "db.json")
 
+
+# create clear screen function
+clearScreen = lambda : os.system(
+    'cls' if os.name == 'nt' else 'clear')
+
+
 def getWeekDay(date):
     weekDays=["Mandag","Tirsdag","Onsdag","Torsdag",
         "Fredag","Lørdag","Søndag"]
     try:
-        dayNumber = calendar.weekday(int(date[6:]), int(date[3:5]), int(date[:2]))
+        dayNumber = calendar.weekday(
+            int(date[6:]),
+            int(date[3:5]),
+            int(date[:2]))
     except TypeError:
         dayNumber = date.weekday()
     return weekDays[dayNumber]
-
 
 
 
@@ -226,48 +230,36 @@ class Database:
 
         clearScreen()
 
-        y = date[6:]
-        m = date[3:5]
-        d = date[:2]
+        y = date[6:]  # year
+        m = date[3:5] # month
+        d = date[:2]  # date
+        # check if exist
         if self.db[self.id]['work'] == {}:
-            self.db[self.id]['work'][date[6:]] = {}
-        if date[6:] not in self.db[self.id]['work']:
-            self.db[self.id]['work'][date[6:]] = {}
-        if date[3:5] not in self.db[self.id]['work'][date[6:]]:
-            self.db[self.id]['work'][date[6:]][date[3:5]] = {}
+            self.db[self.id]['work'][y] = {}
+        if y not in self.db[self.id]['work']:
+            self.db[self.id]['work'][y] = {}
+        if m not in self.db[self.id]['work'][y]:
+            self.db[self.id]['work'][y][m] = {}
 
-
-        # if self.db[self.id]['work'] == {}:
-        #     self.db[self.id]['work'][date[6:]] = {}
-        # if date[6:] in self.db[self.id]['work']:
-        #     pass
-        # else:
-        #     self.db[self.id]['work'][date[6:]] = {}
-        #
-        # if date[3:5] in self.db[self.id]['work'][date[6:]]:
-        #     pass
-        # else:
-        #     self.db[self.id]['work'][date[6:]][date[3:5]] = {}
-
-        if date[:2] in self.db[self.id]['work'][date[6:]][date[3:5]]:
+        if d in self.db[self.id]['work'][y][m]:
             clearScreen()
             print('\n\tDu har allerede registrert arbeid for')
             print(f'\t{getWeekDay(date)} {date}\n')
             print('\tDitt gamle klokkeslett er:')
-            print(f"\tFra {self.db[self.id]['work'][date[6:]][date[3:5]][date[:2]]['start']}")
-            print(f"\tTil {self.db[self.id]['work'][date[6:]][date[3:5]][date[:2]]['end']}")
+            print(f"\tFra {self.db[self.id]['work'][y][m][d]['start']}")
+            print(f"\tTil {self.db[self.id]['work'][y][m][d]['end']}")
             print(f'\n\tDitt nye klokkeslett er:\n\tFra {start}\n\tTil {end}')
             choice = input('\n\tHvilket klokkeslett er riktig?'+
                 '\n\t1. det gamle\n\t2. det nye\n\tskriv: ')
             if choice == '2':
-                self.db[self.id]['work'][date[6:]][date[3:5]][date[:2]]['start'] = start
-                self.db[self.id]['work'][date[6:]][date[3:5]][date[:2]]['end'] = end
+                self.db[self.id]['work'][y][m][d]['start'] = start
+                self.db[self.id]['work'][y][m][d]['end'] = end
             else:
                 return None
         else:
-            self.db[self.id]['work'][date[6:]][date[3:5]][date[:2]] = {'start':start,'end':end}
+            self.db[self.id]['work'][y][m][d] = {'start':start,'end':end}
 
-        self.dataLog.add(f'{self.currentUser}-{date}-{start}-{end}')
+        self.dataLog.add(f'Added work {date} from {start} to {end}')
         updateDB(self.db)
         return None
 
@@ -283,7 +275,7 @@ class Database:
             for value in self.db.values():
                 if name in value['user']:
                     print(f'\tBrukernavn {name} eksisterer allerede')
-                    input('\tTrykk Enter for å gå videre')# exists = False
+                    input('\tTrykk Enter for å gå videre')
                     return None
 
             print(f'\n\t{name} blir lagt til, er dette OK?')
@@ -300,7 +292,7 @@ class Database:
                         else:
                             self.db[str(i)] = {'user':name, 'work':{}}
                             break
-                    # self.db[str(int(max(self.db))+1)] = {'user':name}
+
                 updateDB(self.db)
                 return None
             else:
