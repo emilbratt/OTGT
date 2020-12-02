@@ -3,17 +3,8 @@ from time import sleep
 from datetime import datetime
 import os
 import json
-from log import Log
 import calendar
-
-def getWeekDay(date):
-    weekDays=["Mandag","Tirsdag","Onsdag","Torsdag",
-        "Fredag","Lørdag","Søndag"]
-    try:
-        dayNumber = calendar.weekday(int(date[6:]), int(date[3:5]), int(date[:2]))
-    except TypeError:
-        dayNumber = date.weekday()
-    return weekDays[dayNumber]
+from log import Log
 
 
 # create clear screen function
@@ -26,8 +17,47 @@ mainPath = os.path.dirname(os.path.realpath(__file__))
 dataPath = os.path.join(mainPath, "data")
 dataJson = os.path.join(mainPath, "data", "db.json")
 
+def getWeekDay(date):
+    weekDays=["Mandag","Tirsdag","Onsdag","Torsdag",
+        "Fredag","Lørdag","Søndag"]
+    try:
+        dayNumber = calendar.weekday(int(date[6:]), int(date[3:5]), int(date[:2]))
+    except TypeError:
+        dayNumber = date.weekday()
+    return weekDays[dayNumber]
 
 
+
+
+def workCalc(date,start,end):
+    workedHours = int(end[:2]) - int(start[:2])
+    workedMins = int(end[3:5]) - int(start[3:5])
+
+    if workedHours < 0:
+        return False
+
+    if workedMins < 0:
+        workedHours -= 1
+        workedMins = (workedMins + 60)
+    hours = str(workedHours)
+    minutes = str(workedMins)
+    print('\n\tRegistrert tid:\n\t' +
+    getWeekDay(date) + ' '+ date + '\n\tfra ' +
+    start + '\n\ttil ' + end + '\n\tJobbet ' +
+    hours + ' timer og ' + minutes + ' minutter')
+
+    isOK = input('\n\tStemmer dette?\n\t1. ja\n\t2. nei\n\tskriv: ')
+    if isOK == '1':
+        return True
+    else:
+        return False
+
+
+def clockCalc():
+    pass
+
+def dateCalc():
+    pass
 
 def getDate():
     return int(datetime.now().strftime("%Y%m%d"))
@@ -45,7 +75,7 @@ def createDB():
             isOK = input('\t1. ja\n\t2. nei\n\tskriv: ')
             if isOK == '1':
                 break
-    db['1'] = {'user':username}
+    db['1'] = {'user':username, 'work':{}}
     if os.path.isfile(dataJson) == False:
         with open(dataJson, 'a') as loadFile:
             json.dump(db, loadFile, indent=2)
@@ -63,7 +93,7 @@ def loadDB(dataLog):
             db = json.load(loadFile) # everything OK
         except json.decoder.JSONDecodeError:
             # force create new database and user
-            ataLog.add('json.decoder.JSONDecodeError'+
+            dataLog.add('json.decoder.JSONDecodeError'+
                 'on ./data/db.json, new file created')
             db = createDB()
             updateDB(db)
@@ -90,14 +120,19 @@ class Database:
         # if no datadir, create new
         os.makedirs(dataPath, exist_ok=True)
         self.db = loadDB(self.dataLog)
+        for id in self.db:
+            if self.db[id]['user'] == user:
+                self.id = id
+    # init end
+
 
     def showUsers(self):
         print('\tid\tnavn')
-        for key in self.db:
-            print(f'\t{key}\t{self.db[key]["user"]}')
+        for id in self.db:
+            print(f'\t{id}\t{self.db[id]["user"]}')
 
 
-    def getCurrentUser(self):
+    def getUserName(self):
         return self.currentUser
 
 
@@ -111,20 +146,30 @@ class Database:
 
 
     def addWork(self):
+        print(f'\n\tRegistrere timer for {self.currentUser}')
+        isOK = input(f'\n\t1. ja\n\t2. nei\n\tskriv:  ')
+        if isOK != '1':
+            return None
         while True:
             clearScreen()
             print(f'\n\tDato i dag:\t')
             print('\t' + getWeekDay(datetime.now())+ ' ' +
                 datetime.now().strftime("%d.%m.%Y"))
-            print('\n\tSkriv 1 for å bruke dagens dato\n\teller tast inn egen dato')
+            print('\n\tSkriv 1 for å bruke dagens dato'+
+                '\n\teller tast inn egen dato'+
+                '\n\tskriv 0 for å gå til hovedmeny')
             while True:
-                date = input('\tFromatet må være slik: 01.01.2020\n\tskriv: ')
+                date = input('\n\tFromatet må være slik: 01.01.2020'+
+                    '\n\tskriv: ')
                 if date == '1':
                     date = datetime.now().strftime("%d.%m.%Y")
                     break
+                elif date == '0':
+                    return None
                 else:
                     try:
                         datetime.strptime(date, '%d.%m.%Y')
+                        clearScreen()
                         print('\n\tDato som er registrert:')
                         print('\t' +getWeekDay(date)+ ' ' +date)
                         print('\ter dette OK?')
@@ -132,38 +177,100 @@ class Database:
                         if isOK == '1':
                             break
                     except ValueError:
-                        input('\tUgyldig format\n\tTrykk Enter for å fortsette')
+                        input('\tUgyldig format'+
+                            '\n\tTrykk Enter for å fortsette')
                         clearScreen()
             while True:
                 clearScreen()
                 print('\n\tSkriv start tid\n\tFormatet må være slik:')
                 start = input('\t08:00\n\tskriv: ')
+                if len(start) != 5:
+                    input('\tUgyldig format'+
+                        '\n\tTrykk Enter for å fortsette')
+                    continue
                 try:
                     datetime.strptime(start, '%H:%M')
                     break
                 except ValueError:
-                    input('\tUgyldig format\n\tTrykk Enter for å fortsette')
+                    input('\tUgyldig format'+
+                        '\n\tTrykk Enter for å fortsette')
                     continue
             while True:
                 clearScreen()
                 print('\n\tSkriv slutt tid\n\tFormatet må være slik:')
                 end = input('\t16:00\n\tskriv: ')
+                if len(end) != 5:
+                    input('\tUgyldig format'+
+                        '\n\tTrykk Enter for å fortsette')
+                    continue
+                if end.replace(':','') <= start.replace(':',''):
+                    print('\tslutt-tiden må være etter start-tiden')
+                    input('\tTrykk Enter for å gå tilbake til hovedmeny')
+                    return None
                 try:
                     datetime.strptime(end, '%H:%M')
                     break
                 except ValueError:
-                    input('\tUgyldig format\n\tTrykk Enter for å fortsette')
+                    input('\tUgyldig format'+
+                        '\n\tTrykk Enter for å fortsette')
                     continue
 
             clearScreen()
-            print(f'\n\tRegistrert tid:\n\t{getWeekDay(date)} {date}\n\tfra {start}\n\ttil {end}')
-            isOK = input('\n\tStemmer dette?\n\t1. ja\n\t2. nei\n\tskriv: ')
-            if isOK == '1':
+
+            # prompt user confirmation
+            # check valid time
+            if workCalc(date,start,end) == True:
                 break
             else:
                 continue
-        # continue
-        print('\tok')
+
+        clearScreen()
+
+        y = date[6:]
+        m = date[3:5]
+        d = date[:2]
+        if self.db[self.id]['work'] == {}:
+            self.db[self.id]['work'][date[6:]] = {}
+        if date[6:] not in self.db[self.id]['work']:
+            self.db[self.id]['work'][date[6:]] = {}
+        if date[3:5] not in self.db[self.id]['work'][date[6:]]:
+            self.db[self.id]['work'][date[6:]][date[3:5]] = {}
+
+
+        # if self.db[self.id]['work'] == {}:
+        #     self.db[self.id]['work'][date[6:]] = {}
+        # if date[6:] in self.db[self.id]['work']:
+        #     pass
+        # else:
+        #     self.db[self.id]['work'][date[6:]] = {}
+        #
+        # if date[3:5] in self.db[self.id]['work'][date[6:]]:
+        #     pass
+        # else:
+        #     self.db[self.id]['work'][date[6:]][date[3:5]] = {}
+
+        if date[:2] in self.db[self.id]['work'][date[6:]][date[3:5]]:
+            clearScreen()
+            print('\n\tDu har allerede registrert arbeid for')
+            print(f'\t{getWeekDay(date)} {date}\n')
+            print('\tDitt gamle klokkeslett er:')
+            print(f"\tFra {self.db[self.id]['work'][date[6:]][date[3:5]][date[:2]]['start']}")
+            print(f"\tTil {self.db[self.id]['work'][date[6:]][date[3:5]][date[:2]]['end']}")
+            print(f'\n\tDitt nye klokkeslett er:\n\tFra {start}\n\tTil {end}')
+            choice = input('\n\tHvilket klokkeslett er riktig?'+
+                '\n\t1. det gamle\n\t2. det nye\n\tskriv: ')
+            if choice == '2':
+                self.db[self.id]['work'][date[6:]][date[3:5]][date[:2]]['start'] = start
+                self.db[self.id]['work'][date[6:]][date[3:5]][date[:2]]['end'] = end
+            else:
+                return None
+        else:
+            self.db[self.id]['work'][date[6:]][date[3:5]][date[:2]] = {'start':start,'end':end}
+
+        self.dataLog.add(f'{self.currentUser}-{date}-{start}-{end}')
+        updateDB(self.db)
+        return None
+
 
     def addUser(self):
         while True:
@@ -184,14 +291,14 @@ class Database:
             if choice == '1':
                 self.dataLog.add(f'Added user {name}')
                 if self.db == {}:
-                    self.db['1'] = {'user':name}
+                    self.db['1'] = {'user':name, 'work':{}}
                     input('tom')
                 else:
                     for i in range(1, int(max(self.db))+2):
                         if str(i) in self.db:
                             continue
                         else:
-                            self.db[str(i)] = {'user':name}
+                            self.db[str(i)] = {'user':name, 'work':{}}
                             break
                     # self.db[str(int(max(self.db))+1)] = {'user':name}
                 updateDB(self.db)

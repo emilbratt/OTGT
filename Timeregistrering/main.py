@@ -28,10 +28,10 @@ def mainLoop():
               C.I.Pedersen
             Timeregistrering
         ''')
-        if dataFile.getCurrentUser() == 'main':
+        if dataFile.getUserName() == 'main':
             print('\tIngen bruker valgt\n')
         else:
-            print(f'\tValgt bruker: {dataFile.getCurrentUser()}\n')
+            print(f'\tValgt bruker: {dataFile.getUserName()}\n')
         print('\t1. Velg bruker\n\t2. Registrer timer\n\t3. Se oversikt'+
             '\n\t4. Legg til bruker\n\t5. Fjern bruker\n\t0. Avslutt')
         choice = input('\tVelg: ')
@@ -42,11 +42,11 @@ def mainLoop():
                 while True:
                     print('\n\tVelg bruker fra listen')
                     dataFile.showUsers()
-                    print('\n\t\t0 Gå tilbake')
-                    choice = input('\tSkriv inn id: ')
-                    if choice == '0':
+                    print('\n\t0 Gå tilbake')
+                    userID = input('\tSkriv inn id: ')
+                    if userID == '0':
                         break
-                    userName = dataFile.choseUser(choice)
+                    userName = dataFile.choseUser(userID)
                     if userName == None:
                         print(f'\tIngen bruker med id nr {choice}')
                         input('\tTrykk Enter for å gå videre')
@@ -56,13 +56,13 @@ def mainLoop():
                         break
             elif int(choice) == 2:
                 clearScreen()
-                if dataFile.getCurrentUser() == 'main':
+                if dataFile.getUserName() == 'main':
                     input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
                     continue
                 dataFile.addWork()
             elif int(choice) == 4:
                 clearScreen()
-                if dataFile.getCurrentUser() == 'main':
+                if dataFile.getUserName() == 'main':
                     input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
                     continue
                 print('\n\tEksisterende brukere')
@@ -71,7 +71,7 @@ def mainLoop():
 
             elif int(choice) == 5:
                 clearScreen()
-                if dataFile.getCurrentUser() == 'main':
+                if dataFile.getUserName() == 'main':
                     input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
                     continue
                 print('\n\tFjern bruker fra listen')
