@@ -18,10 +18,15 @@ dataJson = os.path.join(mainPath, "data", "db.json")
 clearScreen = lambda : os.system(
     'cls' if os.name == 'nt' else 'clear')
 
+nameMonths = ['Januar','Februar','Mars',
+            'Arpil','Mai','Juni',
+            'Juli','August','September',
+            'Oktober','November','Desember']
+
+nameDays=['Mandag','Tirsdag','Onsdag','Torsdag',
+    'Fredag','Lørdag','Søndag']
 
 def getWeekDay(date):
-    weekDays=["Mandag","Tirsdag","Onsdag","Torsdag",
-        "Fredag","Lørdag","Søndag"]
     try:
         dayNumber = calendar.weekday(
             int(date[6:]),
@@ -29,7 +34,7 @@ def getWeekDay(date):
             int(date[:2]))
     except TypeError:
         dayNumber = date.weekday()
-    return weekDays[dayNumber]
+    return nameDays[dayNumber]
 
 
 
@@ -262,6 +267,61 @@ class Database:
         self.dataLog.add(f'Added work {date} from {start} to {end}')
         updateDB(self.db)
         return None
+
+    def removeWork(self):
+        M = nameMonths
+        while True:
+            y = input('\n\tSkriv inn årstall'+
+                '\n\tFor eksempel 2020\n\tskriv: ')
+            clearScreen()
+            if len(y) == 4 and y.isdecimal() and int(y) >= 2020:
+                break
+
+        while True:
+            print('\n\tVelg en måned')
+            for i in range(0,12,2):
+                print('\t'+'-'*31)
+                print('\t|'+ str(i+1).rjust(2,'0') + ' ' + M[i].ljust(11) +
+                '|'+ str(i+2).rjust(2,'0') + ' ' + M[i+1].ljust(11) + '|')
+            print('\t'+'-'*31)
+            m = input('\t0. gå tilake\n\tskriv: ')
+            if int(m) >= 1 and int(m) <= 12:
+                pass
+            else:
+                return None
+            clearScreen()
+            print('\n\tÅr ' + y + '\n\tMåned ' + nameMonths[int(m)-1])
+
+            try:
+                self.db[self.id]['work'][y][m] # force try before loop
+                while True:
+                    print('\n\tVelg en dato som du ønsker å fjerne')
+                    for key in self.db[self.id]['work'][y][m]:
+                        print('\t'+key+' '+nameMonths[int(m)-1]+
+                        ' Fra: ' + self.db[self.id]['work'][y][m][key]['start']+
+                        ' Til: ' + self.db[self.id]['work'][y][m][key]['end'])
+                    d = input('\n\t0. Gå tilbake\n\tskriv dato: ')
+                    if d == '0':
+                        break
+                    try:
+                        self.db[self.id]['work'][y][m][d.rjust(2, '0')]
+                        isOK = input('\tEr du sikker?\n\t1. ja\n\t2. nei\n\tskriv: ')
+                        if isOK == '1':
+                            del self.db[self.id]['work'][y][m][d.rjust(2, '0')]
+                            clearScreen()
+                        elif isOK == '2':
+                            clearScreen()
+                            break
+                    except KeyError:
+                        print('\n\tDu har ikke registrert arbeid for denne datoen')
+                        input('\tTrykk Enter for å gå videre')
+                        clearScreen()
+                        break
+            except KeyError:
+                print('\n\tDu har ikke registrert arbeid for denne måneden')
+                input('\tTrykk Enter for å gå videre')
+                clearScreen()
+
 
 
     def addUser(self):

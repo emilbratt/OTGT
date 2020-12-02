@@ -32,8 +32,9 @@ def mainLoop():
             print('\tIngen bruker valgt\n')
         else:
             print(f'\tValgt bruker: {dataFile.getUserName()}\n')
-        print('\t1. Velg bruker\n\t2. Registrer timer\n\t3. Se oversikt'+
-            '\n\t4. Legg til bruker\n\t5. Fjern bruker\n\t0. Avslutt')
+        print('\t1. Velg bruker\n\t2. Registrer Arbeid\n\t3. Se oversikt'+
+            '\n\t4. Legg til bruker\n\t5. Fjern Arbeid'+
+            '\n\t6. Slett timer\n\t0. Avslutt')
         choice = input('\tVelg: ')
         try:
             if int(choice) == 1:
@@ -81,11 +82,18 @@ def mainLoop():
                     print('\t0 Gå tilbake')
                     choice = input('\tSkriv: ')
                     if choice == '0':
+                        clearScreen()
+                        removeWork()
                         break
                     else:
                         dataFile.removeUser(choice)
                     break
-
+            elif int(choice) == 6:
+                clearScreen()
+                if dataFile.getUserName() == 'main':
+                    input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
+                    continue
+                dataFile.removeWork()
             # elif int(choice) == 4:
             #     pass
             #     # showUsers()
@@ -94,7 +102,6 @@ def mainLoop():
                 exit()
         except ValueError: # ignore all invalid values
             pass
-
 
 
 
