@@ -7,11 +7,11 @@ import calendar
 from log import Log
 
 
-timeStampBegin = datetime.now().strftime("%Y-%m-%d_%H:%M:%S.%f")[:-4]
-startDate = datetime.now().strftime("%Y-%m-%d")
+timeStampBegin = datetime.now().strftime('%Y-%m-%d_%H:%M:%S.%f')[:-4]
+startDate = datetime.now().strftime('%Y-%m-%d')
 mainPath = os.path.dirname(os.path.realpath(__file__))
-dataPath = os.path.join(mainPath, "data")
-dataJson = os.path.join(mainPath, "data", "db.json")
+dataPath = os.path.join(mainPath, 'data')
+dataJson = os.path.join(mainPath, 'data', 'db.json')
 
 
 # create clear screen function
@@ -62,17 +62,11 @@ def workCalc(date,start,end):
         return False
 
 
-def clockCalc():
-    pass
-
-def dateCalc():
-    pass
 
 def getDate():
     return int(datetime.now().strftime("%Y%m%d"))
 
 def createDB():
-    # create new db.json if none
     db = {}
     print('\tIngen brukere eksisterer')
     while True:
@@ -238,6 +232,7 @@ class Database:
         y = date[6:]  # year
         m = date[3:5] # month
         d = date[:2]  # date
+
         # check if exist
         if self.db[self.id]['work'] == {}:
             self.db[self.id]['work'][y] = {}
@@ -246,6 +241,7 @@ class Database:
         if m not in self.db[self.id]['work'][y]:
             self.db[self.id]['work'][y][m] = {}
 
+        # append work
         if d in self.db[self.id]['work'][y][m]:
             clearScreen()
             print('\n\tDu har allerede registrert arbeid for')
@@ -278,13 +274,12 @@ class Database:
                 break
 
         while True:
-            print('\n\tVelg en måned')
+            print('\n\tVelg en måned\n')
             for i in range(0,12,2):
-                print('\t'+'-'*31)
-                print('\t|'+ str(i+1).rjust(2,'0') + ' ' + M[i].ljust(11) +
-                '|'+ str(i+2).rjust(2,'0') + ' ' + M[i+1].ljust(11) + '|')
-            print('\t'+'-'*31)
-            m = input('\t0. gå tilake\n\tskriv: ')
+                print('\t'+ str(i+1).rjust(2,' ') + ' ' + M[i].ljust(11) +
+                str(i+2).rjust(2,' ') + ' ' + M[i+1].ljust(11))
+
+            m = input('\n\t0. gå tilake\n\tskriv: ')
             if int(m) >= 1 and int(m) <= 12:
                 pass
             else:
@@ -295,21 +290,24 @@ class Database:
             try:
                 self.db[self.id]['work'][y][m] # force try before loop
                 while True:
-                    print('\n\tVelg en dato som du ønsker å fjerne')
+                    print('\n\tVelg en dato fra listen som du ønsker å fjerne\n')
                     for key in self.db[self.id]['work'][y][m]:
-                        print('\t'+key+' '+nameMonths[int(m)-1]+
+                        print('\t'+str(int(key))+' '+nameMonths[int(m)-1]+
                         ' Fra: ' + self.db[self.id]['work'][y][m][key]['start']+
                         ' Til: ' + self.db[self.id]['work'][y][m][key]['end'])
                     d = input('\n\t0. Gå tilbake\n\tskriv dato: ')
                     if d == '0':
+                        clearScreen()
                         break
                     try:
                         self.db[self.id]['work'][y][m][d.rjust(2, '0')]
                         isOK = input('\tEr du sikker?\n\t1. ja\n\t2. nei\n\tskriv: ')
                         if isOK == '1':
                             del self.db[self.id]['work'][y][m][d.rjust(2, '0')]
+                            self.dataLog.add(f'Removed work {d}.{nameMonths[int(m)-1]}.{y}')
+                            updateDB(self.db)
                             clearScreen()
-                        elif isOK == '2':
+                        else:
                             clearScreen()
                             break
                     except KeyError:
@@ -377,8 +375,7 @@ class Database:
 
 # example usage
 if __name__ == '__main__':
-    Database().addWork()
-    exit()
+
     def example():
         db = Database() # db object with no users chosen
         db.addUser('mike')
