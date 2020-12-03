@@ -18,13 +18,17 @@ dataJson = os.path.join(mainPath, 'data', 'db.json')
 clearScreen = lambda : os.system(
     'cls' if os.name == 'nt' else 'clear')
 
-nameMonths = ['Januar','Februar','Mars',
-            'Arpil','Mai','Juni',
-            'Juli','August','September',
-            'Oktober','November','Desember']
+nameMonths = [
+'Januar','Februar','Mars',
+'Arpil','Mai','Juni',
+'Juli','August','September',
+'Oktober','November','Desember'
+]
 
-nameDays=['Mandag','Tirsdag','Onsdag','Torsdag',
-    'Fredag','Lørdag','Søndag']
+nameDays=[
+'Mandag','Tirsdag','Onsdag','Torsdag',
+'Fredag','Lørdag','Søndag'
+]
 
 def getWeekDay(date):
     try:
@@ -37,8 +41,11 @@ def getWeekDay(date):
     return nameDays[dayNumber]
 
 
+def workCalc():
+    pass
 
-def workCalc(date,start,end):
+
+def workSummary(date,start,end):
     workedHours = int(end[:2]) - int(start[:2])
     workedMins = int(end[3:5]) - int(start[3:5])
 
@@ -50,10 +57,10 @@ def workCalc(date,start,end):
         workedMins = (workedMins + 60)
     hours = str(workedHours)
     minutes = str(workedMins)
-    print('\n\tRegistrert tid:\n\t' +
-    getWeekDay(date) + ' '+ date + '\n\tfra ' +
-    start + '\n\ttil ' + end + '\n\tJobbet ' +
-    hours + ' timer og ' + minutes + ' minutter')
+    print('\n\tRegistrert tid:\n\n\t' +
+        getWeekDay(date) + ' '+ date + '\n\tfra: ' +
+        start + ' til: ' + end + '\n\n\tTotalt:\n\t' +
+        hours + ' timer og ' + minutes + ' minutter')
 
     isOK = input('\n\tStemmer dette?\n\t1. ja\n\t2. nei\n\tskriv: ')
     if isOK == '1':
@@ -93,12 +100,12 @@ def loadDB(dataLog):
     try:
         loadFile = open(dataJson,encoding='utf-8')
         try:
-            db = json.load(loadFile) # everything OK
+            db = json.load(loadFile)
         except json.decoder.JSONDecodeError:
             # force create new database and user
-            dataLog.add('json.decoder.JSONDecodeError'+
-                'on ./data/db.json, new file created')
             db = createDB()
+            dataLog.add('json.decoder.JSONDecodeError'+
+            'on ./data/db.json, new file created')
             updateDB(db)
         loadFile.close()
     except FileNotFoundError:
@@ -116,6 +123,7 @@ def loadDB(dataLog):
 
 
 class Database:
+    # init start
     def __init__(self,user='main'):
         self.currentUser = user
         self.dataLog = Log(user)
@@ -149,7 +157,7 @@ class Database:
 
 
     def addWork(self):
-        print(f'\n\tRegistrere timer for {self.currentUser}')
+        print(f'\n\tRegistrere arbeid for {self.currentUser}')
         isOK = input(f'\n\t1. ja\n\t2. nei\n\tskriv:  ')
         if isOK != '1':
             return None
@@ -222,7 +230,7 @@ class Database:
 
             # prompt user confirmation
             # check valid time
-            if workCalc(date,start,end) == True:
+            if workSummary(date,start,end) == True:
                 break
             else:
                 continue
@@ -246,18 +254,27 @@ class Database:
             clearScreen()
             print('\n\tDu har allerede registrert arbeid for')
             print(f'\t{getWeekDay(date)} {date}\n')
-            print('\tDitt gamle klokkeslett er:')
-            print(f"\tFra {self.db[self.id]['work'][y][m][d]['start']}")
-            print(f"\tTil {self.db[self.id]['work'][y][m][d]['end']}")
-            print(f'\n\tDitt nye klokkeslett er:\n\tFra {start}\n\tTil {end}')
+            print('\tDitt gamle klokkeslett er')
+            print(f"\tFra: {self.db[self.id]['work'][y][m][d]['start']}")
+            print(f"\tTil: {self.db[self.id]['work'][y][m][d]['end']}")
+            print(f'\n\tDitt nye klokkeslett er\n\tFra: {start}\n\tTil: {end}')
             choice = input('\n\tHvilket klokkeslett er riktig?'+
                 '\n\t1. det gamle\n\t2. det nye\n\tskriv: ')
             if choice == '2':
+                clearScreen()
+                print('\n\tOppdaterer nytt klokkeslett')
+                sleep(1.5)
                 self.db[self.id]['work'][y][m][d]['start'] = start
                 self.db[self.id]['work'][y][m][d]['end'] = end
             else:
+                clearScreen()
+                print('\n\tIgnorerer nytt klokkeslett')
+                sleep(1.5)
                 return None
         else:
+            clearScreen()
+            print('\n\tOppdaterer nytt klokkeslett')
+            sleep(1.5)
             self.db[self.id]['work'][y][m][d] = {'start':start,'end':end}
 
         self.dataLog.add(f'Added work {date} from {start} to {end}')
@@ -265,8 +282,13 @@ class Database:
         return None
 
     def removeWork(self):
+        print(f'\n\tFjern arbeid for {self.currentUser}')
+        isOK = input(f'\n\t1. ja\n\t2. nei\n\tskriv:  ')
+        if isOK != '1':
+            return None
         M = nameMonths
         while True:
+            clearScreen()
             y = input('\n\tSkriv inn årstall'+
                 '\n\tFor eksempel 2020\n\tskriv: ')
             clearScreen()
@@ -288,23 +310,28 @@ class Database:
             print('\n\tÅr ' + y + '\n\tMåned ' + nameMonths[int(m)-1])
 
             try:
-                self.db[self.id]['work'][y][m] # force try before loop
+                # this only force try before starting loop
+                self.db[self.id]['work'][y][m]
+
                 while True:
-                    print('\n\tVelg en dato fra listen som du ønsker å fjerne\n')
+                    print('\n\tVelg en dato fra listen'+
+                        ' som du ønsker å fjerne\n')
                     for key in self.db[self.id]['work'][y][m]:
                         print('\t'+str(int(key))+' '+nameMonths[int(m)-1]+
-                        ' Fra: ' + self.db[self.id]['work'][y][m][key]['start']+
-                        ' Til: ' + self.db[self.id]['work'][y][m][key]['end'])
+                        ' Fra: '+ self.db[self.id]['work'][y][m][key]['start']+
+                        ' Til: '+ self.db[self.id]['work'][y][m][key]['end'])
                     d = input('\n\t0. Gå tilbake\n\tskriv dato: ')
                     if d == '0':
                         clearScreen()
                         break
                     try:
                         self.db[self.id]['work'][y][m][d.rjust(2, '0')]
-                        isOK = input('\tEr du sikker?\n\t1. ja\n\t2. nei\n\tskriv: ')
+                        isOK = input('\tEr du sikker?\n\t1. ja\n\t2. nei'+
+                            '\n\tskriv: ')
                         if isOK == '1':
                             del self.db[self.id]['work'][y][m][d.rjust(2, '0')]
-                            self.dataLog.add(f'Removed work {d}.{nameMonths[int(m)-1]}.{y}')
+                            self.dataLog.add('Removed work '+d+'.'+
+                                nameMonths[int(m)-1]+'.'+y)
                             updateDB(self.db)
                             clearScreen()
                         else:

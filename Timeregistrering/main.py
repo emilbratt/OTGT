@@ -32,9 +32,9 @@ def mainLoop():
             print('\tIngen bruker valgt\n')
         else:
             print(f'\tValgt bruker: {dataFile.getUserName()}\n')
-        print('\t1. Velg bruker\n\t2. Registrer Arbeid\n\t3. Se oversikt'+
-            '\n\t4. Legg til bruker\n\t5. Fjern Bruker'+
-            '\n\t6. Fjern Arbeid\n\t0. Avslutt')
+        print('\t1. Velg bruker\n\t2. Registrer Arbeid'+
+            '\n\t3. Fjern Arbeid\n\t4. Legg til bruker'+
+            '\n\t5. Fjern Bruker\n\t0. Avslutt')
         mainMenu = input('\tVelg: ')
         try:
             if mainMenu == '1':
@@ -73,7 +73,7 @@ def mainLoop():
                 if dataFile.getUserName() == 'main':
                     input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
                     continue
-                print('\n\tEksisterende brukere')
+                print('\n\tEksisterende brukere\n')
                 dataFile.showUsers()
                 dataFile.addUser()
 
@@ -82,11 +82,11 @@ def mainLoop():
                 if dataFile.getUserName() == 'main':
                     input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
                     continue
-                print('\n\tFjern bruker fra listen')
+                print('\n\tFjern bruker fra listen\n')
                 while True:
 
                     dataFile.showUsers()
-                    print('\t0 Gå tilbake')
+                    print('\n\t0 Gå tilbake')
                     choice = input('\tSkriv: ')
                     if choice == '0':
                         clearScreen()
@@ -94,7 +94,7 @@ def mainLoop():
                     else:
                         dataFile.removeUser(choice)
                     break
-            elif mainMenu == '6':
+            elif mainMenu == '3':
                 clearScreen()
                 if dataFile.getUserName() == 'main':
                     input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
