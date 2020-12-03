@@ -33,11 +33,11 @@ def mainLoop():
         else:
             print(f'\tValgt bruker: {dataFile.getUserName()}\n')
         print('\t1. Velg bruker\n\t2. Registrer Arbeid\n\t3. Se oversikt'+
-            '\n\t4. Legg til bruker\n\t5. Fjern Arbeid'+
-            '\n\t6. Slett timer\n\t0. Avslutt')
-        choice = input('\tVelg: ')
+            '\n\t4. Legg til bruker\n\t5. Fjern Bruker'+
+            '\n\t6. Fjern Arbeid\n\t0. Avslutt')
+        mainMenu = input('\tVelg: ')
         try:
-            if int(choice) == 1:
+            if mainMenu == '1':
                 clearScreen()
 
                 while True:
@@ -47,21 +47,28 @@ def mainLoop():
                     userID = input('\tSkriv inn id: ')
                     if userID == '0':
                         break
+
+                    # returns None of no id was found
                     userName = dataFile.choseUser(userID)
+
                     if userName == None:
-                        print(f'\tIngen bruker med id nr {choice}')
-                        input('\tTrykk Enter for å gå videre')
-                        clearScreen()
+                        if userID == '':
+                            clearScreen()
+                            continue
+                        else:
+                            print(f'\n\tIngen bruker med id nr {userID}')
+                            input('\tTrykk Enter for å gå videre')
+                            clearScreen()
                     else:
                         dataFile = Database(userName)
                         break
-            elif int(choice) == 2:
+            elif mainMenu == '2':
                 clearScreen()
                 if dataFile.getUserName() == 'main':
                     input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
                     continue
                 dataFile.addWork()
-            elif int(choice) == 4:
+            elif mainMenu == '4':
                 clearScreen()
                 if dataFile.getUserName() == 'main':
                     input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
@@ -70,7 +77,7 @@ def mainLoop():
                 dataFile.showUsers()
                 dataFile.addUser()
 
-            elif int(choice) == 5:
+            elif mainMenu == '5':
                 clearScreen()
                 if dataFile.getUserName() == 'main':
                     input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
@@ -83,21 +90,17 @@ def mainLoop():
                     choice = input('\tSkriv: ')
                     if choice == '0':
                         clearScreen()
-                        removeWork()
                         break
                     else:
                         dataFile.removeUser(choice)
                     break
-            elif int(choice) == 6:
+            elif mainMenu == '6':
                 clearScreen()
                 if dataFile.getUserName() == 'main':
                     input('\n\tVelg en bruker først\n\tTrykk Enter for å gå tilbake')
                     continue
                 dataFile.removeWork()
-            # elif int(choice) == 4:
-            #     pass
-            #     # showUsers()
-            elif int(choice) == 0:
+            elif mainMenu == '0':
                 clearScreen()
                 exit()
         except ValueError: # ignore all invalid values
