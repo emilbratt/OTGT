@@ -1,19 +1,45 @@
 import os
 import random
+from time import sleep
 # create clear screen function
 clearScreen = lambda : os.system(
     'cls' if os.name == 'nt' else 'clear')
 
 
+def enterContinue():
+    input('\n\tTrykk Enter for å gå videre')
 
-def continueAsk():
-    print('\n\tVil du fortsette?\n\t1. ja\n\t2. nei')
-    if input() == "1":
-        clearScreen()
+def emptyQuery(V,M):
+    if V == []:
+        message(M)
+        enterContinue()
+        return True
+
+
+def messages(L):
+    print('\n\t')
+    for i in L:
+        print('\t'+L[i])
+
+def message(M):
+    print('\n\t'+M)
+
+def userConfirm(M,c=False):
+    print()
+    lines = ('\t+'+('-'*len(M))+'+')
+    # print('\n\t+'+('-'*len(M))+'+')
+    print(lines)
+    print('\t'+M+'\n\t1. ja\t2. nei')
+    print(lines)
+    # print('\t+'+('-'*len(M))+'+')
+    if input('\tskriv: ') == "1":
+        if c == True:
+            clearScreen()
         return True
     else:
         clearScreen()
         return False
+
 
 def horisontalLine(n):
     print('+'+('-'*n)+'+')
@@ -29,10 +55,31 @@ def dictMatrix(D):
     print(w)
 
 
+def getUserValues(N,M=[],c=False):
+ # N = numbers of columns to insert
+ # M = Message
+    LT = []
+    while True:
+        L = []
+
+        for i in range(N):
+            print('\n\t'+M[i])
+            k = input('\n\tskriv: ')
+            L.append(k)
+            if i == (N-1):
+                L = tuple(L)
+                LT.append(L)
+                L = []
+                if userConfirm('Vil du legge til mere') == False:
+                    return LT
+
+
+
 
 # takes a list N (number of columns) 1 to 6
-def listMatrix(L,col):
+def listMatrix(H,L,col):
     clearScreen()
+    print('\n\t'+H)
     w = 5 # column width
     for item in L:
         if len(str(item)) >= w:
@@ -90,15 +137,24 @@ def listMatrix(L,col):
 
 
 # takes a list N (number of columns) 1 to 6
-def tupleMatrix(T,col):
-    clearScreen()
+def tupleMatrix(H,T,col,c=False):
+    if c == True:
+        clearScreen()
+    # print('\n\t'+M)
     w = 5 # column width
-    L = []
+    L = [] # will be printed
+
+
+    # append headers to first row
+    for item in H:
+        L.append(item)
 
     # extract individual values from tuple
     for item in T:
         for value in item:
             L.append(value)
+
+    # get column width
     for item in L:
         if len(str(item)) >= w:
             w = len(str(item))+2
@@ -158,4 +214,4 @@ if __name__ == '__main__':
     for i in range(random.randint(14,27)):
         list.append(random.randint(1000,50000))
 
-    listMatrix(list,random.randint(1,6))
+    listMatrix('Liste over tall',list,random.randint(1,6))

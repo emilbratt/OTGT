@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Emil Bratt -> emilbratt@gmail.com
 import os
-
+from dbclient import connect
 # create clear screen function
 clearScreen = lambda : os.system(
     'cls' if os.name == 'nt' else 'clear')
@@ -13,12 +13,35 @@ database = os.path.join(
 )
 
 if os.path.isfile(database) == False:
-    from createtables import createDatabase
+    from createdb import createDatabase
     createDatabase()
 
-# testing
-from dbclient import connect
-c = connect()
-c.insertRoles()
-c.commit()
-c.printRoles()
+
+
+def insertRoles():
+    c = connect()
+    clearScreen()
+    c.insertRoles()
+    c.commit()
+    c.close()
+
+
+def deleteRoles():
+    c = connect()
+    clearScreen()
+    c.deleteRoles()
+    c.commit()
+    c.close()
+
+
+def printRoles():
+    c = connect()
+    c.printRoles()
+    c.close()
+
+    
+if __name__ == '__main__':
+    insertRoles()
+    printRoles()
+    input()
+    deleteRoles()
