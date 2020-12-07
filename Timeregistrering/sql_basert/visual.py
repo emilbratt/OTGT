@@ -100,9 +100,17 @@ def getUserValues(N,M=[],c=False):
 
 
 # takes a list N (number of columns) 1 to 6
-def listMatrix(H,L,col):
-    clearScreen()
-    print('\n\t'+H)
+def listMatrix(H,inList,col,c=False):
+    L = []
+    if c == True:
+        clearScreen()
+    # append headers to first row
+    for item in H:
+        L.append(item)
+
+    for items in inList:
+        L.append(items)
+    # print('\n\t'+H)
     w = 5 # column width
     for item in L:
         if len(str(item)) >= w:

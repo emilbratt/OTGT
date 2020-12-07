@@ -39,15 +39,29 @@ def deleteRoles():
     c.close()
 
 
-def printAllRoles():
+def printRoles():
     c = connect()
-    c.printAllRoles()
+    c.printRoles()
     c.close()
 
 
+# def insertWork(): # not  finished
+#     c = connect()
+#     clearScreen()
+#     c.insertWork()
+#     c.close()
+
+def insertUser():
+    c = connect()
+    clearScreen()
+    c.insertUser()
+    c.commit()
+    c.close()
+
 if __name__ == '__main__':
-    updateRoles()
-    insertRoles()
-    printAllRoles()
-    input()
-    deleteRoles()
+    # updateRoles()
+    # insertRoles()
+    insertUser()
+    # printRoles()
+    # deleteRoles()
+    # insertWork()
