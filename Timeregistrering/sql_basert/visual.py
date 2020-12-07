@@ -26,12 +26,12 @@ def message(M):
 
 def userConfirm(M,c=False):
     print()
-    lines = ('\t+'+('-'*len(M))+'+')
-    # print('\n\t+'+('-'*len(M))+'+')
+    lines = ('\t+'+('-'*(len(M)+1))+'+')
     print(lines)
-    print('\t'+M+'\n\t1. ja\t2. nei')
+    print('\t| '+M+'|')
     print(lines)
-    # print('\t+'+('-'*len(M))+'+')
+    print('\t|'+'1. ja  2. nei'.center(len(M))+' |')
+    print(lines)
     if input('\tskriv: ') == "1":
         if c == True:
             clearScreen()
@@ -55,22 +55,45 @@ def dictMatrix(D):
     print(w)
 
 
+def getUserValue(N,M=[],c=False):
+ # N = numbers of columns to insert
+ # M = Message
+    LT = []
+    while True:
+        L = []
+        for i in range(N):
+            print('\n\t'+M[i])
+            value = input('\n\tskriv: ')
+            if value == '':
+                message('Ingen verdier ble registrert\n\tAvslutter')
+                enterContinue()
+                return None
+            L.append(value)
+            if i == (N-1):
+                L = tuple(L)
+                LT.append(L)
+                L = []
+                return LT
+
 def getUserValues(N,M=[],c=False):
  # N = numbers of columns to insert
  # M = Message
     LT = []
     while True:
         L = []
-
         for i in range(N):
             print('\n\t'+M[i])
-            k = input('\n\tskriv: ')
-            L.append(k)
+            value = input('\n\tskriv: ')
+            if value == '':
+                message('Ingen verdier ble registrert\n\tAvslutter')
+                enterContinue()
+                return None
+            L.append(value)
             if i == (N-1):
                 L = tuple(L)
                 LT.append(L)
                 L = []
-                if userConfirm('Vil du legge til mere') == False:
+                if userConfirm('Vil du legge til flere verdier') == False:
                     return LT
 
 

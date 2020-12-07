@@ -16,7 +16,12 @@ if os.path.isfile(database) == False:
     from createdb import createDatabase
     createDatabase()
 
-
+def updateRoles():
+    c = connect()
+    clearScreen()
+    c.updateRoles()
+    c.commit()
+    c.close()
 
 def insertRoles():
     c = connect()
@@ -34,14 +39,15 @@ def deleteRoles():
     c.close()
 
 
-def printRoles():
+def printAllRoles():
     c = connect()
-    c.printRoles()
+    c.printAllRoles()
     c.close()
 
-    
+
 if __name__ == '__main__':
+    updateRoles()
     insertRoles()
-    printRoles()
+    printAllRoles()
     input()
     deleteRoles()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sqlite3
 import os
-from visual import userConfirm, listMatrix, tupleMatrix, clearScreen, getUserValues, message, messages, emptyQuery
+from visual import userConfirm, listMatrix, tupleMatrix, clearScreen, getUserValues,getUserValue, message, messages, emptyQuery
 database = os.path.join(
     os.path.dirname(
     os.path.realpath(__file__)
@@ -32,11 +32,10 @@ role_desc, role_category
 ?,?
 )
 '''
-
 ####################################################
 
-# print roles ##################################
-printRoles = '''SELECT * FROM roles;'''
+# print roles ######################################
+printAllRoles = '''SELECT * FROM roles;'''
 
 printRoleID = '''
 SELECT roles.role_desc, roles.role_category
@@ -51,12 +50,33 @@ DELETE FROM roles
 WHERE role_id=?;
 '''
 ####################################################
+# UPDATE table
+# SET column_1 = new_value_1,
+#     column_2 = new_value_2
+# WHERE
+#     search_condition
+# ORDER column_or_expression
+# LIMIT row_count OFFSET offset;
+# update roles #####################################
+updateRoles = '''
+UPDATE roles
+SET role_desc=?
+    role_category=?
+WHERE role_id=?;
+'''
+#####################################################
 
 
-def mergeList(string):
-    L = list(string.split(" "))
-    return L
 
+def printRoleTable(cursor):
+    Ht = ['Rolle ID','Rolle Navn','Rolle Kategori']
+    cursor.execute(printAllRoles)
+    queryRes = cursor.fetchall()
+    if emptyQuery(queryRes, 'Rollelisten er tom') == True:
+        return None
+    message('Rolletabell')
+    tupleMatrix(Ht,queryRes,3,False)
+    pass
 
 
 
@@ -74,42 +94,107 @@ class connect:
 
     def insertRoles(self):
         clearScreen()
+        if userConfirm('Vil du se rolle tabellen først?',True) == True:
+            printRoleTable(self.cursor)
         message('Legg verdier i rolletabellen')
-        clearScreen()
-        L = ['Legg til rolle','Legg til Kategori']
-        H = ['Rolle','Kategori']
-        values = getUserValues(2,L)
-        tupleMatrix(H,values,2)
-        if userConfirm('Vil du legge til disse verdiene?') == True:
+        title = ['Legg til rolle','Legg til Kategori']
+        head = ['Rolle','Kategori']
+        values = getUserValues(2,title)
+        if values == None:
+            return None
+        tupleMatrix(head,values,2)
+        if userConfirm('Disse verdiene blir lagt til, OK?') == True:
             self.cursor.executemany(insertRoles,values)
         else:
             return None
 
 
-    def printRoles(self):
-        H = ['Rolle ID','Rolle Navn','Rolle Kategori']
-        self.cursor.execute(printRoles)
+    def printAllRoles(self):
+        head = ['Rolle ID','Rolle Navn','Rolle Kategori']
+        self.cursor.execute(printAllRoles)
         queryRes = self.cursor.fetchall()
         message('Rolletabell')
-        tupleMatrix(H,queryRes,3,False)
+        tupleMatrix(head,queryRes,3,False)
+
+
+    def updateRoles(self):
+
+        head = ['Rolle Navn','Kategori']
+        headUpdate = ['Nytt Rolle Navn','Ny Kategori']
+        title = ['Velg Rolle ID']
+        clearScreen()
+        if userConfirm('Vil du se rolle tabellen først?',True) == True:
+            printRoleTable(self.cursor)
+        message('Velg id på oppføringen du vil endre')
+        id = getUserValue(1,title)
+        if id == None:
+            return None
+        queryRes = []
+        # list records that will be removed
+        for i in range(len(id)):
+            self.cursor.execute(printRoleID,id[i])
+            queryRes.append(self.cursor.fetchone())
+
+        # if no records(no id where selected from user), end function
+        if queryRes == [None]:
+            return None
+        message('Endrer på denne oppføringen')
+        tupleMatrix(head,queryRes,2)
+
+        values = getUserValue(2,headUpdate)
+        clearScreen()
+        message('Før')
+        tupleMatrix(head,queryRes,2,False)
+        message('etter')
+        tupleMatrix(head,values,2,False)
+        if userConfirm('Vil du lagre endringen?',False) == True:
+            pass
+        # if userConfirm('Vil du se rolle tabellen først?',True) == True:
+        #     Ht = ['Rolle ID','Rolle Navn','Rolle Kategori']
+        #     self.cursor.execute(printAllRoles)
+        #     queryRes = self.cursor.fetchall()
+        #     if emptyQuery(queryRes, 'Rollelisten er tom') == True:
+        #         return None
+        #     message('Rolletabell')
+        #     tupleMatrix(Ht,queryRes,3,False)
+        #
+        # # fetch id from user
+        # message('Velg oppføring i rolletabellen som skal endres')
+        # values = getUserValues(1,title)
+        # if values == None:
+        #     return None
+        # queryRes = []
+        #
+        # # list records that will be removed
+        # for i in range(len(values)):
+        #     self.cursor.execute(printRoleID,values[i])
+        #     queryRes.append(self.cursor.fetchone())
+        #
+        # # if no records(no id where selected from user), end function
+        # if queryRes == [None]:
+        #     return None
+        #
+        # tupleMatrix(head,queryRes,2)
+        #
+        # if userConfirm('Roller vist over blir fjernet, ok?') == True:
+        #     self.cursor.executemany(deleteRoles,values)
+        # else:
+        #     return None
+
 
 
     def deleteRoles(self):
-        H = ['Rolle Navn','Kategori']
-        L = ['Velg Rolle ID']
+        head = ['Rolle Navn','Kategori']
+        title = ['Velg Rolle ID']
         clearScreen()
         if userConfirm('Vil du se rolle tabellen først?',True) == True:
-            Ht = ['Rolle ID','Rolle Navn','Rolle Kategori']
-            self.cursor.execute(printRoles)
-            queryRes = self.cursor.fetchall()
-            if emptyQuery(queryRes, 'Rollelisten er tom') == True:
-                return None
-            message('Rolletabell')
-            tupleMatrix(Ht,queryRes,3,False)
+            printRoleTable(self.cursor)
 
         # fetch id from user
         message('Fjern oppføring i rolletabellen')
-        values = getUserValues(1,L)
+        values = getUserValues(1,title)
+        if values == None:
+            return None
         queryRes = []
 
         # list records that will be removed
@@ -120,9 +205,11 @@ class connect:
         # if no records(no id where selected from user), end function
         if queryRes == [None]:
             return None
+        tupleMatrix(head,queryRes,2)
 
-        tupleMatrix(H,queryRes,2)
-
+        message('Endre oppføring i rolletabellen')
+        values = getUserValues(2,head)
+        return None
         if userConfirm('Roller vist over blir fjernet, ok?') == True:
             self.cursor.executemany(deleteRoles,values)
         else:
