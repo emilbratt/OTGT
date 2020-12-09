@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Emil Bratt -> emilbratt@gmail.com
 import webbrowser
 import csv
 import os
