@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 import sqlite3
 import os
-from visual import userConfirm, listMatrix, tupleMatrix, clearScreen, getUserValues,getUserValue, message, messages, emptyQuery
+from visual import userConfirm, listMatrix, tupleMatrix, clearScreen, getUserValues, getUserValue, message, messages, emptyQuery
 database = os.path.join(
     os.path.dirname(
-    os.path.realpath(__file__)
-    ),
-'data', 'data.db'
-)
+    os.path.realpath(__file__)),
+    'data', 'data.db'
+    )
 
 # insert work #####################################
 insertWork = '''
@@ -72,10 +71,11 @@ WHERE
 insertUser = '''
 INSERT INTO users (
     user_name,
+    password,
     role_id
 )
 VALUES (
-    ?,?
+    ?,?,?
 )
 '''
 #####################################################
@@ -89,11 +89,13 @@ FROM
 '''
 printAllUsers = '''
 SELECT
-    *
+    user_id,
+    user_name,
+    role_id
+
 FROM
     users;
 '''
-
 
 def printRoleTable(cursor):
     head = ['Rolle ID','Rolle Navn','Rolle Kategori']
@@ -163,7 +165,6 @@ class connect:
 
 
     def updateRoles(self):
-
         head = ['Rolle Navn','Kategori']
         headUpdate = ['Nytt Rolle Navn','Ny Kategori']
         title = ['Velg Rolle ID']
@@ -175,6 +176,7 @@ class connect:
         if id == None:
             return None
         queryRes = []
+
         # list record that will be updated
         for i in range(len(id)):
             self.cursor.execute(printRoleID,id[i])
@@ -242,15 +244,15 @@ class connect:
             printAllUsersTable(self.cursor)
 
         head = ['Brukernavn']
-        head2 = ['Rolle','Kategori']
+        # head2 = []
         head3 = ['Brukernavn','Rolle','Kategori']
-        title = ['Legg til brukernavn']
+        title = ['Legg til brukernavn','Skriv inn et passord']
         title2 = ['Velg rolle']
-        userName = getUserValue(1,title,False)
-        if userName == None:
+        newUser = getUserValues(2,title,False)
+        if newUser == None:
             return None
 
-        tupleMatrix(head,userName,1)
+        tupleMatrix(head,newUser,1)
         queryRes = []
         parameters = []
         if userConfirm('Vil du velge rolle for brukeren?',True) == True:
@@ -269,10 +271,10 @@ class connect:
 
             row = []
 
-            row.append(userName[0][0])
+            row.append(newUser[0][0])
             row.append(queryRes[0][0])
             row.append(queryRes[0][1])
-            parameters.append(userName[0][0])
+            parameters.append(newUser[0][0])
             parameters.append(roleID[0][0])
             # summary = [tuple(values)]
 
@@ -281,6 +283,6 @@ class connect:
             if userConfirm('Disse verdiene blir lagt til, OK?') == True:
                 self.cursor.execute(insertUser,parameters)
         else:
-            tupleMatrix(head,userName,1,False)
+            tupleMatrix(head,newUser,1,False)
             if userConfirm('Denne brukeren blir lagt til, OK?') == True:
-                self.cursor.execute(insertUser,[userName[0][0],('0')])
+                self.cursor.execute(insertUser,[newUser[0][0],('0')])
