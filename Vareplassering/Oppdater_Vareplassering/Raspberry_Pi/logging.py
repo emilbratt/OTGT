@@ -28,7 +28,6 @@ class Log:
         self.getTime = datetime.now()
         self.startTime = startTime
         self.fileName = self.getTime.strftime("%Y-%m-%d")
-        # self.timestamp = self.getTime.strftime("%Y-%m-%d_%H:%M:%S")
         self.clock = self.getTime.strftime("%H:%M:%S.%f")[:-4]
         self.file = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'log', self.fileName)
         self.type = type
