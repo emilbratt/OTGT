@@ -32,16 +32,6 @@ def createDatabase():
     '''
 
 
-    # createUserTable = '''
-    # CREATE TABLE IF NOT EXISTS users(
-    # user_id     INTEGER PRIMARY KEY AUTOINCREMENT,
-    # user_name   TEXT  NULL,
-    # role_id    INTEGER,
-    # FOREIGN KEY (role_id)
-    #    REFERENCES roles (role_id)
-    # );
-    # '''
-
     createUserTable = '''
     CREATE TABLE IF NOT EXISTS users(
         user_id     INTEGER PRIMARY KEY AUTOINCREMENT,
