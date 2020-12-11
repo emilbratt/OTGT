@@ -3,12 +3,22 @@ import sqlite3
 import os
 from password import passwordStore
 from visual import getUserValue
+dataPath = database = os.path.join(
+    os.path.dirname(
+    os.path.realpath(__file__)
+    ),
+    'data'
+)
 database = os.path.join(
     os.path.dirname(
     os.path.realpath(__file__)
     ),
-'data', 'data.db'
+    'data', 'data.db'
 )
+
+# if no datadir, create new
+os.makedirs(dataPath, exist_ok=True)
+
 # CREATE TABLES########################
 def createDatabase():
     enableForeignKey = '''PRAGMA foreign_keys;'''
