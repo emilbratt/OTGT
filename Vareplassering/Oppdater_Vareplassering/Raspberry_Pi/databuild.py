@@ -28,7 +28,7 @@ class Build:
         sessions = []
         for fileName in os.listdir(self.sessionPath):
             if os.path.splitext(fileName)[-1] == '.csv':
-                Log(f'Building data.json from {fileName} ')
+                Log(f'Fetching data.json from {fileName} ')
                 sessions.append(int(fileName[:-4]))
 
         for file in sessions:
