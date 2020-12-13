@@ -9,29 +9,18 @@ from logging import Log
 
 '''
     notes:
-    sessionExecuteUpdate() is not finished
-    byitemExecuteUpdate() is not finished
     send files to salesreport is not finished
 '''
 
 class Inventory:
     '''
-        This class will create and read 4 individual files:
-        1. byItem.json
-        2. byShelf.json
-        3. byTime.json
-        4. current session file which is the most recent csv file by date and resides in
+        This class will create a session file:
+        The current session file which is the most recent csv file by date and resides in
         ./inventory/sessions/YYYYMMDD.csv
 
         Methods:
-        .sessionAdd('item barcode','shelf barcode')
+        .sessionAdd('item barcode','shelf barcode','timestamp')
             appends values to current session file in ./inventory/sessions/
-
-        .inventoryAdd('item barcode','shelf barcode')
-            adds values to the byItem.json, byShelf.json and byTime.json
-
-        .inventoryDump()
-            save byItem.json, byShelf.json and byTime.json
 
         .sessionExecuteUpdate()
             read all values from current session and update the sql database
@@ -39,13 +28,11 @@ class Inventory:
         .wipeSessions()
             will wipe all session files (all files ending with .csv)
 
-        .wipeInventory()
-            will wipe the files in inventory (byItem.json, byShelf.json and byTime.json)
-
         .salesreportUpdate()
             send inventory files to host salesreport
-
+            not finnished yet
     '''
+
     def __init__(self):
         os.makedirs('%s/inventory'%os.path.dirname(os.path.realpath(
         __file__)), exist_ok=True)
