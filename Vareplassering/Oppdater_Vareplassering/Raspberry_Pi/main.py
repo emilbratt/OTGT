@@ -23,8 +23,6 @@ from credentials import loadCredentials
 '''
 absPath = os.path.dirname(os.path.realpath(__file__))
 os.makedirs('%s/log' % absPath, exist_ok=True)
-os.makedirs('%s/sessions' % absPath, exist_ok=True)
-
 
 def checkDate():
 
