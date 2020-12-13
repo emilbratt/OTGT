@@ -25,7 +25,7 @@ def mainMenu():
                   --------av--------
                   ----Emil-Bratt----
                   ------------------
-''')
+        ''')
         print('\t\tHva ønsker du å gjøre?\n')
         print('\t1. Generer strekkoder interaktivt'
         + '\n\t2. Generer strekkoder fra csv-fil'
