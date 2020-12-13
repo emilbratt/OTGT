@@ -20,25 +20,7 @@ class Build:
         os.path.dirname(os.path.realpath(
         __file__)), 'inventory/sessions')
 
-
-        try:
-            jsonLoad = open(self.dataPath,encoding='utf-8')
-            try:
-                self.data = json.load(jsonLoad)
-                Log('data.json loaded succesfully')
-                sleep(1.1)
-            except json.decoder.JSONDecodeError:
-                Log('JSONDecodeError on data.json')
-                sleep(1.1)
-                if debug == 'True':
-                    exit()
-                else:
-                    call("sudo nohup shutdown -h now", shell=True)
-            jsonLoad.close()
-        except FileNotFoundError:
-            Log('data.json file not found, creating new')
-            sleep(1.1)
-            self.data = {}
+        self.data = {}
 
 
     # build inventory for items and shelf value
