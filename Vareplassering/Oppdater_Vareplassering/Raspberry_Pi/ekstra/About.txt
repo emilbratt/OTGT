@@ -1,0 +1,3 @@
+Skriv ut denne strekkoden.
+Når du er ferdig med å skanne varer og hyller så skanner du denne strekkoden for å
+sette i gang oppdatering av butikkdatabasen
