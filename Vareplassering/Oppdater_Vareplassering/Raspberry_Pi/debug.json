@@ -1,6 +1,6 @@
 {
-  "sql": false,
-  "shutdown": false,
+  "sql": true,
+  "shutdown": true,
   "passwordhide": true,
-  "led": false
+  "led": true
 }
