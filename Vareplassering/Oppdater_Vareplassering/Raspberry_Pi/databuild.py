@@ -21,7 +21,6 @@ class Build:
         __file__)), 'inventory/sessions')
 
 
-
         try:
             jsonLoad = open(self.dataPath,encoding='utf-8')
             try:
@@ -42,7 +41,6 @@ class Build:
             self.data = {}
 
 
-
     # build inventory for items and shelf value
     def runbuild(self):
         sessions = []
@@ -51,35 +49,27 @@ class Build:
                 Log(f'Building data.json from {fileName} ')
                 sessions.append(int(fileName[:-4]))
 
-        print(sessions)
-        sessions.sort()
-        input(sessions)
-
         for file in sessions:
             sessionFile = os.path.join(self.sessionPath,str(file))
 
-            # print(f'\tItem {item} Shelf {shelf}')
-
             with open('%s.csv' % sessionFile,'r') as csvfile:
                 reader = csv.reader(csvfile)
+
                 for row in reader:
                     item = row[0]
                     shelf = row[1]
+
                     if item not in self.data:
                         self.data.setdefault(item, [])
 
                     self.data.setdefault(item, []).append(shelf)
-
 
         with open(self.dataPath, 'w',encoding='utf-8') as jsonLoad:
             Log('Saving data.json')
             json.dump(self.data, jsonLoad, indent=2)
 
 
-
-
 if __name__ == '__main__':
     Log(f'executing {__file__}')
     dataFile = Build()
-
     dataFile.runbuild()
