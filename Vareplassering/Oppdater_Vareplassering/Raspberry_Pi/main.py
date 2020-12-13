@@ -23,22 +23,13 @@ from credentials import loadCredentials
 '''
 absPath = os.path.dirname(os.path.realpath(__file__))
 os.makedirs('%s/log' % absPath, exist_ok=True)
-os.makedirs('%s/inventory' % absPath, exist_ok=True)
-os.makedirs('%s/inventory/sessions' % absPath, exist_ok=True)
+os.makedirs('%s/sessions' % absPath, exist_ok=True)
 
 
 def checkDate():
 
-    # if no files are present for date verification
-    # set prefixed date so we have something to compare - see except ValueError
-    getLogDates = [file for file
-    in os.listdir('%s/log'%
-    os.path.dirname(os.path.realpath(__file__)))
-    if os.path.splitext(file)[-1] == '.json']
-    try:
-        fromjson = int(max(getLogDates).replace('.json', '').replace('-',''))
-    except ValueError:
-        fromjson = 20200101
+    # # if no files are present for date verification
+    # # set prefixed date so we have something to compare - see except ValueError
 
     getcsvDates = [file for file
     in os.listdir('%s/inventory/sessions'%
@@ -51,14 +42,13 @@ def checkDate():
 
     for i in range(5):
         fromdatetime = int(datetime.now().strftime("%Y%m%d"))
-        if fromdatetime < fromjson or fromdatetime < fromcsv:
+        if fromdatetime < fromcsv:
             if i == 4:
                 return False
             sleep(3)
             return True
         else:
             return True
-
 
 
 def getIP():
@@ -118,7 +108,7 @@ def mainloop():
             ledBlink('shelf')
             shelf = input('\n\tscan shelf: ')
             if '-'  in shelf:
-                inventory.inventoryAdd(item,shelf)
+                # inventory.inventoryAdd(item,shelf)
                 inventory.sessionAdd(item,shelf)
                 continue
             else:
@@ -126,14 +116,9 @@ def mainloop():
                     inventory.inventoryDump()
                 elif shelf == 'excUpdate':
                     ledBlink('!x[s]')
-                    # input('updating')
-                    inventory.inventoryDump()
+
                     inventory.sessionExecuteUpdate(credentials)
-                    # exit()
-                elif item == '!x[i]':
-                    ledBlink('!x[i]')
-                    inventory.inventoryDump()
-                    inventory.byitemExecuteUpdate(credentials)
+
                 else:
                     Log(shelf + ' is not a valid shelf barcode',2)
                     # led.blink(0.02,0.06)
@@ -143,16 +128,12 @@ def mainloop():
                 inventory.inventoryDump()
             elif item == 'excUpdate':
                 ledBlink('!x[s]')
-                inventory.inventoryDump()
                 inventory.sessionExecuteUpdate(credentials)
-            elif item == '!x[i]':
-                ledBlink('!x[i]')
-                inventory.inventoryDump()
-                inventory.byitemExecuteUpdate(credentials)
+
             else:
                 Log(item + ' is not a valid item barcode',2)
                 # led.blink(0.02,0.06)
-                sleep(1)
+                sleep(0.5)
                 continue
 
 
@@ -185,9 +166,6 @@ if __name__ == '__main__':
 
         credentials
             add new credentials settings
-
-        wipeinventory
-            removes byitem.json, byshelf.json and byTime.json in ./inventory
 
         wipesessions
             removes all csv files in ./inventory/sessions
@@ -230,9 +208,7 @@ if __name__ == '__main__':
                 debug[sys.argv[i]] = True
                 Log(f'Activating {sys.argv[i]}', 3)
         except KeyError:
-            if sys.argv[i] == 'wipeinventory':
-                Inventory().wipeInventory()
-            elif sys.argv[i] == 'wipesessions':
+            if sys.argv[i] == 'wipesessions':
                 Inventory().wipeSessions()
             elif sys.argv[i] == 'credentials':
                 from credentials import createCredentials
@@ -269,7 +245,8 @@ if __name__ == '__main__':
     # import LED
     if debug['led'] == True:
         try:
-            from gpiozero import LED,PWMLED # import gpiozero module only if led is not disabled in debug.json
+            # import gpiozero module only if led is not disabled in debug.json
+            from gpiozero import LED,PWMLED
             led = LED(17)
         except ModuleNotFoundError:
             try:

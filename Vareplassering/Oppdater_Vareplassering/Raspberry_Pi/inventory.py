@@ -71,77 +71,7 @@ class Inventory:
             self.debug = json.load(mode)
         if self.debug['shutdown'] == True:
             from subprocess import call
-        if self.debug['sql'] == True:
-            try:
-                import pyodbc # if sql is disabled, pyodbc will not be imported
-            except ModuleNotFoundError:
-                try:
-                    call("echo", shell=True)
-                    Log('pyodbc module was not found, shutting down', 1)
-                    sleep(2)
-                    call("sudo nohup shutdown -h now", shell=True)
-                except NameError:
-                    Log('pyodbc module was not found, exiting', 1)
-                    exit()
 
-
-        try:
-            json_file = open('%s/byshelf.json'%self.file,encoding='utf-8')
-            try:
-                self.byshelf = json.load(json_file)
-                Log('byshelf.json loaded succesfully')
-                sleep(1.1)
-            except json.decoder.JSONDecodeError:
-                Log('JSONDecodeError on byshelf.json, shutting down')
-                sleep(1.1)
-                if self.debug == 'True':
-                    exit()
-                else:
-                    call("sudo nohup shutdown -h now", shell=True)
-            json_file.close()
-        except FileNotFoundError:
-            Log('byshelf.json file not found, creating new')
-            sleep(1.1)
-            self.byshelf = {}
-
-        try:
-            json_file = open('%s/byitem.json'%self.file,encoding='utf-8')
-            try:
-                self.byitem = json.load(json_file)
-                Log('byitem.json loaded succesfully')
-                sleep(1.1)
-            except json.decoder.JSONDecodeError:
-                Log('JSONDecodeError on byitem.json')
-                sleep(1.1)
-                if self.debug == 'True':
-                    exit()
-                else:
-                    call("sudo nohup shutdown -h now", shell=True)
-            json_file.close()
-        except FileNotFoundError:
-            Log('byitem.json file not found, creating new')
-            sleep(1.1)
-            self.byitem = {}
-
-
-        try:
-            json_file = open('%s/byTime.json'%self.file,encoding='utf-8')
-            try:
-                self.byTime = json.load(json_file)
-                Log('byTime.json loaded succesfully')
-                sleep(1.1)
-            except json.decoder.JSONDecodeError:
-                Log('JSONDecodeError on byTime.json')
-                sleep(1.1)
-                if self.debug == 'True':
-                    exit()
-                else:
-                    call("sudo nohup shutdown -h now", shell=True)
-            json_file.close()
-        except FileNotFoundError:
-            Log('byTime.json file not found, creating new')
-            sleep(1.1)
-            self.byTime = {}
 
 
         # read, add, save session csv
@@ -176,6 +106,25 @@ class Inventory:
             read all values from current session
             and run queries to update the sql server
         '''
+
+
+        if self.debug['sql'] == True:
+            try:
+                import pyodbc # if sql is disabled, pyodbc will not be imported
+
+            except ModuleNotFoundError:
+                if self.debug['shutdown'] == True:
+                    from subprocess import call
+                try:
+                    call("echo", shell=True)
+                    Log('pyodbc module was not found, shutting down', 1)
+                    sleep(2)
+                    call("sudo nohup shutdown -h now", shell=True)
+                except NameError:
+                    Log('pyodbc module was not found, exiting', 1)
+                    exit()
+
+
         Log('executing sessionExecuteUpdate')
         if self.debug['sql'] == False:
             Log('sql is not activated, skipping update and exiting', 2)
@@ -194,6 +143,13 @@ class Inventory:
             Log('sql database connected succesfully')
             cursor = cnxn.cursor()
 
+            queryUpdateShelf = '''
+            UPDATE articleStock
+            SET StorageShelf =(?)
+            FROM articleStock
+            JOIN ArticleEAN ON articleStock.articleId = ArticleEAN.articleId
+            WHERE ArticleEAN.eanCode=(?)'''
+
             Log('reading values from ' + self.intDate + '.csv')
             with open('%s.csv' % self.sessionPath,'r') as csvfile:
                 reader = csv.reader(csvfile)
@@ -201,10 +157,21 @@ class Inventory:
                 + sqlCredentials['database'] + ' at '
                 + sqlCredentials['server'])
                 for row in reader:
-                    print(row[0],row[1])
+                    print('Updating')
+                    print(row[0]) # barcode
+                    print(row[1]) # shelf value
+
+                    cursor.execute(queryUpdateShelf, row[1], row[0])
+                    cnxn.commit()
+
+                    sleep(0.4)
+            cursor.close()
+            cnxn.close()
 
             # power off
             try:
+                if self.debug['shutdown'] == True:
+                    from subprocess import call
                 call("echo", shell=True)
                 Log('powering off', 5)
                 sleep(2)
@@ -216,94 +183,6 @@ class Inventory:
             Log('sql database connection failed with pyodbc.OperationalError', 1)
             return None
 
-    def inventoryDump(self):
-        Log('running inventoryDump')
-        with open('%s/byitem.json'%self.file,
-        'w',encoding='utf-8') as json_file:
-            json.dump(self.byitem, json_file, indent=2)
-
-        with open('%s/byTime.json'%self.file,
-        'w',encoding='utf-8') as json_file:
-            json.dump(self.byTime, json_file, indent=2)
-
-        with open('%s/byshelf.json'%self.file,
-        'w',encoding='utf-8') as json_file:
-            json.dump(self.byshelf, json_file, indent=2)
-
-
-    def inventoryAdd(self, item, shelf):
-        if item not in self.byitem:
-            self.byitem.setdefault(item, [])
-        if shelf not in self.byitem[item]:
-            self.byitem.setdefault(item, []).append(shelf)
-
-        if shelf not in self.byshelf:
-            self.byshelf.setdefault(shelf, [])
-        if item not in self.byshelf[shelf]:
-            self.byshelf.setdefault(shelf, []).append(item)
-
-        if item not in self.byTime:
-            self.byTime[item] = {shelf:self.timestamp}
-        else:
-            self.byTime[item].update({shelf:self.timestamp})
-
-
-    # update only newest shelf values with sql using the byitem.json
-    def byitemExecuteUpdate(self, sqlCredentials):
-        '''
-            read values from byitem and update item and the newest shelf value
-        '''
-
-        if self.debug['sql'] == False:
-            Log('sql is not activated, skipping update and exiting', 2)
-            return None
-        Log('executing byitemExecuteUpdate')
-        Log('updating from inventory byitem.json to database '
-        + sqlCredentials['database'] + ' at '
-        + sqlCredentials['server'])
-
-
-        try:
-            cnxn = pyodbc.connect(
-            'DRIVER={FreeTDS};SERVER=%s;PORT=%s;DATABASE=%s;UID=%s;PWD=%s' %(
-                sqlCredentials['server'],
-                sqlCredentials['port'],
-                sqlCredentials['database'],
-                sqlCredentials['user'],
-                sqlCredentials['password']
-                )
-            )
-            Log('sql database connected succesfully')
-            cursor = cnxn.cursor()
-
-            Log(f'reading values from {self.file}/byitem.json.csv')
-            for key in self.byitem:
-                print(f'item {key} shelf {self.byitem[key][-1]}')
-                # the last index represent the latest shelf value
-
-            # power off
-            try:
-                call("echo", shell=True)
-                Log('powering off', 5)
-                sleep(2)
-                call("sudo nohup shutdown -h now", shell=True)
-            except NameError:
-                Log('exiting', 5)
-                exit()
-        except pyodbc.OperationalError:
-            Log('sql database connection failed with pyodbc.OperationalError', 1)
-            return None
-
-
-        # power off after update
-        try:
-            call("echo", shell=True)
-            Log('powering off', 5)
-            sleep(2)
-            call("sudo nohup shutdown -h now", shell=True)
-        except NameError:
-            Log('exiting', 5)
-            exit()
 
 
     def salesreportUpdate(self):
@@ -311,20 +190,6 @@ class Inventory:
             for sending session files and logs to salesreport server
         '''
         pass
-
-
-    # this will overwrite existing data with an empty dataset
-    def wipeInventory(self):
-        Log('wiping byitem, byshelf and byTime')
-        json_file = open('%s/byitem.json'%self.file, 'w',encoding='utf-8')
-        json.dump({}, json_file, indent=2)
-        json_file.close()
-        json_file = open('%s/byshelf.json'%self.file, 'w',encoding='utf-8')
-        json.dump({}, json_file, indent=2)
-        json_file.close()
-        json_file = open('%s/byTime.json'%self.file, 'w',encoding='utf-8')
-        json.dump({}, json_file, indent=2)
-        json_file.close()
 
 
     def wipeSessions(self):

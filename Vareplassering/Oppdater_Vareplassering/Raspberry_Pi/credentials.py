@@ -56,11 +56,15 @@ def createCredentials():
 
     credentials = {}
     attributeNames = ['server','port','database','user','password']
-    for i in attributeNames:
-        value = input(i+': ')
-        credentials[i] = value
-    input(attributeNames)
-    input(credentials)
+    inputAccept = False
+    while inputAccept == False:
+        for i in attributeNames:
+            value = input(i+': ')
+            credentials[i] = value
+        isOK = input('is this correct?\n1. yes\n2.no\ntype: ')
+        if isOK == '1':
+            inputAccept = True
+
     json_file = open('%s/credentials.json'%os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'w',encoding='utf-8')
     json.dump(credentials, json_file, indent=2)
     json_file.close()
