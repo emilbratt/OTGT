@@ -21,6 +21,12 @@ from credentials import loadCredentials
     notes
     checkDate() is not tested on pi yet
 '''
+absPath = os.path.dirname(os.path.realpath(__file__))
+os.makedirs('%s/log' % absPath, exist_ok=True)
+os.makedirs('%s/inventory' % absPath, exist_ok=True)
+os.makedirs('%s/inventory/sessions' % absPath, exist_ok=True)
+
+
 def checkDate():
 
     # if no files are present for date verification
@@ -118,7 +124,7 @@ def mainloop():
             else:
                 if shelf == 'dump':
                     inventory.inventoryDump()
-                elif shelf == '!x[s]':
+                elif shelf == 'excUpdate':
                     ledBlink('!x[s]')
                     # input('updating')
                     inventory.inventoryDump()
@@ -135,7 +141,7 @@ def mainloop():
         else:
             if item == 'dump':
                 inventory.inventoryDump()
-            elif item == '!x[s]':
+            elif item == 'excUpdate':
                 ledBlink('!x[s]')
                 inventory.inventoryDump()
                 inventory.sessionExecuteUpdate(credentials)
