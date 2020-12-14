@@ -4,8 +4,8 @@
 
 <h3>Hvordan bruke denne</h3>
 <p>Kjør filen main.py for å starte applikasjonen. Bruke flaggene beskrevet i main.py for tilleggsfunksjoner</p>
-<p>Det kommer nærmere beskrivelse etter hvert</p>
-
+<p>For å bygge en database i json fra alle skanninger, koble usb fra raspberry pi og inn i en pc med python installert</p>
+<p>Gå inn på minnebrikken og kjør: "./main.py build" for å bygge databasen</p>
 
 <h3>Oppsett for Raspberry Pi</h3>
 <p>Raspberry pi må konfigureres med auto login, autostart av applikasjon, sql konfigurering sammen med odbc data kilden</p>
