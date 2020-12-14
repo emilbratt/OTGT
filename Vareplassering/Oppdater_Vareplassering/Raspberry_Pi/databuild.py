@@ -51,6 +51,7 @@ class Build:
             json.dump(self.data, jsonLoad, indent=2)
 
 
+# example use
 if __name__ == '__main__':
     Log(f'executing {__file__}')
     dataFile = Build()

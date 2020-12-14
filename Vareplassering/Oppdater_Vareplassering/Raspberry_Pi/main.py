@@ -169,8 +169,16 @@ if __name__ == '__main__':
 
         wipesessions
             removes all csv files in ./inventory/sessions
+
+        build
+            builds a json file with all barcodes and shelves from session files
     '''
 
+    validFlags = [
+        'mode','passwordhide', 'build',
+        'shutdown','sql','led',
+        'credentials','wipesessions'
+        ]
     # put file directory into a variable
     cwd = os.path.dirname(os.path.realpath(__file__))
 
@@ -209,16 +217,24 @@ if __name__ == '__main__':
                 Log(f'Activating {sys.argv[i]}', 3)
         except KeyError:
             if sys.argv[i] == 'wipesessions':
+                Log(f'executing {__file__} with wipesessions flag')
                 Inventory().wipeSessions()
             elif sys.argv[i] == 'credentials':
+                Log(f'executing {__file__} with credentials flag')
                 from credentials import createCredentials
                 createCredentials()
+            elif sys.argv[i] == 'build':
+                from databuild import Build
+                Log(f'executing {__file__} with build flag')
+                dataFile = Build()
+                dataFile.runbuild()
             else:
-                print(f'\t{sys.argv[i]} is not valid')
-                print('\tvalid options:\n\t\tsql\n\t\tled'
-                +'\n\t\tpasswordhide\n\t\tshutdown'
-                +'\n\t\twipeinventory\n\t\twipesessions'
-                +'\n\t\tcredentials')
+                Log(f'executing {__file__} with {sys.argv[i]} flag')
+                Log(f'{sys.argv[i]} is an invalid flag')
+                print('\tvalid flags:')
+                for flag in validFlags:
+                    print('\t\t./main.py '+flag)
+
         with open('%s/debug.json'%cwd, 'w',encoding='utf-8') as mode:
             json.dump(debug, mode, indent=2)
     # exit if any arguments where given
