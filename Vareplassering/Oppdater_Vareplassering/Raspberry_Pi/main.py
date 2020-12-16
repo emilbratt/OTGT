@@ -17,10 +17,6 @@ from inventory import Inventory
 from logging import Log
 from credentials import loadCredentials
 
-'''
-    notes
-    checkDate() is not tested on pi yet
-'''
 absPath = os.path.dirname(os.path.realpath(__file__))
 os.makedirs('%s/log' % absPath, exist_ok=True)
 os.makedirs('%s/inventory' % absPath, exist_ok=True)
