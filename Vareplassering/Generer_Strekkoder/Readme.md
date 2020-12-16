@@ -7,7 +7,7 @@
 <p>pip3 install --user python-barcode
 <p>Pillow</p>
 <p>python3 -m pip install --upgrade pip</p>
-<p<python3 -m pip install --upgrade Pillow</p>
+<p>python3 -m pip install --upgrade Pillow</p>
 
 
 <h3>Inkluderer</h3>
