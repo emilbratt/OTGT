@@ -6,7 +6,7 @@ import json
 from logging import Log
 
 '''
-    you can run this file directly to add parameters to credentials file
+    you can run this file directly to add new credentials
 '''
 
 # load credentials
