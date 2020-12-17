@@ -1,3 +1,9 @@
+import os
+import random
+from time import sleep
+
+clearScreen = lambda : os.system(
+    'cls' if os.name == 'nt' else 'clear')
 
 
 def prettysql(records, colnames=''):
@@ -49,7 +55,10 @@ def prettysql(records, colnames=''):
 
     printFormat.append(breakLine)
 
-    return printFormat
+    print()
+    for row in printFormat:
+        print(f'\t{row}')
+
 
 def getUserValue(N,M=[],c=False):
  # N = numbers of columns to insert
@@ -91,3 +100,27 @@ def getUserValues(N,M=[],c=False):
                 L = []
                 if userConfirm('Vil du legge til flere verdier') == False:
                     return LT
+
+def userConfirm(M,c=False):
+    print()
+    lines = ('\t+'+('-'*(len(M)+1))+'+')
+    print(lines)
+    print('\t| '+M+'|')
+    print(lines)
+    print('\t|'+'1. ja  2. nei'.center(len(M))+' |')
+    print(lines)
+    if input('\tskriv: ') == "1":
+        if c == True:
+            clearScreen()
+        return True
+    else:
+        clearScreen()
+        return False
+
+def messages(L):
+    print('\n\t')
+    for i in L:
+        print('\t'+L[i])
+
+def message(M):
+    print('\n\t'+M)

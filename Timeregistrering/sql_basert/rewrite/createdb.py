@@ -9,6 +9,7 @@ dataPath = database = os.path.join(
     ),
     'data'
 )
+
 database = os.path.join(
     os.path.dirname(
     os.path.realpath(__file__)
@@ -19,27 +20,15 @@ database = os.path.join(
 # if no datadir, create new
 os.makedirs(dataPath, exist_ok=True)
 
-# CREATE TABLES########################
+# CREATE TABLES ########################
 def createDatabase():
     enableForeignKey = '''PRAGMA foreign_keys;'''
-
-    createRoleTable = '''
-        CREATE TABLE IF NOT EXISTS roles(
-        role_id     INTEGER PRIMARY KEY AUTOINCREMENT,
-        role_desc   TEXT  NULL,
-        role_category   TEXT  NULL
-        );
-    '''
-
 
     createUserTable = '''
     CREATE TABLE IF NOT EXISTS users(
         user_id     INTEGER PRIMARY KEY AUTOINCREMENT,
         user_name   TEXT NOT NULL,
-        role_id    INTEGER DEFAULT 0,
-        password    TEXT NOT NULL,
-        FOREIGN KEY (role_id)
-           REFERENCES roles (role_id)
+        password    TEXT NOT NULL
         );
     '''
 
@@ -70,13 +59,10 @@ def createDatabase():
     conn = sqlite3.connect(database)
     cursor = conn.cursor()
     cursor.execute(enableForeignKey)
-    cursor.execute(createRoleTable)
     cursor.execute(createUserTable)
     cursor.execute(createWorkTable)
     value = getUserValue(1,['skriv inn passord for rot-bruker'])
     rootPWD = passwordStore(value)
-    print(type(rootPWD))
-    input(rootPWD)
 
     cursor.execute(addRootUser,rootPWD)
     conn.commit()

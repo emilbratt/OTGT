@@ -60,8 +60,8 @@ def insertUser():
 
 if __name__ == '__main__':
     # updateRoles()
-    # insertRoles()
-    insertUser()
+    insertRoles()
+    # insertUser()
     # printRoles()
     # deleteRoles()
     # insertWork()

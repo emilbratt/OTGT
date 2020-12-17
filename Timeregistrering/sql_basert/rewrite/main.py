@@ -12,6 +12,24 @@ database = os.path.join(
 'data', 'data.db'
 )
 
-if os.path.isfile(database) == False:
-    from createdb import createDatabase
-    createDatabase()
+
+
+def insertUser():
+    c = connect()
+    clearScreen()
+    c.insertUser()
+    c.commit()
+    c.close()
+
+
+
+
+
+if __name__ == '__main__':
+
+    # this will run the first time the app is run
+    if os.path.isfile(database) == False:
+        from createdb import createDatabase
+        createDatabase()
+
+    insertUser()
