@@ -12,10 +12,10 @@ from datetime import datetime
 import os
 import json
 
-# local libraries
+# local modules
 from inventory import Inventory
 from logging import Log
-from credentials import loadCredentials
+
 
 absPath = os.path.dirname(os.path.realpath(__file__))
 os.makedirs('%s/log' % absPath, exist_ok=True)
@@ -65,7 +65,7 @@ def ledBlink(value):
         return None
     if value == 'item':
         led.off()
-        led.value = 0.5
+        led.value = 0.5  # half brightness
         led.blink(0.2,0.5)
     elif value == 'shelf':
         led.off()
@@ -75,62 +75,51 @@ def ledBlink(value):
         led.off()
         led.value = 1
         led.blink(0.02,0.06)
-    elif value == '!x[s]' or value == '!x[i]':
+    elif value == 'update':
         led.off()
-        led.value = 1
+        led.value = 1 # full brightness
         led.blink(2,1.5)
     return None
 
-def mainloop():
-
-    # start
-    Log(f'hostname: {socket.gethostname()}')
-    Log(f'full path: {cwd}', 'noprint')
+def mainLoop():
 
     # initialize inventory
     inventory = Inventory()
 
-    # load credentials for sql server
-    credentials = loadCredentials()
-
     # start scanning barcodes from items and shelves
     while True:
-        # led.blink(0.2,0.5)
         ledBlink('item')
         item = input('\n\t\033[96mscan item: ')
         if item.isnumeric():
-            # led.off()
-            # led.blink(0.05,0.2)
             ledBlink('shelf')
             shelf = input('\n\tscan shelf: ')
             if '-'  in shelf:
-                # inventory.inventoryAdd(item,shelf)
                 inventory.sessionAdd(item,shelf)
                 continue
             else:
-                if shelf == 'dump':
-                    inventory.inventoryDump()
-                elif shelf == 'excUpdate':
-                    ledBlink('!x[s]')
-
-                    inventory.sessionExecuteUpdate(credentials)
-
+                if shelf == 'excUpdate':
+                    ledBlink('update')
+                    inventory.sessionExecuteUpdate()
+                    del inventory
+                    return True
+                elif shelf == 'exitApp':
+                    return False
                 else:
                     Log(shelf + ' is not a valid shelf barcode',2)
-                    # led.blink(0.02,0.06)
-                    sleep(1)
+                    sleep(0.5)
         else:
-            if item == 'dump':
-                inventory.inventoryDump()
-            elif item == 'excUpdate':
-                ledBlink('!x[s]')
-                inventory.sessionExecuteUpdate(credentials)
-
+            if item == 'excUpdate':
+                ledBlink('update')
+                inventory.sessionExecuteUpdate()
+                del inventory
+                return True
+            elif item == 'exitApp':
+                return False
             else:
                 Log(item + ' is not a valid item barcode',2)
-                # led.blink(0.02,0.06)
                 sleep(0.5)
                 continue
+
 
 
 
@@ -168,6 +157,9 @@ if __name__ == '__main__':
 
         build
             builds a json file with all barcodes and shelves from session files
+
+        live
+            set live mode (dont turn off after update)
     '''
 
     validFlags = [
@@ -290,5 +282,11 @@ if __name__ == '__main__':
             Log(f'ip address: {getIP()}')
             break
 
+    # start
+    Log(f'hostname: {socket.gethostname()}')
+    Log(f'full path: {cwd}', 'noprint')
+
     # run the application
-    mainloop()
+    while True:
+        if mainLoop() == False:
+            exit()

@@ -5,8 +5,9 @@ import sys
 from datetime import datetime
 import os
 import json
+# local modules
 from logging import Log
-
+from credentials import loadCredentials
 '''
     notes:
     send files to salesreport is not finished
@@ -59,7 +60,8 @@ class Inventory:
         if self.debug['shutdown'] == True:
             from subprocess import call
 
-
+        # load credentials for sql server
+        self.sqlCredentials = loadCredentials()
 
         # read, add, save session csv
         self.sessions = [file for file
@@ -88,7 +90,7 @@ class Inventory:
             writer.writerow([item,shelf,self.timestamp])
 
     # read from session file (csv) and update all values with sql
-    def sessionExecuteUpdate(self, sqlCredentials):
+    def sessionExecuteUpdate(self):
         '''
             read all values from current session
             and run queries to update the sql server
@@ -120,11 +122,11 @@ class Inventory:
         try:
             cnxn = pyodbc.connect(
             'DRIVER={FreeTDS};SERVER=%s;PORT=%s;DATABASE=%s;UID=%s;PWD=%s' %(
-                sqlCredentials['server'],
-                sqlCredentials['port'],
-                sqlCredentials['database'],
-                sqlCredentials['user'],
-                sqlCredentials['password']
+                self.sqlCredentials['server'],
+                self.sqlCredentials['port'],
+                self.sqlCredentials['database'],
+                self.sqlCredentials['user'],
+                self.sqlCredentials['password']
                 )
             )
             Log('sql database connected succesfully')
@@ -141,8 +143,8 @@ class Inventory:
             with open('%s.csv' % self.sessionPath,'r') as csvfile:
                 reader = csv.reader(csvfile)
                 Log('updating database '
-                + sqlCredentials['database'] + ' at '
-                + sqlCredentials['server'])
+                + self.sqlCredentials['database'] + ' at '
+                + self.sqlCredentials['server'])
                 for row in reader:
                     print('Updating')
                     print(row[0]) # barcode
@@ -154,6 +156,10 @@ class Inventory:
                     sleep(0.4)
             cursor.close()
             cnxn.close()
+
+            if self.debug['live'] == True:
+                Log('Finish updating, live mode = True -> keep running', 5)
+                return None
 
             # power off
             try:
@@ -184,8 +190,8 @@ class Inventory:
         in os.listdir('%s/inventory/sessions'%
         os.path.dirname(os.path.realpath(__file__)))
         if os.path.splitext(f)[-1] == '.csv']
-        for i in allSessions:
-            Log('deleting ' + i + ' from ./inventory/sessions/')
+        for session in allSessions:
+            Log('deleting ' + session + ' from ./inventory/sessions/')
             os.remove(os.path.join(os.path.dirname(
             os.path.realpath(__file__)),
-            'inventory', 'sessions',i))
+            'inventory', 'sessions',session))

@@ -1,4 +1,4 @@
-Written: 13.12.2020 by Emil Bratt Børsting
+Written: 20.12.2020 by Emil Bratt Børsting
 
 1. Download Raspberry Pi OS lite 32 bit and write to sd-card.
 

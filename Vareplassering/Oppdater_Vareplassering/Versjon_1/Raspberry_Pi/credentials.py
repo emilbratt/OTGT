@@ -40,18 +40,20 @@ def loadCredentials():
         sleep(1.1)
         call("sudo nohup shutdown -h now", shell=True)
 
-    for key in credentials:
-        if key == 'password':
-            if debug['passwordhide'] == True:
-                continue
+    if debug['live'] == False:
+        for key in credentials:
+            if key == 'password':
+                if debug['passwordhide'] == True:
+                    continue
+                else:
+                    Log(key.ljust(10) + credentials[key].ljust(16))
             else:
                 Log(key.ljust(10) + credentials[key].ljust(16))
-        else:
-            Log(key.ljust(10) + credentials[key].ljust(16))
 
     return credentials
 
-# runs if flag credentials is applied
+
+# runs if this file is ran, or if main.py with flag credentials is applied
 def createCredentials():
 
     credentials = {}
