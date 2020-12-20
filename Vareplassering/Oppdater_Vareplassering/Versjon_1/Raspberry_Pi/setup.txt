@@ -2,6 +2,7 @@ Written: 13.12.2020 by Emil Bratt Børsting
 
 1. Download Raspberry Pi OS lite 32 bit and write to sd-card.
 
+
 2. ..run commands
 $ sudo raspi-config
 set local options
@@ -14,6 +15,7 @@ set correct hostname
 
 3. Update system
 $ sudo apt update && sudo apt upgrade -y
+
 
 4. change password for pi user
 $ passwd
@@ -30,14 +32,15 @@ $ pip3 install --user pyodbc
 $ pip3 install --user gpiozero
 $ pip3 install --user RPi.GPIO
 
+
 6. Add at bottom of FreeTDS conf file:
 sudo nano /etc/freetds/freetds.conf
 
 [sqlserver]
       host = <ip/hostname> # Remote Sql Server's IP addr
-      port = <1433> # this is default port, you can change it
-      tds version = 7.4 # version number by the time I write this
-      instance = <dbname> # Database name
+      port = 1433 # this is default port, but you can change it
+      tds version = 7.4 # chose version you want to use
+      instance = <dbname> # insert the name of the database you are gonna use
 
 
 
@@ -45,53 +48,91 @@ sudo nano /etc/freetds/freetds.conf
 $ sudo nano /etc/odbcinst.ini
 
 (add text under)
+
 [FreeTDS]
 Description = FreeTDS unixODBC Driver
 Driver = /usr/lib/arm-linux-gnueabihf/odbc/libtdsodbc.so
 Setup = /usr/lib/arm-linux-gnueabihf/odbc/libtdsodbc.so
 UsageCount = 1
+
 (save and exit)
 
 $ sudo nano  /etc/odbc.ini
 
 (add text under)
+
 [FreeTDS]
 Driver = /usr/lib/arm-linux-gnueabihf/odbc/libtdsodbc.so
 Description = MSSQL Server
 Trace = No
 Server = <ip/hostname> # IP or host name of the Sql Server
 Database = <DBNAME> # Database name
-Port = <1433> # This is default, but you can change it
-TDS_Version = 7.4 # as of 01.12.2020, you can change it
+Port = 1433 # this is default port, but you can change it
+TDS_Version = 7.4 # chose version you want to use
+
 (save and exit)
 
-8. Create mountpoint for usb
-Format a usb with fat32 and label pi/PI
+
+8. Create mountpoint for usb (for if you want run and store data to USB instead of the sd-card)
+Format a usb with fat32 and label "PI"
 $ mkdir /home/pi/usb
 $ sudo nano /etc/fstab
+
 (add text to bottom)
+
 LABEL=PI /home/pi/usb        vfat	user,auto,uid=pi,x-systemd.device-timeout=0     0       2
+
 (save and exit)
 
-put script to use on usb..
+
+9.
+copy app to raspberry pi
 Structure like this:
-credentials file goes into /home/pi/credentials.json
-if no credential file, run ./main.py credentials (using the credentials flag to add new credentials) to create it
 
-files that goes into /home/pi/usb/
-  credentials.py
-  databuild.py
-  debug.json
-  inventory.py
-  main.pyrest of files/folders goes into /home/pi/usb/..
+if on USB...
+  credentials file goes into /home/pi/credentials.json
+  files that goes into /home/pi/usb/
+    credentials.py
+    databuild.py
+    debug.json
+    inventory.py
+    main.pyrest of files/folders goes into /home/pi/usb/..
+
+if on sd-card...
+$ mkdir /home/pi/app
+  credentials file goes into /home/pi/credentials.json
+  files that goes into /home/pi/app/
+    credentials.py
+    databuild.py
+    debug.json
+    inventory.py
+    main.pyrest of files/folders goes into /home/pi/usb/..
+
+  if you have no credential file, create one by running:
+  ./main.py credentials (using the credentials flag to add new credentials)
 
 
-9. Make boot script and add to .bashrc
+
+
+10. Make boot script and add to .bashrc
 $ nano /home/pi/.bashrc
 
+if USB..
+
 (add text to bottom)
+
 cd /home/pi/usb
 python3 /home/pi/usb/main.py
+
+(save and exit)
+
+if on sd-card..
+
+(add text to bottom)
+
+cd /home/pi/app
+python3 /home/pi/app/main.py
+
 (save and exit)
 
 
@@ -103,7 +144,9 @@ $ nano nameofscript.py
 
 
 $ nano nameofscript.service
+
 (add text)
+
 [Unit]
 Description=what script does
 After=multi-user.target
@@ -118,6 +161,7 @@ KillMode=process
 
 [Install]
 WantedBy=multi-user.target
+
 (save and exit)
 
 $ sudo cp nameofscript.service /etc/systemd/system/nameofscript.service
