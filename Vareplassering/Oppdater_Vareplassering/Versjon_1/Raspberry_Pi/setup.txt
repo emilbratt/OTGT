@@ -1,10 +1,15 @@
 Written: 13.12.2020 by Emil Bratt Børsting
 
-1. Download Raspberry Pi OS 32 bit and write to sd-card.
+1. Download Raspberry Pi OS lite 32 bit and write to sd-card.
 
 2. ..run commands
 $ sudo raspi-config
-Connect to network wifi, enable auto login to Text console and enable ssh, set date/time
+set local options
+Connect to network wifi
+enable auto login to text console
+enable ssh
+set date/time etc
+set correct hostname
 
 
 3. Update system
