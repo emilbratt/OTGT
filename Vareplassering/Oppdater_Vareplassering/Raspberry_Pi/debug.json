@@ -1,0 +1,7 @@
+{
+  "sql": true,
+  "shutdown": true,
+  "passwordhide": true,
+  "led": true,
+  "live": false
+}
