@@ -42,7 +42,7 @@ class connect:
             'SELECT CONVERT(VARCHAR(16),GETDATE(),20)').fetchone()[0]
 
 
-    def getToday(self):
+    def getAllToday(self):
         fetchList = '''
         SELECT articleId,
         stockAdjustmenId

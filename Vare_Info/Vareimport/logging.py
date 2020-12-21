@@ -44,7 +44,7 @@ class Log:
 
             json_file.close()
         except FileNotFoundError:
-            print('\t\033[93mlog file not found, creating new\033[0m')
+            # if log file not found, create new
             self.log = {self.startTime:{self.clock:'log file not found, creating new'}}
 
 
