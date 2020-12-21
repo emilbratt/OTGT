@@ -73,7 +73,10 @@ def prettysql(records, colnames=''):
 
     printFormat.append(breakLine)
 
-    return printFormat
+    for row in printFormat:
+        print(row)
+    # return printFormat
+    return None
 
 
 # example usage

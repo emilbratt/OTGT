@@ -3,10 +3,10 @@ from subprocess import call
 from time import sleep
 import os
 import json
-from logging import Log
+from writelog import Log
 
 '''
-    you can run this file directly to add parameters to credentials file
+    you can run this file directly to add new credentials
 '''
 
 # load credentials
@@ -27,12 +27,12 @@ def loadCredentials():
         except AttributeError:
             Log('AttributeError on credentials.json, shutting down')
             sleep(1.1)
-            # exit()
+
             call("sudo nohup shutdown -h now", shell=True)
         except json.decoder.JSONDecodeError:
             Log('json.decoder.JSONDecodeError on credentials.json, shutting down')
             sleep(1.1)
-            # exit()
+
             call("sudo nohup shutdown -h now", shell=True)
         json_file.close()
     except FileNotFoundError:
@@ -51,9 +51,8 @@ def loadCredentials():
 
     return credentials
 
-# runs if flag credentials is applied
-def createCredentials():
 
+def createCredentials():
     credentials = {}
     attributeNames = ['server','port','database','user','password']
     inputAccept = False
@@ -73,6 +72,7 @@ def createCredentials():
             continue
         else:
             Log(key.ljust(10) + credentials[key].ljust(16),'noprint')
+
 
 if __name__ == '__main__':
     Log(f'executing {__file__}')
