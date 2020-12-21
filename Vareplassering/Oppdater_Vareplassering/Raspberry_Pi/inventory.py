@@ -54,11 +54,20 @@ class Inventory:
         os.path.dirname(os.path.realpath(
         __file__)), 'inventory/sessions', self.intDate)
 
+        # if no session file, touch to create empty
+        self.sessionFile = os.path.join(self.sessionPath+'.csv')
+        if not os.path.isfile(self.sessionFile):
+            Log('First session run, creating session: ' + self.intDate)
+            with open(self.sessionFile, 'a'):
+                os.utime(self.sessionFile, None)
+
+
         with open('%s/debug.json'%os.path.join(
         os.path.dirname(os.path.realpath(__file__))), 'r') as mode:
             self.debug = json.load(mode)
         if self.debug['shutdown'] == True:
             from subprocess import call
+
 
         # load credentials for sql server
         self.sqlCredentials = loadCredentials()
