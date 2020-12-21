@@ -102,7 +102,7 @@ def mainLoop():
                     inventory.sessionExecuteUpdate()
                     del inventory
                     return True
-                elif shelf == 'exitApp':
+                elif shelf == 'exit':
                     return False
                 else:
                     Log(shelf + ' is not a valid shelf barcode',2)
@@ -113,7 +113,7 @@ def mainLoop():
                 inventory.sessionExecuteUpdate()
                 del inventory
                 return True
-            elif item == 'exitApp':
+            elif item == 'exit':
                 return False
             else:
                 Log(item + ' is not a valid item barcode',2)
