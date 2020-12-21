@@ -1,1 +1,1 @@
-<h3>Her ligger applikasjoner for å hente vareinfo</h3>
+<h3>Her ligger applikasjoner for bruk under vareimportering</h3>
