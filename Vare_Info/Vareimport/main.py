@@ -111,8 +111,8 @@ if __name__ == '__main__':
     while True:
         clearScreen()
         print(f'\n\t{colourPrint[0]}Vareoversikt\n\tVelg:\n\033[0m')
-        print(f'\t{colourPrint[3]}1. Skann en og en vare og hvis generell info på skjerm\033[0m')
-        print(f'\t{colourPrint[3]}2. Skann en og en vare og hvis utvidet info på skjerm\033[0m')
+        print(f'\t{colourPrint[3]}1. Skann en og en vare og vis generell info på skjerm\033[0m')
+        print(f'\t{colourPrint[3]}2. Skann en og en vare og vis utvidet info på skjerm\033[0m')
         print(f'\t{colourPrint[3]}3. Åpne oversikt over alle importerte varer i dag (regneark)\033[0m')
         print(f'\n\t{colourPrint[4]}0. Avslutt\033[0m')
         choice = input(f'\n\t{colourPrint[2]}skriv: \033[0m')
