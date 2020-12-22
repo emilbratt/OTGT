@@ -40,7 +40,7 @@ def loadCredentials():
         sleep(1.1)
         call("sudo nohup shutdown -h now", shell=True)
 
-    if debug['live'] == False:
+    if debug['showcred'] == True:
         for key in credentials:
             if key == 'password':
                 if debug['passwordhide'] == True:

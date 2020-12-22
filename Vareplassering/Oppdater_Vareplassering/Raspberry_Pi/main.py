@@ -159,7 +159,10 @@ if __name__ == '__main__':
             builds a json file with all barcodes and shelves from session files
 
         live
-            set live mode (dont turn off after update)
+            set live mode (keep running after update)
+
+        showcred
+            enable/disable displaying server, port, database and user on screen
     '''
 
     validFlags = [
