@@ -89,7 +89,7 @@ class Inventory:
                 Log('datestamp: ' + self.intDate +
                 ' is not up to date compared to latest session file')
             else:
-                Log('session: ' + self.intDate)
+                Log('session:\t' + self.intDate)
 
 
     def sessionAdd(self, item, shelf):
