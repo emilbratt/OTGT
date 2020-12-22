@@ -185,7 +185,7 @@ if __name__ == '__main__':
         + 'creating a temp session for this instance', 1)
 
 
-    Log(f'executing {__file__}')
+    Log(f'executing {__file__}','5')
 
 
     # open debug and check parameters

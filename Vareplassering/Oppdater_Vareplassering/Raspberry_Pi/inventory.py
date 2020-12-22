@@ -200,7 +200,7 @@ class Inventory:
         os.path.dirname(os.path.realpath(__file__)))
         if os.path.splitext(f)[-1] == '.csv']
         for session in allSessions:
-            Log('deleting ' + session + ' from ./inventory/sessions/')
+            Log('deleting ' + session + ' from ./inventory/sessions/','2')
             os.remove(os.path.join(os.path.dirname(
             os.path.realpath(__file__)),
             'inventory', 'sessions',session))

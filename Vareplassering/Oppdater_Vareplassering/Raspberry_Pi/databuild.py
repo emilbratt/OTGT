@@ -53,6 +53,6 @@ class Build:
 
 # example use
 if __name__ == '__main__':
-    Log(f'executing {__file__}')
+    Log(f'executing {__file__}','5')
     dataFile = Build()
     dataFile.runbuild()

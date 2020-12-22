@@ -25,18 +25,18 @@ def loadCredentials():
             Log('credentials.json loaded succesfully')
             sleep(1.1)
         except AttributeError:
-            Log('AttributeError on credentials.json, shutting down')
+            Log('AttributeError on credentials.json, shutting down','1')
             sleep(1.1)
             # exit()
             call("sudo nohup shutdown -h now", shell=True)
         except json.decoder.JSONDecodeError:
-            Log('json.decoder.JSONDecodeError on credentials.json, shutting down')
+            Log('json.decoder.JSONDecodeError on credentials.json, shutting down','1')
             sleep(1.1)
             # exit()
             call("sudo nohup shutdown -h now", shell=True)
         json_file.close()
     except FileNotFoundError:
-        Log('credentials.json file not found, shutting down')
+        Log('credentials.json file not found, shutting down','1')
         sleep(1.1)
         call("sudo nohup shutdown -h now", shell=True)
 
@@ -55,7 +55,6 @@ def loadCredentials():
 
 # runs if this file is ran, or if main.py with flag credentials is applied
 def createCredentials():
-
     credentials = {}
     attributeNames = ['server','port','database','user','password']
     inputAccept = False
@@ -77,7 +76,7 @@ def createCredentials():
             Log(key.ljust(10) + credentials[key].ljust(16))
 
 if __name__ == '__main__':
-    Log(f'executing {__file__}')
+    Log(f'executing {__file__}','5')
     Log('Creating new credentials')
     createCredentials()
     Log('New credentials was stored')
