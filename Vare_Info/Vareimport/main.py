@@ -32,6 +32,7 @@ def openFile(path):
     if sys.platform.startswith('linux'):
         os.system('xdg-open "%s"' % path)
     elif sys.platform.startswith('win32'):
+        import subprocess
         subprocess.Popen('explorer "%s"' % path)
     elif sys.platform.startswith('darwin'):
         os.system('xdg-open "%s"' % path)
