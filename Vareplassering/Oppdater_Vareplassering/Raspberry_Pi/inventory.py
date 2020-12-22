@@ -80,7 +80,7 @@ class Inventory:
 
         # check for existing sessions
         if self.sessions == []:
-            Log('no session files (csv) in .inventory/sessions/'
+            Log('sessions directory /inventory/sessions/ is empty'
             + ', new session with stamp '
             + self.intDate + '.csv will be created')
             open(r'%s.csv' % self.sessionPath,'a', newline='')
@@ -89,7 +89,7 @@ class Inventory:
                 Log('datestamp: ' + self.intDate +
                 ' is not up to date compared to latest session file')
             else:
-                Log('session file: ' + self.intDate)
+                Log('session: ' + self.intDate)
 
 
     def sessionAdd(self, item, shelf):
