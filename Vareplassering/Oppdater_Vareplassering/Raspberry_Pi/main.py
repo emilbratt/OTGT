@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
-# Emil Bratt -> emilbratt@gmail.com
+__author__ = "Emil Bratt Børsting"
+__email__  = "emilbratt@gmail.com"
+__status__ = "deployed"
+
 # use this as a template for your own projects
 # you will have to modify it to fit your purpose
 from time import sleep
 # sleep is used mainly to distinguish logs which are timestamped
 # by forcing a .1 second delay between each record
+# i will probably rewrite how this is handled (maybe use it in the logging.py file)
 import socket # for getting hostname and ip address
 import csv
-import sys
+import sys # handles arguments (flags) when running the file
 from datetime import datetime
 import os
 import json
@@ -23,10 +27,25 @@ os.makedirs('%s/inventory' % absPath, exist_ok=True)
 os.makedirs('%s/inventory/sessions' % absPath, exist_ok=True)
 
 def checkDate():
+    '''
+        we store new values in a sesssion file
 
-    # # if no files are present for date verification
-    # # set prefixed date so we have something to compare - see except ValueError
+        each session file represents a fixed date so that it is
+        easy to keep track of the new values added
 
+        this function returns true if the time stamp
+        is greater than the latest session file
+
+        this is important because we incrementally add new
+        session files for each date moving forward
+
+        with values being added every now and then we do not want to iterate
+        through an ever growing list of values when updating shelf values,
+        but rather only from the newest session file
+    '''
+
+    # if no files are present for date verification then
+    # set prefixed date so we have something to use as a filename - see except ValueError
     getcsvDates = [file for file
     in os.listdir('%s/inventory/sessions'%
     os.path.dirname(os.path.realpath(__file__)))
@@ -48,7 +67,9 @@ def checkDate():
 
 
 def getIP():
-
+    '''
+        returns the ip address of the device
+    '''
     interface = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         interface.connect(('10.255.255.255', 1))
@@ -61,6 +82,11 @@ def getIP():
 
 
 def ledBlink(value):
+    '''
+        this function handles the LED that is connected to the GPIO board
+
+        plug the + wire of the led into gpio pin number 11 (tested on raspberry pi 3B)
+    '''
     if debug['led'] == False:
         return None
     if value == 'item':
@@ -82,7 +108,12 @@ def ledBlink(value):
     return None
 
 def mainLoop():
+    '''
+        this function will loop while you add items and shelf values
 
+        it will end (and restart if debug.json is set with the live parameter = true)
+        when you scan the excUpdate barcode that is located in the ekstra directory
+    '''
     # initialize inventory
     inventory = Inventory()
 
