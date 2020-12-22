@@ -125,5 +125,5 @@ if __name__ == '__main__':
         elif choice == '3':
             currentFile = exportXLSX()
             openFile(currentFile)
-        elif choice == '0' or choice == '':
+        elif choice == '0':
             exit()
