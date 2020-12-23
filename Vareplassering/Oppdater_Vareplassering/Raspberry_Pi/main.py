@@ -20,6 +20,46 @@ import json
 from inventory import Inventory
 from logging import Log
 
+    # optionally add flags
+    '''
+        mode
+            will not run the program but instead check what
+            is enabled/disabled in debug.json and print on screen
+
+            when running on pi in normal enviroment, set all to True
+            when debugging set needed values to false
+
+            how: by adding one or more flags as shown under
+            example: switch shutdown and sql -> python3 main.py shutdown sql
+
+        passwordhide
+            enable/disable passwrod printing on screen
+
+        shutdown
+            enable/disable shutdown on error
+
+        sql
+            enables/disables sql updating
+
+        led
+            enables/disables the gpio led
+
+        credentials
+            add new credentials settings
+
+        wipesessions
+            removes all csv files in ./inventory/sessions
+
+        build
+            builds a json file with all barcodes and shelves from session files
+
+        live
+            set live mode (keep running after update)
+
+        showcred
+            enable/disable displaying server, port, database and user on screen
+    '''
+
 
 absPath = os.path.dirname(os.path.realpath(__file__))
 os.makedirs('%s/log' % absPath, exist_ok=True)
@@ -155,47 +195,6 @@ def mainLoop():
 
 
 if __name__ == '__main__':
-
-    # optionally add flags
-    '''
-        mode
-            will not run the program but instead check what
-            is enabled/disabled in debug.json and print on screen
-
-            when running on pi in normal enviroment, set all to True
-            when debugging set needed values to false
-
-            how: by adding one or more flags as shown under
-            example: switch shutdown and sql -> python3 main.py shutdown sql
-
-        passwordhide
-            enable/disable passwrod printing on screen
-
-        shutdown
-            enable/disable shutdown on error
-
-        sql
-            enables/disables sql updating
-
-        led
-            enables/disables the gpio led
-
-        credentials
-            add new credentials settings
-
-        wipesessions
-            removes all csv files in ./inventory/sessions
-
-        build
-            builds a json file with all barcodes and shelves from session files
-
-        live
-            set live mode (keep running after update)
-
-        showcred
-            enable/disable displaying server, port, database and user on screen
-    '''
-
     validFlags = [
         'mode','passwordhide', 'build',
         'shutdown','sql','led',

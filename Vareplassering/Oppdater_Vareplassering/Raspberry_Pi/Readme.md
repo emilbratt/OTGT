@@ -12,3 +12,11 @@
 <p>Det er flere "dependencies" som må innstalleres sammen med FreeTDS driveren og modulen pyodbc for at python skal kunne kommunisere med MSSQL server</p>
 <p>Les setup.txt og gå igjennom steg for steg med oppsett av Raspberry Pi</p>
 <p>Jeg har skrevet denne på engelsk for for å gjøre det enklere for andre å kopiere</p>
+
+<h3>Velg modus</h3>
+<p>Du kan endre modus ved å kjøre "./main.py sql" for å aktivere eller deaktivere sql</p>
+<p>Alternativt så kan du endre verdiene i debug.json (true/false)</p>
+<p>Hvis raspberry pi er koblet på batteri</p>
+<p>"sql": true,"shutdown": true,"passwordhide": true,"led": true,""showcred": true,"live": false</p>
+<p>Hvis raspberry pi er koblet på strøm med kbalet nett</p>
+<p>"sql": true,"shutdown": true,"passwordhide": true,"led": false,""showcred": true,"live": true</p>
