@@ -135,10 +135,15 @@ python3 /home/pi/app/main.py
 
 (save and exit)
 
+11. optional.. kill switch for radio signals (wifi and bluetooth)
+$ sudo rfkill block wifi
+$ sudo rfkill block bluetooth
 
-optional...
-#################
-Make boot script to run after boot -> for multi-user (systemd)
+list blocked radio transmitters
+$ rfkill list all
+
+
+12. optional.. make boot script to run after boot -> for multi-user (systemd)
 $ nano nameofscript.py
 	write the script....
 
