@@ -22,6 +22,9 @@ from logging import Log
 
     # optionally add flags
     '''
+        run with "./main.py <name>"  (where name is the mode/flag)
+        you can add more flags after each other ./main.py <flag1> <flag2> etc..
+        
         mode
             will not run the program but instead check what
             is enabled/disabled in debug.json and print on screen
@@ -198,7 +201,8 @@ if __name__ == '__main__':
     validFlags = [
         'mode','passwordhide', 'build',
         'shutdown','sql','led',
-        'credentials','wipesessions'
+        'credentials','wipesessions','live',
+        'showcred'
         ]
     # put file directory into a variable
     cwd = os.path.dirname(os.path.realpath(__file__))
