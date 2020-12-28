@@ -26,28 +26,30 @@ os.makedirs(pathSalg, exist_ok=True)
 os.makedirs(pathImport, exist_ok=True)
 os.makedirs(pathOmsetning, exist_ok=True)
 
-def getDates():
+
+
+def writeSpreadsheet(data):
+    pass
+
+
+def fetchYesterday():
+
     c = connect()
+    times = c.fetchTime()
+    turnoverYesterday = c.turnoverYesterday()
+    importsYesterdayy = c.importsYesterdayy()
+    soldoutYesterdayy = c.soldoutYesterdayy()
     c.close()
-    return None
-
-
-
-def fetchData():
-
-    c = connect()
-    data['sales'] = c.sales()
-    data['import'] = c.imports()
-    data['soldout'] = c.soldout()
-    c.close()
-    print(data['sales'])
-    print(data['import'])
-    print(data['soldout'])
-
-
-
+    for row in turnoverYesterday:
+        print(row)
+    print()
+    for row in importsYesterdayy:
+        print(row)
+    print()
+    for row in soldoutYesterdayy:
+        print(row)
 
 if __name__ == '__main__':
     data = {} # data fetched during execution is appended here
-    fetchData()
+    fetchYesterday()
     # getDates()

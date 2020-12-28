@@ -14,6 +14,13 @@ def loadDriver():
     else:
         return False
 
+def humanYYYYMMDD(YYYYMMDD):
+    year = YYYYMMDD[:4]
+    month = YYYYMMDD[4:6]
+    day = YYYYMMDD[6:8]
+    return f'{day}-{month}-{year}'
+
+
 class connect:
     def __init__(self):
         from credentials import loadCredentials
@@ -38,29 +45,69 @@ class connect:
                 )
             )
 
+        self.yesterday = -1 # subtract 1 day from todays date
+        self.days = [-1,-8,-15] # getting from last day, same weekday the week before and the week before that
+
         self.cursor = self.cnxn.cursor()
+        self.cursor.execute('SET LANGUAGE NORWEGIAN')
+
         self.YYYYMMDD = self.cursor.execute(
             'SELECT CONVERT(VARCHAR(10),CURRENT_TIMESTAMP,112)').fetchone()[0]
-        self.yesterdayYYYMMDD = self.cursor.execute(
-            'SELECT CONVERT(VARCHAR(10),DATEADD(day, -1,CURRENT_TIMESTAMP),112)'
-            ).fetchone()[0]
+
         self.weekNum = self.cursor.execute(
-            'SELECT DATENAME(WEEK, CURRENT_TIMESTAMP)-1').fetchone()[0]
+            'SELECT DATENAME(WEEK, CURRENT_TIMESTAMP)').fetchone()[0]
+
         self.weekday = self.cursor.execute(
             'SELECT DATENAME(WEEKDAY, CURRENT_TIMESTAMP)').fetchone()[0]
         self.timestamp = self.cursor.execute(
             'SELECT CONVERT(VARCHAR(20),CURRENT_TIMESTAMP,20)').fetchone()[0]
         self.time = self.cursor.execute(
-            'SELECT CONVERT(VARCHAR(16),GETDATE(),20)').fetchone()[0]
-        self.yesterday = -1 # subtract 1 day from todays date
-        self.days = [-1,-8,-15] # getting from last day, same weekday the week before and the week before that
+            'SELECT CONVERT(VARCHAR(16),GETDATE(),20)').fetchone()[0][11:16]
+
+        self.weekdayYesterday = self.cursor.execute('''
+            SET
+                LANGUAGE NORWEGIAN
+            SELECT
+                DATENAME(WEEKDAY, DATEADD(DAY, (?), CURRENT_TIMESTAMP))
+            ''',self.yesterday).fetchone()[0]
+
+        self.yesterdayYYYMMDD = self.cursor.execute(
+            'SELECT CONVERT(VARCHAR(10),DATEADD(DAY, -1,CURRENT_TIMESTAMP),112)'
+            ).fetchone()[0]
+
+        self.weekNumYesterday = self.cursor.execute('''
+            SELECT DATENAME(WEEK, DATEADD(DAY, -1, CURRENT_TIMESTAMP))
+            ''').fetchone()[0]
+
+
+        self.dateHuman = humanYYYYMMDD(self.YYYYMMDD)
+        self.dateYesterdayHuman = humanYYYYMMDD(self.yesterdayYYYMMDD)
+
 
     def close(self):
         self.cursor.close()
         self.cnxn.close()
 
 
-    def imports(self):
+    def fetchTime(self):
+        data = {}
+        data['today'] = {}
+        data['today']['YYYYMMDD'] = self.YYYYMMDD
+        data['today']['weekNum'] = self.weekNum
+        data['today']['timestamp'] = self.timestamp
+        data['today']['weekday'] = self.weekday
+        data['today']['time'] = self.time
+        data['today']['human'] = self.dateHuman
+        data['yesterday'] = {}
+        data['yesterday']['YYYYMMDD'] = self.yesterdayYYYMMDD
+        data['yesterday']['weekNum'] = self.weekNumYesterday
+        data['yesterday']['weekday'] = self.weekdayYesterday
+        data['yesterday']['human'] = self.dateYesterdayHuman
+        return data
+
+
+
+    def importsYesterdayy(self):
 
         articleList = self.cursor.execute('''
         SELECT
@@ -69,9 +116,9 @@ class connect:
         FROM
         	StockAdjustment
         WHERE
-            DATEPART(WEEKDAY, [adjustmentDate]) >= DATEPART(WEEKDAY, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
-        	DATEPART(WEEK, [adjustmentDate]) >= DATEPART(WEEK, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
-        	DATEPART(YEAR, [adjustmentDate]) >= DATEPART(YEAR, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
+            DATEPART(WEEKDAY, [adjustmentDate]) = DATEPART(WEEKDAY, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(WEEK, [adjustmentDate]) = DATEPART(WEEK, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
             adjustmentCode ='41'
         ORDER BY
         	adjustmentDate
@@ -81,12 +128,12 @@ class connect:
         for article in articleList:
             for importInfo in self.cursor.execute('''
                 SELECT
-                    Article.suppliers_art_no AS LeverandorID,
                     Brands.brandLabel AS Merke,
                     Article.articleName AS Navn,
                     CAST(StockAdjustment.adjustmentQty AS INT) AS Antall_Importert,
                     CAST (stockQty AS INT) AS Antall_Lager,
-                    articleStock.StorageShelf AS Lager_plass
+                    articleStock.StorageShelf AS Lager_plass,
+                    Article.suppliers_art_no AS LeverandorID
 
                 FROM
                     Article
@@ -99,67 +146,66 @@ class connect:
                 ''', article[0], article[1]).fetchall():
                 data.append(importInfo)
 
-        title = [
-        'Lev.ID','Merke','Navn',
-        'Importert','Lager','Plass'
+        colName = [
+        'Merke','Navn',
+        'Importert','Antall Lager','Lagerplass','Lev.ID'
         ]
 
-        data.insert(0,title)
+
+        data.insert(0,colName)
+        data.insert(0,['Vareimport',self.weekdayYesterday.title() +' Uke-' + self.weekNumYesterday,self.dateYesterdayHuman])
+        if len(data) < 3:
+            data[1] = ['Ingen Importerte Varer I Dag']
         return data
 
 
 
 
-    def sales(self):
-
+    def turnoverYesterday(self):
         data = []
-        for day in self.days:
-            tempList = []
-            tempList.append(self.cursor.execute('''
+        result = self.cursor.execute('''
             SET
                 LANGUAGE NORWEGIAN
             SELECT
-                DATENAME(WEEKDAY, DATEADD(day, (?), CURRENT_TIMESTAMP))
-            ''',day).fetchone())
+                REPLACE(CAST(SUM(Brto_Salg_Kr) AS DECIMAL(29,2)) ,'.',',')
+            FROM
+                view_HIP_salesInfo_10
+            WHERE
+                DATEPART(WEEKDAY,[salesdate]) = DATEPART(WEEKDAY,DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+                DATEPART(WEEK, [salesdate]) = DATEPART(WEEK, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+                DATEPART(YEAR, [salesdate]) = DATEPART(YEAR, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+                isGiftCard ='0'
+        ''',self.yesterday,self.yesterday,self.yesterday).fetchone()
 
-            tempList.append(self.cursor.execute('''
-                SET
-                    LANGUAGE NORWEGIAN
-                SELECT
-                    REPLACE(CAST(SUM(Brto_Salg_Kr) AS DECIMAL(29,2)) ,'.',',')
-                FROM
-                    view_HIP_salesInfo_10
-                WHERE
-                    DATEPART(WEEKDAY,[salesdate]) = DATEPART(WEEKDAY,DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
-                    DATEPART(WEEK, [salesdate]) = DATEPART(WEEK, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
-                    DATEPART(YEAR, [salesdate]) = DATEPART(YEAR, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
-                    isGiftCard ='0'
-            ''',day,day,day).fetchone())
 
-            data.append(tempList)
 
+
+        data.append(result)
+        data.insert(0,['Omsetning',self.weekdayYesterday.title() +' Uke-' + self.weekNumYesterday,self.dateYesterdayHuman])
+        if data[1][0] == None:
+            data[1] = ['Ingen Omsetning I Dag']
         return data
 
 
+    def soldoutYesterdayy(self):
+        data = []
 
-    def soldout(self):
-        soldout = {}
-        query = '''
+        result = self.cursor.execute('''
         SELECT
             Brands.brandLabel AS Merke,
             Article.articleName AS Navn,
-            Article.suppliers_art_no AS Leverandor,
-            stockQty,
+            CAST (stockQty AS INT) AS Antall_Lager,
             articleStock.StorageShelf AS Lager,
-            CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 103) AS Siste_Importdato
+            CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS Siste_Importdato,
+            Article.suppliers_art_no AS Leverandor
         FROM
             ((Article
             INNER JOIN articleStock ON Article.articleId = articleStock.articleId)
             INNER JOIN Brands ON Article.brandId = Brands.brandId)
         WHERE
-        	DATEPART(WEEKDAY, articleStock.lastSold) =  DATEPART(WEEKDAY, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
-        	DATEPART(WEEK, articleStock.lastSold) =  DATEPART(WEEK, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
-        	DATEPART(YEAR, articleStock.lastSold) =  DATEPART(YEAR, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(WEEKDAY, articleStock.lastSold) =  DATEPART(WEEKDAY, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(WEEK, articleStock.lastSold) =  DATEPART(WEEK, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(YEAR, articleStock.lastSold) =  DATEPART(YEAR, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
         	ArticleStatus = '0' AND Article.articleName NOT LIKE '[.]%' AND stockQty<='0' AND
         	[articleName] NOT LIKE '%REPOSE DESIGNFOREVIG%' AND
         	[articleName] NOT LIKE 'Retain 24 gavekort%' AND
@@ -170,8 +216,19 @@ class connect:
         	[articleName] NOT LIKE 'IHR LUNSJSERVIETTER%'
         ORDER BY
         	brandLabel
-        '''
+        ''', self.yesterday,self.yesterday,self.yesterday).fetchall()
 
-        soldout['today'] = self.cursor.execute(query, self.yesterday,self.yesterday,self.yesterday).fetchall()
+        for row in result:
+            data.append(row)
 
-        return soldout
+        colName = [
+        'Merke','Navn','Antall Lager',
+        'Lagerplass','Sist Importert','Lev. ID'
+        ]
+
+
+        data.insert(0,colName)
+        data.insert(0,['Utsolgte Varer',self.weekdayYesterday.title() +' Uke-' + self.weekNumYesterday,self.dateYesterdayHuman])
+        if len(data) < 3:
+            data[1] = ['Ingen Utsolgte Varer I Dag']
+        return data
