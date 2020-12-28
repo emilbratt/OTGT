@@ -55,7 +55,7 @@ def exportXLSX():
 
     # set working directory
     appRootPath = os.path.dirname(os.path.realpath(__file__))
-    os.makedirs('%s/utskrift' % appRootPath, exist_ok=True)
+    # os.makedirs('%s/utskrift' % appRootPath, exist_ok=True)
     c = connect()
     data = c.getImportToday()
     c.close()
