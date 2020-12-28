@@ -38,8 +38,12 @@ def fetchData():
     c = connect()
     data['sales'] = c.sales()
     data['import'] = c.imports()
+    data['soldout'] = c.soldout()
     c.close()
-    print(data)
+    print(data['soldout'])
+
+
+
 
 if __name__ == '__main__':
     data = {} # data fetched during execution is appended here

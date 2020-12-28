@@ -52,7 +52,7 @@ class connect:
             'SELECT CONVERT(VARCHAR(20),CURRENT_TIMESTAMP,20)').fetchone()[0]
         self.time = self.cursor.execute(
             'SELECT CONVERT(VARCHAR(16),GETDATE(),20)').fetchone()[0]
-        self.day = -1 # subtract days from todays date
+        self.yesterday = -4 # subtract 1 day from todays date
         self.days = [-1,-8,-15] # getting from last day, same weekday the week before and the week before that
 
     def close(self):
@@ -75,29 +75,9 @@ class connect:
             adjustmentCode ='41'
         ORDER BY
         	adjustmentDate
-        ''',self.day,self.day,self.day).fetchall()
-
-        fethData = '''
-        SELECT
-            Article.suppliers_art_no AS LeverandorID,
-            Brands.brandLabel AS Merke,
-            Article.articleName AS Navn,
-            CAST(StockAdjustment.adjustmentQty AS INT) AS Antall_Importert,
-            CAST (stockQty AS INT) AS Antall_Lager,
-            articleStock.StorageShelf AS Lager_plass
-
-        FROM
-            Article
-            INNER JOIN articleStock ON Article.articleId = articleStock.articleId
-            INNER JOIN Brands ON Article.brandId = Brands.brandId
-            INNER JOIN StockAdjustment ON Article.articleId = StockAdjustment.articleId
-
-        WHERE
-            Article.articleId =(?) AND adjustmentCode ='41' AND stockAdjustmenId = (?)
-        '''
+        ''',self.yesterday,self.yesterday,self.yesterday).fetchall()
 
         data = []
-
         for article in articleList:
             for importInfo in self.cursor.execute('''
                 SELECT
@@ -162,71 +142,36 @@ class connect:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def importss(self):
-        fetchList = '''
+    def soldout(self):
+        soldout = {}
+        query = '''
         SELECT
-            articleId,
-            stockAdjustmenId
-        FROM
-            StockAdjustment
-        WHERE
-            adjustmentDate >= DATEADD(day, DATEDIFF(day, 0, GETDATE()), 0) AND
-            adjustmentCode ='41'
-        ORDER BY
-            adjustmentDate
-        '''
-        fethInfo = '''
-        SELECT
-            Article.suppliers_art_no AS LeverandorID,
             Brands.brandLabel AS Merke,
             Article.articleName AS Navn,
-            CAST(StockAdjustment.adjustmentQty AS INT) AS Antall_Importert,
-            CAST (stockQty AS INT) AS Antall_Lager,
-            articleStock.StorageShelf AS Lager_plass
-
+            Article.suppliers_art_no AS Leverandor,
+            stockQty,
+            articleStock.StorageShelf AS Lager,
+            CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 103) AS Siste_Importdato
         FROM
-            Article
-            INNER JOIN articleStock ON Article.articleId = articleStock.articleId
-            INNER JOIN Brands ON Article.brandId = Brands.brandId
-            INNER JOIN StockAdjustment ON Article.articleId = StockAdjustment.articleId
-
+            ((Article
+            INNER JOIN articleStock ON Article.articleId = articleStock.articleId)
+            INNER JOIN Brands ON Article.brandId = Brands.brandId)
         WHERE
-            Article.articleId =(?) AND adjustmentCode ='41' AND stockAdjustmenId = (?)
+        	DATEPART(WEEKDAY, articleStock.lastSold) >=  DATEPART(WEEKDAY, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(WEEK, articleStock.lastSold) >=  DATEPART(WEEK, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(YEAR, articleStock.lastSold) >=  DATEPART(YEAR, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
+        	ArticleStatus = '0' AND Article.articleName NOT LIKE '[.]%' AND stockQty<='0' AND
+        	[articleName] NOT LIKE '%REPOSE DESIGNFOREVIG%' AND
+        	[articleName] NOT LIKE 'Retain 24 gavekort%' AND
+        	[articleName] NOT LIKE 'Diverse Vinding%' AND
+        	[articleName] NOT LIKE 'Diverse Glass%' AND
+        	[articleName] NOT LIKE 'MARIMEKKO LUNSJSERVIETTER%' AND
+        	[articleName] NOT LIKE 'Diverse SERVISE%' AND
+        	[articleName] NOT LIKE 'IHR LUNSJSERVIETTER%'
+        ORDER BY
+        	brandLabel
         '''
-        result = self.cursor.execute(fetchList).fetchall()
-        data = []
 
-        for article in result:
-            for importInfo in self.cursor.execute(fethInfo, article[0], article[1]).fetchall():
-                data.append(importInfo)
+        soldout['today'] = self.cursor.execute(query, self.yesterday,self.yesterday,self.yesterday).fetchall()
 
-        title = [
-        'Lev.ID','Merke','Navn',
-        'Importert','Lager','Plass'
-        ]
-
-        data.insert(0,title)
-        return data
+        return soldout
