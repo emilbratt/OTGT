@@ -52,7 +52,7 @@ class connect:
             'SELECT CONVERT(VARCHAR(20),CURRENT_TIMESTAMP,20)').fetchone()[0]
         self.time = self.cursor.execute(
             'SELECT CONVERT(VARCHAR(16),GETDATE(),20)').fetchone()[0]
-        self.yesterday = -4 # subtract 1 day from todays date
+        self.yesterday = -1 # subtract 1 day from todays date
         self.days = [-1,-8,-15] # getting from last day, same weekday the week before and the week before that
 
     def close(self):
@@ -157,9 +157,9 @@ class connect:
             INNER JOIN articleStock ON Article.articleId = articleStock.articleId)
             INNER JOIN Brands ON Article.brandId = Brands.brandId)
         WHERE
-        	DATEPART(WEEKDAY, articleStock.lastSold) >=  DATEPART(WEEKDAY, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
-        	DATEPART(WEEK, articleStock.lastSold) >=  DATEPART(WEEK, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
-        	DATEPART(YEAR, articleStock.lastSold) >=  DATEPART(YEAR, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(WEEKDAY, articleStock.lastSold) =  DATEPART(WEEKDAY, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(WEEK, articleStock.lastSold) =  DATEPART(WEEK, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(YEAR, articleStock.lastSold) =  DATEPART(YEAR, DATEADD(day, (?), CURRENT_TIMESTAMP)) AND
         	ArticleStatus = '0' AND Article.articleName NOT LIKE '[.]%' AND stockQty<='0' AND
         	[articleName] NOT LIKE '%REPOSE DESIGNFOREVIG%' AND
         	[articleName] NOT LIKE 'Retain 24 gavekort%' AND

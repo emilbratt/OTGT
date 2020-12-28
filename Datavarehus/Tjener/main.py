@@ -40,6 +40,8 @@ def fetchData():
     data['import'] = c.imports()
     data['soldout'] = c.soldout()
     c.close()
+    print(data['sales'])
+    print(data['import'])
     print(data['soldout'])
 
 
