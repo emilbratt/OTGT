@@ -21,10 +21,19 @@ def humanYYYYMMDD(YYYYMMDD):
     return f'{day}-{month}-{year}'
 
 
-class connect:
+
+def transferDatawarehouse(records):
+    '''
+        this function sends the results from the queries
+        and sends the data to the data-warehouse
+    '''
+    pass
+
+
+class Getrecords:
     def __init__(self):
         from credentials import loadCredentials
-        credentials = loadCredentials()
+        credentials = loadCredentials('get')
         driver = loadDriver()
 
         if 'windows' in driver:
@@ -64,12 +73,9 @@ class connect:
         self.time = self.cursor.execute(
             'SELECT CONVERT(VARCHAR(16),GETDATE(),20)').fetchone()[0][11:16]
 
-        self.weekdayYesterday = self.cursor.execute('''
-            SET
-                LANGUAGE NORWEGIAN
-            SELECT
-                DATENAME(WEEKDAY, DATEADD(DAY, (?), CURRENT_TIMESTAMP))
-            ''',self.yesterday).fetchone()[0]
+        self.weekdayYesterday = self.cursor.execute(
+            'SELECT DATENAME(WEEKDAY, DATEADD(DAY, (?), CURRENT_TIMESTAMP))'
+            ,self.yesterday).fetchone()[0]
 
         self.yesterdayYYYMMDD = self.cursor.execute(
             'SELECT CONVERT(VARCHAR(10),DATEADD(DAY, -1,CURRENT_TIMESTAMP),112)'
@@ -78,7 +84,6 @@ class connect:
         self.weekNumYesterday = self.cursor.execute('''
             SELECT DATENAME(WEEK, DATEADD(DAY, -1, CURRENT_TIMESTAMP))
             ''').fetchone()[0]
-
 
         self.dateHuman = humanYYYYMMDD(self.YYYYMMDD)
         self.dateYesterdayHuman = humanYYYYMMDD(self.yesterdayYYYMMDD)
@@ -92,13 +97,14 @@ class connect:
     def fetchTime(self):
         data = {}
         data['today'] = {}
+        data['yesterday'] = {}
+
+        data['today']['time'] = self.time
+        data['today']['timestamp'] = self.timestamp
         data['today']['YYYYMMDD'] = self.YYYYMMDD
         data['today']['weekNum'] = self.weekNum
-        data['today']['timestamp'] = self.timestamp
         data['today']['weekday'] = self.weekday
-        data['today']['time'] = self.time
         data['today']['human'] = self.dateHuman
-        data['yesterday'] = {}
         data['yesterday']['YYYYMMDD'] = self.yesterdayYYYMMDD
         data['yesterday']['weekNum'] = self.weekNumYesterday
         data['yesterday']['weekday'] = self.weekdayYesterday
@@ -128,6 +134,7 @@ class connect:
         for article in articleList:
             for importInfo in self.cursor.execute('''
                 SELECT
+                    Article.articleId,
                     Brands.brandLabel AS Merke,
                     Article.articleName AS Navn,
                     CAST(StockAdjustment.adjustmentQty AS INT) AS Antall_Importert,
@@ -146,16 +153,6 @@ class connect:
                 ''', article[0], article[1]).fetchall():
                 data.append(importInfo)
 
-        colName = [
-        'Merke','Navn',
-        'Importert','Antall Lager','Lagerplass','Lev.ID'
-        ]
-
-
-        data.insert(0,colName)
-        data.insert(0,['Vareimport',self.weekdayYesterday.title() +' Uke-' + self.weekNumYesterday,self.dateYesterdayHuman])
-        if len(data) < 3:
-            data[1] = ['Ingen Importerte Varer I Dag']
         return data
 
 
@@ -163,11 +160,14 @@ class connect:
 
     def turnoverYesterday(self):
         data = []
-        result = self.cursor.execute('''
+        total = self.cursor.execute('''
             SET
                 LANGUAGE NORWEGIAN
             SELECT
-                REPLACE(CAST(SUM(Brto_Salg_Kr) AS DECIMAL(29,2)) ,'.',',')
+            	CASE
+            		WHEN SUM(Brto_Salg_Kr) IS NULL THEN 0
+            		ELSE SUM(Brto_Salg_Kr)
+            	END
             FROM
                 view_HIP_salesInfo_10
             WHERE
@@ -177,21 +177,51 @@ class connect:
                 isGiftCard ='0'
         ''',self.yesterday,self.yesterday,self.yesterday).fetchone()
 
+        data.append(total[0])
+        # return total
 
 
+        # data.append(total)
+        # data.insert(0,['Omsetning'])
+        # data.insert(0,[self.dateYesterdayHuman])
+        # data.insert(0,[self.weekdayYesterday.title() +' Uke-' + self.weekNumYesterday])
+        # if result[0] == None: # no record means no turnover
+        #     data[2] = ['Ingen Omsetning I Dag']
+        #     return data
+        # else: # get turnover from each work hour (will be added)
 
-        data.append(result)
-        data.insert(0,['Omsetning',self.weekdayYesterday.title() +' Uke-' + self.weekNumYesterday,self.dateYesterdayHuman])
-        if data[1][0] == None:
-            data[1] = ['Ingen Omsetning I Dag']
-        return data
+        # data.append(['Klokkeslett'])
+        # data = []
+        query = '''
+            SELECT
+            	CASE
+            		WHEN SUM(Brto_Salg_Kr) IS NULL THEN 0
+            		ELSE SUM(Brto_Salg_Kr)
+            	END
+            FROM
+                view_HIP_salesInfo_10
+            WHERE
+                DATEPART(HOUR, [salesdate]) = (?) AND
+                DATEPART(DAYOFYEAR, [salesdate]) = DATEPART(DAYOFYEAR, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+                DATEPART(YEAR, [salesdate]) = DATEPART(YEAR, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+                isGiftCard = '0'
 
+        '''
+        for hour in range(24):
+            hourly = self.cursor.execute(query,hour,self.yesterday,self.yesterday).fetchone()
+            # data.append(['Fra '+str(hour).rjust(2,'0')+' Til '+str(hour+1).rjust(2,'0'),result[0]])
+            data.append(hourly[0])
+
+        # print(data)
+        # exit()
+        return [data]
 
     def soldoutYesterdayy(self):
         data = []
 
         result = self.cursor.execute('''
         SELECT
+            Article.articleId,
             Brands.brandLabel AS Merke,
             Article.articleName AS Navn,
             CAST (stockQty AS INT) AS Antall_Lager,
@@ -221,14 +251,4 @@ class connect:
         for row in result:
             data.append(row)
 
-        colName = [
-        'Merke','Navn','Antall Lager',
-        'Lagerplass','Sist Importert','Lev. ID'
-        ]
-
-
-        data.insert(0,colName)
-        data.insert(0,['Utsolgte Varer',self.weekdayYesterday.title() +' Uke-' + self.weekNumYesterday,self.dateYesterdayHuman])
-        if len(data) < 3:
-            data[1] = ['Ingen Utsolgte Varer I Dag']
         return data
