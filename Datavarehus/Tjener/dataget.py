@@ -30,7 +30,7 @@ def transferDatawarehouse(records):
     pass
 
 
-class Getrecords:
+class Getconnect:
     def __init__(self):
         from credentials import loadCredentials
         credentials = loadCredentials('get')
@@ -157,6 +157,30 @@ class Getrecords:
 
 
 
+    def getArticles(self,val):
+        return self.cursor.execute('''
+        SELECT
+            articleId, brandId, articleName
+        FROM
+            Article
+        WHERE
+            articleId > (?)
+        ORDER BY
+            articleId
+        ''',val).fetchall()
+
+
+    def getBrands(self,val):
+        return self.cursor.execute('''
+        SELECT
+            brandId, brandLabel
+        FROM
+            Brands
+        WHERE
+            brandId > (?)
+        ORDER BY
+            brandId
+        ''', val).fetchall()
 
     def turnoverYesterday(self):
         data = []
@@ -165,8 +189,8 @@ class Getrecords:
                 LANGUAGE NORWEGIAN
             SELECT
             	CASE
-            		WHEN SUM(Brto_Salg_Kr) IS NULL THEN 0
-            		ELSE SUM(Brto_Salg_Kr)
+            		WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
+            		ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
             	END
             FROM
                 view_HIP_salesInfo_10
@@ -178,25 +202,12 @@ class Getrecords:
         ''',self.yesterday,self.yesterday,self.yesterday).fetchone()
 
         data.append(total[0])
-        # return total
 
-
-        # data.append(total)
-        # data.insert(0,['Omsetning'])
-        # data.insert(0,[self.dateYesterdayHuman])
-        # data.insert(0,[self.weekdayYesterday.title() +' Uke-' + self.weekNumYesterday])
-        # if result[0] == None: # no record means no turnover
-        #     data[2] = ['Ingen Omsetning I Dag']
-        #     return data
-        # else: # get turnover from each work hour (will be added)
-
-        # data.append(['Klokkeslett'])
-        # data = []
         query = '''
             SELECT
             	CASE
-            		WHEN SUM(Brto_Salg_Kr) IS NULL THEN 0
-            		ELSE SUM(Brto_Salg_Kr)
+            		WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
+            		ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
             	END
             FROM
                 view_HIP_salesInfo_10
@@ -207,13 +218,11 @@ class Getrecords:
                 isGiftCard = '0'
 
         '''
-        for hour in range(24):
+        for hour in range(24): # append each horus turnover for each hour of the day
             hourly = self.cursor.execute(query,hour,self.yesterday,self.yesterday).fetchone()
-            # data.append(['Fra '+str(hour).rjust(2,'0')+' Til '+str(hour+1).rjust(2,'0'),result[0]])
             data.append(hourly[0])
 
-        # print(data)
-        # exit()
+
         return [data]
 
     def soldoutYesterdayy(self):
@@ -252,3 +261,7 @@ class Getrecords:
             data.append(row)
 
         return data
+
+
+if __name__ == '__main__':
+    print('ok')
