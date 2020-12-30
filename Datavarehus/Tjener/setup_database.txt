@@ -105,7 +105,6 @@ Add user
 
 -> can read and access from everywhere..
 # CREATE USER 'readuser'@'%' IDENTIFIED BY 'password';
-# CREATE USER 'cipread'@'%' IDENTIFIED BY 'password';
 
 
 Granting access
