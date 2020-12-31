@@ -11,11 +11,6 @@ from writelog import Log
 
 # load credentials
 def loadCredentials(db):
-    mode = open('%s/mode.json'%
-    os.path.dirname(os.path.realpath(__file__)),
-    encoding='utf-8')
-    runMode = json.load(mode)
-    mode.close()
     try:
         json_file = open('%s/credentials.json'%
             os.path.dirname(os.path.realpath(__file__)),
@@ -42,10 +37,7 @@ def loadCredentials(db):
 
     for key in credentials[db]:
         if key == 'password':
-            if runMode['passwordhide'] == True:
-                continue
-            else:
-                Log(key.ljust(10) + credentials[db][key].ljust(16),'noprint')
+            continue
         else:
             Log(key.ljust(10) + credentials[db][key].ljust(16),'noprint')
 

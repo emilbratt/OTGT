@@ -218,10 +218,9 @@ class Getconnect:
                 isGiftCard = '0'
 
         '''
-        for hour in range(24): # append each horus turnover for each hour of the day
+        for hour in range(24): # append each hours turnover for each hour of the day
             hourly = self.cursor.execute(query,hour,self.yesterday,self.yesterday).fetchone()
             data.append(hourly[0])
-
 
         return [data]
 

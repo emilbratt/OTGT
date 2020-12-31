@@ -32,7 +32,7 @@ class Postconnect:
             Log('Could not connect to CIP on mariadb server', 'noprint')
             exit()
 
-        self.cursor = self.cnxn.cursor() # nb: auto commit is on by default
+        self.cursor = self.cnxn.cursor()
 
 
 
@@ -75,10 +75,11 @@ class Postconnect:
         else:
             return result[0]
 
+
     def brandsPost(self,records: tuple):
         self.cursor.executemany(insertTables['brands'],records)
         self.cnxn.commit()
-        input('updated brands')
+        Log('Updated table brands')
 
 
 
@@ -89,36 +90,39 @@ class Postconnect:
         '''
         self.cursor.executemany(insertTables['articles'],records)
         self.cnxn.commit()
-        input('updated articles')
+        Log('Updated table articles')
 
     def barcodesPost(self,records: list):
         pass
 
+
+
+
     def soldoutPost(self,records):
-
         self.cursor.executemany(insertTables['soldout'],records)
-        print('ok')
-
-
-
-
+        self.cnxn.commit()
+        Log('Updated table soldout')
 
 
     def importsPost(self,records: list):
-        pass
+        self.cursor.executemany(insertTables['imports'],records)
+        self.cnxn.commit()
+        Log('Updated table imports')
+
+
+    def turnover_hourlyPost(self,record: list):
+        self.cursor.execute(insertTables['turnover_hourly'],record)
+        self.cnxn.commit()
+        Log('Updated table turnover_hourly')
+
+
+    def turnover_dailyPost(self,record: list):
+        self.cursor.execute(insertTables['turnover_daily'],record)
+        self.cnxn.commit()
+        Log('Updated table turnover_daily')
+
 
     def storagePost(self,records: list):
-        pass
-
-    def turnover_dailyPost(self,records: list):
-        pass
-
-    def turnover_hourlyPost(self,records: list):
-
-        '''
-            update turnover_hourly and turnover_daily
-            find a way to split the total from the hourly...
-        '''
         pass
 
 

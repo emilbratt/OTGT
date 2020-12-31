@@ -2,10 +2,10 @@
 import os
 import sys
 import csv
-from dataget import *
-from datapost import *
-from datetime import datetime
 import json
+from dataget import Getconnect
+from datapost import Postconnect
+from datetime import datetime
 from writelog import Log
 
 '''
@@ -23,14 +23,6 @@ from writelog import Log
 # get timestamp and date
 timestamp = datetime.now()
 ymd = timestamp.strftime("%Y-%m-%d")
-
-# load mode
-mode = open('%s/mode.json'%
-os.path.dirname(os.path.realpath(__file__)),
-encoding='utf-8')
-runMode = json.load(mode)
-mode.close()
-
 
 
 # set working directory
@@ -54,6 +46,101 @@ for dir in dirs:
         os.makedirs(dirs[dir]+'/Maanedlig', exist_ok=True)
 
 
+
+def initialize():
+    # get highest id number for article id and brand id
+    c = Postconnect()
+    brand_idMax = c.brandsGetMax()
+    article_idMax = c.articlesGetMax()
+    c.close()
+
+    # fetch new records from retial
+    c = Getconnect()
+    brandsRes = []
+    for row in c.getBrands(brand_idMax):
+        brandsRes.append(tuple(row))
+    articlesRes = []
+    for row in c.getArticles(article_idMax):
+        articlesRes.append(tuple(row))
+    c.close()
+
+    # insert records into datawarehouse
+    c = Postconnect()
+    if brandsRes != []:
+        Log(f'Updating brands from brand_id: {brand_idMax}', 'noprint')
+        c.brandsPost(brandsRes)
+    if articlesRes != []:
+        Log(f'Updating articles from article_id: {article_idMax}', 'noprint')
+        c.articlesPost(articlesRes)
+    c.close()
+
+
+
+
+def getRecords():
+    c = Getconnect()
+    data['Tider'] = c.fetchTime()
+    data['Omsetning'] = {'Daglig':c.turnoverYesterday()}
+    data['Import'] = {'Daglig':c.importsYesterdayy()}
+    data['Utsolgt'] = {'Daglig':c.soldoutYesterdayy()}
+    c.close()
+
+
+
+def updateCIP():
+    # format dates for columns in data warehouse
+    dateInsert = []
+    dateInsert.append(int(data['Tider']['yesterday']['YYYYMMDD'][:4]))
+    dateInsert.append(int(data['Tider']['yesterday']['YYYYMMDD'][4:6]))
+    dateInsert.append(int(data['Tider']['yesterday']['YYYYMMDD'][6:8]))
+    dateInsert.append(int(data['Tider']['yesterday']['weekNum']))
+    dateInsert.append(data['Tider']['yesterday']['weekday'])
+    dateInsert.append(int(data['Tider']['yesterday']['YYYYMMDD']))
+    dateInsert.append(data['Tider']['yesterday']['human'])
+
+
+    def prepareRecords(row,category):
+        if category == 'Omsetning':
+            turnover = {}
+            # extract hourly values and add dates
+            turnover['timer'] = [v for v in row[1:]]
+            for value in dateInsert:
+                turnover['timer'].append(value)
+            # extract total value and dates
+            turnover['dag'] = [row[0]]
+            for value in dateInsert:
+                turnover['dag'].append(value)
+            return turnover
+
+        elif category == 'Utsolgt' or category == 'Import':
+            for value in dateInsert:
+                row.append(value)
+            return row
+        else:
+            return None
+
+
+    prepared = {}
+    for category in data:
+        if category != 'Tider':
+            for when in data[category]:
+                if when == 'Daglig':
+                    prepared[category] = [] # add category as key
+                    # prepare rows with additional data
+                    for row in data[category][when]:
+                        prepared[category].append(
+                            prepareRecords(
+                                list(row),category
+                            )
+                        )
+
+
+    c = Postconnect()
+    c.soldoutPost(prepared['Utsolgt'])
+    c.importsPost(prepared['Import'])
+    c.turnover_hourlyPost(prepared['Omsetning'][0]['timer'])
+    c.turnover_dailyPost(prepared['Omsetning'][0]['dag'])
+    c.close()
 
 def writeSpreadsheet():
     import openpyxl
@@ -157,109 +244,10 @@ def writeSpreadsheet():
 
 
 
-def initialize():
-    # get highest id number for article id and brand id
-    c = Postconnect()
-    brand_idMax = c.brandsGetMax()
-    article_idMax = c.articlesGetMax()
-    c.close()
-
-
-    # fetch new records from retial
-    c = Getconnect()
-
-    brandsRes = []
-    for row in c.getBrands(brand_idMax):
-        brandsRes.append(tuple(row))
-
-    articlesRes = []
-    for row in c.getArticles(article_idMax):
-        articlesRes.append(tuple(row))
-
-    c.close()
-
-
-    # insert records into datawarehouse
-    c = Postconnect()
-    if brandsRes != []:
-        Log(f'Updating brands from brand_id: {brand_idMax}', 'noprint')
-        c.brandsPost(brandsRes)
-    if articlesRes != []:
-        Log(f'Updating articles from article_id: {article_idMax}', 'noprint')
-        c.articlesPost(articlesRes)
-    c.close()
-
-
-def getRecords():
-    c = Getconnect()
-    data['Tider'] = c.fetchTime()
-    data['Omsetning'] = {'Daglig':c.turnoverYesterday()}
-    data['Import'] = {'Daglig':c.importsYesterdayy()}
-    data['Utsolgt'] = {'Daglig':c.soldoutYesterdayy()}
-
-
-    c.close()
-    exit()
-    ''' remmeber to uncomment below.. '''
-    # writeSpreadsheet(data)
 
 
 
 
-def updateCIP():
-    dateInsert = []
-    dateInsert.append(int(data['Tider']['yesterday']['YYYYMMDD'][:4]))
-    dateInsert.append(int(data['Tider']['yesterday']['YYYYMMDD'][4:6]))
-    dateInsert.append(int(data['Tider']['yesterday']['YYYYMMDD'][6:8]))
-    dateInsert.append(int(data['Tider']['yesterday']['weekNum']))
-    dateInsert.append(data['Tider']['yesterday']['weekday'])
-    dateInsert.append(int(data['Tider']['yesterday']['YYYYMMDD']))
-    dateInsert.append(data['Tider']['yesterday']['human'])
-
-
-    def prepareRecords(row,category):
-        if category == 'Omsetning':
-            turnover = {}
-
-            # extract hourly values and add dates to turnover_hourly
-            turnover['turnover_hourly'] = [v for v in row[1:-1]]
-            for value in dateInsert:
-                turnover['turnover_hourly'].append(value)
-
-            # extract total value and dates to turnover_daily
-            turnover['turnover_daily'] = [row[0]]
-            for value in dateInsert:
-                turnover['turnover_daily'].append(value)
-
-            return turnover
-
-        elif category == 'Utsolgt' or category == 'Import':
-            for value in dateInsert:
-                row.append(value)
-            return row
-
-        else:
-            return None
-
-
-    prepared = {}
-    for category in data:
-        if category != 'Tider':
-            for when in data[category]:
-                if when == 'Daglig':
-                    prepared[category] = [] # add category as key
-                    # prepare rows with additional data
-                    for row in data[category][when]:
-                        prepared[category].append(
-                            prepareRecords(
-                                list(row),category
-                            )
-                        )
-
-
-    c = Postconnect()
-    c.soldoutPost(prepared['Utsolgt'])
-    c.close()
 
 
 
@@ -267,8 +255,8 @@ if __name__ == '__main__':
 
 
     data = {} # data fetched during execution is appended here
-    initialize()
+    initialize() # insert id_records in data warehouse if new data from store
 
-    getRecords()
-    updateCIP()
-    # writeSpreadsheet()
+    getRecords() # populate the data dict with new data from the store
+    updateCIP() # send the newly populated data and insert into data warehouse
+    writeSpreadsheet() # export spreadsheets from the data
