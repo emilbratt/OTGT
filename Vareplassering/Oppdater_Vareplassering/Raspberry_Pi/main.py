@@ -20,48 +20,48 @@ import json
 from inventory import Inventory
 from logging import Log
 
-    # optionally add flags
-    '''
-        run with "./main.py <name>"  (where name is the mode/flag)
-        you can add more flags after each other ./main.py <flag1> <flag2> etc..
-        
-        mode
-            will not run the program but instead check what
-            is enabled/disabled in debug.json and print on screen
+# optionally add flags
+'''
+    run with "./main.py <name>"  (where name is the mode/flag)
+    you can add more flags after each other ./main.py <flag1> <flag2> etc..
 
-            when running on pi in normal enviroment, set all to True
-            when debugging set needed values to false
+    mode
+        will not run the program but instead check what
+        is enabled/disabled in debug.json and print on screen
 
-            how: by adding one or more flags as shown under
-            example: switch shutdown and sql -> python3 main.py shutdown sql
+        when running on pi in normal enviroment, set all to True
+        when debugging set needed values to false
 
-        passwordhide
-            enable/disable passwrod printing on screen
+        how: by adding one or more flags as shown under
+        example: switch shutdown and sql -> python3 main.py shutdown sql
 
-        shutdown
-            enable/disable shutdown on error
+    passwordhide
+        enable/disable passwrod printing on screen
 
-        sql
-            enables/disables sql updating
+    shutdown
+        enable/disable shutdown on error
 
-        led
-            enables/disables the gpio led
+    sql
+        enables/disables sql updating
 
-        credentials
-            add new credentials settings
+    led
+        enables/disables the gpio led
 
-        wipesessions
-            removes all csv files in ./inventory/sessions
+    credentials
+        add new credentials settings
 
-        build
-            builds a json file with all barcodes and shelves from session files
+    wipesessions
+        removes all csv files in ./inventory/sessions
 
-        live
-            set live mode (keep running after update)
+    build
+        builds a json file with all barcodes and shelves from session files
 
-        showcred
-            enable/disable displaying server, port, database and user on screen
-    '''
+    live
+        set live mode (keep running after update)
+
+    showcred
+        enable/disable displaying server, port, database and user on screen
+'''
 
 
 absPath = os.path.dirname(os.path.realpath(__file__))

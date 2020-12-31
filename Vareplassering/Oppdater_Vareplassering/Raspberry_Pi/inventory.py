@@ -43,16 +43,16 @@ class Inventory:
 
         self.getTime = datetime.now()
         self.intDate = self.getTime.strftime("%Y%m%d")
-        self.timestamp = self.getTime.strftime(
-        "%Y-%m-%d_%H:%M:%S.%f")[:-4]
+        # self.timestamp = self.getTime.strftime(
+        #     "%Y-%m-%d_%H:%M:%S.%f")[:-4]
 
         self.file = os.path.join(
         os.path.dirname(os.path.realpath(
-        __file__)), 'inventory')
+            __file__)), 'inventory')
 
         self.sessionPath = os.path.join(
         os.path.dirname(os.path.realpath(
-        __file__)), 'inventory/sessions', self.intDate)
+            __file__)), 'inventory/sessions', self.intDate)
 
         # if no session file, touch to create empty
         self.sessionFile = os.path.join(self.sessionPath+'.csv')
@@ -96,7 +96,9 @@ class Inventory:
         # print(f'\tItem {item} Shelf {shelf}')
         with open(r'%s.csv' % self.sessionPath,'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow([item,shelf,self.timestamp])
+            writer.writerow([
+            item,shelf,datetime.now().strftime("%Y-%m-%d_%H:%M:%S.%f")[:-4]
+            ])
 
     # read from session file (csv) and update all values with sql
     def sessionExecuteUpdate(self):
