@@ -62,14 +62,11 @@ FOREIGN KEY (article_id) REFERENCES articles(article_id)
 ''',
 'placement':'''
 CREATE TABLE IF NOT EXISTS placement(
-barcode     VARCHAR(255)    NOT NULL,
-location    char(10)        NOT NULL,
-year        INT             NOT NULL,
-month       INT             NOT NULL,
-date        INT             NOT NULL,
-timestamp   CHAR(30)        NOT NULL,
-yyyymmdd    INT             NOT NULL,
-humandate   CHAR(10)        NOT NULL
+article_id      INT UNSIGNED    NOT NULL,
+stock_location  char(10)        NOT NULL,
+timestamp       CHAR(30)        NOT NULL,
+yyyymmdd        INT             NOT NULL,
+FOREIGN KEY (article_id) REFERENCES articles(article_id)
 );
 ''',
 'turnover_hourly':'''
