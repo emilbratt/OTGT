@@ -106,12 +106,20 @@ Add user
 -> can read and access from everywhere..
 # CREATE USER 'readuser'@'%' IDENTIFIED BY 'password';
 
+-> can read, update and insert from everywhere..
+# CREATE USER 'postuser'@'%' IDENTIFIED BY 'password';
+
 
 Granting access
-on all on all databases
+
 # GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost';
-read on DBNAME
+
 # GRANT SELECT ON DBNAME.* TO 'readuser'@'%';
+
+# GRANT SELECT ON DBNAME.* TO 'postuser'@'%';
+# GRANT UPDATE ON DBNAME.* TO 'postuser'@'%';
+# GRANT INSERT ON DBNAME.* TO 'postuser'@'%';
+
 reload for changes to take effect
 # FLUSH PRIVILEGES;
 
@@ -120,8 +128,14 @@ Delete user
 # DROP USER 'readuser'@'%';
 
 
+Allow remote connections
+$ sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+Uncomment
+bind-address            = 127.0.0.1
+To
+# bind-address            = 127.0.0.1
 
-
+$ sudo systemctl restart mariadb
 
 
 Put autoreport generator app in your users home folder
