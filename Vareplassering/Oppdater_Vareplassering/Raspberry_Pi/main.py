@@ -18,7 +18,7 @@ import json
 
 # local modules
 from inventory import Inventory
-from logging import Log
+from writelog import Log
 
 # optionally add flags
 '''

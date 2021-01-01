@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 import json
 # local modules
-from logging import Log
+from writelog import Log
 from credentials import loadCredentials
 '''
     notes:
@@ -69,8 +69,10 @@ class Inventory:
             from subprocess import call
 
 
-        # load credentials for sql server
-        self.sqlCredentials = loadCredentials()
+        # load credentials for get server
+        self.credentialsGet = loadCredentials('get')
+        # load credentials for post server
+        self.credentialsPost = loadCredentials('post')
 
         # read, add, save session csv
         self.sessions = [file for file
@@ -107,85 +109,176 @@ class Inventory:
             and run queries to update the sql server
         '''
 
-
+        # if sql is disabled, pyodbc and mariadb will not be imported
         if self.debug['sql'] == True:
             try:
-                import pyodbc # if sql is disabled, pyodbc will not be imported
-
+                 import pyodbc
             except ModuleNotFoundError:
+                Log('pyodbc module was not found', 1)
                 if self.debug['shutdown'] == True:
                     from subprocess import call
                 try:
-                    call("echo", shell=True)
-                    Log('pyodbc module was not found, shutting down', 1)
+                    call("echo", shell=True) # will trigger exception of error
                     sleep(2)
                     call("sudo nohup shutdown -h now", shell=True)
                 except NameError:
-                    Log('pyodbc module was not found, exiting', 1)
                     exit()
+            try:
+                 import mariadb
+            except ModuleNotFoundError:
+                Log('mariadb module was not found', 1)
+                if self.debug['shutdown'] == True:
+                    from subprocess import call
+                try:
+                    call("echo", shell=True) # will trigger exception of error
+                    sleep(2)
+                    call("sudo nohup shutdown -h now", shell=True)
+                except NameError:
+                    return None
 
 
         Log('executing sessionExecuteUpdate')
         if self.debug['sql'] == False:
-            Log('sql is not activated, skipping update and exiting', 2)
+            Log('sql is not activated, skipping update', 2)
             return None
 
+
+        # connect to store
         try:
-            cnxn = pyodbc.connect(
+            cnxnGet = pyodbc.connect(
             'DRIVER={FreeTDS};SERVER=%s;PORT=%s;DATABASE=%s;UID=%s;PWD=%s' %(
-                self.sqlCredentials['server'],
-                self.sqlCredentials['port'],
-                self.sqlCredentials['database'],
-                self.sqlCredentials['user'],
-                self.sqlCredentials['password']
+                self.credentialsGet['server'],
+                self.credentialsGet['port'],
+                self.credentialsGet['database'],
+                self.credentialsGet['user'],
+                self.credentialsGet['password']
                 )
             )
-            Log('sql database connected succesfully')
-            cursor = cnxn.cursor()
-
-            queryUpdateShelf = '''
-            UPDATE articleStock
-            SET StorageShelf =(?)
-            FROM articleStock
-            JOIN ArticleEAN ON articleStock.articleId = ArticleEAN.articleId
-            WHERE ArticleEAN.eanCode=(?)'''
-
-            Log('reading values from ' + self.intDate + '.csv')
-            with open('%s.csv' % self.sessionPath,'r') as csvfile:
-                reader = csv.reader(csvfile)
-                Log('updating database '
-                + self.sqlCredentials['database'] + ' at '
-                + self.sqlCredentials['server'])
-                for row in reader:
-                    print('Updating')
-                    print(row[0]) # barcode
-                    print(row[1]) # shelf value
-
-                    cursor.execute(queryUpdateShelf, row[1], row[0])
-                    cnxn.commit()
-
-                    sleep(0.4)
-            cursor.close()
-            cnxn.close()
-
-            if self.debug['live'] == True:
-                Log('Finish updating, live mode = True -> keep running', 5)
-                return None
-
-            # power off
-            try:
-                if self.debug['shutdown'] == True:
-                    from subprocess import call
-                call("echo", shell=True)
-                Log('powering off', 5)
-                sleep(2)
-                call("sudo nohup shutdown -h now", shell=True)
-            except NameError:
-                Log('exiting', 5)
-                exit()
+            Log('Get database connected succesfully')
+            cursorGet = cnxnGet.cursor()
         except pyodbc.OperationalError:
-            Log('sql database connection failed with pyodbc.OperationalError', 1)
+            Log('Get database connection failed with pyodbc.OperationalError', 1)
             return None
+
+        # connect to data warehouse
+        try:
+            cnxnPost = mariadb.connect(
+                user=self.credentialsPost['user'],
+                password=self.credentialsPost['password'],
+                host=self.credentialsPost['server'],
+                port=int(self.credentialsPost['port']),
+                database=self.credentialsPost['database']
+            )
+            Log('Post database connection succesfully')
+            cursorPost = cnxnPost.cursor()
+        except mariadb.Error:
+            Log('Post database connection failed with mariadb.Error', 1)
+            return None
+
+
+        articleIdGet = '''
+        SELECT
+            Article.articleId
+        FROM
+            ArticleEAN
+        INNER JOIN
+            Article
+        ON
+            ArticleEAN.articleId = Article.articleId
+        WHERE
+            ArticleEAN.eanCode = (?)
+
+        '''
+
+        updateShelfGet = '''
+        UPDATE
+            articleStock
+        SET
+            StorageShelf =(?)
+        FROM
+            articleStock
+        JOIN
+            ArticleEAN
+        ON
+            articleStock.articleId = ArticleEAN.articleId
+        WHERE
+            ArticleEAN.eanCode=(?)'''
+
+
+        deDuplicate = []
+        preparePost = []
+        Log('reading values from ' + self.intDate + '.csv')
+        with open('%s.csv' % self.sessionPath,'r') as csvfile:
+            reader = csv.reader(csvfile)
+            Log('updating database '
+            + self.credentialsGet['database'] + ' at '
+            + self.credentialsGet['server'])
+            for row in reader:
+                if [row[0],row[1]] not in deDuplicate:
+                    deDuplicate.append([row[0],row[1]])
+
+                    # append rows with timestamp and date for data warehouse
+                    add = cursorGet.execute(articleIdGet, row[0]).fetchone()
+                    prep = []
+                    if add != None:
+                        prep.append(add[0])
+                        prep.append(row[1])
+                        prep.append(row[2])
+                        prep.append(int(self.intDate))
+                        preparePost.append(prep)
+
+                    # append to store
+                    print(f'Updating shelf for {row[0]} to {row[1]}')
+                    cursorGet.execute(updateShelfGet, row[1], row[0])
+                    cnxnGet.commit()
+                    sleep(0.2)
+
+
+        cursorGet.close()
+        cnxnGet.close()
+
+        # update data warehouse
+
+        # get list to compare
+        selectShelfPost = '''
+        SELECT *
+        FROM `placement`
+        WHERE yyyymmdd = (?);
+        '''
+        selectShelf = cursorPost.execute(selectShelfPost,(self.intDate,))
+        result = cursorPost.fetchall()
+        for row in result:
+            if list(row) in preparePost:
+                preparePost.remove(list(row))
+
+        # after comparison, insert new distinct values
+        insertShelfPost = '''
+        INSERT INTO `placement`
+            (article_id, stock_location, timestamp,yyyymmdd)
+        VALUES
+            (?, ?, ?, ?);
+        '''
+        if preparePost != []:
+            cursorPost.executemany(insertShelfPost,preparePost)
+            cnxnPost.commit()
+        cnxnPost.close()
+
+        if self.debug['live'] == True:
+            Log('Finish updating, live mode = True -> keep running', 5)
+            return None
+
+        # power off if enabled or exit if not
+        try:
+            if self.debug['shutdown'] == True:
+                from subprocess import call
+            call("echo", shell=True)
+            Log('powering off', 5)
+            sleep(2)
+            call("sudo nohup shutdown -h now", shell=True)
+        except NameError:
+            Log('exiting', 5)
+            exit()
+
 
 
 

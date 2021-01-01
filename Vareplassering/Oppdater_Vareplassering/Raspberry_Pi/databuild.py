@@ -2,7 +2,7 @@ import json
 import csv
 import os
 from time import sleep
-from logging import Log
+from writelog import Log
 
 class Build:
     def __init__(self):

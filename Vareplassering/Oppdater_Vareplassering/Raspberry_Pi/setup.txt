@@ -22,6 +22,7 @@ $ passwd
 
 
 5. Install dependencies for script
+For MSSQL
 $ sudo apt install unixodbc -y
 $ sudo apt install unixodbc-dev -y
 $ sudo apt install freetds-dev -y
@@ -29,8 +30,13 @@ $ sudo apt install tdsodbc -y
 $ sudo apt install freetds-bin -y
 $ sudo apt install python3-pip -y
 $ pip3 install --user pyodbc
+For MariaDB
+$ sudo apt-get install libmariadb3 libmariadb-dev -y
+$ pip3 install --user mariadb
+For LED
 $ pip3 install --user gpiozero
 $ pip3 install --user RPi.GPIO
+
 
 
 6. Add at bottom of FreeTDS conf file:
