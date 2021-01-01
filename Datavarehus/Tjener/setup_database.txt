@@ -140,7 +140,7 @@ $ sudo systemctl restart mariadb
 
 Put autoreport generator app in your users home folder
 $ make a backup folder for rsync
-$ mkdir /home/user/Output_bu
+$ mkdir ~/autoreport
 
 Crontab
 $ crontab -e
@@ -153,7 +153,7 @@ $ crontab -e
 5 1 * * 1 /usr/bin/python3 convertWeeklyCSVtoXLSX.py > convertWeekly.log 2>&1
 
 # backup reports
-0 2 * * * rsync -auv /home/user/Output/ /home/user/Output_bu/
+0 2 * * * rsync -auv ~/Output/ ~/Output_bu/
 
 
 
@@ -162,7 +162,7 @@ $ ssh-keygen -b 4096
     --press enter all way thorugh
 $ ssh-copy-id username@host/ip
 crontab -e
-0 3 * * * rsync -au  --bwlimit=2000 --log-file=/home/user/rsync_Output.log -e "ssh -p 22" "/home/user/Output"   user@host/ip:/home/user/dir/
+0 3 * * * rsync -au  --bwlimit=2000 --log-file=~/rsync_Output.log -e "ssh -p 22" "~/Output"   user@host:/home/user/dir/
 ssh user@user@host/ip
 mkdir salesreport
 exit
@@ -184,7 +184,7 @@ After=multi-user.target
 [Service]
 User=user
 Group=user
-WorkingDirectory=/home/pi/
+WorkingDirectory=/home/user/
 Type=simple
 ExecStart=/usr/bin/python3 /home/user/nameofscript.py
 KillMode=process

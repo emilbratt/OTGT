@@ -72,7 +72,7 @@ def createCredentials():
         sleep(1.1)
 
 
-    print('\t1. For Post\n\t2. For Get')
+    print('\t1. For Post\n\t2. For Get\n\t3. For Cloud')
     db = input()
 
     if db == '1':
@@ -81,19 +81,32 @@ def createCredentials():
     elif db == '2':
         db = 'get'
         credentials['get'] = {}
+    elif db == '3':
+        db = 'cloud'
+        credentials['cloud'] = {}
     else:
         exit()
 
 
-    attributeNames = ['server','port','database','user','password']
+    databaseAttributes = ['server','port','database','user','password']
+    cloudAttributes = ['server','user','password']
     inputAccept = False
-    while inputAccept == False:
-        for i in attributeNames:
-            value = input(i+': ')
-            credentials[db][i] = value
-        isOK = input('is this correct?\n1. yes\n2.no\ntype: ')
-        if isOK == '1':
-            inputAccept = True
+    if db == 'post' or db == 'get':
+        while inputAccept == False:
+            for i in databaseAttributes:
+                value = input(i+': ')
+                credentials[db][i] = value
+            isOK = input('is this correct?\n1. yes\n2.no\ntype: ')
+            if isOK == '1':
+                inputAccept = True
+    if db == 'cloud':
+        while inputAccept == False:
+            for i in cloudAttributes:
+                value = input(i+': ')
+                credentials[db][i] = value
+            isOK = input('is this correct?\n1. yes\n2.no\ntype: ')
+            if isOK == '1':
+                inputAccept = True
 
     json_file = open('%s/credentials.json'%
         os.path.dirname(os.path.realpath(__file__)),

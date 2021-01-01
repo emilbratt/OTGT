@@ -4,9 +4,10 @@ from writelog import Log
 
 columnNames = {
 'clockHoursWeekly':[
-'Ukedag','Totalt','00-01','01-02','02-03','03-04','04-05','05-06','06-07','07-08',
-'08-09','09-10','10-11','11-12','12-13','13-14','14-15','15-16','16-17',
-'17-18','18-19','19-20','20-21','21-22','22-23','23-24'
+'Ukedag','Totalt','00-01','01-02','02-03','03-04','04-05',
+'05-06','06-07','07-08','08-09','09-10','10-11','11-12',
+'12-13','13-14','14-15','15-16','16-17','17-18','18-19',
+'19-20','20-21','21-22','22-23','23-24'
 ],
 'clockHoursMonthly':[
 'Dato','Totalt','00-01','01-02','02-03','03-04','04-05','05-06','06-07','07-08',
@@ -56,23 +57,36 @@ class Getconnect:
         credentials = loadCredentials('get')
         driver = loadDriver()
 
+        # try:
         if 'windows' in driver:
-            Log('Platform: Windows','noprint')
-            self.cnxn = pyodbc.connect('DRIVER={%s};SERVER=%s;DATABASE=%s;UID=%s;PWD=%s' % (
-                driver['windows'], credentials['server'],
-                credentials['database'], credentials['user'],
-                credentials['password']
+            try:
+                Log('Getconnect: Platform: Windows')
+                self.cnxn = pyodbc.connect('DRIVER={%s};SERVER=%s;DATABASE=%s;UID=%s;PWD=%s' % (
+                    driver['windows'], credentials['server'],
+                    credentials['database'], credentials['user'],
+                    credentials['password']
+                    )
                 )
-            )
+                Log(f'Getconnect: Connected to {credentials["database"]}')
+            except pyodbc.ProgrammingError:
+                Log(f'Getconnect: Could not connect to {credentials["database"]}')
+                exit()
         elif 'linux' in driver:
-            Log('Platform: Linux','noprint')
-            self.cnxn = pyodbc.connect(
-                'DRIVER={FreeTDS};SERVER=%s;PORT=%s;DATABASE=%s;UID=%s;PWD=%s' % (
-                credentials['server'], credentials['port'],
-                credentials['database'], credentials['user'],
-                credentials['password']
+            Log('Getconnect: Platform: Linux')
+            try:
+                self.cnxn = pyodbc.connect(
+                    'DRIVER={FreeTDS};SERVER=%s;PORT=%s;DATABASE=%s;UID=%s;PWD=%s' % (
+                    credentials['server'], credentials['port'],
+                    credentials['database'], credentials['user'],
+                    credentials['password']
+                    )
                 )
-            )
+                Log(f'Getconnect: Connected to {credentials["database"]}')
+            except pyodbc.ProgrammingError:
+                Log(f'Getconnect: Could not connect to {credentials["database"]}')
+                exit()
+
+        Log(f'Getconnect: Connected to {credentials["database"]}')
 
         self.timeGet = 'SELECT CONVERT(VARCHAR(16),GETDATE(),20)'
         self.timestampGet = 'SELECT CONVERT(VARCHAR(20),CURRENT_TIMESTAMP,20)'
@@ -83,7 +97,7 @@ class Getconnect:
         self.monthGet = '''SELECT DATENAME(MONTH, DATEADD(DAY, (?), CURRENT_TIMESTAMP))'''
 
         self.yesterday = -1 # subtract 1 day from todays date
-        self.days = [-1,-8,-15] # getting from last day, same weekday the week before and the week before that
+        # self.days = [-1,-8,-15] # getting from last day, same weekday the week before and the week before that
 
         self.cursor = self.cnxn.cursor()
 
@@ -111,11 +125,8 @@ class Getconnect:
         self.monthYesterday = self.cursor.execute(
             self.monthGet,self.yesterday).fetchone()[0]
 
-
         self.dateHuman = humanYYYYMMDD(self.YYYYMMDD)
         self.dateYesterdayHuman = humanYYYYMMDD(self.yesterdayYYYMMDD)
-
-        Log('Getconnect: Initialize complete')
 
 
     def close(self):
@@ -137,31 +148,15 @@ class Getconnect:
         data['yesterday']['weekNum'] = self.weekNumYesterday
         data['yesterday']['weekday'] = self.weekdayYesterday
         data['yesterday']['month'] = self.monthYesterday
-        # data['yesterday']['YYYYMM'] = self.yesterdayYYYMMDD[:6]
         data['yesterday']['human'] = self.dateYesterdayHuman
         data['yesterday']['YYYY-weekNum'] = self.yesterdayYYYMMDD[
             :4]+'-'+self.weekNumYesterday
+        data['weekly'] = self.cursor.execute(
+            'SELECT DATEPART(WEEKDAY, CURRENT_TIMESTAMP)').fetchone()[0] == 1
+        data['monthly'] = self.cursor.execute(
+            'SELECT DATEPART(DAY, CURRENT_TIMESTAMP)').fetchone()[0] == 1
         Log('Getconnect: Fetching from fetchTime')
-
         return data
-
-
-
-
-
-    def getArticles(self,val):
-        result = self.cursor.execute('''
-        SELECT
-            articleId, brandId, articleName
-        FROM
-            Article
-        WHERE
-            articleId > (?)
-        ORDER BY
-            articleId
-        ''',val).fetchall()
-        Log('Getconnect: Fetching from getArticles')
-        return result
 
 
     def getBrands(self,val):
@@ -176,6 +171,21 @@ class Getconnect:
             brandId
         ''', val).fetchall()
         Log('Getconnect: Fetching from getBrands')
+        return result
+
+
+    def getArticles(self,val):
+        result = self.cursor.execute('''
+        SELECT
+            articleId, brandId, articleName
+        FROM
+            Article
+        WHERE
+            articleId > (?)
+        ORDER BY
+            articleId
+        ''',val).fetchall()
+        Log('Getconnect: Fetching from getArticles')
         return result
 
 
@@ -489,7 +499,6 @@ class Getconnect:
         return data
 
 
-
     def importsDaily(self):
 
         articleList = self.cursor.execute('''
@@ -518,21 +527,17 @@ class Getconnect:
                     CAST (stockQty AS INT) AS Antall_Lager,
                     articleStock.StorageShelf AS Lager_plass,
                     Article.suppliers_art_no AS LeverandorID
-
                 FROM
                     Article
                     INNER JOIN articleStock ON Article.articleId = articleStock.articleId
                     INNER JOIN Brands ON Article.brandId = Brands.brandId
                     INNER JOIN StockAdjustment ON Article.articleId = StockAdjustment.articleId
-
                 WHERE
                     Article.articleId =(?) AND adjustmentCode ='41' AND stockAdjustmenId = (?)
                 ''', article[0], article[1]).fetchall():
                 data.append(importInfo)
         Log('Getconnect: Fetching from importsDaily')
         return data
-
-
 
 
     def importsWeekly(self):
@@ -569,13 +574,11 @@ class Getconnect:
                     CAST (stockQty AS INT) AS Antall_Lager,
                     articleStock.StorageShelf AS Lager_plass,
                     Article.suppliers_art_no AS LeverandorID
-
                 FROM
                     Article
                     INNER JOIN articleStock ON Article.articleId = articleStock.articleId
                     INNER JOIN Brands ON Article.brandId = Brands.brandId
                     INNER JOIN StockAdjustment ON Article.articleId = StockAdjustment.articleId
-
                 WHERE
                     Article.articleId =(?) AND adjustmentCode ='41' AND stockAdjustmenId = (?)
                 ''', article[0], article[1]).fetchall():
@@ -617,13 +620,11 @@ class Getconnect:
                     CAST (stockQty AS INT) AS Antall_Lager,
                     articleStock.StorageShelf AS Lager_plass,
                     Article.suppliers_art_no AS LeverandorID
-
                 FROM
                     Article
                     INNER JOIN articleStock ON Article.articleId = articleStock.articleId
                     INNER JOIN Brands ON Article.brandId = Brands.brandId
                     INNER JOIN StockAdjustment ON Article.articleId = StockAdjustment.articleId
-
                 WHERE
                     Article.articleId =(?) AND adjustmentCode ='41' AND stockAdjustmenId = (?)
                 ''', article[0], article[1]).fetchall():

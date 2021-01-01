@@ -17,17 +17,15 @@ class Postconnect:
                 port=int(credentials['port']),
                 database=credentials['database']
             )
-            Log('Postconnect: Connected to CIP')
-        except mariadb.Error as e:
-            Log('Postconnect: Could not connect to CIP on mariadb server')
+            Log(f'Postconnect: Connected to {credentials["database"]}')
+        except mariadb.Error:
+            Log(f'Postconnect: Could not connect to {credentials["database"]}')
             exit()
 
         self.cursor = self.cnxn.cursor()
 
 
-
     def close(self):
-
         self.cnxn.close()
 
 
@@ -42,8 +40,6 @@ class Postconnect:
         self.cursor.execute(createTables['turnover_daily'])
         self.cnxn.commit()
         Log('Postconnect: All tables created or exists')
-
-
 
 
     def brandsGetMax(self):
@@ -91,7 +87,6 @@ class Postconnect:
         self.cursor.execute(deleteRows['barcodes'])
         self.cnxn.commit()
         Log('Postconnect: Deleted all from table barcodes')
-
 
 
     def soldoutPost(self,records):

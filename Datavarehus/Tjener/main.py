@@ -1,27 +1,21 @@
 #!/usr/bin/env python3
+__author__ = "Emil Bratt Børsting"
+__email__  = "emilbratt@gmail.com"
+__status__ = "developement"
 import os
 import sys
 import csv
 import json
+import subprocess
 from dataget import Getconnect
 from datapost import Postconnect
 from datetime import datetime
+from credentials import loadCredentials
 from writelog import Log
 
 '''
     notes:
     make cloud upload
-    make insert placement (data from from raspberry pi shelf value)
-'''
-'''
-    flags: daily, weekly, monthly
-
-    (maybe I can omit flags and do flowcontrol off of result from times received
-    from the sql server in the store)
-
-    daily = fetches only daily report
-    weekly = fetches daily and weekly report
-    monthly = fetches daily, weekly and monthly report
 '''
 
 # get timestamp and date
@@ -53,54 +47,63 @@ for dir in dirs:
 
 def initialize():
 
-    c = Postconnect()
-    c.makeTables() # if tables do not exist, create them
+    P = Postconnect()
+    G = Getconnect()
+
+    P.makeTables() # if tables for data warehouse do not exist, create them
 
     # get highest id number for article id and brand id
-    brand_idMax = c.brandsGetMax()
-    article_idMax = c.articlesGetMax()
-    c.close()
+    brand_idMax = P.brandsGetMax()
+    article_idMax = P.articlesGetMax()
 
-    # fetch new records from retial
-    c = Getconnect()
+
+    # get datetimes and check if weekly and/or monthly execute = True
+    data['Tider'] = G.fetchTime()
+
+
+    # fetch new brands and articles from retial
     brandsPost = []
-    for row in c.getBrands(brand_idMax):
+    for row in G.getBrands(brand_idMax):
         brandsPost.append(tuple(row))
-    articlesPost = []
-    for row in c.getArticles(article_idMax):
-        articlesPost.append(tuple(row))
-    c.close()
-
-    # insert records into datawarehouse
-    c = Postconnect()
     if brandsPost != []:
-        Log(f'Updating brands from brand_id: {brand_idMax}', 'noprint')
-        c.brandsPost(brandsPost)
+        Log(f'Updating brands from brand_id: {brand_idMax}')
+        P.brandsPost(brandsPost)
+    else:
+        Log(f'No new brands from brand_id: {brand_idMax}')
+
+    articlesPost = []
+    for row in G.getArticles(article_idMax):
+        articlesPost.append(tuple(row))
     if articlesPost != []:
-        Log(f'Updating articles from article_id: {article_idMax}', 'noprint')
-        c.articlesPost(articlesPost)
-    c.close()
+        Log(f'Updating articles from article_id: {article_idMax}')
+        P.articlesPost(articlesPost)
+    else:
+        Log(f'No new articles from article_id: {article_idMax}')
 
 
-def reloadBarcodes():
-    c = Getconnect()
-    barcodes = c.getBarcodes()
-    c.close()
-    barcodePost = []
-    for row in barcodes:
-        barcodePost.append(tuple(row))
-    c = Postconnect()
-    c.barcodesDel()
-    c.barcodesPost(barcodePost)
-    c.close()
 
+    # update barcodes
+    if data['Tider']['monthly'] == True:
+        barcodes = G.getBarcodes()
+        '''
+        fetch new barcodes from retial
+        barcodes can be changed, as an easy workaround,
+        instead of updating incrementally we have to delete
+        all records and insert all new barcodes over again
+        '''
+        barcodePost = []
+        for row in barcodes:
+            barcodePost.append(tuple(row))
+        P.barcodesDel()
+        P.barcodesPost(barcodePost)
+
+    G.close()
+    P.close()
 
 
 def getRecords():
     c = Getconnect()
 
-    # get datetimes from sql server
-    data['Tider'] = c.fetchTime()
 
     # daily
     data['Omsetning'] = {'Daglig':c.turnoverDaily()}
@@ -108,14 +111,16 @@ def getRecords():
     data['Utsolgt'] = {'Daglig':c.soldoutDaily()}
 
     # weekly
-    data['Omsetning']['Ukentlig'] = c.turnoverWeekly()
-    data['Utsolgt']['Ukentlig'] = c.soldoutWeekly()
-    data['Import']['Ukentlig'] = c.importsWeekly()
+    if data['Tider']['weekly'] == True:
+        data['Omsetning']['Ukentlig'] = c.turnoverWeekly()
+        data['Utsolgt']['Ukentlig'] = c.soldoutWeekly()
+        data['Import']['Ukentlig'] = c.importsWeekly()
 
     # monthly
-    data['Omsetning']['Maanedlig'] = c.turnoverMonthly()
-    data['Utsolgt']['Maanedlig'] = c.soldoutMonthly()
-    data['Import']['Maanedlig'] = c.importsMonthly()
+    if data['Tider']['monthly'] == True:
+        data['Omsetning']['Maanedlig'] = c.turnoverMonthly()
+        data['Utsolgt']['Maanedlig'] = c.soldoutMonthly()
+        data['Import']['Maanedlig'] = c.importsMonthly()
 
     c.close()
 
@@ -178,11 +183,35 @@ def writeSpreadsheet():
     from openpyxl import Workbook
     from openpyxl.utils import get_column_letter
     from openpyxl.styles import Alignment
+    credentials = loadCredentials('cloud')
 
     def exportXLSX(fileName: str):
 
+
         def cloudUpload(fileName: str):
-            pass
+
+
+            def commandAsmbl(cmd):
+                Log(f'Cloud Upload: uploading {category} {when} to {credentials["server"]}')
+                subprocess.Popen(cmd, shell=True, executable='/bin/bash')
+
+            commmand = 'curl -u '
+            commmand += credentials['user']
+            commmand += ':'
+            commmand += credentials['password']
+            commmand += ' -T '
+            commmand += fileName
+            commmand += ' https://'
+            commmand += credentials['server']
+            commmand += '/remote.php/dav/files/'
+            commmand += credentials['user']
+            commmand += '/'
+            commmand += category
+            commmand += '/'
+            commmand += when
+            commmand += '/'
+            commandAsmbl(commmand)
+
 
         # load spreadsheet
         wb = Workbook()
@@ -218,8 +247,9 @@ def writeSpreadsheet():
         ws.column_dimensions['I'].width = cellLength[8]+5
         ws.column_dimensions['J'].width = cellLength[9]+5
 
-        freeze = None
-        for i,row in enumerate(data[category][when]): # append rows to spreadsheet
+
+        freeze = None  # find freeze point for titles while appending
+        for i,row in enumerate(data[category][when]):
             if len(row) > 2 and freeze == None:
                 freeze = 'A'+str(i+2)
             ws.append(list(row))
@@ -260,9 +290,7 @@ def writeSpreadsheet():
     data['Import']['Daglig'].insert(0,[data['Tider']['yesterday']['weekday'].title() +' Uke-' + data['Tider']['yesterday']['weekNum']])
     data['Import']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
     data['Import']['Daglig'].insert(0,['Vareimport'])
-    if len(data['Import']['Daglig']) < 5: # less than 5 rows means no records from this query
-        data['Import']['Daglig'][2] = ['Ingen Importerte Varer I Dag']
-        del data['Import']['Daglig'][3]
+
 
     colName = [
     'Artikkel ID','Merke','Navn','Antall Lager',
@@ -272,9 +300,7 @@ def writeSpreadsheet():
     data['Utsolgt']['Daglig'].insert(0,[data['Tider']['yesterday']['weekday'].title() +' Uke-' + data['Tider']['yesterday']['weekNum']])
     data['Utsolgt']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
     data['Utsolgt']['Daglig'].insert(0,['Utsolgte Varer'])
-    if len(data['Utsolgt']['Daglig']) < 5: # less than 5 rows means no records from this query
-        data['Utsolgt']['Daglig'][2] = ['Ingen Utsolgte Varer I Dag']
-        del data['Utsolgt']['Daglig'][3]
+
 
     # loop through results in data and export spreadsheet
     for category in data:
@@ -302,13 +328,9 @@ def writeSpreadsheet():
 
 
 if __name__ == '__main__':
-
-
     data = {} # data fetched during execution is appended here
 
     initialize() # daily insert id_records in data warehouse if new data from store
-
-    reloadBarcodes() # monthly empty barcode table copy all barcodes from store
 
     getRecords() # daily populate the data dict with new data from the store
 
