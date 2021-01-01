@@ -10,10 +10,14 @@ from writelog import Log
 
 '''
     notes:
-    uncomment create writeSpreadsheet
+    make cloud upload
+    make insert placement (data from from raspberry pi shelf value)
 '''
 '''
     flags: daily, weekly, monthly
+
+    (maybe I can omit flags and do flowcontrol off of result from times received
+    from the sql server in the store)
 
     daily = fetches only daily report
     weekly = fetches daily and weekly report
@@ -48,43 +52,72 @@ for dir in dirs:
 
 
 def initialize():
-    # get highest id number for article id and brand id
+
     c = Postconnect()
+    c.makeTables() # if tables do not exist, create them
+
+    # get highest id number for article id and brand id
     brand_idMax = c.brandsGetMax()
     article_idMax = c.articlesGetMax()
     c.close()
 
     # fetch new records from retial
     c = Getconnect()
-    brandsRes = []
+    brandsPost = []
     for row in c.getBrands(brand_idMax):
-        brandsRes.append(tuple(row))
-    articlesRes = []
+        brandsPost.append(tuple(row))
+    articlesPost = []
     for row in c.getArticles(article_idMax):
-        articlesRes.append(tuple(row))
+        articlesPost.append(tuple(row))
     c.close()
 
     # insert records into datawarehouse
     c = Postconnect()
-    if brandsRes != []:
+    if brandsPost != []:
         Log(f'Updating brands from brand_id: {brand_idMax}', 'noprint')
-        c.brandsPost(brandsRes)
-    if articlesRes != []:
+        c.brandsPost(brandsPost)
+    if articlesPost != []:
         Log(f'Updating articles from article_id: {article_idMax}', 'noprint')
-        c.articlesPost(articlesRes)
+        c.articlesPost(articlesPost)
     c.close()
 
+
+def reloadBarcodes():
+    c = Getconnect()
+    barcodes = c.getBarcodes()
+    c.close()
+    barcodePost = []
+    for row in barcodes:
+        barcodePost.append(tuple(row))
+    c = Postconnect()
+    c.barcodesDel()
+    c.barcodesPost(barcodePost)
+    c.close()
 
 
 
 def getRecords():
     c = Getconnect()
-    data['Tider'] = c.fetchTime()
-    data['Omsetning'] = {'Daglig':c.turnoverYesterday()}
-    data['Import'] = {'Daglig':c.importsYesterdayy()}
-    data['Utsolgt'] = {'Daglig':c.soldoutYesterdayy()}
-    c.close()
 
+    # get datetimes from sql server
+    data['Tider'] = c.fetchTime()
+
+    # daily
+    data['Omsetning'] = {'Daglig':c.turnoverDaily()}
+    data['Import'] = {'Daglig':c.importsDaily()}
+    data['Utsolgt'] = {'Daglig':c.soldoutDaily()}
+
+    # weekly
+    data['Omsetning']['Ukentlig'] = c.turnoverWeekly()
+    data['Utsolgt']['Ukentlig'] = c.soldoutWeekly()
+    data['Import']['Ukentlig'] = c.importsWeekly()
+
+    # monthly
+    data['Omsetning']['Maanedlig'] = c.turnoverMonthly()
+    data['Utsolgt']['Maanedlig'] = c.soldoutMonthly()
+    data['Import']['Maanedlig'] = c.importsMonthly()
+
+    c.close()
 
 
 def updateCIP():
@@ -130,9 +163,7 @@ def updateCIP():
                     for row in data[category][when]:
                         prepared[category].append(
                             prepareRecords(
-                                list(row),category
-                            )
-                        )
+                                list(row),category))
 
 
     c = Postconnect()
@@ -156,6 +187,8 @@ def writeSpreadsheet():
         # load spreadsheet
         wb = Workbook()
         ws = wb.active
+
+
 
         # apply default col length
         cellLength = {}
@@ -185,12 +218,20 @@ def writeSpreadsheet():
         ws.column_dimensions['I'].width = cellLength[8]+5
         ws.column_dimensions['J'].width = cellLength[9]+5
 
-        for row in data[category][when]: # append rows to spreadsheet
+        freeze = None
+        for i,row in enumerate(data[category][when]): # append rows to spreadsheet
+            if len(row) > 2 and freeze == None:
+                freeze = 'A'+str(i+2)
             ws.append(list(row))
 
         for col in ws.columns: # align all fields with value to center
             for cell in col:
                 cell.alignment = Alignment(horizontal='center', vertical='center')
+
+        if freeze != None:
+            ws.freeze_panes = ws[freeze]
+
+
 
         # save spreadsheet
         wb.save(fileName)
@@ -199,7 +240,7 @@ def writeSpreadsheet():
         cloudUpload(fileName) # note: add send wb to cloud
 
 
-    # giv column names and add date info before exporting to spreadsheet
+    # give column names and add date info before exporting to spreadsheet
 
     colName = [
     'Totalt','00-01','01-02','02-03','03-04','04-05','05-06','06-07','07-08',
@@ -207,18 +248,18 @@ def writeSpreadsheet():
     '17-18','18-19','19-20','20-21','21-22','22-23','23-24'
     ]
     data['Omsetning']['Daglig'].insert(0,colName)
-    data['Omsetning']['Daglig'].insert(0,['Omsetning'])
-    data['Omsetning']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
     data['Omsetning']['Daglig'].insert(0,[data['Tider']['yesterday']['weekday'].title() +' Uke-' + data['Tider']['yesterday']['weekNum']])
+    data['Omsetning']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
+    data['Omsetning']['Daglig'].insert(0,['Omsetning'])
 
     colName = [
     'Artikkel ID','Merke','Navn',
     'Importert','Antall Lager','Lagerplass','Lev.ID'
     ]
     data['Import']['Daglig'].insert(0,colName)
-    data['Import']['Daglig'].insert(0,['Vareimport'])
-    data['Import']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
     data['Import']['Daglig'].insert(0,[data['Tider']['yesterday']['weekday'].title() +' Uke-' + data['Tider']['yesterday']['weekNum']])
+    data['Import']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
+    data['Import']['Daglig'].insert(0,['Vareimport'])
     if len(data['Import']['Daglig']) < 5: # less than 5 rows means no records from this query
         data['Import']['Daglig'][2] = ['Ingen Importerte Varer I Dag']
         del data['Import']['Daglig'][3]
@@ -228,9 +269,9 @@ def writeSpreadsheet():
     'Lagerplass','Sist Importert','Lev. ID'
     ]
     data['Utsolgt']['Daglig'].insert(0,colName)
-    data['Utsolgt']['Daglig'].insert(0,['Utsolgte Varer'])
-    data['Utsolgt']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
     data['Utsolgt']['Daglig'].insert(0,[data['Tider']['yesterday']['weekday'].title() +' Uke-' + data['Tider']['yesterday']['weekNum']])
+    data['Utsolgt']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
+    data['Utsolgt']['Daglig'].insert(0,['Utsolgte Varer'])
     if len(data['Utsolgt']['Daglig']) < 5: # less than 5 rows means no records from this query
         data['Utsolgt']['Daglig'][2] = ['Ingen Utsolgte Varer I Dag']
         del data['Utsolgt']['Daglig'][3]
@@ -239,8 +280,17 @@ def writeSpreadsheet():
     for category in data:
         if category != 'Tider':
             for when in data[category]:
-                fileName = os.path.join(dirs[category],when,data['Tider']['yesterday']['YYYYMMDD']+'.xlsx')
+                if when == 'Daglig':
+                    fileName = os.path.join(dirs[category],when,data[
+                        'Tider']['yesterday']['YYYYMMDD']+'.xlsx')
+                elif when == 'Ukentlig':
+                    fileName = os.path.join(dirs[category],when,data[
+                        'Tider']['yesterday']['YYYY-weekNum']+'.xlsx')
+                elif when == 'Maanedlig':
+                    fileName = os.path.join(dirs[category],when,data[
+                        'Tider']['yesterday']['YYYYMMDD'][:6]+'.xlsx')
                 exportXLSX(fileName)
+                Log(f'Spreadsheet: exporting {fileName}')
 
 
 
@@ -255,8 +305,13 @@ if __name__ == '__main__':
 
 
     data = {} # data fetched during execution is appended here
-    initialize() # insert id_records in data warehouse if new data from store
 
-    getRecords() # populate the data dict with new data from the store
-    updateCIP() # send the newly populated data and insert into data warehouse
-    writeSpreadsheet() # export spreadsheets from the data
+    initialize() # daily insert id_records in data warehouse if new data from store
+
+    reloadBarcodes() # monthly empty barcode table copy all barcodes from store
+
+    getRecords() # daily populate the data dict with new data from the store
+
+    updateCIP() # daily send the newly populated data and insert into data warehouse
+
+    writeSpreadsheet() # daily export spreadsheets from the data

@@ -3,16 +3,6 @@ import sys
 from writelog import Log
 from postqueries import *
 
-'''
-year            INT             NOT NULL,
-monthly         INT             NOT NULL,
-date            INT             NOT NULL,
-week            INT             NOT NULL,
-week_day        VARCHAR(255)    NOT NULL,
-yyyymmdd        INT             NOT NULL,
-'''
-
-
 
 class Postconnect:
     def __init__(self):
@@ -27,9 +17,9 @@ class Postconnect:
                 port=int(credentials['port']),
                 database=credentials['database']
             )
-            Log('Connected to CIP', 'noprint')
+            Log('Postconnect: Connected to CIP')
         except mariadb.Error as e:
-            Log('Could not connect to CIP on mariadb server', 'noprint')
+            Log('Postconnect: Could not connect to CIP on mariadb server')
             exit()
 
         self.cursor = self.cnxn.cursor()
@@ -51,7 +41,7 @@ class Postconnect:
         self.cursor.execute(createTables['turnover_hourly'])
         self.cursor.execute(createTables['turnover_daily'])
         self.cnxn.commit()
-        Log('All tables created successfully', 'noprint')
+        Log('Postconnect: All tables created or exists')
 
 
 
@@ -60,6 +50,7 @@ class Postconnect:
         self.cursor.execute(
             'SELECT MAX(brand_id) FROM brands;')
         result = self.cursor.fetchone()
+        Log('Postconnect: Fetching from brandsGetMax')
         if result[0] == None:
             return 0
         else:
@@ -70,59 +61,70 @@ class Postconnect:
         self.cursor.execute(
                 'SELECT MAX(article_id) FROM articles;')
         result = self.cursor.fetchone()
+        Log('Postconnect: Fetching from articlesGetMax')
         if result[0] == None:
             return 0
         else:
             return result[0]
 
 
-    def brandsPost(self,records: tuple):
-        self.cursor.executemany(insertTables['brands'],records)
+    def brandsPost(self,records):
+        self.cursor.executemany(insertRows['brands'],records)
         self.cnxn.commit()
-        Log('Updated table brands')
+        Log('Postconnect: Updated table brands')
 
 
 
-    def articlesPost(self,records: tuple):
-        query = '''
-        INSERT INTO articles(article_id, brand_id, art_name)
-        VALUES((?), (?), (?));
-        '''
-        self.cursor.executemany(insertTables['articles'],records)
+    def articlesPost(self,records):
+        self.cursor.executemany(insertRows['articles'],records)
         self.cnxn.commit()
-        Log('Updated table articles')
+        Log('Postconnect: Updated table articles')
 
     def barcodesPost(self,records: list):
-        pass
+        self.cursor.executemany(insertRows['barcodes'],records)
+        self.cnxn.commit()
+        Log('Postconnect: Updated table barcodes')
 
+
+
+    def barcodesDel(self):
+        self.cursor.execute(deleteRows['barcodes'])
+        self.cnxn.commit()
+        Log('Postconnect: Deleted all from table barcodes')
 
 
 
     def soldoutPost(self,records):
-        self.cursor.executemany(insertTables['soldout'],records)
+        if records == []:
+            Log('Postconnect: No sodlouts today, skipping soldout')
+        else:
+            self.cursor.executemany(insertRows['soldout'],records)
+            self.cnxn.commit()
+            Log('Postconnect: Updated table soldout')
+
+
+    def importsPost(self,records):
+        if records == []:
+            Log('Postconnect: No imports today, skipping imports')
+        else:
+            self.cursor.executemany(insertRows['imports'],records)
+            self.cnxn.commit()
+            Log('Postconnect: Updated table imports')
+
+
+    def turnover_hourlyPost(self,record):
+        self.cursor.execute(insertRows['turnover_hourly'],record)
         self.cnxn.commit()
-        Log('Updated table soldout')
+        Log('Postconnect: Updated table turnover_hourly')
 
 
-    def importsPost(self,records: list):
-        self.cursor.executemany(insertTables['imports'],records)
+    def turnover_dailyPost(self,record):
+        self.cursor.execute(insertRows['turnover_daily'],record)
         self.cnxn.commit()
-        Log('Updated table imports')
+        Log('Postconnect: Updated table turnover_daily')
 
 
-    def turnover_hourlyPost(self,record: list):
-        self.cursor.execute(insertTables['turnover_hourly'],record)
-        self.cnxn.commit()
-        Log('Updated table turnover_hourly')
-
-
-    def turnover_dailyPost(self,record: list):
-        self.cursor.execute(insertTables['turnover_daily'],record)
-        self.cnxn.commit()
-        Log('Updated table turnover_daily')
-
-
-    def storagePost(self,records: list):
+    def storagePost(self,records):
         pass
 
 

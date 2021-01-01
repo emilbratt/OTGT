@@ -121,7 +121,7 @@ humandate   CHAR(10)    NOT NULL
 '''
 }
 
-insertTables = {
+insertRows = {
 'soldout':'''
 INSERT INTO soldout
     (article_id,brand_name,art_name,stock_qty,stock_location,last_import,
@@ -160,12 +160,18 @@ INSERT INTO `articles`
     (article_id, brand_id, art_name)
 VALUES
     (?, ?, ?);
+''',
+'barcodes':'''
+INSERT INTO `barcodes`
+    (article_id, barcode)
+VALUES
+    (?, ?);
 '''
 }
 
 
 
-selectTables = {
+selectRows = {
 'getItemsFromBrandId':'''
 SELECT art_name
 FROM articles
@@ -176,9 +182,9 @@ WHERE brands.brand_id = '191';
 
 }
 
-
-
+deleteRows = {
+'barcodes':'''
+DELETE FROM barcodes;
 '''
 
-
-'''
+}
