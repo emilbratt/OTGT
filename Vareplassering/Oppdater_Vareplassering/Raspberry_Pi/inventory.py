@@ -8,10 +8,7 @@ import json
 # local modules
 from writelog import Log
 from credentials import loadCredentials
-'''
-    notes:
-    send files to salesreport is not finished
-'''
+
 
 class Inventory:
     '''
@@ -278,15 +275,6 @@ class Inventory:
         except NameError:
             Log('exiting', 5)
             exit()
-
-
-
-
-    def salesreportUpdate(self):
-        '''
-            for sending session files and logs to salesreport server
-        '''
-        pass
 
 
     def wipeSessions(self):

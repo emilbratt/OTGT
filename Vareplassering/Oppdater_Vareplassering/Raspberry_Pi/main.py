@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 __author__ = "Emil Bratt Børsting"
 __email__  = "emilbratt@gmail.com"
-__status__ = "deployed"
+__status__ = "production"
 
 # use this as a template for your own projects
 # you will have to modify it to fit your purpose
