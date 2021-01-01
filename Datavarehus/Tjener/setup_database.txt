@@ -1,4 +1,4 @@
-Written by Emil Bratt Boersting 29.12.2020
+Updated by Emil Bratt Boersting 01.01.2021
 
 The datawarehouse will not take normalization into account
 Data redundency will be a result of practical access to the data
@@ -137,23 +137,27 @@ To
 
 $ sudo systemctl restart mariadb
 
+Add cnf
+$ nano ~/.my.cnf
 
-Put autoreport generator app in your users home folder
-$ make a backup folder for rsync
+(add text)
+
+[mysqldump]
+user = db_user
+password = db_password
+
+(save)
+
+$ chmod 600 ~/.my.cnf
+
+Create backup folder for database
+$ mkdir ~/autoreport/db_backup
+
+Make app folder and put app-source (files) in your users home folder
 $ mkdir ~/autoreport
+Copy files to this folder..
 
-Crontab
-$ crontab -e
-# daily
-5 18 * * 1-7 /usr/bin/python3 daily.py > daily.log 2>&1
-6 18 * * 1-7 /usr/bin/python3 convertDailyCSVtoXLSX.py > convertDaily.log 2>&1
 
-# weekly
-0 1 * * 1 /usr/bin/python3 weekly.py > weekly.log 2>&1
-5 1 * * 1 /usr/bin/python3 convertWeeklyCSVtoXLSX.py > convertWeekly.log 2>&1
-
-# backup reports
-0 2 * * * rsync -auv ~/Output/ ~/Output_bu/
 
 
 
@@ -167,6 +171,28 @@ ssh user@user@host/ip
 mkdir salesreport
 exit
 
+
+Add crontab tasks
+$ crontab -e
+
+(add text)
+
+# do a mysql_dump
+0 1 * * * mysqldump --single-transaction -h localhost -u databaseuser CIP >  /home/username/autoreport/db_backup/nameofdatabase_`date +"\%Y\%m\%d"`.bak
+
+# send mysql_dump to otgt35
+10 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_mysqldumpp.log -e "ssh -p 22" /home/username/autoreport/db_backup   username@hostname:/home/username/salesreport/
+
+# run daily autoreport
+20 1 * * * /usr/bin/python3 ~/autoreport/main.py
+
+# send reports to otgt35
+40 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/autoreport/Data   username@otgt35.no:/home/username/salesreport/
+
+# send aytoreport log to otgt35
+50 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/autoreport/log   username@otgt35.no:/home/username/salesreport/
+
+(save)
 
 
 optional...
