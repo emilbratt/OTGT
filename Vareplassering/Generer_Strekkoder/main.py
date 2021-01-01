@@ -53,7 +53,7 @@ def generateBarcodeValues(choice):
                     continue
                 if values == [] and value == '':
                     continue
-                values.append(value)
+                values.append(value.upper())
 
                 if values[-1] == '':
                     values.remove('')
