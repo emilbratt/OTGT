@@ -13,15 +13,9 @@ from datetime import datetime
 from credentials import loadCredentials
 from writelog import Log
 
-'''
-    notes:
-    make cloud upload
-'''
-
 # get timestamp and date
 timestamp = datetime.now()
 ymd = timestamp.strftime("%Y-%m-%d")
-
 
 # set working directory
 dirs = {}
@@ -45,7 +39,6 @@ for dir in dirs:
         if dir != 'Salg':
             os.makedirs(dirs[dir]+'/Ukentlig', exist_ok=True)
             os.makedirs(dirs[dir]+'/Maanedlig', exist_ok=True)
-
 
 
 def initialize():
@@ -84,7 +77,6 @@ def initialize():
         Log(f'No new articles from article_id: {article_idMax}')
 
 
-
     # update barcodes
     if data['Tider']['monthly'] == True:
         barcodes = G.getBarcodes()
@@ -108,32 +100,25 @@ def getRecords():
     c = Getconnect()
 
     # # daily
-    # data['Omsetning'] = {'Daglig':c.turnoverDaily()}
-    # data['Import'] = {'Daglig':c.importsDaily()}
-    # data['Utsolgt'] = {'Daglig':c.soldoutDaily()}
-    # data['Salg'] = {'Daglig':c.salesDaily()}
+    data['Omsetning'] = {'Daglig':c.turnoverDaily()}
+    data['Import'] = {'Daglig':c.importsDaily()}
+    data['Utsolgt'] = {'Daglig':c.soldoutDaily()}
+    data['Salg'] = {'Daglig':c.salesDaily()}
     post['sales_count'] = {'daily':c.salesCountDaily()}
 
+    # weekly
+    if data['Tider']['weekly'] == True:
+        # onlyt run on mondays (get last week)
+        data['Omsetning']['Ukentlig'] = c.turnoverWeekly()
+        data['Utsolgt']['Ukentlig'] = c.soldoutWeekly()
+        data['Import']['Ukentlig'] = c.importsWeekly()
 
-    #
-    #
-    # # weekly
-    # if data['Tider']['weekly'] == True:
-    #     # onlyt run on mondays (get last week)
-    #     data['Omsetning']['Ukentlig'] = c.turnoverWeekly()
-    #     data['Utsolgt']['Ukentlig'] = c.soldoutWeekly()
-    #     data['Import']['Ukentlig'] = c.importsWeekly()
-    #
-    # # monthly
-    # if data['Tider']['monthly'] == True:
-    #      # only run on first every month (get last month)
-    #     data['Omsetning']['Maanedlig'] = c.turnoverMonthly()
-    #     data['Utsolgt']['Maanedlig'] = c.soldoutMonthly()
-    #     data['Import']['Maanedlig'] = c.importsMonthly()
-
-    #
-    # post['post'] = {}
-    # post['post']['salescount'] = {'daily':c.salesCountDaily()}
+    # monthly
+    if data['Tider']['monthly'] == True:
+         # only run on first every month (get last month)
+        data['Omsetning']['Maanedlig'] = c.turnoverMonthly()
+        data['Utsolgt']['Maanedlig'] = c.soldoutMonthly()
+        data['Import']['Maanedlig'] = c.importsMonthly()
 
     c.close()
 
@@ -245,8 +230,6 @@ def writeSpreadsheet():
         wb = Workbook()
         ws = wb.active
 
-
-
         # apply default col length
         cellLength = {}
         for i in range(10):
@@ -275,12 +258,11 @@ def writeSpreadsheet():
         ws.column_dimensions['I'].width = cellLength[8]+5
         ws.column_dimensions['J'].width = cellLength[9]+5
 
-
         freeze = None  # find freeze point for titles while appending
         for i,row in enumerate(data[category][when]):
             if len(row) > 2 and freeze == None:
                 freeze = 'A'+str(i+2)
-            if category == 'Salg':
+            if category == 'Salg' and i > 2:
                 ws.append(list(row)[:-1])
             else:
                 ws.append(list(row))
@@ -292,13 +274,11 @@ def writeSpreadsheet():
         if freeze != None:
             ws.freeze_panes = ws[freeze]
 
-
-
         # save spreadsheet
         wb.save(fileName)
 
-        ''' note: remember to fix this '''
-        cloudUpload(fileName) # note: add send wb to cloud
+        # send wb to cloud
+        cloudUpload(fileName)
 
 
     # give column names and add date info before exporting to spreadsheet
@@ -322,7 +302,6 @@ def writeSpreadsheet():
     data['Import']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
     data['Import']['Daglig'].insert(0,['Vareimport'])
 
-
     colName = [
     'Artikkel ID','Merke','Navn','Antall Lager',
     'Lagerplass','Sist Importert','Lev. ID'
@@ -332,7 +311,6 @@ def writeSpreadsheet():
     data['Utsolgt']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
     data['Utsolgt']['Daglig'].insert(0,['Utsolgte Varer'])
 
-
     colName = [
     'Artikkel ID','Merke','Navn','Antall Solgt',
     'Dato','Klokketime','Pris','Rabatt','Betalingsmate'
@@ -341,7 +319,6 @@ def writeSpreadsheet():
     data['Salg']['Daglig'].insert(0,[data['Tider']['yesterday']['weekday'].title() +' Uke-' + data['Tider']['yesterday']['weekNum']])
     data['Salg']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
     data['Salg']['Daglig'].insert(0,['Varesalg'])
-
 
     # loop through results in data and export spreadsheet
     for category in data:
@@ -362,10 +339,6 @@ def writeSpreadsheet():
                 if fileName != False:
                     exportXLSX(fileName)
                     Log(f'Spreadsheet: exporting {fileName}')
-
-
-
-
 
 
 
