@@ -394,9 +394,7 @@ class Getconnect:
         	[articleName] NOT LIKE 'Retain 24 gavekort%' AND
         	[articleName] NOT LIKE 'Diverse Vinding%' AND
         	[articleName] NOT LIKE 'Diverse Glass%' AND
-        	[articleName] NOT LIKE 'MARIMEKKO LUNSJSERVIETTER%' AND
-        	[articleName] NOT LIKE 'Diverse SERVISE%' AND
-        	[articleName] NOT LIKE 'IHR LUNSJSERVIETTER%'
+        	[articleName] NOT LIKE 'Diverse SERVISE%'
         ORDER BY
         	brandLabel
         ''', self.yesterday,self.yesterday,self.yesterday).fetchall()
@@ -440,9 +438,7 @@ class Getconnect:
         	[articleName] NOT LIKE 'Retain 24 gavekort%' AND
         	[articleName] NOT LIKE 'Diverse Vinding%' AND
         	[articleName] NOT LIKE 'Diverse Glass%' AND
-        	[articleName] NOT LIKE 'MARIMEKKO LUNSJSERVIETTER%' AND
-        	[articleName] NOT LIKE 'Diverse SERVISE%' AND
-        	[articleName] NOT LIKE 'IHR LUNSJSERVIETTER%'
+        	[articleName] NOT LIKE 'Diverse SERVISE%'
         ORDER BY
         	brandLabel
         ''',self.yesterday,self.yesterday).fetchall()
@@ -485,9 +481,7 @@ class Getconnect:
         	[articleName] NOT LIKE 'Retain 24 gavekort%' AND
         	[articleName] NOT LIKE 'Diverse Vinding%' AND
         	[articleName] NOT LIKE 'Diverse Glass%' AND
-        	[articleName] NOT LIKE 'MARIMEKKO LUNSJSERVIETTER%' AND
-        	[articleName] NOT LIKE 'Diverse SERVISE%' AND
-        	[articleName] NOT LIKE 'IHR LUNSJSERVIETTER%'
+        	[articleName] NOT LIKE 'Diverse SERVISE%'
         ORDER BY
         	brandLabel
         ''',self.yesterday,self.yesterday).fetchall()
@@ -630,6 +624,69 @@ class Getconnect:
                 ''', article[0], article[1]).fetchall():
                 data.append(importInfo)
         Log('Getconnect: Fetching from importsMonthly')
+        return data
+
+
+
+    def salesDaily(self):
+
+        data = []
+        result = self.cursor.execute('''
+            SELECT
+                Article.articleId AS Vare_Id,
+                Brands.brandLabel AS Merke,
+                Article.articleName AS Navn,
+                CAST(noOfArticles AS INT) AS Antall_Solgt,
+                CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 23) AS Dato,
+                CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 8) AS Tid,
+                usedPricePerUnit AS Pris,
+                CustomerSales.disCount AS Rabatt,
+                CustomerSaleHeader.additionalInfo AS Betalingsmate
+            FROM (((CustomerSales
+            FULL JOIN Article
+                ON CustomerSales.articleId = Article.articleId)
+            FULL JOIN CustomerSaleHeader
+                ON CustomerSales.customerSaleHeaderId = CustomerSaleHeader.customerSaleHeaderId)
+            FULL JOIN Brands
+                ON Brands.brandId = Article.brandId)
+            WHERE
+                Article.articleId IS NOT NULL AND
+            	DATEPART(DAYOFYEAR, [salesdate]) = DATEPART(DAYOFYEAR, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+            	DATEPART(YEAR, [salesdate]) = DATEPART(YEAR, DATEADD(DAY, (?), CURRENT_TIMESTAMP))
+            ORDER BY
+                salesDate
+        ''',self.yesterday,self.yesterday).fetchall()
+
+        for row in result:
+            data.append(row)
+
+        Log('Getconnect: Fetching from salesDaily')
+        return data
+
+
+
+    def salesCountDaily(self):
+        data = []
+        query = '''
+            SELECT
+            	CASE
+                    WHEN COUNT(Article.articleId) IS NULL THEN 0
+                	ELSE COUNT(Article.articleId)
+            	END
+            FROM (((CustomerSales
+            FULL JOIN Article ON CustomerSales.articleId = Article.articleId)
+            FULL JOIN CustomerSaleHeader ON CustomerSales.customerSaleHeaderId = CustomerSaleHeader.customerSaleHeaderId)
+            FULL JOIN Brands ON Brands.brandId = Article.brandId)
+            WHERE
+                DATEPART(HOUR, [salesdate]) = (?) AND
+            	DATEPART(DAYOFYEAR, [salesdate]) = DATEPART(DAYOFYEAR, DATEADD(DAY, (?), CURRENT_TIMESTAMP)) AND
+            	DATEPART(YEAR, [salesdate]) = DATEPART(YEAR, DATEADD(DAY, (?), CURRENT_TIMESTAMP))
+        '''
+
+        for hour in range(24): # append each hours turnover for each hour of the day
+            hourly = self.cursor.execute(query,hour,self.yesterday,self.yesterday).fetchone()
+            data.append(hourly[0])
+
         return data
 
 if __name__ == '__main__':

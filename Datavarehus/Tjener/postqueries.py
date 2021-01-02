@@ -115,8 +115,59 @@ weekday     CHAR(10)    NOT NULL,
 yyyymmdd    INT         NOT NULL,
 humandate   CHAR(10)    NOT NULL
 );
+''',
+'sales':'''
+CREATE TABLE IF NOT EXISTS sales(
+article_id      INT UNSIGNED    NOT NULL,
+brand_name      VARCHAR(255)    NULL,
+art_name        VARCHAR(255)    NOT NULL,
+sold_qty        INT             NOT NULL,
+date            CHAR(10)        NOT NULL,
+time            CHAR(5)         NOT NULL,
+price           DECIMAL(18,2)   NULL,
+discount        DECIMAL(18,2)   NULL,
+pay_method      VARCHAR(64)     NULL,
+FOREIGN KEY (article_id) REFERENCES articles(article_id)
+);
+''',
+'sales_hourly':'''
+CREATE TABLE IF NOT EXISTS sales_count(
+`00`        INT         NOT NULL,
+`01`        INT         NOT NULL,
+`02`        INT         NOT NULL,
+`03`        INT         NOT NULL,
+`04`        INT         NOT NULL,
+`05`        INT         NOT NULL,
+`06`        INT         NOT NULL,
+`07`        INT         NOT NULL,
+`08`        INT         NOT NULL,
+`09`        INT         NOT NULL,
+`10`        INT         NOT NULL,
+`11`        INT         NOT NULL,
+`12`        INT         NOT NULL,
+`13`        INT         NOT NULL,
+`14`        INT         NOT NULL,
+`15`        INT         NOT NULL,
+`16`        INT         NOT NULL,
+`17`        INT         NOT NULL,
+`18`        INT         NOT NULL,
+`19`        INT         NOT NULL,
+`20`        INT         NOT NULL,
+`21`        INT         NOT NULL,
+`22`        INT         NOT NULL,
+`23`        INT         NOT NULL,
+year        SMALLINT    NOT NULL,
+month       TINYINT     NOT NULL,
+date        TINYINT     NOT NULL,
+week        TINYINT     NOT NULL,
+weekday     CHAR(10)    NOT NULL,
+yyyymmdd    INT         NOT NULL,
+humandate   CHAR(10)    NOT NULL
+);
 '''
 }
+
+
 
 insertRows = {
 'soldout':'''
@@ -163,9 +214,23 @@ INSERT INTO `barcodes`
     (article_id, barcode)
 VALUES
     (?, ?);
+''',
+'sales':'''
+INSERT INTO sales
+    (article_id,brand_name,art_name,sold_qty,
+    date,time,price,discount,pay_method)
+VALUES
+    (?, ?, ?, ?, ?, ?, ?, ?, ?);
+''',
+'sales_count':'''
+INSERT INTO sales_count
+    (`00`,`01`,`02`,`03`,`04`,`05`,`06`,`07`,`08`,`09`,`10`,`11`,
+    `12`,`13`,`14`,`15`,`16`,`17`,`18`,`19`,`20`,`21`,`22`,`23`,
+    year, month, date, week, weekday, yyyymmdd, humandate)
+VALUES
+    (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
 '''
 }
-
 
 
 selectRows = {

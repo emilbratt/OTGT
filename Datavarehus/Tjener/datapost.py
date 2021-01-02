@@ -30,16 +30,10 @@ class Postconnect:
 
 
     def makeTables(self):
-        self.cursor.execute(createTables['brands'])
-        self.cursor.execute(createTables['articles'])
-        self.cursor.execute(createTables['barcodes'])
-        self.cursor.execute(createTables['soldout'])
-        self.cursor.execute(createTables['imports'])
-        self.cursor.execute(createTables['placement'])
-        self.cursor.execute(createTables['turnover_hourly'])
-        self.cursor.execute(createTables['turnover_daily'])
+        for key in createTables:
+            self.cursor.execute(createTables[key])
         self.cnxn.commit()
-        Log('Postconnect: All tables created or exists')
+        Log('Postconnect: makeTables completed')
 
 
     def brandsGetMax(self):
@@ -119,8 +113,19 @@ class Postconnect:
         Log('Postconnect: Updated table turnover_daily')
 
 
-    def storagePost(self,records):
-        pass
+    def salesPost(self, records):
+        if records == []:
+            Log('Postconnect: No sales today, skipping sales')
+        else:
+            self.cursor.executemany(insertRows['sales'],records)
+            self.cnxn.commit()
+            Log('Postconnect: Updated table sales')
+
+
+    def sales_countPost(self,record):
+        self.cursor.execute(insertRows['sales_count'],record)
+        self.cnxn.commit()
+        Log('Postconnect: Updated table sales_count')
 
 
 if __name__ == '__main__':

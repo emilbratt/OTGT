@@ -30,6 +30,7 @@ dirs['Data'] = os.path.join(dirs['App'], 'Data')
 dirs['Utsolgt'] = os.path.join(dirs['App'], 'Data','Utsolgt')
 dirs['Import'] = os.path.join(dirs['App'], 'Data', 'Import')
 dirs['Omsetning'] = os.path.join(dirs['App'], 'Data', 'Omsetning')
+dirs['Salg'] = os.path.join(dirs['App'], 'Data', 'Salg')
 
 # if no dir, create new
 os.makedirs(dirs['Data'], exist_ok=True)
@@ -37,11 +38,13 @@ os.makedirs(dirs['Utsolgt'], exist_ok=True)
 os.makedirs(dirs['Import'], exist_ok=True)
 os.makedirs(dirs['Omsetning'], exist_ok=True)
 os.makedirs(dirs['Utsolgt'], exist_ok=True)
+os.makedirs(dirs['Salg'], exist_ok=True)
 for dir in dirs:
     if dir != 'Data' and dir != 'App':
         os.makedirs(dirs[dir]+'/Daglig', exist_ok=True)
-        os.makedirs(dirs[dir]+'/Ukentlig', exist_ok=True)
-        os.makedirs(dirs[dir]+'/Maanedlig', exist_ok=True)
+        if dir != 'Salg':
+            os.makedirs(dirs[dir]+'/Ukentlig', exist_ok=True)
+            os.makedirs(dirs[dir]+'/Maanedlig', exist_ok=True)
 
 
 
@@ -52,13 +55,13 @@ def initialize():
 
     P.makeTables() # if tables for data warehouse do not exist, create them
 
+    # get datetimes and check if weekly and/or monthly execute = True
+    data['Tider'] = G.fetchTime()
+
+
     # get highest id number for article id and brand id
     brand_idMax = P.brandsGetMax()
     article_idMax = P.articlesGetMax()
-
-
-    # get datetimes and check if weekly and/or monthly execute = True
-    data['Tider'] = G.fetchTime()
 
 
     # fetch new brands and articles from retial
@@ -104,28 +107,40 @@ def initialize():
 def getRecords():
     c = Getconnect()
 
+    # # daily
+    # data['Omsetning'] = {'Daglig':c.turnoverDaily()}
+    # data['Import'] = {'Daglig':c.importsDaily()}
+    # data['Utsolgt'] = {'Daglig':c.soldoutDaily()}
+    # data['Salg'] = {'Daglig':c.salesDaily()}
+    post['sales_count'] = {'daily':c.salesCountDaily()}
 
-    # daily
-    data['Omsetning'] = {'Daglig':c.turnoverDaily()}
-    data['Import'] = {'Daglig':c.importsDaily()}
-    data['Utsolgt'] = {'Daglig':c.soldoutDaily()}
 
-    # weekly
-    if data['Tider']['weekly'] == True:
-        data['Omsetning']['Ukentlig'] = c.turnoverWeekly()
-        data['Utsolgt']['Ukentlig'] = c.soldoutWeekly()
-        data['Import']['Ukentlig'] = c.importsWeekly()
+    #
+    #
+    # # weekly
+    # if data['Tider']['weekly'] == True:
+    #     # onlyt run on mondays (get last week)
+    #     data['Omsetning']['Ukentlig'] = c.turnoverWeekly()
+    #     data['Utsolgt']['Ukentlig'] = c.soldoutWeekly()
+    #     data['Import']['Ukentlig'] = c.importsWeekly()
+    #
+    # # monthly
+    # if data['Tider']['monthly'] == True:
+    #      # only run on first every month (get last month)
+    #     data['Omsetning']['Maanedlig'] = c.turnoverMonthly()
+    #     data['Utsolgt']['Maanedlig'] = c.soldoutMonthly()
+    #     data['Import']['Maanedlig'] = c.importsMonthly()
 
-    # monthly
-    if data['Tider']['monthly'] == True:
-        data['Omsetning']['Maanedlig'] = c.turnoverMonthly()
-        data['Utsolgt']['Maanedlig'] = c.soldoutMonthly()
-        data['Import']['Maanedlig'] = c.importsMonthly()
+    #
+    # post['post'] = {}
+    # post['post']['salescount'] = {'daily':c.salesCountDaily()}
 
     c.close()
 
 
 def updateCIP():
+     # for rows that need adjustments
+    prepared = {}
     # format dates for columns in data warehouse
     dateInsert = []
     dateInsert.append(int(data['Tider']['yesterday']['YYYYMMDD'][:4]))
@@ -154,11 +169,19 @@ def updateCIP():
             for value in dateInsert:
                 row.append(value)
             return row
+        elif category == 'Salg':
+            return row
+        elif category == 'sales_count':
+            add = []
+            add = [v for v in row]
+            for value in dateInsert:
+                post[category][when].append(value)
+                add.append(value)
+            return add
         else:
             return None
 
 
-    prepared = {}
     for category in data:
         if category != 'Tider':
             for when in data[category]:
@@ -167,16 +190,23 @@ def updateCIP():
                     # prepare rows with additional data
                     for row in data[category][when]:
                         prepared[category].append(
-                            prepareRecords(
-                                list(row),category))
+                            prepareRecords(list(row),category))
 
+    for category in post:
+        for when in post[category]:
+            prepareRecords(post[category][when],category)
 
+    # insert rows in data warehouse
     c = Postconnect()
     c.soldoutPost(prepared['Utsolgt'])
     c.importsPost(prepared['Import'])
+    c.salesPost(prepared['Salg'])
     c.turnover_hourlyPost(prepared['Omsetning'][0]['timer'])
     c.turnover_dailyPost(prepared['Omsetning'][0]['dag'])
+    c.sales_countPost(post['sales_count']['daily'])
+
     c.close()
+
 
 def writeSpreadsheet():
     import openpyxl
@@ -189,8 +219,6 @@ def writeSpreadsheet():
 
 
         def cloudUpload(fileName: str):
-
-
             def commandAsmbl(cmd):
                 Log(f'Cloud Upload: uploading {category} {when} to {credentials["server"]}')
                 subprocess.Popen(cmd, shell=True, executable='/bin/bash')
@@ -252,7 +280,10 @@ def writeSpreadsheet():
         for i,row in enumerate(data[category][when]):
             if len(row) > 2 and freeze == None:
                 freeze = 'A'+str(i+2)
-            ws.append(list(row))
+            if category == 'Salg':
+                ws.append(list(row)[:-1])
+            else:
+                ws.append(list(row))
 
         for col in ws.columns: # align all fields with value to center
             for cell in col:
@@ -302,6 +333,16 @@ def writeSpreadsheet():
     data['Utsolgt']['Daglig'].insert(0,['Utsolgte Varer'])
 
 
+    colName = [
+    'Artikkel ID','Merke','Navn','Antall Solgt',
+    'Dato','Klokketime','Pris','Rabatt','Betalingsmate'
+    ]
+    data['Salg']['Daglig'].insert(0,colName)
+    data['Salg']['Daglig'].insert(0,[data['Tider']['yesterday']['weekday'].title() +' Uke-' + data['Tider']['yesterday']['weekNum']])
+    data['Salg']['Daglig'].insert(0,[data['Tider']['yesterday']['human']])
+    data['Salg']['Daglig'].insert(0,['Varesalg'])
+
+
     # loop through results in data and export spreadsheet
     for category in data:
         if category != 'Tider':
@@ -315,8 +356,12 @@ def writeSpreadsheet():
                 elif when == 'Maanedlig':
                     fileName = os.path.join(dirs[category],when,data[
                         'Tider']['yesterday']['YYYYMMDD'][:6]+'.xlsx')
-                exportXLSX(fileName)
-                Log(f'Spreadsheet: exporting {fileName}')
+                else:
+                    fileName == False
+
+                if fileName != False:
+                    exportXLSX(fileName)
+                    Log(f'Spreadsheet: exporting {fileName}')
 
 
 
@@ -328,7 +373,8 @@ def writeSpreadsheet():
 
 
 if __name__ == '__main__':
-    data = {} # data fetched during execution is appended here
+    data = {} # data for post and spreadsheet appended here
+    post = {} # data only for post appended here
 
     initialize() # daily insert id_records in data warehouse if new data from store
 

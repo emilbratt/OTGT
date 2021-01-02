@@ -177,20 +177,20 @@ $ crontab -e
 
 (add text)
 
-# do a mysql_dump
-0 1 * * * mysqldump --single-transaction -h localhost -u databaseuser CIP >  /home/username/autoreport/db_backup/nameofdatabase_`date +"\%Y\%m\%d"`.bak
+# do a daily mysql_dump with a weekly name_stamp
+0 1 * * * mysqldump --single-transaction -h localhost -u databaseuser CIP >  /home/username/autoreport/db_backup/DB_NAME_`date +"\%Y"`-`date +"\%m"`_week-`date +"\%V"`.bak
 
-# send mysql_dump to otgt35
+# send mysql_dump to cloud
 10 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_mysqldumpp.log -e "ssh -p 22" /home/username/autoreport/db_backup   username@hostname:/home/username/salesreport/
 
 # run daily autoreport
 20 1 * * * /usr/bin/python3 ~/autoreport/main.py
 
-# send reports to otgt35
-40 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/autoreport/Data   username@otgt35.no:/home/username/salesreport/
+# send reports to cloud
+40 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/autoreport/Data   username@hostname:/home/username/salesreport/
 
-# send aytoreport log to otgt35
-50 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/autoreport/log   username@otgt35.no:/home/username/salesreport/
+# send aytoreport log to cloud
+50 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/autoreport/log   username@hostname:/home/username/salesreport/
 
 (save)
 
