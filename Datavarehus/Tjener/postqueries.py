@@ -164,6 +164,14 @@ weekday     CHAR(10)    NOT NULL,
 yyyymmdd    INT         NOT NULL,
 humandate   CHAR(10)    NOT NULL
 );
+''',
+'placement_invalid':'''
+CREATE TABLE IF NOT EXISTS placement_invalid(
+barcode         VARCHAR(255)    NOT NULL,
+stock_location  char(10)        NOT NULL,
+timestamp       CHAR(30)        NOT NULL,
+yyyymmdd        INT             NOT NULL
+);
 '''
 }
 
