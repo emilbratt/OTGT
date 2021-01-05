@@ -27,10 +27,7 @@ from writelog import Log
 
     mode
         will not run the program but instead check what
-        is enabled/disabled in debug.json and print on screen
-
-        when running on pi in normal enviroment, set all to True
-        when debugging set needed values to false
+        is enabled/disabled in mode.json and print on screen
 
         how: by adding one or more flags as shown under
         example: switch shutdown and sql -> python3 main.py shutdown sql
@@ -46,6 +43,9 @@ from writelog import Log
 
     led
         enables/disables the gpio led
+
+    usb
+        enables/disables backing up to usb drive
 
     credentials
         add new credentials settings
@@ -130,7 +130,7 @@ def ledBlink(value):
 
         plug the + wire of the led into gpio pin number 11 (tested on raspberry pi 3B)
     '''
-    if debug['led'] == False:
+    if mode['led'] == False:
         return None
     if value == 'item':
         led.off()
@@ -154,7 +154,7 @@ def mainLoop():
     '''
         this function will loop while you add items and shelf values
 
-        it will end (and restart if debug.json is set with the live parameter = true)
+        it will end (and restart if mode.json is set with the live parameter = true)
         when you scan the excUpdate barcode that is located in the ekstra directory
     '''
     # initialize inventory
@@ -171,23 +171,23 @@ def mainLoop():
                 inventory.sessionAdd(item,shelf)
                 continue
             else:
-                if shelf == 'excUpdate':
+                if shelf.upper() == 'EXCUPDATE':
                     ledBlink('update')
                     inventory.sessionExecuteUpdate()
                     del inventory
                     return True
-                elif shelf == 'exit':
+                elif shelf.upper() == 'EXIT':
                     return False
                 else:
                     Log(shelf + ' is not a valid shelf barcode',2)
                     sleep(0.5)
         else:
-            if item == 'excUpdate':
+            if item.upper() == 'EXCUPDATE':
                 ledBlink('update')
                 inventory.sessionExecuteUpdate()
                 del inventory
                 return True
-            elif item == 'exit':
+            elif item.upper() == 'EXIT':
                 return False
             else:
                 Log(item + ' is not a valid item barcode',2)
@@ -202,7 +202,7 @@ if __name__ == '__main__':
         'mode','passwordhide', 'build',
         'shutdown','sql','led',
         'credentials','wipesessions','live',
-        'showcred'
+        'showcred','usb'
         ]
     # put file directory into a variable
     cwd = os.path.dirname(os.path.realpath(__file__))
@@ -222,23 +222,24 @@ if __name__ == '__main__':
     Log(f'executing {__file__}','5')
 
 
-    # open debug and check parameters
-    mode = open('%s/debug.json'%cwd,encoding='utf-8')
-    debug = json.load(mode)
-    mode.close()
-    # check modes in debug.json
+    # open mode and check parameters
+    modeFile = open('%s/mode.json'%cwd,encoding='utf-8')
+    mode = json.load(modeFile)
+    modeFile.close()
+    # check modes in mode.json
     if 'mode' in sys.argv:
-        for key in debug:
-            print(f'{key} = {debug[key]}')
+        for key in mode:
+            print(f'{key} = {mode[key]}')
+        exit()
 
     # apply all arguments
     for i in range(1,len(sys.argv)):
         try:
-            if debug[sys.argv[i]] == True:
-                debug[sys.argv[i]] = False
+            if mode[sys.argv[i]] == True:
+                mode[sys.argv[i]] = False
                 Log(f'Deactivating {sys.argv[i]}', 4)
             else:
-                debug[sys.argv[i]] = True
+                mode[sys.argv[i]] = True
                 Log(f'Activating {sys.argv[i]}', 3)
         except KeyError:
             if sys.argv[i] == 'wipesessions':
@@ -260,33 +261,30 @@ if __name__ == '__main__':
                 for flag in validFlags:
                     print('\t\t./main.py '+flag)
 
-        with open('%s/debug.json'%cwd, 'w',encoding='utf-8') as mode:
-            json.dump(debug, mode, indent=2)
+        with open('%s/mode.json'%cwd, 'w',encoding='utf-8') as modeFile:
+            json.dump(mode, modeFile, indent=2)
     # exit if any arguments where given
     if len(sys.argv) > 1:
         exit()
 
 
 
-
-    debugMode = False
     # warn user if any parameter is disabled
-    for key in debug:
-        if debug[key] == False:
-            Log(f'{key} is deactivated', 2)
-            debugMode = True
+    for key in mode:
+        if mode[key] == False:
+            Log(f'{key}: deactivated', 2)
+        else:
+            Log(f'{key}: activated', 3)
         sleep(0.5)
 
-    if debugMode == True:
-        Log('running in debug mode', 3)
     # import shutdown
-    if debug['shutdown'] == True:
+    if mode['shutdown'] == True:
         from subprocess import call
 
     # import LED
-    if debug['led'] == True:
+    if mode['led'] == True:
         try:
-            # import gpiozero module only if led is not disabled in debug.json
+            # import gpiozero module only if led is not disabled in mode.json
             from gpiozero import LED,PWMLED
             led = LED(17)
         except ModuleNotFoundError:

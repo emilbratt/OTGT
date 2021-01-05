@@ -1,4 +1,4 @@
-Updated: 01.01.2021 by Emil Bratt Børsting
+Updated: 05.01.2021 by Emil Bratt Børsting
 
 1. Download Raspberry Pi OS lite 32 bit and write to sd-card.
 
@@ -38,7 +38,6 @@ $ pip3 install --user gpiozero
 $ pip3 install --user RPi.GPIO
 
 
-
 6. Add at bottom of FreeTDS conf file:
 sudo nano /etc/freetds/freetds.conf
 
@@ -47,7 +46,6 @@ sudo nano /etc/freetds/freetds.conf
       port = 1433 # this is default port, but you can change it
       tds version = 7.4 # chose version you want to use
       instance = <dbname> # insert the name of the database you are gonna use
-
 
 
 7. Create DSN (add to file)
@@ -79,35 +77,14 @@ TDS_Version = 7.4 # chose version you want to use
 (save and exit)
 
 
-8. Create mountpoint for usb (for if you want run and store data to USB instead of the sd-card)
-Format a usb with fat32 and label "PI"
-$ mkdir /home/pi/usb
-$ sudo nano /etc/fstab
-
-(add text to bottom)
-
-LABEL=PI /home/pi/usb        vfat	user,auto,uid=pi,x-systemd.device-timeout=0     0       2
-
-(save and exit)
-
-
-9.
-copy app to raspberry pi
+8. Copy app-source to raspberry pi
 Structure like this:
 
-if on USB...
-  credentials file goes into /home/pi/credentials.json
-  files that goes into /home/pi/usb/
-    credentials.py
-    databuild.py
-    debug.json
-    inventory.py
-    main.pyrest of files/folders goes into /home/pi/usb/..
 
-if on sd-card...
 $ mkdir /home/pi/app
   credentials file goes into /home/pi/credentials.json
   files that goes into /home/pi/app/
+    backup_usb.sh
     credentials.py
     databuild.py
     debug.json
@@ -118,21 +95,26 @@ $ mkdir /home/pi/app
   ./main.py credentials (using the credentials flag to add new credentials)
 
 
+9. (Optional) Create mountpoint for usb if you want to make an inventory backup to USB
+Remember: Pi will not boot unless USB is attached, see -> -systemd.device-timeout=0
+This is to avoid conflict if USB is not attached
+Format a usb with fat32 and label "PI"
+$ mkdir /home/pi/usb
+$ sudo nano /etc/fstab
+
+(add text to bottom)
+
+LABEL=PI /home/pi/usb        vfat	user,auto,uid=pi,x-systemd.device-timeout=0     0       2
+
+(save and exit)
+
+$ chmod +x /home/pi/app/backup_usb.sh
+
+Remember to set  "usb": true, in mode.json
 
 
 10. Make boot script and add to .bashrc
 $ nano /home/pi/.bashrc
-
-if USB..
-
-(add text to bottom)
-
-cd /home/pi/usb
-python3 /home/pi/usb/main.py
-
-(save and exit)
-
-if on sd-card..
 
 (add text to bottom)
 
@@ -141,7 +123,31 @@ python3 /home/pi/app/main.py
 
 (save and exit)
 
-11. optional.. kill switch for radio signals (wifi and bluetooth)
+
+11. Set mode
+If battery mode with usb the debug.json could look like this:
+{
+  "sql": true,
+  "shutdown": true,
+  "passwordhide": true,
+  "showcred": true,
+  "led": true,
+  "usb": true,
+  "live": false
+}
+If live mode withoud usb (always on) the debug.json could look like this:
+{
+  "sql": true,
+  "shutdown": false,
+  "passwordhide": true,
+  "showcred": true,
+  "led": false,
+  "usb": false,
+  "live": true
+}
+
+
+12. optional.. kill switch for radio signals (wifi and bluetooth) if wired connection
 $ sudo rfkill block wifi
 $ sudo rfkill block bluetooth
 
@@ -149,7 +155,7 @@ list blocked radio transmitters
 $ rfkill list all
 
 
-12. optional.. make boot script to run after boot -> for multi-user (systemd)
+13. optional.. make boot script to run after boot -> for multi-user (systemd)
 $ nano nameofscript.py
 	write the script....
 

@@ -59,10 +59,10 @@ class Inventory:
                 os.utime(self.sessionFile, None)
 
 
-        with open('%s/debug.json'%os.path.join(
+        with open('%s/mode.json'%os.path.join(
         os.path.dirname(os.path.realpath(__file__))), 'r') as mode:
-            self.debug = json.load(mode)
-        if self.debug['shutdown'] == True:
+            self.mode = json.load(mode)
+        if self.mode['shutdown'] == True:
             from subprocess import call
 
 
@@ -107,12 +107,12 @@ class Inventory:
         '''
 
         # if sql is disabled, pyodbc and mariadb will not be imported
-        if self.debug['sql'] == True:
+        if self.mode['sql'] == True:
             try:
                  import pyodbc
             except ModuleNotFoundError:
                 Log('pyodbc module was not found', 1)
-                if self.debug['shutdown'] == True:
+                if self.mode['shutdown'] == True:
                     from subprocess import call
                 try:
                     call("echo", shell=True) # will trigger exception of error
@@ -124,7 +124,7 @@ class Inventory:
                  import mariadb
             except ModuleNotFoundError:
                 Log('mariadb module was not found', 1)
-                if self.debug['shutdown'] == True:
+                if self.mode['shutdown'] == True:
                     from subprocess import call
                 try:
                     call("echo", shell=True) # will trigger exception of error
@@ -135,7 +135,7 @@ class Inventory:
 
 
         Log('executing sessionExecuteUpdate')
-        if self.debug['sql'] == False:
+        if self.mode['sql'] == False:
             Log('sql is not activated, skipping update', 2)
             return None
 
@@ -203,7 +203,8 @@ class Inventory:
 
 
         deDuplicate = []
-        preparePost = []
+        prepareValidPost = []
+        prepareInvalidPost = []
         Log('reading values from ' + self.intDate + '.csv')
         with open('%s.csv' % self.sessionPath,'r') as csvfile:
             reader = csv.reader(csvfile)
@@ -218,11 +219,17 @@ class Inventory:
                     add = cursorGet.execute(articleIdGet, row[0]).fetchone()
                     prep = []
                     if add != None:
-                        prep.append(add[0])
-                        prep.append(row[1])
-                        prep.append(row[2])
+                        prep.append(add[0]) # article_id
+                        prep.append(row[1]) # shelf
+                        prep.append(row[2]) # timestamp
                         prep.append(int(self.intDate))
-                        preparePost.append(prep)
+                        prepareValidPost.append(prep)
+                    else:
+                        prep.append(row[0]) # scanned barcode
+                        prep.append(row[1]) # shelf
+                        prep.append(row[2]) # timestamp
+                        prep.append(int(self.intDate))
+                        prepareInvalidPost.append(prep)
 
                     # append to store
                     print(f'Updating shelf for {row[0]} to {row[1]}')
@@ -230,43 +237,73 @@ class Inventory:
                     cnxnGet.commit()
                     sleep(0.2)
 
-
         cursorGet.close()
         cnxnGet.close()
 
         # update data warehouse
 
-        # get list to compare
-        selectShelfPost = '''
+        # get list to compare from placement
+        placementSelectPost = '''
         SELECT *
         FROM `placement`
         WHERE yyyymmdd = (?);
         '''
-        selectShelf = cursorPost.execute(selectShelfPost,(self.intDate,))
+        selectShelf = cursorPost.execute(placementSelectPost,(self.intDate,))
         result = cursorPost.fetchall()
         for row in result:
-            if list(row) in preparePost:
-                preparePost.remove(list(row))
+            if list(row) in prepareValidPost:
+                prepareValidPost.remove(list(row))
 
         # after comparison, insert new distinct values
-        insertShelfPost = '''
+        placementInsertShelfPost = '''
         INSERT INTO `placement`
-            (article_id, stock_location, timestamp,yyyymmdd)
+            (article_id, stock_location, timestamp, yyyymmdd)
         VALUES
             (?, ?, ?, ?);
         '''
-        if preparePost != []:
-            cursorPost.executemany(insertShelfPost,preparePost)
+        if prepareValidPost != []:
+            Log('Updating table "placement" on data warehouse')
+            cursorPost.executemany(placementInsertShelfPost,prepareValidPost)
             cnxnPost.commit()
+
+
+        # get list to compare from invalid_placement
+        placement_invalidSelectPost = '''
+        SELECT *
+        FROM `placement_invalid`
+        WHERE yyyymmdd = (?);
+        '''
+        selectShelf = cursorPost.execute(placement_invalidSelectPost,(self.intDate,))
+        result = cursorPost.fetchall()
+        for row in result:
+            if list(row) in prepareInvalidPost:
+                prepareInvalidPost.remove(list(row))
+
+        # after comparison, insert new distinct values
+        placement_invalidInsertShelfPost = '''
+        INSERT INTO `placement_invalid`
+            (barcode, stock_location, timestamp, yyyymmdd)
+        VALUES
+            (?, ?, ?, ?);
+        '''
+        if prepareInvalidPost != []:
+            Log('Updating table "placement_invalid" on data warehouse')
+            cursorPost.executemany(placement_invalidInsertShelfPost,prepareInvalidPost)
+            cnxnPost.commit()
+
         cnxnPost.close()
 
-        if self.debug['live'] == True:
+        if self.mode['usb'] == True:
+            os.system("sh backup_usb.sh")
+            Log('Backing up iventory to USB')
+
+        if self.mode['live'] == True:
             Log('Finish updating, live mode = True -> keep running', 5)
             return None
 
         # power off if enabled or exit if not
         try:
-            if self.debug['shutdown'] == True:
+            if self.mode['shutdown'] == True:
                 from subprocess import call
             call("echo", shell=True)
             Log('powering off', 5)
