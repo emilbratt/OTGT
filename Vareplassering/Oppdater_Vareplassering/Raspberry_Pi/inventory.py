@@ -262,7 +262,10 @@ class Inventory:
             (?, ?, ?, ?);
         '''
         if prepareValidPost != []:
-            Log('Updating table "placement" on data warehouse')
+            Log('Updating database '
+            + 'Table: placement on '
+            + self.credentialsPost['database'] + ' at '
+            + self.credentialsPost['server'])
             cursorPost.executemany(placementInsertShelfPost,prepareValidPost)
             cnxnPost.commit()
 
@@ -287,7 +290,10 @@ class Inventory:
             (?, ?, ?, ?);
         '''
         if prepareInvalidPost != []:
-            Log('Updating table "placement_invalid" on data warehouse')
+            Log('Updating database '
+            + 'Table: placement_invalid on '
+            + self.credentialsPost['database'] + ' at '
+            + self.credentialsPost['server'])
             cursorPost.executemany(placement_invalidInsertShelfPost,prepareInvalidPost)
             cnxnPost.commit()
 
