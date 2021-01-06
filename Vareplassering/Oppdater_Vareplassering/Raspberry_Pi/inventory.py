@@ -211,9 +211,12 @@ class Inventory:
             Log('updating database '
             + self.credentialsGet['database'] + ' at '
             + self.credentialsGet['server'])
-            for row in reader:
-                if [row[0],row[1]] not in deDuplicate:
-                    deDuplicate.append([row[0],row[1]])
+            try:
+                for i,row in enumerate(reader):
+
+                    # commented out 06.01.2021 and pulled block under back 1 indent
+                    # if [row[0],row[1]] not in deDuplicate:
+                    #     deDuplicate.append([row[0],row[1]])
 
                     # append rows with timestamp and date for data warehouse
                     add = cursorGet.execute(articleIdGet, row[0]).fetchone()
@@ -230,12 +233,16 @@ class Inventory:
                         prep.append(row[2]) # timestamp
                         prep.append(int(self.intDate))
                         prepareInvalidPost.append(prep)
-
                     # append to store
                     print(f'Updating shelf for {row[0]} to {row[1]}')
                     cursorGet.execute(updateShelfGet, row[1], row[0])
                     cnxnGet.commit()
                     sleep(0.2)
+
+            except csv.Error:
+                Log(f'CSV error when looping through {self.sessionPath} ' +
+                f'on row {str(i+2)} possibly because of corrput ' +
+                'row due to device not shut off properly')
 
         cursorGet.close()
         cnxnGet.close()
