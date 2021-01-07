@@ -9,19 +9,20 @@ from writelog import Log
     you can run this file directly to add new credentials
 '''
 
+appPath = os.path.dirname(os.path.realpath(__file__))
+modePath = os.path.join(appPath, 'mode.json')
+credPath = os.path.join(appPath, 'credentials.json')
+
+
 # load credentials
 def loadCredentials():
-    mode = open('%s/debug.json'%
-    os.path.dirname(os.path.realpath(__file__)),
-    encoding='utf-8')
-    debug = json.load(mode)
-    mode.close()
+    modeFile = open(modePath,  encoding='utf-8')
+    mode = json.load(modeFile)
+    modeFile.close()
     try:
-        json_file = open('%s/credentials.json'%
-        os.path.dirname(os.path.dirname(os.path.realpath(__file__))),
-        encoding='utf-8')
+        credFile = open(credPath, encoding='utf-8')
         try:
-            credentials = json.load(json_file)
+            credentials = json.load(credFile)
             Log('credentials.json loaded succesfully','noprint')
             sleep(1.1)
         except AttributeError:
@@ -34,7 +35,7 @@ def loadCredentials():
             sleep(1.1)
 
             call("sudo nohup shutdown -h now", shell=True)
-        json_file.close()
+        credFile.close()
     except FileNotFoundError:
         Log('credentials.json file not found, shutting down')
         sleep(1.1)
@@ -42,7 +43,7 @@ def loadCredentials():
 
     for key in credentials:
         if key == 'password':
-            if debug['passwordhide'] == True:
+            if mode['passwordhide'] == True:
                 continue
             else:
                 Log(key.ljust(10) + credentials[key].ljust(16),'noprint')
@@ -64,9 +65,9 @@ def createCredentials():
         if isOK == '1':
             inputAccept = True
 
-    json_file = open('%s/credentials.json'%os.path.dirname(os.path.dirname(os.path.realpath(__file__))), 'w',encoding='utf-8')
-    json.dump(credentials, json_file, indent=2)
-    json_file.close()
+    credFile = open(credPath, 'w',encoding='utf-8')
+    json.dump(credentials, credFile, indent=2)
+    credFile.close()
     for key in credentials:
         if key == 'password':
             continue

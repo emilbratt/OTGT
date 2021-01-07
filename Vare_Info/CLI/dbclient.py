@@ -42,7 +42,14 @@ class connect:
             'SELECT CONVERT(VARCHAR(16),GETDATE(),20)').fetchone()[0]
 
 
-    def getImportToday(self):
+    def getYYYYMMDD(self, days):
+        query = '''
+        SELECT CONVERT(VARCHAR(10),DATEADD(DAY, -(?), CURRENT_TIMESTAMP),112)
+        '''
+        return self.cursor.execute(query,days).fetchone()[0]
+
+
+    def getImport(self,days):
         fetchList = '''
         SELECT
             articleId,
@@ -50,7 +57,8 @@ class connect:
         FROM
             StockAdjustment
         WHERE
-            adjustmentDate >= DATEADD(day, DATEDIFF(day, 0, GETDATE()), 0) AND
+        	DATEPART(DAY, [adjustmentDate]) = DATEPART(DAY, DATEADD(DAY, -(?), CURRENT_TIMESTAMP)) AND
+        	DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, DATEADD(DAY, -(?), CURRENT_TIMESTAMP)) AND
             adjustmentCode ='41'
         ORDER BY
             adjustmentDate
@@ -73,7 +81,7 @@ class connect:
         WHERE
             Article.articleId =(?) AND adjustmentCode ='41' AND stockAdjustmenId = (?)
         '''
-        result = self.cursor.execute(fetchList).fetchall()
+        result = self.cursor.execute(fetchList,days,days).fetchall()
         data = []
 
         for article in result:

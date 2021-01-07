@@ -5,7 +5,7 @@ import csv
 from dbclient import *
 from prettyquery import prettysql
 from datetime import datetime
-
+from spreadsheet import exportXLSX
 # create a clear screen function
 clearScreen = lambda : os.system(
     'cls' if os.name == 'nt' else 'clear')
@@ -47,39 +47,19 @@ def printAllTerminal():
     prettysql(data)
 
 
-def exportXLSX():
-    import openpyxl
-    from openpyxl import Workbook
-    from openpyxl.utils import get_column_letter
-    from openpyxl.styles import Alignment
+def getImport():
+    message = (f'{colourPrint[3]}\n\tFor hvilken dag?\n\t0 = idag\n\t1 = igår'+
+        f'\n\t2 = forigårs osv..\n\t{colourPrint[2]}skriv: \033[0m')
+    days = int(input(message))
 
-    # set working directory
-    appRootPath = os.path.dirname(os.path.realpath(__file__))
-    # os.makedirs('%s/utskrift' % appRootPath, exist_ok=True)
     c = connect()
-    data = c.getImportToday()
+    data = c.getImport(days)
+    currentFile = os.path.join(outPath, (str(c.getYYYYMMDD(days))+'.xlsx'))
     c.close()
 
-    wb = Workbook()
-    ws = wb.active
 
-    for row in data:
-        ws.append(list(row))
-
-    for col in ws.columns:
-        for cell in col:
-            cell.alignment = Alignment(horizontal='center', vertical='center')
-
-    ws.column_dimensions['A'].width = 25
-    ws.column_dimensions['B'].width = 25
-    ws.column_dimensions['C'].width = 70
-    ws.column_dimensions['D'].width = 10
-    ws.column_dimensions['E'].width = 8
-    ws.column_dimensions['F'].width = 8
-
-    wb.save(currentFile)
-    return currentFile
-
+    spreadsheet = exportXLSX(currentFile, data)
+    openFile(spreadsheet)
 
 
 def printInfoTerminal(choice):
@@ -89,7 +69,9 @@ def printInfoTerminal(choice):
         # c = connect()
 
         while True:
-            barcode = input('Skan strekkode eller trykk Enter for å gå tilbake')
+            message = (f'{colourPrint[0]}'+
+                f'Skan strekkode eller trykk Enter for å gå tilbake')
+            barcode = input(message)
             sys.stdout.write("\033[F")
             if barcode.isnumeric():
                 break
@@ -111,10 +93,14 @@ if __name__ == '__main__':
     while True:
         clearScreen()
         print(f'\n\t{colourPrint[0]}Vareoversikt\n\tVelg:\n\033[0m')
-        print(f'\t{colourPrint[3]}1. Skann en og en vare og vis generell info på skjerm\033[0m')
-        print(f'\t{colourPrint[3]}2. Skann en og en vare og vis utvidet info på skjerm\033[0m')
-        print(f'\t{colourPrint[3]}3. Åpne oversikt over alle importerte varer i dag (regneark)\033[0m')
-        print(f'\n\t{colourPrint[4]}0. Avslutt\033[0m')
+        print(f'\t{colourPrint[3]}'+
+        f'1. Skann en og en vare og vis generell info på skjerm\033[0m')
+        print(f'\t{colourPrint[3]}'+
+        f'2. Skann en og en vare og vis utvidet info på skjerm\033[0m')
+        print(f'\t{colourPrint[3]}'+
+        f'3. Åpne oversikt over alle importerte varer i dag (regneark)\033[0m')
+        print(f'\n\t{colourPrint[4]}'+
+        f'0. Avslutt\033[0m')
         choice = input(f'\n\t{colourPrint[2]}skriv: \033[0m')
 
 
@@ -123,7 +109,6 @@ if __name__ == '__main__':
         elif choice == '2':
             printInfoTerminal('2')
         elif choice == '3':
-            currentFile = exportXLSX()
-            openFile(currentFile)
+            getImport()
         elif choice == '0':
             exit()
