@@ -50,7 +50,15 @@ def printAllTerminal():
 def getImport():
     message = (f'{colourPrint[3]}\n\tFor hvilken dag?\n\t0 = idag\n\t1 = igår'+
         f'\n\t2 = forigårs osv..\n\t{colourPrint[2]}skriv: \033[0m')
-    days = int(input(message))
+    while True:
+        days = input(message)
+        if days.isnumeric():
+            days = int(days)
+            break
+        else:
+            print(f'{colourPrint[3]}\n\tSkriv inn et tall')
+
+
 
     c = connect()
     data = c.getImport(days)
