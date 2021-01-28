@@ -130,7 +130,7 @@ Delete user
 
 Allow remote connections
 $ sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
-Uncomment
+Remove bind restriction on localhost by commenting out..
 bind-address            = 127.0.0.1
 To
 # bind-address            = 127.0.0.1
