@@ -137,7 +137,7 @@ To
 
 $ sudo systemctl restart mariadb
 
-Add cnf
+Add a MySQL/MariaDB configuration file -> (cnf-file)
 $ nano ~/.my.cnf
 
 (add text)
