@@ -89,9 +89,10 @@ $ mkdir /home/pi/app
     databuild.py
     debug.json
     inventory.py
-    main.pyrest of files/folders goes into /home/pi/usb/..
+    main.py
 
-  if you have no credential file, create one by running:
+
+  if you have not generated a credential file, do so by running:
   ./main.py credentials (using the credentials flag to add new credentials)
 
 
@@ -125,7 +126,7 @@ python3 /home/pi/app/main.py
 
 
 11. Set mode
-If battery mode with usb the debug.json could look like this:
+If battery mode with usb the mode.json could look like this:
 {
   "sql": true,
   "shutdown": true,
@@ -135,7 +136,7 @@ If battery mode with usb the debug.json could look like this:
   "usb": true,
   "live": false
 }
-If live mode withoud usb (always on) the debug.json could look like this:
+If live mode withoud usb (always on) the mode.json could look like this:
 {
   "sql": true,
   "shutdown": false,
