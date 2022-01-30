@@ -1,7 +1,7 @@
 Åpne skriveklar.odt
 Denne inneholder strekkoder som trigger kommandoer på enheten
 
-##Kommandoer
+## Kommandoer
 ```
 excUpdate
 ```
