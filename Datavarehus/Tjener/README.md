@@ -250,8 +250,8 @@ add text (swap out username, database_user, database_name e.g. with correct ones
 ..and save file
 
 
-Alternative to cron
-Make boot script to run after boot -> for multi-user (systemd)
+Alternative to cron using systemd
+
 Swap out nameofservice with your preferred name
 ```
 nano nameofservice.service
