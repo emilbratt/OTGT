@@ -50,7 +50,7 @@ Add freetds driver to datasource
   sudo nano /etc/freetds/freetds.conf
 ```
 
-..and add text under
+..and add text under inserting your correct parameters
 
 ```
 [sqlserver]
@@ -66,14 +66,14 @@ Add config for FreeTDS
 ```
   sudo nano /etc/odbcinst.ini  (add text under)
 ```
-..add text under
+..and add text under inserting your correct parameters
 
 ```
 [FreeTDS]
-Description = FreeTDS unixODBC Driver
-Driver = /usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
-Setup = /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
-UsageCount = 1
+  Description = FreeTDS unixODBC Driver
+  Driver = /usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
+  Setup = /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
+  UsageCount = 1
 ```
 ..save file and exit
 
