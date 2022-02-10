@@ -1,4 +1,4 @@
-<h3>Setup</h3>
+<h3>Setup Autoreporting</h3>
 
 Install a headless Debian and set password, set date/time etc then follow below
 
@@ -182,16 +182,15 @@ chmod 600 ~/.my.cnf
 
 Create backup folder for database
 ```
-mkdir ~/autoreport/db_backup
+mkdir ~/path/datawarehouse/db_backup
 ```
 
 Make app folder and put app-source (files) in your users home folder
 ```
-mkdir ~/autoreport
+mkdir ~/path/datawarehouse
 ```
 
 Copy files to this folder..
-
 
 
 Rsync folder ../Data to cloud
@@ -209,9 +208,9 @@ Open crontab
 crontab -e
 ```
 
-add line
+add line (insert your remote hosts username)
 ```
-0 3 * * * rsync -au  --bwlimit=2000 --log-file=~/rsync_Output.log -e "ssh -p 22" "~/Output"   user@host:/home/user/dir/
+0 3 * * * rsync -au  --bwlimit=2000 --log-file=~/rsync_Output.log -e "ssh -p 22" "~/Output"   user@host:/home/user/salesreport/
 ```
 
 add salesreport folder on remote host
@@ -229,22 +228,23 @@ Add crontab tasks
 crontab -e
 ```
 
-(add text)
+add text (swap out username, database_user, database_name e.g. with correct ones)
 ```
-# do a daily mysql_dump with a weekly name_stamp
-0 1 * * * mysqldump --single-transaction -h localhost -u databaseuser CIP >  /home/username/autoreport/db_backup/DB_NAME_`date +"\%Y"`-`date +"\%m"`_week-`date +"\%V"`.bak
-
-# send mysql_dump to cloud
-10 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_mysqldumpp.log -e "ssh -p 22" /home/username/autoreport/db_backup   username@hostname:/home/username/salesreport/
-
 # run daily autoreport
-20 1 * * * /usr/bin/python3 ~/autoreport/main.py
+20 1 * * * /usr/bin/python3 ~/path/datawarehouse/main.py
 
-# send reports to cloud
-40 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/autoreport/Data   username@hostname:/home/username/salesreport/
+# send reports to remote_host
+30 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/path/datawarehouse/Data   username@remote_host.no:/home/username/salesreport/
 
-# send aytoreport log to cloud
-50 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/autoreport/log   username@hostname:/home/username/salesreport/
+# send log to remote_host
+40 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/path/datawarehouse/log   username@remote_host.no:/home/username/salesreport/
+
+# do a mysql_dump
+0 1 * * * mysqldump --single-transaction -h localhost -u database_user database_name >  /home/username/path/datawarehouse/db_backup/database_name_`date +"\%Y"`-`date +"\%m"`.bak
+
+# send mysql_dump to remote_host
+10 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_mysqldumpp.log -e "ssh -p 22" /home/username/path/datawarehouse/db_backup   username@remote_host.no:/home/username/salesreport/
+
 ```
 
 ..and save file
