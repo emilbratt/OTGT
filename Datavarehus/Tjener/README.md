@@ -89,7 +89,7 @@ Setting up the datawarehouse database
 $ sudo mariadb
 
 
-#### Instructions for basic usage of mariadb ####
+## Instructions for basic usage of mariadb
 
 Create database (set your own name instead of DBNAME)
 ```
@@ -97,82 +97,128 @@ Create database (set your own name instead of DBNAME)
 ```
 Add user
 -> can do everything but only connect from the same machine
-# CREATE USER 'admin'@localhost IDENTIFIED BY 'password';
-
+```
+  CREATE USER 'admin'@localhost IDENTIFIED BY 'password';
+```
 -> can read and access from everywhere..
-# CREATE USER 'readuser'@'%' IDENTIFIED BY 'password';
+```
+  CREATE USER 'readuser'@'%' IDENTIFIED BY 'password';
+```
 
 -> can read, update and insert from everywhere..
-# CREATE USER 'postuser'@'%' IDENTIFIED BY 'password';
+```
+  CREATE USER 'postuser'@'%' IDENTIFIED BY 'password';
+```
 
-
-Granting access
-
-# GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost';
-
-# GRANT SELECT ON DBNAME.* TO 'readuser'@'%';
-
-# GRANT SELECT ON DBNAME.* TO 'postuser'@'%';
-# GRANT UPDATE ON DBNAME.* TO 'postuser'@'%';
-# GRANT INSERT ON DBNAME.* TO 'postuser'@'%';
+Granting access to users
+```
+  GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost';
+  GRANT SELECT ON DBNAME.* TO 'readuser'@'%';
+  GRANT SELECT ON DBNAME.* TO 'postuser'@'%';
+  GRANT UPDATE ON DBNAME.* TO 'postuser'@'%';
+  GRANT INSERT ON DBNAME.* TO 'postuser'@'%';
+```
 
 reload for changes to take effect
-# FLUSH PRIVILEGES;
+```
+  FLUSH PRIVILEGES;
+```
 
 Delete user
-# DROP USER 'admin'@'localhost';
-# DROP USER 'readuser'@'%';
+```
+  DROP USER 'admin'@'localhost';
+  DROP USER 'readuser'@'%';
+```
 
 
 Allow remote connections
-$ sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
-Remove bind restriction on localhost by commenting..
-bind-address            = 127.0.0.1
-To
-# bind-address            = 127.0.0.1
+```
+  sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+```
 
-$ sudo systemctl restart mariadb
+Remove (un-comment) bind restriction on localhost by commenting..
+```
+bind-address            = 127.0.0.1
+```
+To
+```
+# bind-address            = 127.0.0.1
+```
+
+Restart database
+```
+  sudo systemctl restart mariadb
+```
 
 Add a MySQL/MariaDB configuration file -> (cnf-file)
-$ nano ~/.my.cnf
+```
+  nano ~/.my.cnf
+```
 
-(add text)
-
+add text
+```
 [mysqldump]
 user = db_user
 password = db_password
+```
+..and save file
 
-(save)
-
-$ chmod 600 ~/.my.cnf
+fix permissions for database access
+```
+  chmod 600 ~/.my.cnf
+```
 
 Create backup folder for database
-$ mkdir ~/autoreport/db_backup
+```
+  mkdir ~/autoreport/db_backup
+```
 
 Make app folder and put app-source (files) in your users home folder
-$ mkdir ~/autoreport
+```
+  mkdir ~/autoreport
+```
+
 Copy files to this folder..
 
 
 
-
-
 Rsync folder ../Data to cloud
-$ ssh-keygen -b 4096
-    --press enter all way thorugh
-$ ssh-copy-id username@host/ip
-crontab -e
-0 3 * * * rsync -au  --bwlimit=2000 --log-file=~/rsync_Output.log -e "ssh -p 22" "~/Output"   user@host:/home/user/dir/
-ssh user@user@host/ip
-mkdir salesreport
-exit
+```
+  ssh-keygen -t rsa -b 4096 -f $1 -q -N ""
+```
 
+Swap out username and host/ip and have ssh copy the public key to remote host
+```
+  ssh-copy-id username@host/ip
+```
+
+Open crontab
+```
+  crontab -e
+```
+
+add line
+```
+  0 3 * * * rsync -au  --bwlimit=2000 --log-file=~/rsync_Output.log -e "ssh -p 22" "~/Output"   user@host:/home/user/dir/
+```
+
+add salesreport folder on remote host
+```
+  ssh user@user@host/ip -t mkdir salesreport
+```
+
+And exit
+```
+  exit
+```
 
 Add crontab tasks
-$ crontab -e
+```
+  crontab -e
+```
 
 (add text)
-
+```
 # do a daily mysql_dump with a weekly name_stamp
 0 1 * * * mysqldump --single-transaction -h localhost -u databaseuser CIP >  /home/username/autoreport/db_backup/DB_NAME_`date +"\%Y"`-`date +"\%m"`_week-`date +"\%V"`.bak
 
@@ -187,18 +233,20 @@ $ crontab -e
 
 # send aytoreport log to cloud
 50 1 * * * rsync -au  --bwlimit=2000 --log-file=/home/username/rsync_Output.log -e "ssh -p 22" ~/autoreport/log   username@hostname:/home/username/salesreport/
+```
 
-(save)
+..and save file
 
 
-optional...
-
+Alternative to cron
 Make boot script to run after boot -> for multi-user (systemd)
-nano nameofscript.py
-	write the script....
+Swap out nameofservice with your preferred name
+```
+  nano nameofservice.service
+```
 
-
-nano nameofscript.service
+add this and tweak to your need
+```
 [Unit]
 Description=what script does
 After=multi-user.target
@@ -213,7 +261,11 @@ KillMode=process
 
 [Install]
 WantedBy=multi-user.target
+```
 
-
-sudo cp nameofscript.service /etc/systemd/system/nameofscript.service
-sudo systemctl enable update_shelf.service
+Enable and start service (remember to use your name)
+```
+  sudo cp nameofscript.service /etc/systemd/system/nameofscript.service
+  sudo systemctl enable nameofscript.service
+  sudo systemctl start nameofscript.service
+```
