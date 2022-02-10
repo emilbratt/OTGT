@@ -45,7 +45,7 @@ For python to connect to mariadb
 ```
 
 
-Add freetds driver to datasource
+Add datasource for database connection
 ```
   sudo nano /etc/freetds/freetds.conf
 ```
