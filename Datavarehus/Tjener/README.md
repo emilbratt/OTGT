@@ -1,7 +1,6 @@
 <h3>Setup</h3>
 
-Install a headless Debian
-Enable ssh, generate ssh-keys, set password and set date/time etc..
+Install a headless Debian and set password, set date/time etc then follow below
 
 Update system
 ```
