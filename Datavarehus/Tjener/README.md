@@ -4,17 +4,19 @@ Install a headless Debian
 Enable ssh, generate ssh-keys, set password and set date/time etc..
 
 Update system
-$ sudo apt update && sudo apt upgrade -y
+```
+  sudo apt update && sudo apt upgrade -y
+```
 
 Install mariadb
-$ sudo apt install mariadb-server -y
+```
+  sudo apt install mariadb-server -y
+```
 
 Check if mariadb is up and running
-$ sudo systemctl status mariadb
-If up and running, press q to quit
-
-Remove unecessary default options and settings for security
-$ sudo mysql_secure_installation
+```
+  sudo systemctl status mariadb
+```
 
 
 Install dependencies and packages for SQL
@@ -24,51 +26,62 @@ $ sudo apt install python3-openpyxl -y
 For backup using rsync
 $ sudo apt install rsync -y
 
-For python to connect to MSSQL
-$ sudo apt install unixodbc -y
-$ sudo apt install unixodbc-dev -y
-$ sudo apt install freetds-dev -y
-$ sudo apt install tdsodbc -y
-$ sudo apt install freetds-bin -y
-$ sudo apt install python3-pip -y
-$ sudo apt install python-pyodbc
+For database dependencies for connecting to MSSQL database
+```
+  sudo apt update && \
+  sudo apt install unixodbc -y && \
+  sudo apt install unixodbc-dev -y  && \
+  sudo apt install freetds-dev -y  && \
+  sudo apt install tdsodbc -y && \
+  sudo apt install freetds-bin -y  && \
+  sudo apt install python3-pip -y  && \
+  sudo apt install python-pyodbc
+```
 
 For python to connect to mariadb
-$ sudo apt-get install libmariadb3 libmariadb-dev -y
-$ pip3 install --user mariadb
+```
+  sudo apt-get install libmariadb3 libmariadb-dev -y && \
+  pip3 install --user mariadb
+```
 
 
 Add freetds driver to datasource
-$ sudo nano /etc/freetds/freetds.conf
+```
+  sudo nano /etc/freetds/freetds.conf
+```
 
-(add text under)
+..and add text under
 
+```
 [sqlserver]
       host = <ip/hostname> # Remote Sql Server's IP addr
       port = 1433 # this is default port, but you can change it
       tds version = 7.4 # chose version you want to use
       instance = <dbname> # insert the name of the database you are gonna use
+```
+..save file and exit
 
-(save and exit)
 
+Add config for FreeTDS
+```
+  sudo nano /etc/odbcinst.ini  (add text under)
+```
+..add text under
 
-$ sudo nano /etc/odbcinst.ini  (add text under)
-
-(add text under)
-
+```
 [FreeTDS]
 Description = FreeTDS unixODBC Driver
 Driver = /usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
 Setup = /usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
 UsageCount = 1
+```
+..save file and exit
 
-(save and exit)
-
-
-$ sudo nano  /etc/odbc.ini (add text under)
-
-(add text under)
-
+```
+  sudo nano  /etc/odbc.ini (add text under)
+```
+..add text under
+```
 [FreeTDS]
 Description = MSSQL Server
 Driver = /usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
@@ -78,34 +91,36 @@ Server = <ip/hostname> # IP or host name of the Sql Server
 Database = <DBNAME> # Database name
 Port = 1433 # this is default port, but you can change it
 TDS_Version = 7.4 # chose version you want to use
+```
+..save file and exit
 
-(save and exit)
 
-
-Prepare for production environment
-$ sudo mysql_secure_installation
+Remove no more needed default settings for MariaDB
+```
+  sudo mysql_secure_installation
+```
 
 Setting up the datawarehouse database
-$ sudo mariadb
+```
+  sudo mariadb
+```
 
 
-## Instructions for basic usage of mariadb
+Here are some instructions for basic usage of mariadb
 
 Create database (set your own name instead of DBNAME)
 ```
   CREATE DATABASE IF NOT EXISTS DBNAME;
 ```
-Add user
--> can do everything but only connect from the same machine
+Add user that can do everything but only connect from the same machine
 ```
   CREATE USER 'admin'@localhost IDENTIFIED BY 'password';
 ```
--> can read and access from everywhere..
+Add user that can read and access from everywhere..
 ```
   CREATE USER 'readuser'@'%' IDENTIFIED BY 'password';
 ```
-
--> can read, update and insert from everywhere..
+Add user that can read, update and insert from everywhere..
 ```
   CREATE USER 'postuser'@'%' IDENTIFIED BY 'password';
 ```
@@ -130,12 +145,10 @@ Delete user
   DROP USER 'readuser'@'%';
 ```
 
-
 Allow remote connections
 ```
   sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
 ```
-
 Remove (un-comment) bind restriction on localhost by commenting..
 ```
 bind-address            = 127.0.0.1
@@ -145,7 +158,7 @@ To
 # bind-address            = 127.0.0.1
 ```
 
-Restart database
+Re(start) database
 ```
   sudo systemctl restart mariadb
 ```
