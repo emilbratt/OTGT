@@ -1,5 +1,5 @@
 <h3>Setup</h3>
-```
+
 Install a headless Debian
 Enable ssh, generate ssh-keys, set password and set date/time etc..
 
@@ -92,8 +92,9 @@ $ sudo mariadb
 #### Instructions for basic usage of mariadb ####
 
 Create database (set your own name instead of DBNAME)
-# CREATE DATABASE IF NOT EXISTS DBNAME;
-
+```
+  CREATE DATABASE IF NOT EXISTS DBNAME;
+```
 Add user
 -> can do everything but only connect from the same machine
 # CREATE USER 'admin'@localhost IDENTIFIED BY 'password';
@@ -191,7 +192,7 @@ $ crontab -e
 
 
 optional...
-#################
+
 Make boot script to run after boot -> for multi-user (systemd)
 nano nameofscript.py
 	write the script....
@@ -216,5 +217,3 @@ WantedBy=multi-user.target
 
 sudo cp nameofscript.service /etc/systemd/system/nameofscript.service
 sudo systemctl enable update_shelf.service
-####################
-```
