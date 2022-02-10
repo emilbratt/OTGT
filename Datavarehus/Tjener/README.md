@@ -1,7 +1,8 @@
-<h3>Setup Autoreporting</h3>
+## Setup Autoreporting
 
-Install a headless Debian and set password, set date/time etc then follow below
+### Install a headless Debian and set password, set date/time etc
 
+* Once you have an up and running system, follow these commands
 Update system
 ```
 sudo apt update && sudo apt upgrade -y
@@ -17,8 +18,7 @@ Check if mariadb is up and running
 sudo systemctl status mariadb
 ```
 
-
-Install dependencies and packages for SQL
+### Install dependencies and packages for SQL
 For python to write excel spreadshes
 $ sudo apt install python3-openpyxl -y
 
@@ -43,7 +43,7 @@ sudo apt-get install libmariadb3 libmariadb-dev -y && \
 pip3 install --user mariadb
 ```
 
-
+### Database connection and configurations
 Add datasource for database connection
 ```
 sudo nano /etc/freetds/freetds.conf
@@ -105,7 +105,7 @@ sudo mariadb
 ```
 
 
-Here are some instructions for basic usage of mariadb
+### Here are some instructions for setting up mariadb and basic usage
 
 Create database (set your own name instead of DBNAME)
 ```
@@ -144,6 +144,8 @@ DROP USER 'admin'@'localhost';
 DROP USER 'readuser'@'%';
 ```
 
+
+### Additional database configurations
 Allow remote connections
 ```
 sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
@@ -180,19 +182,19 @@ fix permissions for database access
 chmod 600 ~/.my.cnf
 ```
 
+Make app folder and put app-source (files) in your users home folder
+```
+mkdir ~/path/datawarehouse
+```
+..copy the scripts to this folder..
+
 Create backup folder for database
 ```
 mkdir ~/path/datawarehouse/db_backup
 ```
 
-Make app folder and put app-source (files) in your users home folder
-```
-mkdir ~/path/datawarehouse
-```
 
-Copy files to this folder..
-
-
+### Setup passwordless connection for automated rsync
 Rsync folder ../Data to cloud
 ```
 ssh-keygen -t rsa -b 4096 -f $1 -q -N ""
@@ -203,15 +205,8 @@ Swap out username and host/ip and have ssh copy the public key to remote host
 ssh-copy-id username@host/ip
 ```
 
-Open crontab
-```
-crontab -e
-```
-
-add line (insert your remote hosts username)
-```
-0 3 * * * rsync -au  --bwlimit=2000 --log-file=~/rsync_Output.log -e "ssh -p 22" "~/Output"   user@host:/home/user/salesreport/
-```
+### Setup the auto reports
+* Alternative 1: crontab
 
 add salesreport folder on remote host
 ```
@@ -223,14 +218,14 @@ And exit
 exit
 ```
 
-Add crontab tasks
+### Add crontab tasks for auto reporting
 ```
 crontab -e
 ```
 
 add text (swap out username, database_user, database_name e.g. with correct ones)
 ```
-# run daily autoreport
+# run daily auto report
 20 1 * * * /usr/bin/python3 ~/path/datawarehouse/main.py
 
 # send reports to remote_host
@@ -250,9 +245,9 @@ add text (swap out username, database_user, database_name e.g. with correct ones
 ..and save file
 
 
-Alternative to cron using systemd
+* Alternative 2: systemd service
 
-Swap out nameofservice with your preferred name
+Create service file and swap out needed parameters and have it run a script
 ```
 nano nameofservice.service
 ```
@@ -260,19 +255,19 @@ nano nameofservice.service
 add this and tweak to your need
 ```
 [Unit]
-Description=what script does
-After=multi-user.target
+  Description=what script does
+  After=multi-user.target
 
 [Service]
-User=user
-Group=user
-WorkingDirectory=/home/user/
-Type=simple
-ExecStart=/usr/bin/python3 /home/user/nameofscript.py
-KillMode=process
+  User=user
+  Group=user
+  WorkingDirectory=/home/user/
+  Type=simple
+  ExecStart=/usr/bin/python3 /home/user/nameofscript.py
+  KillMode=process
 
 [Install]
-WantedBy=multi-user.target
+  WantedBy=multi-user.target
 ```
 
 Enable and start service (remember to use your name)
