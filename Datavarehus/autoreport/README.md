@@ -1,3 +1,6 @@
+## About
+* runs auto reporting on sales, inventory imports, turnover e.g.  
+
 ## Setup Autoreporting
 
 ### Install a headless Debian and set password, set date/time etc
