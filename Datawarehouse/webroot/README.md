@@ -15,14 +15,23 @@ sudo apt update && sudo apt upgrade -y
 
 ### Install dependencies and packages for SQL
 
-For database dependencies for connecting to MSSQL database
+For database dependencies for connecting to MSSQL and MariaDB database
 ```
 sudo apt update && \
 sudo apt install unixodbc -y && \
 sudo apt install unixodbc-dev -y  && \
 sudo apt install freetds-dev -y  && \
 sudo apt install tdsodbc -y && \
-sudo apt install freetds-bin -y
+sudo apt install freetds-bin -y && \
+sudo apt install mariadb-server -y && \
+sudo apt install apache2 php php-mysql libapache2-mod-php -y
+```
+
+start apache and mariadb
+```
+sudo systemctl enable mariadb apache2 && sudo systemctl start mariadb apache2
+```
+
 ```
 
 ### Database connection and configurations
