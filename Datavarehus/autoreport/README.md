@@ -6,6 +6,7 @@
 ### Install a headless Debian and set password, set date/time etc
 
 * Once you have an up and running system, follow these commands
+
 Update system
 ```
 sudo apt update && sudo apt upgrade -y
