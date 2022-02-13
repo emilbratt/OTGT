@@ -1,6 +1,5 @@
 ## About
-* This is the webserver that brings some functionality to the user
-* such as reading values from the POS database and reports
+This is the webserver that brings some functionality to the user such as reading values from the POS database and reports
 
 
 ## Setup the http web-server
