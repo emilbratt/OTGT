@@ -1,0 +1,29 @@
+<IfModule mod_rewrite.c>
+
+  # ENABLE RE-WRITE ENGINE
+  #   if not already enabled, enable rewriting of url
+    RewriteEngine On
+
+  # REWRITE CONDITION
+  #   send all requests to index.php if no file or dir exist
+  #   ! -f = if no file
+  #   ! -d = if no directory
+  #  RewriteCond %{REQUEST_FILENAME} !-f
+  #  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # SYNTAX
+  #   RewriteRule    [REGEX]        [FILE]          [FLAG]
+  #   RewriteRule    ^(.*)$         index.php?$1    [QSA,L]
+
+  # REWRITE RULE
+      RewriteRule    ^(.*)$    index.php?$1    [QSA,L]
+
+
+  # ABOUT FLAGS
+  #   https://httpd.apache.org/docs/current/rewrite/flags.html
+
+  # DIRECTORY LINKING
+  #   for files linked from outside webroot, keep it commented/disabled for now
+  #   Options +FollowSymLinks
+
+</IfModule>
