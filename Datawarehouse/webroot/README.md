@@ -42,10 +42,10 @@ sudo nano /etc/freetds/freetds.conf
 
 ```
 [sqlserver]
-  host = <ip/hostname> # Remote Sql Server's IP addr
-  port = 1433 # this is default port, but you can change it
-  tds version = 7.4 # chose version you want to use
-  instance = <dbname> # insert the name of the database you are gonna use
+  host = <ip/hostname> # database server
+  port = 1433 # database port
+  tds version = 7.4 # chose driver version
+  instance = <dbname> # insert the name of the database
 ```
 ..save file and exit
 
@@ -75,9 +75,9 @@ sudo nano  /etc/odbc.ini (add text under)
   Driver = /usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
   Description = MSSQL Server
   Trace = No
-  Server = <ip/hostname> # IP or host name of the Sql Server
-  Database = <DBNAME> # Database name
-  Port = 1433 # this is default port, but you can change it
-  TDS_Version = 7.4 # chose version you want to use
+  Server = <ip/hostname> # database server
+  Database = <DBNAME> # database name
+  Port = 1433 # database port
+  TDS_Version = 7.4 # driver version
 ```
 ..save file and exit
