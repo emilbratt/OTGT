@@ -81,3 +81,23 @@ sudo nano  /etc/odbc.ini (add text under)
   TDS_Version = 7.4 # driver version
 ```
 ..save file and exit
+
+
+### Apache Server Config
+
+Open the virtual host config /etc/apache2/sites-available/datawarehouse.conf and point the document root to this directory using absolute path reference
+```
+  DocumentRoot /path/to/this/directory
+```
+
+Enable override all for this directory for .htaccess to work
+```
+  <Directory "/var/www/html/cip_dev/OTGT/Datawarehouse/webroot">
+    AllowOverride All
+  </Directory>
+```
+
+Enable virtual host
+```
+sudo a2ensite datawarehouse
+```
