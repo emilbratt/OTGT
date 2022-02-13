@@ -6,7 +6,7 @@ This is the webserver that brings some functionality to the user such as reading
 
 ### Install a headless Debian, make sure date/time are correct e.g.
 
-* Once you have an up and running system, follow these commands
+Once you have an up and running system, follow these commands
 
 Update system
 ```
