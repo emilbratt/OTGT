@@ -1,0 +1,25 @@
+; replace INSERT with correct values and change filename to environment.ini
+; NOTE: keep values inside double qoutes to avoid errors on special chars
+
+[retail] ; database used in our shop
+  db_server = "INSERT"
+  db_port = "INSERT"
+  db_name = "INSERT"
+  db_user = "INSERT"
+  db_password = "INSERT"
+
+[datawarehouse] ; database used for data collection
+  db_server = "INSERT"
+  db_port = "INSERT"
+  db_name = "INSERT"
+  db_user_read = "INSERT"
+  db_password_read = "INSERT"
+  db_user_admin = "INSERT"
+  db_password_admin = "INSERT"
+  db_user_post = "INSERT"
+  db_password_post = "INSERT"
+
+[nextcloud_otgt] ; self-hosted nextcloud instance used for OTGT
+  server = "INSERT"
+  user_autoreport = "INSERT"
+  password_autoreport = "INSERT"
