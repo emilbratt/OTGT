@@ -2,9 +2,9 @@
 This is the webserver that brings some functionality to the user such as reading values from the POS database and reports
 
 
-## Setup the http web-server
+## Setting up the http server
 
-### Install a headless Debian and set password, set date/time etc
+### Install a headless Debian, make sure date/time are correct e.g.
 
 * Once you have an up and running system, follow these commands
 
