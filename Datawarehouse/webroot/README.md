@@ -32,8 +32,6 @@ start apache and mariadb
 sudo systemctl enable mariadb apache2 && sudo systemctl start mariadb apache2
 ```
 
-```
-
 ### Database connection and configurations
 Add datasource for database connection
 ```
