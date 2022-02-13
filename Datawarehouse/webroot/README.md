@@ -45,7 +45,7 @@ sudo nano /etc/freetds/freetds.conf
   host = <ip/hostname> # database server
   port = 1433 # database port
   tds version = 7.4 # chose driver version
-  instance = <dbname> # insert the name of the database
+  instance = <databasename> # insert the name of the database
 ```
 ..save file and exit
 
@@ -76,7 +76,7 @@ sudo nano  /etc/odbc.ini (add text under)
   Description = MSSQL Server
   Trace = No
   Server = <ip/hostname> # database server
-  Database = <DBNAME> # database name
+  Database = <databasename> # database name
   Port = 1433 # database port
   TDS_Version = 7.4 # driver version
 ```
