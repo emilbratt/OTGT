@@ -6,11 +6,10 @@ error_reporting(E_ALL);
 
 
 require_once './applications/Request.php';
-$request = new Request;
+$main = new Apprequest;
+$main = null;
+// die;
 
-
-// remove the ugly signature that mess up the print_r on $_SERVER
-$_SERVER['SERVER_SIGNATURE'] = '';
 // print out globals
 echo '<pre>';
 print_r($_SERVER);
