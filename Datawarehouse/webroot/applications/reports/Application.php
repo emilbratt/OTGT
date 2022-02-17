@@ -1,5 +1,10 @@
 <?php
 
+/*
+notes:
+for turnover reports, maybe include graphs using some graphing tool for web view
+
+*/
 
 class Home {
   function __construct () {
