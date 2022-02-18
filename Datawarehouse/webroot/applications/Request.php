@@ -25,6 +25,7 @@ class Apprequest {
 
     if (!(is_dir("./applications/$this->app_dir"))) {
       $this->app_dir = explode('&', $this->app_dir)[0];
+      // if no match, send 404
       if(!(is_dir("./applications/$this->app_dir"))) {
         echo "Directory: " . $_SERVER['HTTP_HOST'] . "/$this->app_dir not found";
         http_response_code(404);
@@ -57,7 +58,6 @@ class Apprequest {
     http_response_code(404);
     exit(1);
   }
-
 }
 
 
