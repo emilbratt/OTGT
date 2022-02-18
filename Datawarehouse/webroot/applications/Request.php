@@ -64,17 +64,19 @@ class Pagerequest {
   public static function get_file ($page_directory) {
     $url_split = explode('/', strtolower(substr($_SERVER['REDIRECT_URL'], 1)));
     if (isset($url_split[2])) {
-      $page = "$page_directory/$url_split[2].php";
-      // should work if no "&" after url
+      $page = $page_directory . '/' . $url_split[2] . '.php';
+      // should work if no "&" (GET array) after url
       if(is_file($page)) {
         return $page;
       }
 
-      // if "&" (_GET array) after url
+      // if there is a "&" (GET array) after url
       $page = explode('&', $page)[0] . '.php';
       if(is_file($page)) {
         return $page;
       }
+
+      // if none of the above, send 404
       echo "File: " . $_SERVER['HTTP_HOST'] . "$page not found" ;
       http_response_code(404);
       exit(1);
