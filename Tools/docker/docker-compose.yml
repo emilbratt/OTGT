@@ -1,0 +1,31 @@
+version: "3.9"
+# datawarehouse_mariadb uses a docker volume for persistent database store
+# datawarehouse_php_apache uses a bind mounts for php ini and source-code
+
+services:
+  datawarehouse_mariadb:
+    image: mariadb
+    container_name: datawarehouse_mariadb
+    volumes:
+      - datawarehouse_mariadb_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_db_pwd
+      MYSQL_DATABASE: db_name
+      MYSQL_USER: db_user
+      MYSQL_PASSWORD: user_db_password
+
+  datawarehouse_php_apache:
+    depends_on:
+      - datawarehouse_mariadb
+    image: php:8.0-apache
+    container_name: datawarehouse_web
+    volumes:
+      - ../../Datawarehouse/webroot:/var/www/html
+      - ./php_conf:/usr/local/etc/php
+    ports:
+      - "8000:80"
+    restart: always
+
+volumes:
+  datawarehouse_mariadb_data: {}
