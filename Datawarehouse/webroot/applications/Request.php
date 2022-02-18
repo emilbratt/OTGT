@@ -51,6 +51,8 @@ class Apprequest {
       $app = new $this->app_class;
       return;
     }
+
+    // if no match, send 404
     echo "Class $this->app_class: " . $_SERVER['HTTP_HOST'] . "/$this->app_dir.php does not exist" ;
     http_response_code(404);
     exit(1);
