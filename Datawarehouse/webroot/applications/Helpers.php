@@ -3,9 +3,27 @@
 
 class Dates {
 
-  public static function get_weekday () {
+  public static function get_this_weekday () {
     $days = array('Søndag', 'Madnag', 'Tirsdag', 'Onsdag','Torsdag','Fredag', 'Lørdag');
     return $days[date('w')];
+  }
+
+  public static function get_this_month () {
+    $months = [
+      'Jan' => 'januar',
+      'Feb' => 'februar',
+      'Mar' => 'mars',
+      'Apr' => 'april',
+      'May' => 'mai',
+      'Jun' => 'juni',
+      'Jul' => 'juli',
+      'Aug' => 'august',
+      'Sep' => 'september',
+      'Oct' => 'oktober',
+      'Nov' => 'november',
+      'Des' => 'desember',
+    ];
+    return $months[date('M')];
   }
 }
 

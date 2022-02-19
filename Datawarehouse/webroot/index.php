@@ -14,7 +14,7 @@ error_reporting(E_ALL);
 require_once './applications/Request.php';
 $main = new Apprequest;
 $main = null;
-// die;
+die;
 
 // print out globals
 echo '<pre>';

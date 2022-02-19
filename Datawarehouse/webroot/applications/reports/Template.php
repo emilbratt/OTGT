@@ -2,16 +2,23 @@
 
 class Template {
 
+  private $html;
 
-  public static function doc_head () {
-    return <<<EOT
+  function __construct () {
+    $this->html = <<<EOT
     <!DOCTYPE html>
-    <html>
     EOT;
+
   }
 
-  public static function doc_style () {
-    return <<<EOT
+  public function print () {
+    echo $this->html;
+    $this->html = '';
+  }
+
+  public function start () {
+    $this->html .= <<<EOT
+    \n<html>
     <style>
     html {
       min-height: 100%;
@@ -64,29 +71,62 @@ class Template {
       background-color: #333333 ;
     }
     </style>
-    EOT;
-  }
-
-  public static function doc_start () {
-    return <<<EOT
     <body>
     EOT;
   }
 
-  public static function doc_end () {
-    return <<<EOT
-    </body>
+
+  public function title_left ($string = 'left title') {
+    $this->html .= '<h1 style="float: left;">' . $string . '</h1>';
+
+  }
+
+  public function title_right ($string = 'right title') {
+    $this->html .= '<h1 style="float: right;"> '. $string . '</h1>';
+  }
+
+
+  public function table_start () {
+    $this->html .= <<<EOT
+    \n<table>
+    EOT;
+  }
+
+  public function table_row_start () {
+    $this->html .= <<<EOT
+    \n<tr>
+    EOT;
+  }
+
+  public function table_header_value ($string) {
+    $this->html .= <<<EOT
+    \n<th>$string</th>
+    EOT;
+  }
+
+  public function table_row_value ($string) {
+    $this->html .= <<<EOT
+    \n<td>$string</td>
+    EOT;
+  }
+
+  public function table_row_end () {
+    $this->html .= <<<EOT
+    \n</tr>
+    EOT;
+  }
+
+  public function table_end () {
+    $this->html .= <<<EOT
+    \n</table>
+    EOT;
+  }
+
+  public function end () {
+    $this->html .= <<<EOT
+    \n</body>
     </html>
     EOT;
   }
 
-
-  public static function doc_title_left ($string) {
-    return '<h1 style="float: left;">' . $string . '</h1>';
-
-  }
-
-  public static function doc_title_right ($string) {
-    return '<h1 style="float: right;"> '. $string . '</h1>';
-  }
 }

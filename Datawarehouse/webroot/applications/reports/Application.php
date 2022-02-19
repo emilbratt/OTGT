@@ -10,10 +10,11 @@ for turnover reports, maybe include graphs using some graphing tool for web view
 
 class Home {
   function __construct () {
-
+    // links to the reports listed as classes below
+    echo Template::doc_start();
     $reports = [
-      'Utsolgt idag' => '/reports/soldout/today',
-      'Utsolgt denne uken' => '/reports/soldout/week',
+      'Utsolgt idag' => '/reports/soldout&type=thisday',
+      'Utsolgt denne uken' => '/reports/soldout&type=thisweek',
     ];
     foreach ($reports as $name => $page) {
       echo '<a href="http://'.$_SERVER['HTTP_HOST'].$page.'">'.$name.'</a><br>';
@@ -22,66 +23,67 @@ class Home {
 }
 
 
-// TO BE REMOVED
-// class Soldout {
-//   function __construct () {
-//     $page = Pagerequest::get_file('./applications/reports/soldout');
-//     if($page !== false) {
-//       require_once $page;
-//       $page = new Page();
-//     }
-//   }
-// }
-
 class Soldout {
   function __construct () {
+    // shows reports of soldout items for today, this week or this month
     require_once './applications/Database.php';
     require_once './applications/Helpers.php';
-    require_once './applications/reports/html_template.php';
+    require_once './applications/reports/Template.php';
     require_once './applications/reports/QueryReports.php';
 
-    $query = QuerySoldout::get();
-    $this->cnxn = Database::get_connection();
-
-    // $this->query = $this->get_query_exlude_common();
-
-
-    // load html doc type, css style and body start tag
-    echo Template::doc_head();
-    echo Template::doc_style();
-    echo Template::doc_start();
-    echo Template::doc_title_left('Rapport: Utsolgte varer i ???');
-    echo Template::doc_title_right('Dato: ' . Dates::get_weekday() . ' '. date("d/m-Y"));
-
-    echo '<table>';
-    echo '<tr>';
-    echo ' <th>Merke</th>';
-    echo ' <th>Navn</th>';
-    echo ' <th>Antall</th>';
-    echo ' <th>Plasserng</th>';
-    echo ' <th>Sist_Importert</th>';
-    echo ' <th>Lev_id</th>';
-    echo '</tr>';
-    foreach ($this->cnxn->query($query) as $row) {
-      echo '<tr>';
-      $brand = CharacterConvert::utf_to_norwegian($row['Merke']);
-      $name = CharacterConvert::utf_to_norwegian($row['Navn']);
-      $qty = CharacterConvert::utf_to_norwegian($row['Antall']);
-      $location = CharacterConvert::utf_to_norwegian($row['Plasserng']);
-      $last_import = CharacterConvert::utf_to_norwegian($row['Sist_Importert']);
-      $supply_id = CharacterConvert::utf_to_norwegian($row['Lev_id']);
-      echo "<td>$brand</td>";
-      echo "<td>$name</td>";
-      echo "<td>$qty</td>";
-      echo "<td>$location</td>";
-      echo "<td>$last_import</td>";
-      echo "<td>$supply_id</td>";
+    $type = 'today';
+    $left_title = 'Rapport: Utsolgte varer i dag';
+    if(isset($_GET['type'])) {
+      $type = $_GET['type'];
     }
-    echo '</tr>';
-    echo '</table>';
+    switch ($type) {
+      case 'today':
+        $left_title = 'Rapport: Utsolgte varer i dag';
+        break;
+      case 'thisweek':
+        $left_title = 'Rapport: Utsolgte varer denne uken';
+      break;
+      case 'thismonth':
+        $left_title = 'Rapport: Utsolgte varer '. Dates::get_this_month() . ' ' . date("Y");
+      break;
+    }
+    $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
+    $table_headers = [
+      'Merke', 'Navn', 'Antall', 'Plassering', 'Sist Importert', 'Lev. ID',
+    ];
 
-    // close remaining html tags
-    echo Template::doc_end();
+    // html starts here
+    $template = new Template();
+    $template->start();
+    $template->title_left($left_title);
+    $template->title_right($right_title);
+
+    // report table starts here
+    $template->table_start();
+    $template->table_row_start();
+    foreach ($table_headers as $header) {
+      $template->table_header_value($header);
+    }
+    $template->table_row_end();
+    $query = QuerySoldout::get($type);
+    $this->cnxn = Database::get_connection();
+    foreach ($this->cnxn->query($query) as $row) {
+      $template->table_row_start();
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['last_imported']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supply_id']));
+      $template->table_row_end();
+    }
+    $template->table_end();
+
+    // html ends here
+    $template->end();
+
+    // prints out the whole template that is generated
+    $template->print();
   }
 }
 
@@ -89,8 +91,67 @@ class Soldout {
 
 
 
-class Turnover {
+class Imported {
   function __construct () {
-    echo 'this is reports - Turnover served from Application.php';
+    // shows reports of soldout items for today, this week or this month
+    require_once './applications/Database.php';
+    require_once './applications/Helpers.php';
+    require_once './applications/reports/Template.php';
+    require_once './applications/reports/QueryReports.php';
+
+    $type = 'today';
+    $left_title = 'Rapport: Utsolgte varer i dag';
+    if(isset($_GET['type'])) {
+      $type = $_GET['type'];
+    }
+    switch ($type) {
+      case 'today':
+        $left_title = 'Rapport: Utsolgte varer i dag';
+        break;
+      case 'thisweek':
+        $left_title = 'Rapport: Utsolgte varer denne uken';
+      break;
+      case 'thismonth':
+        $left_title = 'Rapport: Utsolgte varer '. Dates::get_this_month() . ' ' . date("Y");
+      break;
+    }
+    $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
+    $table_headers = [
+      'Merke', 'Navn', 'Importert', 'Lager', 'Plassering', 'Lev. ID', 'Sist Importert', '',
+    ];
+
+    // html starts here
+    $template = new Template();
+    $template->start();
+    $template->title_left($left_title);
+    $template->title_right($right_title);
+
+    // report table starts here
+    $template->table_start();
+    $template->table_row_start();
+    foreach ($table_headers as $header) {
+      $template->table_header_value($header);
+    }
+    $template->table_row_end();
+    $query = QueryImported::get($type);
+    $this->cnxn = Database::get_connection();
+    foreach ($this->cnxn->query($query) as $row) {
+      $template->table_row_start();
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supply_id']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['last_imported']));
+      $template->table_row_end();
+    }
+    $template->table_end();
+
+    // html ends here
+    $template->end();
+
+    // prints out the whole template that is generated
+    $template->print();
   }
 }
