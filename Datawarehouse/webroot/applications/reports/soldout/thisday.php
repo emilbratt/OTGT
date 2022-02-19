@@ -8,7 +8,7 @@ class Page {
   private $cnxn;
 
   function __construct () {
-    require_once './applications/reports/soldout/html_template.php';
+    require_once './applications/reports/html_template.php';
     require_once './applications/Database.php';
     require_once './applications/Helpers.php';
     $this->cnxn = Database::get_connection();
