@@ -1,4 +1,10 @@
 <?php
+/**
+ * this is not a REST-API, but rather a back-end and front-end baked into
+ * this app directory for a simple way to interact with the shops database
+ * providing easy access to reports and other features
+ */
+
 // temporary enable error reporting
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
