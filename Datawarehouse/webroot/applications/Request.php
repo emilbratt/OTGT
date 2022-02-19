@@ -6,12 +6,17 @@ class Apprequest {
   protected $app_class;
 
   function __construct ()  {
+    // based on url.. ->
     $this->parse_url();
+    // -> ..we load the correct script (application)
     $this->load_app();
   }
 
 
   private function parse_url () {
+    // the 1st word in the url = app directory
+    // the 2nd word in the url = app class
+
     // defaults that is changed if specified in URL
     $this->app_class = 'Home';
     if($_SERVER['REDIRECT_URL'] === '/') {
@@ -41,6 +46,7 @@ class Apprequest {
   private function load_app () {
     // load Application.php inside the appapplications directory
     if (!(is_dir("./applications/$this->app_dir"))) {
+      // if no match, send 404
       echo "Directory: " . $_SERVER['HTTP_HOST'] . "/$this->app_dir not found" ;
       http_response_code(404);
       exit(1);
@@ -78,7 +84,7 @@ class Pagerequest {
         return $page;
       }
 
-      // if none of the above, send 404
+      // if none of the above matches, send 404
       echo "File: " . $_SERVER['HTTP_HOST'] . "$page not found" ;
       http_response_code(404);
       exit(1);
