@@ -103,7 +103,7 @@ class Template {
     EOT;
   }
 
-  public function table_header_value ($string) {
+  public function table_row_header ($string) {
     $this->html .= <<<EOT
     <th>$string</th>\n
     EOT;

@@ -55,7 +55,7 @@ class QuerySoldout {
         break;
     }
 
-    $sort = 'sold';
+    $sort = 'lastsold';
     if(isset($_GET['sort'])) {
       $sort = $_GET['sort'];
     }
@@ -72,7 +72,7 @@ class QuerySoldout {
       case 'location':
         $query .= ' ORDER BY articleStock.StorageShelf';
         break;
-      case 'sold':
+      case 'lastsold':
         $query .= ' ORDER BY articleStock.lastSold';
         break;
     }
@@ -166,7 +166,7 @@ class QueryImported {
         break;
     }
 
-    $sort = 'last_imported';
+    $sort = 'lastimported';
     if(isset($_GET['sort'])) {
       $sort = $_GET['sort'];
     }
@@ -183,7 +183,7 @@ class QueryImported {
       case 'location':
         $query .= ' ORDER BY location';
         break;
-      case 'last_imported':
+      case 'lastimported':
         $query .= ' ORDER BY last_imported';
         break;
     }

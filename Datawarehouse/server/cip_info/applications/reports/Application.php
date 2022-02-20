@@ -1,12 +1,12 @@
 <?php
 
-/*
-notes:
-for turnover reports, maybe include graphs using some graphing tool for web view
-
-// example request: http://host:port/reports/soldout/&type=thismonth&include=none-defaults&filter=default&sort=brand&order=accendings
-
-*/
+/**
+ * notes:
+ * for turnover reports, maybe include graphs using some graphing tool for web view
+ *
+ * example request: http://host:port/reports/soldout/&type=thismonth&include=none-defaults&filter=default&sort=brand&order=accendings
+ *
+ */
 
 class Reports {
   function __construct () {
@@ -17,6 +17,9 @@ class Reports {
     require_once '../applications/reports/QueryReports.php';
   }
 
+  public function run () {
+    echo 'this is reports Rerports()';
+  }
 
 }
 
@@ -79,7 +82,7 @@ class Soldout extends Reports {
     $template->table_start();
     $template->table_row_start();
     foreach ($table_headers as $header) {
-      $template->table_header_value($header);
+      $template->table_row_header($header);
     }
     $template->table_row_end();
     $query = QuerySoldout::get($type);
@@ -143,7 +146,7 @@ class Imported {
     $template->table_start();
     $template->table_row_start();
     foreach ($table_headers as $header) {
-      $template->table_header_value($header);
+      $template->table_row_header($header);
     }
     $template->table_row_end();
     $query = QueryImported::get($type);

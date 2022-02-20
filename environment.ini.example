@@ -23,3 +23,6 @@
   server = "INSERT"
   user_autoreport = "INSERT"
   password_autoreport = "INSERT"
+
+[developement] ; custom configs for developing
+  show_errors = true
