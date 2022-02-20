@@ -3,7 +3,7 @@
 class Database {
 
   public static function get_connection () {
-    $config_file = '../../environment.ini';
+    $config_file = '../../../../environment.ini';
     $config = parse_ini_file($config_file, $process_sections = true);
 
     $db_server = $config['retail']['db_server'];

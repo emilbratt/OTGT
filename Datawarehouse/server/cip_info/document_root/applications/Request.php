@@ -9,7 +9,7 @@ class Apprequest {
 
   function __construct ()  {
 
-    $config_file = '../../environment.ini';
+    $config_file = '../../../../environment.ini';
     $config = parse_ini_file($config_file, $process_sections = true);
     $this->show_errors = $config['developement']['show_errors'];
 

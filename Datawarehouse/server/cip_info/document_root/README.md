@@ -87,13 +87,13 @@ sudo nano  /etc/odbc.ini (add text under)
 
 Open the virtual host config /etc/apache2/sites-available/datawarehouse.conf and point the document root to this directory using absolute path reference
 ```
-DocumentRoot /path/to/this/directory
+DocumentRoot /var/www/html/OTGT/Datawarehouse/server/cip/document_root
 ```
 
 Enable override all for this directory for .htaccess to work
 ```
-<Directory "/var/www/html/cip_dev/OTGT/Datawarehouse/webroot">
-  AllowOverride All
+<Directory "/var/www/html/OTGT/Datawarehouse/server/cip/document_root">
+        AllowOverride All
 </Directory>
 ```
 
