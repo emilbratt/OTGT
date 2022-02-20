@@ -122,13 +122,9 @@ class Soldout extends Reports {
 }
 
 
-class Imported {
-  function __construct () {
-    // shows reports of soldout items for today, this week or this month
-    require_once '../applications/Database.php';
-    require_once '../applications/Helpers.php';
-    require_once '../applications/reports/ReportTemplate.php';
-    require_once '../applications/reports/QueryReports.php';
+class Imported extends Reports
+ {
+  public function run () {
 
     $type = 'thisday';
     if(isset($_GET['type'])) {
