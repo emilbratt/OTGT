@@ -48,7 +48,7 @@ class Soldout {
     }
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
     $table_headers = [
-      'Merke', 'Navn', 'Antall', 'Plassering', 'Sist Importert', 'Lev. ID',
+      'Merke', 'Navn', 'Lager', 'Plassering', 'Sist Importert', 'Lev. ID',
     ];
 
     // html starts here
@@ -104,18 +104,18 @@ class Imported {
     }
     switch ($type) {
       case 'thisday':
-        $left_title = 'Rapport: Utsolgte varer i dag';
+        $left_title = 'Rapport: Importerte varer i dag';
         break;
       case 'thisweek':
-        $left_title = 'Rapport: Utsolgte varer denne uken';
+        $left_title = 'Rapport: Importerte varer denne uken';
       break;
       case 'thismonth':
-        $left_title = 'Rapport: Utsolgte varer '. Dates::get_this_month() . ' ' . date("Y");
+        $left_title = 'Rapport: Importerte varer '. Dates::get_this_month() . ' ' . date("Y");
       break;
     }
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
     $table_headers = [
-      'Merke', 'Navn', 'Importert', 'Lager', 'Plassering', 'Lev. ID', 'Sist Importert', '',
+      'Merke', 'Navn', 'Importert', 'Lager', 'Plassering', 'Importert', 'Lev. ID',
     ];
 
     // html starts here
@@ -141,8 +141,8 @@ class Imported {
       $template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
       $template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
       $template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supply_id']));
       $template->table_row_value(CharacterConvert::utf_to_norwegian($row['last_imported']));
+      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supply_id']));
       $template->table_row_end();
     }
     $template->table_end();
