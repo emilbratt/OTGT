@@ -152,17 +152,32 @@ class Imported {
     $query = QueryImported::get($type);
 
     $this->cnxn = Database::get_connection();
-    foreach ($this->cnxn->query($query) as $row) {
-      $template->table_row_start();
-      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
-      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
-      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
-      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['last_imported']));
-      $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supply_id']));
-      $template->table_row_end();
+
+    try {
+      foreach ($this->cnxn->query($query) as $row) {
+        $template->table_row_start();
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['last_imported']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supply_id']));
+        $template->table_row_end();
+      }
     }
+    catch(Exception $e)  {
+      $config_file = '../../../../environment.ini';
+      $config = parse_ini_file($config_file, $process_sections = true);
+      if($config['developement']['show_errors']) {
+        echo '<pre>';
+        print_r($e->getMessage());
+        echo '</pre>';
+      }
+      exit(1);
+    }
+
+
     $template->table_end();
 
     // html ends here

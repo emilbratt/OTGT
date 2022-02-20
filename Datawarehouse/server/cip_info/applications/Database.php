@@ -16,6 +16,7 @@ class Database {
 
     try {
       $cnxn = new PDO($connection_string,  $db_user, $db_password);
+      $cnxn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       return $cnxn;
     }
     catch(Exception $e)  {
