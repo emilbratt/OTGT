@@ -25,4 +25,4 @@
   password_autoreport = "INSERT"
 
 [developement] ; custom configs for developing
-  show_errors = true
+  show_errors = false
