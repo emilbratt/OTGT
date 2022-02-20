@@ -20,7 +20,6 @@ class Reports {
   public function run () {
     echo 'this is reports Rerports()';
   }
-
 }
 
 
@@ -122,8 +121,8 @@ class Soldout extends Reports {
 }
 
 
-class Imported extends Reports
- {
+class Imported extends Reports {
+
   public function run () {
 
     $type = 'thisday';
@@ -160,9 +159,7 @@ class Imported extends Reports
     }
     $template->table_row_end();
     $query = QueryImported::get($type);
-
     $this->cnxn = Database::get_connection();
-
     try {
       foreach ($this->cnxn->query($query) as $row) {
         $template->table_row_start();
@@ -187,8 +184,6 @@ class Imported extends Reports
       }
       exit(1);
     }
-
-
     $template->table_end();
 
     // html ends here
