@@ -1,24 +1,12 @@
 <?php
 
-class Template {
+require_once '../applications/Template.php';
 
-  private $html;
-
-  function __construct () {
-    $this->html = <<<EOT
-    <!DOCTYPE html>
-    EOT;
-
-  }
-
-  public function print () {
-    echo $this->html;
-    $this->html = '';
-  }
+class ReportTemplate extends Template {
+  // methods with same name here will override the method in Template
 
   public function start () {
     $this->html .= <<<EOT
-    \n<html>
     <style>
     html {
       min-height: 100%;
@@ -71,61 +59,20 @@ class Template {
       background-color: #333333 ;
     }
     </style>
-    <body>
+    <body>\n
     EOT;
   }
 
-
   public function title_left ($string = 'left title') {
-    $this->html .= '<h1 style="float: left;">' . $string . '</h1>';
+    $this->html .= <<<EOT
+    <h1 style="float: left;">$string</h1>\n
+    EOT;
 
   }
 
   public function title_right ($string = 'right title') {
-    $this->html .= '<h1 style="float: right;"> '. $string . '</h1>';
-  }
-
-
-  public function table_start () {
     $this->html .= <<<EOT
-    \n<table>
-    EOT;
-  }
-
-  public function table_row_start () {
-    $this->html .= <<<EOT
-    \n<tr>
-    EOT;
-  }
-
-  public function table_header_value ($string) {
-    $this->html .= <<<EOT
-    \n<th>$string</th>
-    EOT;
-  }
-
-  public function table_row_value ($string) {
-    $this->html .= <<<EOT
-    \n<td>$string</td>
-    EOT;
-  }
-
-  public function table_row_end () {
-    $this->html .= <<<EOT
-    \n</tr>
-    EOT;
-  }
-
-  public function table_end () {
-    $this->html .= <<<EOT
-    \n</table>
-    EOT;
-  }
-
-  public function end () {
-    $this->html .= <<<EOT
-    \n</body>
-    </html>
+    <h1 style="float: right;">$string</h1>\n
     EOT;
   }
 

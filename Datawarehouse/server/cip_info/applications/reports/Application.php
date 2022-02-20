@@ -28,7 +28,7 @@ class Soldout {
     // shows reports of soldout items for today, this week or this month
     require_once '../applications/Database.php';
     require_once '../applications/Helpers.php';
-    require_once '../applications/reports/Template.php';
+    require_once '../applications/reports/ReportTemplate.php';
     require_once '../applications/reports/QueryReports.php';
 
     $type = 'thisday';
@@ -52,7 +52,7 @@ class Soldout {
     ];
 
     // html starts here
-    $template = new Template();
+    $template = new ReportTemplate();
     $template->start();
     $template->title_left($left_title);
     $template->title_right($right_title);
@@ -95,7 +95,7 @@ class Imported {
     // shows reports of soldout items for today, this week or this month
     require_once '../applications/Database.php';
     require_once '../applications/Helpers.php';
-    require_once '../applications/reports/Template.php';
+    require_once '../applications/reports/ReportTemplate.php';
     require_once '../applications/reports/QueryReports.php';
 
     $type = 'thisday';
@@ -119,7 +119,7 @@ class Imported {
     ];
 
     // html starts here
-    $template = new Template();
+    $template = new ReportTemplate();
     $template->start();
     $template->title_left($left_title);
     $template->title_right($right_title);
