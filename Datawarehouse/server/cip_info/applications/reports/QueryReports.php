@@ -15,6 +15,7 @@ class QuerySoldout {
       CAST (stockQty AS INT) AS quantity,
       articleStock.StorageShelf AS location,
       CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS last_imported,
+      CONVERT(VARCHAR(10), articleStock.lastSold, 105) AS last_sold,
       Article.suppliers_art_no AS supply_id
     FROM
       Article
@@ -148,7 +149,6 @@ class QueryImported {
       break;
       default:
         $query .= ' AND DATEPART(DAYOFYEAR, [adjustmentDate]) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP) )';
-
     }
 
     $items = 'all';
