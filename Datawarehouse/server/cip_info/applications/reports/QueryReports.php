@@ -99,6 +99,7 @@ class QueryImported {
 
   public static function get ($type) {
     $query = <<<EOT
+    SET LANGUAGE NORWEGIAN
     SELECT
       Brands.brandLabel AS brand,
       Article.articleName AS article,
@@ -131,6 +132,7 @@ class QueryImported {
         AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
     EOT;
 
+
     if(isset($_GET['type'])) {
       $type = $_GET['type'];
     }
@@ -144,6 +146,9 @@ class QueryImported {
       case 'thismonth':
         $query .= ' AND DATEPART(MONTH, [adjustmentDate]) = DATEPART(MONTH, CURRENT_TIMESTAMP) )';
       break;
+      default:
+        $query .= ' AND DATEPART(DAYOFYEAR, [adjustmentDate]) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP) )';
+
     }
 
     $items = 'all';

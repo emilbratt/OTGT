@@ -14,14 +14,14 @@ class Apprequest {
     $this->show_errors = $config['developement']['show_errors'];
 
     $this->load_directory();
-    require_once "./applications/$this->app_dir/Application.php";
+    require_once "../applications/$this->app_dir/Application.php";
     $this->load_class();
     $app = new $this->app_class;
   }
 
 
   private function load_directory () {
-    // the 1st word in the url = app directory which resides in ./applications
+    // the 1st word in the url = app directory which resides in ../applications
     // defaults that is changed if specified in URL
     if($_SERVER['REDIRECT_URL'] === '/') {
       $this->app_dir = 'home';
@@ -33,12 +33,12 @@ class Apprequest {
       $this->app_dir = $this->url_split[0];
     }
 
-    if (is_dir("./applications/$this->app_dir")) {
+    if (is_dir("../applications/$this->app_dir")) {
       return;
     }
 
     $this->app_dir = explode('&', $this->app_dir)[0];
-    if(is_dir("./applications/$this->app_dir")) {
+    if(is_dir("../applications/$this->app_dir")) {
       return;
     }
 

@@ -1,8 +1,12 @@
 <?php
 /**
- * this is not a REST-API, but rather a back-end and front-end baked into
- * this app directory for a simple way to interact with the shops database
- * providing easy access to reports and other features
+ * all requests regardles of URL or http method, goes through this file
+ * this means that every dependent file that is included will have to
+ * be referenced as of the relative path to THIS file
+ *
+ * keeping in mind this is not a REST-API, but rather a front-and-back-end
+ * baked into each other forming the application where each app directory is
+ * one specific service
  */
 
 // temporary enable error reporting
@@ -11,7 +15,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 
-require_once './applications/Request.php';
+require_once '../applications/Request.php';
 $main = new Apprequest;
 $main = null;
 die;

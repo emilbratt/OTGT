@@ -26,18 +26,17 @@ class Home {
 class Soldout {
   function __construct () {
     // shows reports of soldout items for today, this week or this month
-    require_once './applications/Database.php';
-    require_once './applications/Helpers.php';
-    require_once './applications/reports/Template.php';
-    require_once './applications/reports/QueryReports.php';
+    require_once '../applications/Database.php';
+    require_once '../applications/Helpers.php';
+    require_once '../applications/reports/Template.php';
+    require_once '../applications/reports/QueryReports.php';
 
-    $type = 'today';
-    $left_title = 'Rapport: Utsolgte varer i dag';
+    $type = 'thisday';
     if(isset($_GET['type'])) {
       $type = $_GET['type'];
     }
     switch ($type) {
-      case 'today':
+      case 'thisday':
         $left_title = 'Rapport: Utsolgte varer i dag';
         break;
       case 'thisweek':
@@ -94,18 +93,17 @@ class Soldout {
 class Imported {
   function __construct () {
     // shows reports of soldout items for today, this week or this month
-    require_once './applications/Database.php';
-    require_once './applications/Helpers.php';
-    require_once './applications/reports/Template.php';
-    require_once './applications/reports/QueryReports.php';
+    require_once '../applications/Database.php';
+    require_once '../applications/Helpers.php';
+    require_once '../applications/reports/Template.php';
+    require_once '../applications/reports/QueryReports.php';
 
-    $type = 'today';
-    $left_title = 'Rapport: Utsolgte varer i dag';
+    $type = 'thisday';
     if(isset($_GET['type'])) {
       $type = $_GET['type'];
     }
     switch ($type) {
-      case 'today':
+      case 'thisday':
         $left_title = 'Rapport: Utsolgte varer i dag';
         break;
       case 'thisweek':
@@ -134,6 +132,7 @@ class Imported {
     }
     $template->table_row_end();
     $query = QueryImported::get($type);
+
     $this->cnxn = Database::get_connection();
     foreach ($this->cnxn->query($query) as $row) {
       $template->table_row_start();
