@@ -9,16 +9,45 @@
  */
 
 class Reports {
+
+  protected $current_url;
+
   function __construct () {
     // shows reports of soldout items for today, this week or this month
     require_once '../applications/Database.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/reports/ReportTemplate.php';
     require_once '../applications/reports/QueryReports.php';
+    $this->cur_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
   }
 
   public function run () {
     echo 'this is reports Rerports()';
+  }
+
+  protected function url_rebuild ($old_url, $key, $val) {
+    // for changing/adding the GET query within the visitors url
+
+    // $scheme = $_SERVER['REQUEST_SCHEME'] . '://';
+    // $old_url = $scheme . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    // echo $old_url; echo '<br>'; return;
+
+    $filtered_url = preg_replace('~(\?|&)'.$key.'=[^&]*~', '', $old_url);
+    // echo $filtered_url; echo '<br>'; return;
+    $new_url = $filtered_url . '&' . "$key=$val";
+    // echo $new_url; echo '<br>'; return;
+
+
+    return $new_url;
+    $res = str_replace("$key=$val", "$key=$new_val", $_SERVER['REQUEST_URI'], $count);
+    if ($count === 0) {
+      // if no url query (get array) is passed, separate with ?, else &
+      if(strpos($_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'], '?') !== false) {
+        return $scheme . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "&$key=$new_val";
+      }
+      return $scheme . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "?$key=$new_val";
+    }
+    return $scheme . $_SERVER['HTTP_HOST'] . $res;
   }
 }
 
@@ -34,7 +63,6 @@ class Home extends Reports {
     $template->end();
     $template->print();
     die;
-
 
     $reports = [
       'Utsolgt idag' => '/reports/soldout&type=thisday',
@@ -93,7 +121,7 @@ class Soldout extends Reports {
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['last_imported']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['last_sold']));
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supply_id']));
         $template->table_row_end();
@@ -141,8 +169,15 @@ class Imported extends Reports {
       break;
     }
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
+
     $table_headers = [
-      'Merke', 'Navn', 'Importert', 'Lager', 'Plassering', 'Importert', 'Lev. ID',
+      ['Merke', 'brand'],
+      ['Navn', 'article'],
+      ['Importert', 'import_qty'],
+      ['Lager', 'quantity'],
+      ['Plassering', 'location'],
+      ['Importert', 'lastimported'],
+      ['Lev. ID', 'supplyid'],
     ];
 
     // html starts here
@@ -155,7 +190,20 @@ class Imported extends Reports {
     $template->table_start();
     $template->table_row_start();
     foreach ($table_headers as $header) {
-      $template->table_row_header($header);
+      $url = $this->url_rebuild($this->cur_url, 'sort', $header[1]);
+      if (isset($_GET['order'])) {
+        if ($_GET['order'] == 'ascending') {
+          $url = $this->url_rebuild($url, 'order', 'descending');
+        }
+        else {
+          $url = $this->url_rebuild($url, 'order', 'ascending');
+        }
+      }
+      else  {
+        $url = $this->url_rebuild($url, 'order', 'ascending');
+      }
+      $header_val = '<a href="' . $url . '">' . $header[0] .'</a>';
+      $template->table_row_header($header_val);
     }
     $template->table_row_end();
     $query = QueryImported::get($type);
@@ -168,8 +216,8 @@ class Imported extends Reports {
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['last_imported']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supply_id']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
         $template->table_row_end();
       }
     }

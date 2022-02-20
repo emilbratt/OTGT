@@ -15,7 +15,7 @@ class QuerySoldout {
       CAST (stockQty AS INT) AS quantity,
       articleStock.StorageShelf AS location,
       CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS last_imported,
-      CONVERT(VARCHAR(10), articleStock.lastSold, 105) AS last_sold,
+      CONVERT(VARCHAR(10), articleStock.lastSold, 105) AS lastsold,
       Article.suppliers_art_no AS supply_id
     FROM
       Article
@@ -107,8 +107,8 @@ class QueryImported {
       CAST(StockAdjustment.adjustmentQty AS INT) AS import_qty,
       CAST (stockQty AS INT) AS quantity,
       articleStock.StorageShelf AS location,
-      Article.suppliers_art_no AS supply_id,
-      CAST(StockAdjustment.adjustmentDate AS Date) AS last_imported
+      Article.suppliers_art_no AS supplyid,
+      CAST(StockAdjustment.adjustmentDate AS Date) AS lastimported
     FROM
       Article
     INNER JOIN
@@ -183,8 +183,14 @@ class QueryImported {
       case 'location':
         $query .= ' ORDER BY location';
         break;
+      case 'import_qty':
+        $query .= ' ORDER BY StockAdjustment.adjustmentQty';
+        break;
       case 'lastimported':
-        $query .= ' ORDER BY last_imported';
+        $query .= ' ORDER BY lastimported';
+        break;
+      case 'supplyid':
+        $query .= ' ORDER BY supplyid';
         break;
     }
 
