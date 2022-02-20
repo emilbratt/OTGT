@@ -8,10 +8,32 @@ for turnover reports, maybe include graphs using some graphing tool for web view
 
 */
 
-class Home {
+class Reports {
   function __construct () {
+    // shows reports of soldout items for today, this week or this month
+    require_once '../applications/Database.php';
+    require_once '../applications/Helpers.php';
+    require_once '../applications/reports/ReportTemplate.php';
+    require_once '../applications/reports/QueryReports.php';
+  }
+
+
+}
+
+
+class Home extends Reports {
+
+  public function run () {
     // links to the reports listed as classes below
-    echo Template::doc_start();
+    $template = new ReportTemplate();
+    $template->start();
+    $template->title_left('this is reports -> home');
+    $template->title_right('not done yet');
+    $template->end();
+    $template->print();
+    die;
+
+
     $reports = [
       'Utsolgt idag' => '/reports/soldout&type=thisday',
       'Utsolgt denne uken' => '/reports/soldout&type=thisweek',
@@ -23,13 +45,9 @@ class Home {
 }
 
 
-class Soldout {
-  function __construct () {
-    // shows reports of soldout items for today, this week or this month
-    require_once '../applications/Database.php';
-    require_once '../applications/Helpers.php';
-    require_once '../applications/reports/ReportTemplate.php';
-    require_once '../applications/reports/QueryReports.php';
+class Soldout extends Reports {
+
+  public function run () {
 
     $type = 'thisday';
     if(isset($_GET['type'])) {
@@ -85,9 +103,6 @@ class Soldout {
     $template->print();
   }
 }
-
-
-
 
 
 class Imported {

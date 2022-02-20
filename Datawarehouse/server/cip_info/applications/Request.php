@@ -17,6 +17,7 @@ class Apprequest {
     require_once "../applications/$this->app_dir/Application.php";
     $this->load_class();
     $app = new $this->app_class;
+    $app->run();
   }
 
 
