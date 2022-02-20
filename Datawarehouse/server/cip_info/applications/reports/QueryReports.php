@@ -14,9 +14,9 @@ class QuerySoldout {
       Article.articleName AS article,
       CAST (stockQty AS INT) AS quantity,
       articleStock.StorageShelf AS location,
-      CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS last_imported,
+      CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS lastimported,
       CONVERT(VARCHAR(10), articleStock.lastSold, 105) AS lastsold,
-      Article.suppliers_art_no AS supply_id
+      Article.suppliers_art_no AS supplyid
     FROM
       Article
       INNER JOIN articleStock ON Article.articleId = articleStock.articleId
@@ -75,6 +75,12 @@ class QuerySoldout {
         break;
       case 'lastsold':
         $query .= ' ORDER BY articleStock.lastSold';
+        break;
+      case 'lastimported':
+        $query .= ' ORDER BY articleStock.lastReceivedFromSupplier';
+        break;
+      case 'supplyid':
+        $query .= ' ORDER BY Article.suppliers_art_no';
         break;
     }
 
