@@ -10,7 +10,7 @@
 
 class Reports {
 
-  protected $current_url;
+  protected $visitor_url;
 
   function __construct () {
     // shows reports of soldout items for today, this week or this month
@@ -18,16 +18,16 @@ class Reports {
     require_once '../applications/Helpers.php';
     require_once '../applications/reports/ReportTemplate.php';
     require_once '../applications/reports/QueryReports.php';
-    $this->cur_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $this->visitor_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
   }
 
   public function run () {
     echo 'this is reports Rerports()';
   }
 
-  protected function url_rebuild ($old_url, $key, $val) {
-    // for changing/adding the GET query within the visitors url
-    $filtered_url = preg_replace('~(\?|&)'.$key.'=[^&]*~', '', $old_url);
+  protected function replace_query_parameter ($old_url, $key, $val) {
+    // regex: starts with either ? or & followed by $key followed by = and any value until & or end of string
+    $filtered_url = preg_replace('/(\?|&)'.$key.'=[^&]*/', '', $old_url);
     $new_url = $filtered_url . '&' . "$key=$val";
     return $new_url;
   }
@@ -98,17 +98,17 @@ class Soldout extends Reports {
     $template->table_start();
     $template->table_row_start();
     foreach ($table_headers as $header) {
-      $url = $this->url_rebuild($this->cur_url, 'sort', $header[1]);
+      $url = $this->replace_query_parameter($this->visitor_url, 'sort', $header[1]);
       if (isset($_GET['order'])) {
         if ($_GET['order'] == 'ascending') {
-          $url = $this->url_rebuild($url, 'order', 'descending');
+          $url = $this->replace_query_parameter($url, 'order', 'descending');
         }
         else {
-          $url = $this->url_rebuild($url, 'order', 'ascending');
+          $url = $this->replace_query_parameter($url, 'order', 'ascending');
         }
       }
       else  {
-        $url = $this->url_rebuild($url, 'order', 'ascending');
+        $url = $this->replace_query_parameter($url, 'order', 'ascending');
       }
       $header_val = '<a href="' . $url . '">' . $header[0] .'</a>';
       $template->table_row_header($header_val);
@@ -192,17 +192,17 @@ class Imported extends Reports {
     $template->table_start();
     $template->table_row_start();
     foreach ($table_headers as $header) {
-      $url = $this->url_rebuild($this->cur_url, 'sort', $header[1]);
+      $url = $this->replace_query_parameter($this->visitor_url, 'sort', $header[1]);
       if (isset($_GET['order'])) {
         if ($_GET['order'] == 'ascending') {
-          $url = $this->url_rebuild($url, 'order', 'descending');
+          $url = $this->replace_query_parameter($url, 'order', 'descending');
         }
         else {
-          $url = $this->url_rebuild($url, 'order', 'ascending');
+          $url = $this->replace_query_parameter($url, 'order', 'ascending');
         }
       }
       else  {
-        $url = $this->url_rebuild($url, 'order', 'ascending');
+        $url = $this->replace_query_parameter($url, 'order', 'ascending');
       }
       $header_val = '<a href="' . $url . '">' . $header[0] .'</a>';
       $template->table_row_header($header_val);
