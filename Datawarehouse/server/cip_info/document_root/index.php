@@ -7,12 +7,19 @@
  * keeping in mind this is not a REST-API, but rather a front-and-back-end
  * baked into each other forming the application where each app directory is
  * one specific service
+ *
+ * TODO:
+ *  add. js for handeling search filter of result set
+ *  add. turnover report
+ *  add. app to find items by name, brand, category, barcode etc..
+ *  add. app to update shelf value mobile and desktop freindly
  */
 
 // temporary enable error reporting
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 
 
 require_once '../applications/Request.php';
