@@ -22,15 +22,11 @@ class Reports {
     require_once '../applications/reports/ReportTemplate.php';
     require_once '../applications/reports/QueryReports.php';
 
-    // $this->visitor_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-
+    // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
     if (isset($_GET['order'])) {
       if ($_GET['order'] == 'ascending') {
         $this->order = 'descending';
-      }
-      else {
-        $this->order = 'ascending';
       }
     }
   }
