@@ -117,7 +117,7 @@ class Soldout extends Reports {
     }
     $template->table_row_end();
     $query = QuerySoldout::get($type);
-    $this->cnxn = Database::get_connection();
+    $this->cnxn = Database::get_retail_connection();
     try {
       foreach ($this->cnxn->query($query) as $row) {
         $template->table_row_start();
@@ -203,7 +203,7 @@ class Imported extends Reports {
     }
     $template->table_row_end();
     $query = QueryImported::get($type);
-    $this->cnxn = Database::get_connection();
+    $this->cnxn = Database::get_retail_connection();
     try {
       foreach ($this->cnxn->query($query) as $row) {
         $template->table_row_start();
