@@ -20,7 +20,7 @@ class Reports {
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
     require_once '../applications/reports/ReportTemplate.php';
-    require_once '../applications/reports/QueryReports.php';
+    require_once '../applications/reports/ReportsQuery.php';
 
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
