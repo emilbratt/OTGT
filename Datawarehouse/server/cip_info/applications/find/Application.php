@@ -5,6 +5,9 @@
  * for finding items in a convenient fashion
  * searching by brand, article, barcode, category etc,
  *
+ * TODO:
+ *  add: all queries that have user-input should be logged
+ *  add: click on result row to open detailed info about article
  */
 
 class Find {
