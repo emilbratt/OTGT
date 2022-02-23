@@ -2,7 +2,7 @@
 
 require_once '../applications/Template.php';
 
-class FindTemplate extends Template {
+class TemplateFind extends Template {
   // methods with same name here will override the method in Template
 
   public function start () {
@@ -14,6 +14,9 @@ class FindTemplate extends Template {
     body {
       background: linear-gradient(#222222, #000000);
       color: #BBBBFF;
+    }
+    title {
+      display: inline-block;
     }
     table, th, td {
       border:1px solid black;
@@ -35,16 +38,23 @@ class FindTemplate extends Template {
       color: #BBBBFF;
       border: 1px solid #AAAAAA;
     }
-    form {
-      padding-bottom: 10px;
-    }
     form, input {
+      display: inline;
       width:250px;
       height: 30px;
     }
-    #searchField {
-      background: #111111;
-      display: inline-block;
+    #input_field_brand {
+      display: inline;
+      width:250px;
+      height: 30px;
+    }
+    #input_field_article {
+      display: inline;
+      width:650px;
+      height: 30px;
+    }
+    #input_field_div {
+      display: inline;
     }
     td, th {
       border: 1px solid #111111;
@@ -68,94 +78,46 @@ class FindTemplate extends Template {
     EOT;
   }
 
-  public function title_left ($string = 'left title') {
+  public function title ($string = 'title') {
     $this->html .= <<<EOT
-    <h1 style="float: left;">$string</h1>\n
+    <div class="title">
+      <h1>$string</h1>
+    </div>\n
     EOT;
 
   }
 
-  public function title_right ($string = 'right title') {
+  public function form_search ($brand = '', $article = '') {
     $this->html .= <<<EOT
-    <h1 style="float: right;">$string</h1>\n
+
+    <div id="input_field_div">
+      <form action="">
+        <label for="input_field_brand">Merke:</label>
+        <input
+          type="text" autofocus="autofocus" onfocus="this.select()"
+          id="input_field_brand" name="input_field_brand"
+          value="$brand">
+
+        <label for="input_field_article">Artikkel:</label>
+        <input
+          type="text" id="input_field_article" name="input_field_article"
+          value="$article">
+
+        <input type="submit" value="Søk">
+
+      </form>
+    </div>
+    <br><br>\n
     EOT;
   }
 
-  // public function table_row_header ($string, $new_sort) {
-  //   $old_sort = $_GET['sort'];
-  //   $res = str_replace("sort=$new_sort", "sort=$old_sort", $_SERVER['REQUEST_URI']);
-  //   $url =  $_SERVER['HTTP_HOST'].$res;
-  //
-  //   $this->html .= <<<EOT
-  //   <th><a href="$url">$string</a></th>\n
-  //   EOT;
-  //
-  //
-  //   // $this->html .= <<<EOT
-  //   // <th><a href="sort=Name">$string</a></th>
-  //   // <th>$string</th>\n
-  //   // EOT;
-  // }
-
-  public function for_laaater ($string) {
-
-
-
-    $path = explode('&', $_SERVER['REDIRECT_QUERY_STRING'])[0];
-    unset($_GET['index_php']);
-    unset($_GET[$path]);
-    echo '<pre>';
-    print_r($_GET);
-    echo '</pre>';
-    $_GET['sort'] = 'quantity';
-    $new_query_string = http_build_query($_GET);
-    $path = $_SERVER['REDIRECT_URL'];
-    $url =  $_SERVER['HTTP_HOST'].$path. '?' .$new_query_string;
-
-
-    //
-    // $query = $_GET;
-    // // replace parameter(s)
-    // $query['type'] = 'thismonth';
-    // // rebuild url
-    // $query_result = http_build_query($query);
-    // // new link
-    //
-    // $doc_root = $_SERVER['HTTP_HOST'].explode('&', $_SERVER['REDIRECT_URL'])[0];
-    // $url = "$doc_root/$query_result";
-    // echo $url;
-    // echo <<<EOT
-    // <a href="$doc_root/$query_result">URL</a>
-    // EOT;
-    // // echo $query_result;
-    // die;
-
-
-    // $doc_root = $_SERVER['HTTP_HOST'].explode('?', $_SERVER['REDIRECT_URL'])[0];
-    // $path = explode('&', $_SERVER['REDIRECT_QUERY_STRING'])[0];
-    // echo $path; die;
-
-    $doc_root = $_SERVER['HTTP_HOST'] . $_SERVER['REDIRECT_URL'];
-    // echo $doc_root;
-    $doc_root = parse_url($doc_root, PHP_URL_PATH);
-    // $url = "$doc_root/$query_result";
-    // echo $doc_root; die;
-
-
-    echo '<pre>';
-    print_r($_SERVER);
-    echo '</pre>';
-    echo explode('&', $_SERVER['REDIRECT_URL'])[0];
-    die;
-    // echo http_build_query($data) . "\n";
-    $data = http_build_query($data);
-    echo $data; die;
-    // $this->html .= <<<EOT
-    // <th><a href="sort=Name">$string</a></th>
-    // <th>$string</th>\n
-    // EOT;
+  public function message ($string) {
+    $this->html .= <<<EOT
+    <div class="message">
+      <h3>$string</h3>
+    </div>\n
+    EOT;
   }
-
 
 
 }
