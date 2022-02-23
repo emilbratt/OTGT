@@ -235,6 +235,8 @@ class QuerySold {
       else {
         $query .= 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate,';
       }
+    } else {
+      $query .= 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate,';
     }
 
     $query .= <<<EOT
