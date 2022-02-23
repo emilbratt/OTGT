@@ -170,7 +170,7 @@ class Imported extends Reports {
     $table_headers = [
       ['Merke', 'brand'],
       ['Navn', 'article'],
-      ['Importert', 'import_qty'],
+      ['Importert', 'importqty'],
       ['Lager', 'quantity'],
       ['Plassering', 'location'],
       ['Importert', 'lastimported'],

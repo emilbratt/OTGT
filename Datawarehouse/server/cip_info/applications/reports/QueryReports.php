@@ -189,7 +189,7 @@ class QueryImported {
       case 'location':
         $query .= ' ORDER BY location';
         break;
-      case 'import_qty':
+      case 'importqty':
         $query .= ' ORDER BY StockAdjustment.adjustmentQty';
         break;
       case 'lastimported':
