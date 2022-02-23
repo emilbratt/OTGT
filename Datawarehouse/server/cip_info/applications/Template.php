@@ -56,7 +56,7 @@ class Template {
       width:250px;
       height: 30px;
     }
-    #searchField {
+    #search_field {
       background: #111111;
       display: inline-block;
     }

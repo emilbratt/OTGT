@@ -58,13 +58,6 @@ class Home extends Reports {
     $template->print();
     die;
 
-    $reports = [
-      'Utsolgt idag' => '/reports/soldout&type=thisday',
-      'Utsolgt denne uken' => '/reports/soldout&type=thisweek',
-    ];
-    foreach ($reports as $name => $page) {
-      echo '<a href="http://'.$_SERVER['HTTP_HOST'].$page.'">'.$name.'</a><br>';
-    }
   }
 }
 
