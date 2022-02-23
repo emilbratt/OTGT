@@ -6,6 +6,7 @@
  * searching by brand, article, barcode, category etc,
  *
  * TODO:
+ *  add: button to enable/disable expired articles
  *  add: all queries that have user-input should be logged
  *  add: click on result row to open detailed info about article
  */
