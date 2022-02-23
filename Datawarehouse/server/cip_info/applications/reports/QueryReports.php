@@ -228,17 +228,14 @@ class QuerySold {
       Article.articleName AS article,
       CAST(CustomerSales.noOfArticles AS INT) AS soldqty,
     EOT;
-    if(isset($_GET['type'])) {
-      if($_GET['type'] == 'thisday') {
-        $query .= 'CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 8) AS salesdate,';
-      }
-      else {
-        $query .= 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate,';
-      }
-    } else {
-      $query .= 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate,';
-    }
 
+    $_date = 'CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 8) AS salesdate,';
+    if(isset($_GET['type'])) {
+      if($_GET['type'] != 'thisday') {
+        $_date .= 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate,';
+      }
+    }
+    $query .= $_date;
     $query .= <<<EOT
       CustomerSales.usedPricePerUnit AS price,
       CustomerSales.disCount AS discount,
