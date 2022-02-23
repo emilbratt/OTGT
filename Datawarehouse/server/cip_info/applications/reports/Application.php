@@ -1,8 +1,9 @@
 <?php
 
 /**
- * notes:
+ * NOTE:
  * for turnover reports, maybe include graphs using some graphing tool for web view
+ * fix global way to show time on 'thisday' and date on 'thisweek' and 'thismonth'
  *
  * example request: http://host:port/reports/soldout/&type=thismonth&include=none-defaults&filter=default&sort=brand&order=accendings
  *
@@ -207,6 +208,102 @@ class Imported extends Reports {
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
         $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
+        $template->table_row_end();
+      }
+    }
+    catch(Exception $e)  {
+      $config_file = '../../../../environment.ini';
+      $config = parse_ini_file($config_file, $process_sections = true);
+      if($config['developement']['show_errors']) {
+        echo '<pre>';
+        print_r($e->getMessage());
+        echo $query;
+        echo '</pre>';
+      }
+      exit(1);
+    }
+    $template->table_end();
+
+    // html ends here
+    $template->end();
+
+    // prints out the whole template that is generated
+    $template->print();
+  }
+}
+
+
+
+class Sold extends Reports {
+
+  public function run () {
+
+    $type = 'thisday';
+    if(isset($_GET['type'])) {
+      $type = $_GET['type'];
+    }
+    switch ($type) {
+      case 'thisday':
+        $left_title = 'Rapport: Alle salg i dag';
+        break;
+      case 'thisweek':
+        $left_title = 'Rapport: Alle salg denne uken';
+      break;
+      case 'thismonth':
+        $left_title = 'Rapport: Alle salg '. Dates::get_this_month() . ' ' . date("Y");
+      break;
+    }
+    $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
+    $_key = 'Dato';
+    if ($type == 'thisday') {
+      $_key = 'Tid';
+    }
+    $table_headers = [
+      ['Navn', 'name'],
+      ['Merke', 'brand'],
+      ['Navn', 'article'],
+      ['Antall', 'soldqty'],
+      [$_key, 'salesdate'],
+      // ['Dato', 'salesdate'],
+      // ['Tid', 'salestime'],
+      ['Pris', 'price'],
+      // ['Rabatt', 'discount'],
+      // ['Betalingsmåte', 'paymentmethod'],
+      // ['Lev. ID', 'supplyid'],
+    ];
+
+    // html starts here
+    $template = new TemplateReports();
+    $template->start();
+    $template->title_left($left_title);
+    $template->title_right($right_title);
+
+    // report table starts here
+    $template->table_start();
+    $template->table_row_start();
+    $this->hyper_link = new HyperLink();
+    foreach ($table_headers as $header) {
+      $this->hyper_link->add_query('sort', $header[1]);
+      $this->hyper_link->add_query('order', $this->order);
+      $header_val = '<a href="' . $this->hyper_link->url . '">' . $header[0] .'</a>';
+      $template->table_row_header($header_val);
+    }
+    $template->table_row_end();
+    $query = QuerySold::get($type);
+    $this->cnxn = Database::get_retail_connection();
+    try {
+      foreach ($this->cnxn->query($query) as $row) {
+        $template->table_row_start();
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['name']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['soldqty']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['salesdate']));
+        // $template->table_row_value(CharacterConvert::utf_to_norwegian($row['salestime']));
+        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['price']));
+        // $template->table_row_value(CharacterConvert::utf_to_norwegian($row['discount']));
+        // $template->table_row_value(CharacterConvert::utf_to_norwegian($row['paymentmethod']));
+        // $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
         $template->table_row_end();
       }
     }
