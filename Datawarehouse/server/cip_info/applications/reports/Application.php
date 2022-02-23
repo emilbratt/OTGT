@@ -19,8 +19,8 @@ class Reports {
     require_once '../applications/Database.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
-    require_once '../applications/reports/ReportTemplate.php';
-    require_once '../applications/reports/ReportsQuery.php';
+    require_once '../applications/reports/TemplateReports.php';
+    require_once '../applications/reports/QueryReports.php';
 
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
@@ -93,7 +93,7 @@ class Soldout extends Reports {
     ];
 
     // html starts here
-    $template = new ReportTemplate();
+    $template = new TemplateReports();
     $template->start();
     $template->title_left($left_title);
     $template->title_right($right_title);
@@ -178,7 +178,7 @@ class Imported extends Reports {
     ];
 
     // html starts here
-    $template = new ReportTemplate();
+    $template = new TemplateReports();
     $template->start();
     $template->title_left($left_title);
     $template->title_right($right_title);

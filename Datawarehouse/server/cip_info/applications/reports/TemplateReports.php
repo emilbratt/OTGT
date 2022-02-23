@@ -2,7 +2,7 @@
 
 require_once '../applications/Template.php';
 
-class ReportTemplate extends Template {
+class TemplateReports extends Template {
   // methods with same name here will override the method in Template
 
   public function start () {
