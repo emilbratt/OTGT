@@ -31,9 +31,26 @@ class QueryFind {
     EOT;
 
     $this->illegal_reserved_words = [
-      'DATABASE', 'DELETE', 'MODIFY', 'UPDATE', 'INSERT', 'DROP', 'KAKE'
+      'DATABASE', 'DELETE', 'MODIFY', 'UPDATE', 'INSERT', 'DROP',
     ];
 
+  }
+
+  public function add_toggle_expired () {
+    $items = 'active';
+    if(isset($_GET['items'])) {
+      $items = $_GET['items'];
+    }
+    switch ($items) {
+      case 'all':
+        break;
+      case 'expired':
+        $this->query .= " AND Article.articleName LIKE '[.]%'";
+        break;
+      case 'active':
+        $this->query .= " AND Article.articleName NOT LIKE '[.]%'";
+        break;
+    }
   }
 
   protected function special_character_replace () {
@@ -64,6 +81,35 @@ class QueryFind {
     }
   }
 
+  public function add_search_brand () {
+    // add search for brand
+    $string = $_GET['input_field_brand'];
+    $this->query .= <<<EOT
+    WHERE Brands.brandLabel LIKE '%$string%'\n
+    EOT;
+  }
+
+  public function add_search_article () {
+    // add search for name
+    $array = explode(' ', $_GET['input_field_article']);
+    foreach ($array as $string) {
+      // i dont know how to use prepared statements for any number of
+      // multi word search
+      // while this is a kind of naive way to secure queries against
+      // injection, it is better than nothing at this point
+      // you can for example write DELETE- (notice the hyphen) and it
+      // willl go unnoticed
+      // however, this will never be a public facing service, only local
+
+      if (in_array(strtoupper($string), $this->illegal_reserved_words) ) {
+        echo "<p>Ignored illegal reserved word $string</p>";
+        return;
+      }
+      $this->query .= <<<EOT
+      AND Article.articleName LIKE '%$string%'\n
+      EOT;
+    }
+  }
 
   public function add_order () {
     $order = 'ascending';
@@ -97,48 +143,25 @@ class QueryFind {
 
 class QueryFindBySearch extends QueryFind {
 
-  public function add_search_brand () {
-    // add search for brand
-    $string = $_GET['input_field_brand'];
-    $this->query .= <<<EOT
-    WHERE Brands.brandLabel LIKE '%$string%'\n
-    EOT;
+  function __construct () {
+    parent::__construct();
   }
-
-  public function add_search_article () {
-    // add search for name
-    $array = explode(' ', $_GET['input_field_article']);
-    foreach ($array as $string) {
-      // i dont know how to use prepared statements for any number of
-      // multi word search
-      // while this is a kind of naive way to secure queries against
-      // injection, it is better than nothing at this point
-      // you can for example write DELETE- (notice the hyphen) and it
-      // willl go unnoticed
-      // however, this will never be a public facing service, only local
-
-      if (in_array(strtoupper($string), $this->illegal_reserved_words) ) {
-        echo "<p>Ignored illegal reserved word $string</p>";
-        return;
-      }
-      $this->query .= <<<EOT
-      AND Article.articleName LIKE '%$string%'\n
-      EOT;
-    }
-  }
-
 
 }
 
 class QueryFindByBarcode extends QueryFind {
 
-  public function  instantiate () {
+  function __construct () {
+    parent::__construct();
+    // with the default start of query, we also at this part
+    // so that we are able to use barcode in the where clause
     $this->query .= <<<EOT
     INNER JOIN
       ArticleEAN ON Article.articleId = ArticleEAN.articleId
     WHERE
     EOT;
   }
+
 
   public function add_barcode ($part) {
     if(!(is_numeric($part))) {

@@ -41,16 +41,26 @@ class TemplateFind extends Template {
     form, input {
       display: inline;
       width:250px;
-      height: 30px;
+      height: 26px;
     }
     #input_field_brand {
       display: inline;
-      width:250px;
-      height: 30px;
+      width: 170px;
+    }
+    .inline {
+      display: inline;
     }
     #input_field_article {
       display: inline;
-      width:650px;
+      width: 400px;
+    }
+    #input_field_submit {
+
+      display: inline;
+      color: #BBBBFF;
+      background: #222222;
+      display: inline;
+      width: 150px;
       height: 30px;
     }
     #input_field_div {
@@ -68,10 +78,9 @@ class TemplateFind extends Template {
       background-color: #333333 ;
     }
     a {
-      text-decoration:none
+      text-decoration: none;
       font-family: arial;
       color: #CCCCFF;
-
     }
     </style>
     <body>\n
@@ -84,26 +93,24 @@ class TemplateFind extends Template {
       <h1>$string</h1>
     </div>\n
     EOT;
-
   }
 
   public function form_search ($brand = '', $article = '') {
     $this->html .= <<<EOT
-
     <div id="input_field_div">
-      <form action="">
-        <label for="input_field_brand">Merke:</label>
+      <form>
+        <label for="input_field_brand"><h3 class="inline">Merke:</h3></label>
         <input
           type="text" autofocus="autofocus" onfocus="this.select()"
           id="input_field_brand" name="input_field_brand"
           value="$brand">
 
-        <label for="input_field_article">Artikkel:</label>
+        <label for="input_field_article"><h3 class="inline">Artikkel:</h3></label>
         <input
           type="text" id="input_field_article" name="input_field_article"
           value="$article">
 
-        <input type="submit" value="Søk">
+        <input type="submit" value="Søk" id="input_field_submit">
 
       </form>
     </div>

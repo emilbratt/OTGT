@@ -77,6 +77,15 @@ class Template {
   }
 
 
+  public function hyperlink ($string, $hyperlink) {
+    $this->html .= <<<EOT
+    <a href="$hyperlink">
+      <button id="input_field_submit">$string</button>
+    </a>\n
+    EOT;
+  }
+
+
   public function title_left ($string = 'left title') {
     $this->html .= <<<EOT
     <h1 style="float: left;">$string</h1>\n

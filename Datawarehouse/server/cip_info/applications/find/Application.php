@@ -6,7 +6,6 @@
  * searching by brand, article, barcode, category etc,
  *
  * TODO:
- *  add: button to enable/disable expired articles
  *  add: all queries that have user-input should be logged
  *  add: click on result row to open detailed info about article
  */
@@ -15,7 +14,9 @@ class Find {
 
   protected $visitor_url;
   protected $order;
-  protected $hyper_link;
+  protected $toggle_expired;
+  protected $toggle_expired_message;
+  // protected $hyper_link_header;
   protected $template;
 
   function __construct () {
@@ -33,6 +34,21 @@ class Find {
         $this->order = 'descending';
       }
     }
+
+    // default is none-expired (show only active articles), can be flipped with button
+    $this->toggle_expired = 'all';
+    $this->toggle_expired_message = 'Vis Aktive & Utgåtte';
+    if(isset($_GET['items'])) {
+      if($_GET['items'] == 'active') {
+        $this->toggle_expired = 'expired';
+        $this->toggle_expired_message = 'Vis Kun Utgåtte';
+      }
+      else if($_GET['items'] == 'all') {
+        $this->toggle_expired = 'active';
+        $this->toggle_expired_message = 'Vis Kun Aktive';
+      }
+    }
+
   }
 
   protected function check_minimum_search_string_brand () {
@@ -83,6 +99,9 @@ class BySearch extends Find {
       $title = $_GET['input_field_article'];
     }
     $this->template->form_search($brand, $title);
+    $hyper_link_toggle = new HyperLink();
+    $hyper_link_toggle->add_query('items', $this->toggle_expired);
+    $this->template->hyperlink($this->toggle_expired_message, $hyper_link_toggle->url);
 
     if(isset($_GET['input_field_brand']) and isset($_GET['input_field_article'])) {
       $this->result_set();
@@ -93,6 +112,8 @@ class BySearch extends Find {
 
   private function result_set () {
 
+    // if search string is to short, the query will become to expensive
+    // and or have to many rows, we set a lower limit to characters
     if($_GET['input_field_brand'] == '') {
       $this->template->message('Minst 2 tegn for å søke på merke');
       return;
@@ -116,28 +137,31 @@ class BySearch extends Find {
       ['Plassering', 'location'],
       ['Lev. ID', 'supplyid'],
     ];
-    // report table starts here
+
     $this->template->table_start();
     $this->template->table_row_start();
-
-    $this->hyper_link = new HyperLink();
+    $hyper_link_header = new HyperLink();
+    $hyper_link_header->link_home('hei', 'sann');
     foreach ($table_headers as $header) {
-      $this->hyper_link->add_query('sort', $header[1]);
-      $this->hyper_link->add_query('order', $this->order);
-      $header_val = '<a href="' . $this->hyper_link->url . '">' . $header[0] .'</a>';
+      $hyper_link_header->add_query('sort', $header[1]);
+      $hyper_link_header->add_query('order', $this->order);
+      $header_val = '<a href="' . $hyper_link_header->url . '">' . $header[0] .'</a>';
       $this->template->table_row_header($header_val);
     }
     $this->template->table_row_end();
     $query = new QueryFindBySearch();
     $query->add_search_brand();
     $query->add_search_article();
+    $query->add_toggle_expired();
     $query->add_sort();
     $query->add_order();
+    // $query->print_query();
 
     $this->cnxn = Database::get_retail_connection();
 
     try {
       foreach ($this->cnxn->query($query->get()) as $row) {
+        $article = $row['articleid'];
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
@@ -159,8 +183,6 @@ class BySearch extends Find {
       exit(1);
     }
     $this->template->table_end();
-
-    // html ends here
     $this->template->end();
 
   }
