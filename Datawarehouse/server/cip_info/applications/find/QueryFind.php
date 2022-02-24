@@ -40,10 +40,52 @@ class QueryFind {
     $this->query = preg_replace('/(\ø|æ|å|Ø|Æ|Å|tiss)/', '_', $this->query);
   }
 
-  public function print () {
+  public function add_sort () {
+    $sort = 'brand';
+    if(isset($_GET['sort'])) {
+      $sort = $_GET['sort'];
+    }
+    switch ($sort) {
+      case 'article':
+        $this->query .= ' ORDER BY Article.articleName';
+        break;
+      case 'brand':
+        $this->query .= ' ORDER BY Brands.brandLabel';
+        break;
+      case 'quantity':
+        $this->query .= ' ORDER BY stockQty';
+        break;
+      case 'location':
+        $this->query .= ' ORDER BY articleStock.StorageShelf';
+        break;
+      case 'supplyid':
+        $this->query .= ' ORDER BY Article.suppliers_art_no';
+        break;
+    }
+  }
+
+
+  public function add_order () {
+    $order = 'ascending';
+    if(isset($_GET['order'])) {
+      $order = $_GET['order'];
+    }
+    switch ($order) {
+      case 'ascending':
+        $this->query .= ' ASC';
+        break;
+      case 'descending':
+        $this->query .= ' DESC';
+        break;
+    }
+  }
+
+  public function print_query () {
+    // for debugging only (show current query)
     echo '<pre>';
     echo $this->query;
     echo '</pre>';
+    die;
   }
 
   public function get () {
@@ -53,18 +95,19 @@ class QueryFind {
 
 }
 
-class QueryFindSearch extends QueryFind {
+class QueryFindBySearch extends QueryFind {
 
-  public function add_search_brand ($string) {
+  public function add_search_brand () {
     // add search for brand
+    $string = $_GET['input_field_brand'];
     $this->query .= <<<EOT
     WHERE Brands.brandLabel LIKE '%$string%'\n
     EOT;
   }
 
-  public function add_search_article ($string) {
+  public function add_search_article () {
     // add search for name
-    $array = explode(' ', $string);
+    $array = explode(' ', $_GET['input_field_article']);
     foreach ($array as $string) {
       // i dont know how to use prepared statements for any number of
       // multi word search
@@ -87,7 +130,7 @@ class QueryFindSearch extends QueryFind {
 
 }
 
-class QueryFindBarcode extends QueryFind {
+class QueryFindByBarcode extends QueryFind {
 
   public function  instantiate () {
     $this->query .= <<<EOT

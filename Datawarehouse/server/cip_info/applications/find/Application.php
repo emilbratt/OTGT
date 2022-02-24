@@ -84,12 +84,10 @@ class BySearch extends Find {
     }
     $this->template->form_search($brand, $title);
 
-
     if(isset($_GET['input_field_brand']) and isset($_GET['input_field_article'])) {
       $this->result_set();
     }
 
-    // prints out the whole template that is generated
     $this->template->print();
   }
 
@@ -130,9 +128,11 @@ class BySearch extends Find {
       $this->template->table_row_header($header_val);
     }
     $this->template->table_row_end();
-    $query = new QueryFindSearch();
-    $query->add_search_brand($_GET['input_field_brand']);
-    $query->add_search_article($_GET['input_field_article']);
+    $query = new QueryFindBySearch();
+    $query->add_search_brand();
+    $query->add_search_article();
+    $query->add_sort();
+    $query->add_order();
 
     $this->cnxn = Database::get_retail_connection();
 
