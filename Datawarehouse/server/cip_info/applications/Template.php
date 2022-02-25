@@ -6,20 +6,13 @@ class Template {
   protected $html;
 
   function __construct () {
+    // this will add global css to our html template
+    // any additional css will have to be added after the
+    // constructor for each inherited class after
+    // calling this as a parent
     $this->html = <<<EOT
     <!DOCTYPE html>
-    <html>\n
-    EOT;
-
-  }
-
-  public function print () {
-    echo $this->html;
-    $this->html = '';
-  }
-
-  public function start () {
-    $this->html .= <<<EOT
+    <html>
     <style>
     html {
       min-height: 100%;
@@ -27,6 +20,9 @@ class Template {
     body {
       background: linear-gradient(#222222, #000000);
       color: #BBBBFF;
+    }
+    title {
+      display: inline-block;
     }
     table, th, td {
       border:1px solid black;
@@ -56,6 +52,11 @@ class Template {
       width:250px;
       height: 30px;
     }
+    form, input {
+      display: inline;
+      width:250px;
+      height: 26px;
+    }
     #search_field {
       background: #111111;
       display: inline-block;
@@ -71,11 +72,49 @@ class Template {
     tr:nth-child(odd) {
       background-color: #333333 ;
     }
+    #input_field_div {
+      display: inline;
+    }
+    #input_field_submit {
+      display: inline;
+      color: #BBBBFF;
+      background: #222222;
+      display: inline;
+      width: 150px;
+      height: 30px;
+    }
+    #input_field_article {
+      display: inline;
+      width: 400px;
+    }
+    #input_field_brand {
+      display: inline;
+      width: 170px;
+    }
+    a {
+      text-decoration: none;
+      font-family: arial;
+      color: #CCCCFF;
+    }\n
+    EOT;
+  }
+
+  public function start () {
+    // when the style is added, we call this function to start
+    // adding html content to the body tag
+    $this->html .= <<<EOT
     </style>
     <body>\n
     EOT;
   }
 
+  public function title ($string = 'title') {
+    $this->html .= <<<EOT
+    <div class="title">
+      <h1>$string</h1>
+    </div>\n
+    EOT;
+  }
 
   public function hyperlink ($string, $hyperlink) {
     $this->html .= <<<EOT
@@ -85,12 +124,10 @@ class Template {
     EOT;
   }
 
-
   public function title_left ($string = 'left title') {
     $this->html .= <<<EOT
     <h1 style="float: left;">$string</h1>\n
     EOT;
-
   }
 
   public function title_right ($string = 'right title') {
@@ -141,6 +178,16 @@ class Template {
     </body>
     </html>
     EOT;
+  }
+
+  public function print () {
+    // print out the final html template as the last step
+    echo $this->html;
+    $this->html = '';
+  }
+
+  function __destruct () {
+
   }
 
 }

@@ -5,94 +5,8 @@ require_once '../applications/Template.php';
 class TemplateFind extends Template {
   // methods with same name here will override the method in Template
 
-  public function start () {
-    $this->html .= <<<EOT
-    <style>
-    html {
-      min-height: 100%;
-    }
-    body {
-      background: linear-gradient(#222222, #000000);
-      color: #BBBBFF;
-    }
-    title {
-      display: inline-block;
-    }
-    table, th, td {
-      border:1px solid black;
-    }
-    th {
-      font-size:110%;
-    }
-    table {
-      font-family: arial;
-      border-collapse: collapse;
-      opacity: 0.8;
-      width: 100%;
-    }
-    td {
-      text-align: right;
-    }
-    input[type="text"] {
-      background-color : #111111;
-      color: #BBBBFF;
-      border: 1px solid #AAAAAA;
-    }
-    form, input {
-      display: inline;
-      width:250px;
-      height: 26px;
-    }
-    #input_field_brand {
-      display: inline;
-      width: 170px;
-    }
-    .inline {
-      display: inline;
-    }
-    #input_field_article {
-      display: inline;
-      width: 400px;
-    }
-    #input_field_submit {
-
-      display: inline;
-      color: #BBBBFF;
-      background: #222222;
-      display: inline;
-      width: 150px;
-      height: 30px;
-    }
-    #input_field_div {
-      display: inline;
-    }
-    td, th {
-      border: 1px solid #111111;
-      text-align: left;
-      padding-left: 2px;
-    }
-    tr:nth-child(even) {
-      background-color: #222222;
-    }
-    tr:nth-child(odd) {
-      background-color: #333333 ;
-    }
-    a {
-      text-decoration: none;
-      font-family: arial;
-      color: #CCCCFF;
-    }
-    </style>
-    <body>\n
-    EOT;
-  }
-
-  public function title ($string = 'title') {
-    $this->html .= <<<EOT
-    <div class="title">
-      <h1>$string</h1>
-    </div>\n
-    EOT;
+  function __construct () {
+    parent::__construct();
   }
 
   public function form_search ($brand = '', $article = '') {
@@ -125,6 +39,5 @@ class TemplateFind extends Template {
     </div>\n
     EOT;
   }
-
 
 }
