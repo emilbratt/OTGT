@@ -37,11 +37,9 @@ class HyperLink {
     $this->url = $this->home_address . $this->query_string;
 
     // fix ? instead of & after redirect url
-    $val = $_SERVER['REDIRECT_URL'];
-    $serch = $_SERVER['REDIRECT_URL'] . '&';
-    $replace =  $_SERVER['REDIRECT_URL'] . '?';
-    // $this->url = preg_replace('~' . $val . '&~', $val . '?', $this->url);
-    $this->url = preg_replace("~$serch~", $replace, $this->url);
+    $search = $_SERVER['REDIRECT_URL'] . '&';
+    $replace = $_SERVER['REDIRECT_URL'] . '?';
+    $this->url = preg_replace("~$search~", $replace, $this->url);
 
   }
 
