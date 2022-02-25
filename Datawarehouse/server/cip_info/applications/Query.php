@@ -3,7 +3,7 @@
 
 class QueryRetail {
   protected $query;
-  protected $illegal_reserved; // simple way to prevend script kiddie level sql injection
+  protected $illegal_reserved_words; // simple way to prevend script kiddie level sql injection
   protected $special_characters; // mainly to swap æ, ø and å to  _
   protected $where_set; // simply verify if we have to pass WHERE to conditional
 
