@@ -36,7 +36,7 @@ class Template {
     td {
       text-align: right;
     }
-    input[type="text"] {
+    input[type="text"], input[type="search"] {
       background-color : #111111;
       color: #BBBBFF;
       border: 1px solid #AAAAAA;
@@ -75,7 +75,7 @@ class Template {
     #input_field_div {
       display: inline;
     }
-    #input_field_submit {
+    input[type="submit"], button {
       display: inline;
       color: #BBBBFF;
       background: #222222;
@@ -108,10 +108,32 @@ class Template {
     EOT;
   }
 
+  public function top_navbar ($arr) {
+    $this->html .= <<<EOT
+    <div class="topnav">\n
+    EOT;
+    foreach ($arr as $title => $hyperlink) {
+      $this->html .= <<<EOT
+      <a href="$hyperlink">$title</a>
+      EOT;
+    }
+    $this->html .= <<<EOT
+    </div>
+    EOT;
+  }
+
   public function title ($string = 'title') {
     $this->html .= <<<EOT
     <div class="title">
       <h1>$string</h1>
+    </div>\n
+    EOT;
+  }
+
+  public function message ($string) {
+    $this->html .= <<<EOT
+    <div class="message">
+      <h3>$string</h3>
     </div>\n
     EOT;
   }

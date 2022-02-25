@@ -13,14 +13,15 @@
 class Find {
 
   protected $visitor_url;
-  protected $order;
+  protected $order; // keeping track of what order should be passed when clicking header col of result table
   protected $toggle_expired;
   protected $toggle_expired_message;
+  protected $search_string_brand_len;
+  protected $search_string_article_len;
   // protected $hyper_link_header;
   protected $template;
 
   function __construct () {
-    // shows reports of soldout items for today, this week or this month
     require_once '../applications/Database.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
@@ -51,24 +52,12 @@ class Find {
 
   }
 
-  protected function check_minimum_search_string_brand () {
-    // a short search string set to at least 2 characters for brand and
-    // 3 characters for article will skip search
-    // this is to avoid to large result-sets from the database query
-    if(strlen($_GET['input_field_brand']) < 2) {
-      return false;
-    }
-    return true;
+  protected function get_search_string_brand_len () {
+    $this->search_string_brand_len = strlen($_GET['input_field_brand']);
   }
 
-  protected function check_minimum_search_string_article () {
-    // a short search string set to at least 2 characters for brand and
-    // 3 characters for article will skip search
-    // this is to avoid to large result-sets from the database query
-    if(strlen($_GET['input_field_article']) < 3) {
-      return false;
-    }
-    return true;
+  protected function get_search_string_article_len () {
+    $this->search_string_article_len = strlen($_GET['input_field_article']);
   }
 }
 
@@ -81,15 +70,20 @@ class Home extends Find {
 
 class BySearch extends Find {
   public function run () {
-
     $title = 'Søk etter vare';
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
-
 
     // html starts here
     $this->template = new TemplateFind();
     $this->template->start();
+
+    // top navigation bar
+    $this->template->top_menu();
+
+
     $this->template->title($title);
+
+    // preserving the previous brand and title search if passed, else empty
     $brand = '';
     $title = '';
     if(isset($_GET['input_field_brand'])) {
@@ -99,11 +93,13 @@ class BySearch extends Find {
       $title = $_GET['input_field_article'];
     }
     $this->template->form_search($brand, $title);
+
     $hyper_link_toggle = new HyperLink();
     $hyper_link_toggle->add_query('items', $this->toggle_expired);
     $this->template->hyperlink($this->toggle_expired_message, $hyper_link_toggle->url);
 
-    if(isset($_GET['input_field_brand']) and isset($_GET['input_field_article'])) {
+    // if form is passed, handle query
+    if(isset($_GET['input_field_brand']) or isset($_GET['input_field_article'])) {
       $this->result_set();
     }
 
@@ -111,22 +107,23 @@ class BySearch extends Find {
   }
 
   private function result_set () {
-
     // if search string is to short, the query will become to expensive
-    // and or have to many rows, we set a lower limit to characters
-    if($_GET['input_field_brand'] == '') {
-      $this->template->message('Minst 2 tegn for å søke på merke');
+    // and potentially to many rows; we set a lower limit to characters
+    $this->get_search_string_brand_len();
+    $this->get_search_string_article_len();
+    if ($this->search_string_brand_len < 1 and $this->search_string_article_len < 1) {
       return;
     }
-    if($_GET['input_field_article'] == '') {
+    else if ($this->search_string_brand_len < 1 and $this->search_string_article_len < 5) {
+      $this->template->message('Hvis du utelater Merke, bruk minst 5 tegn for å søke på artikkel');
       return;
     }
-    if(!($this->check_minimum_search_string_brand())) {
-      $this->template->message('Minst 2 tegn for å søke på merke');
+    else if ($this->search_string_article_len < 1 and $this->search_string_brand_len < 4) {
+      $this->template->message('Hvis du utelater Artikkel, bruk minst 4 tegn for å søke på Merke');
       return;
     }
-    if(!($this->check_minimum_search_string_article())) {
-      $this->template->message('Minst 3 tegn for å søke på Artikkel');
+    else if (($this->search_string_brand_len + $this->search_string_article_len) < 4) {
+      $this->template->message('Minst 5 tegn (fordelt på Merke og Artikkel) totalt for å søke');
       return;
     }
 
@@ -145,20 +142,17 @@ class BySearch extends Find {
     foreach ($table_headers as $header) {
       $hyper_link_header->add_query('sort', $header[1]);
       $hyper_link_header->add_query('order', $this->order);
-      $header_val = '<a href="' . $hyper_link_header->url . '">' . $header[0] .'</a>';
+      $header_val = '<a href="' . $hyper_link_header->url . '">' . $header[0] . '</a>';
       $this->template->table_row_header($header_val);
     }
     $this->template->table_row_end();
     $query = new QueryFindBySearch();
-    $query->add_search_brand();
-    $query->add_search_article();
-    $query->add_toggle_expired();
-    $query->add_sort();
-    $query->add_order();
-    // $query->print_query();
+    $query->where_brand();
+    $query->where_article();
+    $query->where_article_expired();
+    $query->sort_by();
 
     $this->cnxn = Database::get_retail_connection();
-
     try {
       foreach ($this->cnxn->query($query->get()) as $row) {
         $article = $row['articleid'];
