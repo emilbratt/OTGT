@@ -78,7 +78,7 @@ class BySearch extends Find {
     $this->template->start();
 
     // top navigation bar
-    $this->template->top_menu();
+    // $this->template->top_navbar();
 
 
     $this->template->title($title);

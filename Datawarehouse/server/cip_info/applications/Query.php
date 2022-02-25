@@ -3,9 +3,8 @@
 
 class QueryRetail {
   protected $query;
-  protected $illegal_reserved_words; // simple way to prevend script kiddie level sql injection
+  protected $illegal_reserved_words; // simple way to prevent script kiddie level sql injection
   protected $special_characters; // mainly to swap æ, ø and å to  _
-  protected $where_set; // simply verify if we have to pass WHERE to conditional
 
   function __construct () {
     $this->query = "SET LANGUAGE NORWEGIAN\n"; // always use norwegian
