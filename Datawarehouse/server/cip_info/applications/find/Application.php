@@ -163,6 +163,7 @@ class BySearch extends Find {
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
         $this->template->table_row_end();
       }
+      $this->template->table_end();
     }
     catch(Exception $e)  {
       $config_file = '../../../../environment.ini';
@@ -175,7 +176,6 @@ class BySearch extends Find {
       }
       exit(1);
     }
-    $this->template->end();
 
   }
 }

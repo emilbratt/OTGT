@@ -4,7 +4,7 @@
 class QueryRetail {
   protected $query;
   protected $illegal_reserved_words; // simple way to prevent script kiddie level sql injection
-  protected $special_characters; // mainly to swap æ, ø and å to  _
+  protected $special_characters; // mainly to swap "æ", "ø" and "å" to  "_"
 
   function __construct () {
     $this->query = "SET LANGUAGE NORWEGIAN\n"; // always use norwegian
@@ -13,10 +13,6 @@ class QueryRetail {
       'DATABASE', 'DELETE', 'MODIFY', 'UPDATE', 'INSERT', 'DROP', 'KAKE'
     ];
 
-  }
-
-  protected function special_character_replace () {
-    $this->query = preg_replace('/(\ø|æ|å|Ø|Æ|Å)/', '_', $this->query);
   }
 
   protected function check_illegal_word ($string) {
@@ -59,13 +55,11 @@ class QueryRetail {
     // word originally is positioned by the article we are searching
     $array = explode(' ', $string);
     foreach ($array as $string) {
-      // i dont know how to use prepared statements for any number of
-      // multi word search
+      // i dont know how to use prepared statements for a multi word search..
       // while this is a kind of naive way to secure queries against
-      // injection, it is better than nothing at this point
+      // injection, it is better than nothing at this point..
       // you can for example write DELETE- (notice the hyphen) and it
-      // willl go unnoticed
-      // however, this will never be a public facing service, only local
+      // willl go unnoticed however, this will never be public facing
 
       $this->check_illegal_word($string);
       if ( $this->has_where() ) {
@@ -99,18 +93,21 @@ class QueryRetail {
   }
 
   public function where_barcode () {
-    $string = $_GET['barcode'];
-    if(!(is_numeric($string))) {
-      echo "<p>Could not verify that $string is a valid barcode</p>";
+    $ean = $_GET['barcode'];
+    if(!(is_numeric($ean))) {
+      echo "<p>Could not verify that $ean is a valid barcode</p>";
       $this->print_query();
     }
-    if(!(is_numeric($string))) {
-      echo "<p>Could not verify that $string is a valid barcode</p>";
-      $this->print_query();
+    if ( $this->has_where() ) {
+      $this->query .= <<<EOT
+      AND ArticleEAN.eanCode = '$ean'\n
+      EOT;
     }
-    $this->query .= <<<EOT
-      ArticleEAN.eanCode = '$part'
-    EOT;
+    else {
+      $this->query .= <<<EOT
+      WHERE ArticleEAN.eanCode = '$ean'\n
+      EOT;
+    }
   }
 
   public function sort_by () {
@@ -158,7 +155,7 @@ class QueryRetail {
   }
 
   public function get () {
-    $this->special_character_replace();
+    $this->query = preg_replace('/(\ø|æ|å|Ø|Æ|Å)/', '_', $this->query);
     // $this->print_query(); // comment / uncomment for debugging
     return $this->query;
   }

@@ -221,8 +221,7 @@ class Template {
 
     // only if debugging is set, we show php globals
     if ($this->debug) {
-      $this->print_debug();
-
+      $this->add_debug();
     }
     // print out the final html template as the last step
     $this->html .= <<<EOT
@@ -234,12 +233,12 @@ class Template {
   }
 
 
-  private function print_debug () {
+  private function add_debug () {
     $this->html .= <<<EOT
     <br><br>
-    <p>----------------------------</p>
-    <p>--Debug Enabled--</p>
-    <p>----------------------------</p>\n
+    <p>------------------------------------------</p>
+    <p>-------- Debug Enabled --------</p>
+    <p>------------------------------------------</p>\n
     EOT;
     $this->html .= <<<EOT
     <p>\$_SERVER</p>
