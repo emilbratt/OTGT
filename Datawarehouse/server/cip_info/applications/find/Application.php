@@ -12,21 +12,25 @@
 
 class Find {
 
+  protected $template;
   protected $visitor_url;
   protected $order; // keeping track of what order should be passed when clicking header col of result table
   protected $toggle_expired;
   protected $toggle_expired_message;
   protected $search_string_brand_len;
   protected $search_string_article_len;
-  // protected $hyper_link_header;
-  protected $template;
 
   function __construct () {
     require_once '../applications/Database.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
+    require_once '../applications/find/NavigationFind.php';
     require_once '../applications/find/TemplateFind.php';
     require_once '../applications/find/QueryFind.php';
+
+    // html starts here
+    $this->template = new TemplateFind();
+    $this->template->start();
 
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
@@ -49,7 +53,6 @@ class Find {
         $this->toggle_expired_message = 'Vis Kun Aktive';
       }
     }
-
   }
 
   protected function get_search_string_brand_len () {
@@ -62,9 +65,11 @@ class Find {
 }
 
 class Home extends Find {
-
     public function run () {
-      echo 'This is Find';
+      $navigation = new NavigationFind();
+      $this->template->top_navbar($navigation->top_nav_links);
+      $this->template->title('Søk etter vare');
+      $this->template->print();
     }
 }
 
@@ -73,13 +78,8 @@ class BySearch extends Find {
     $title = 'Søk etter vare';
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
 
-    // html starts here
-    $this->template = new TemplateFind();
-    $this->template->start();
-
-    // top navigation bar
-    // $this->template->top_navbar();
-
+    $navigation = new NavigationFind();
+    $this->template->top_navbar($navigation->top_nav_links);
 
     $this->template->title($title);
 
@@ -94,9 +94,6 @@ class BySearch extends Find {
     }
     $this->template->form_search($brand, $title);
 
-    $hyper_link_toggle = new HyperLink();
-    $hyper_link_toggle->add_query('items', $this->toggle_expired);
-    $this->template->hyperlink($this->toggle_expired_message, $hyper_link_toggle->url);
 
     // if form is passed, handle query
     if(isset($_GET['input_field_brand']) or isset($_GET['input_field_article'])) {
@@ -127,6 +124,9 @@ class BySearch extends Find {
       return;
     }
 
+    $hyper_link_toggle = new HyperLink();
+    $hyper_link_toggle->add_query('items', $this->toggle_expired);
+    $this->template->hyperlink($this->toggle_expired_message, $hyper_link_toggle->url);
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
@@ -175,7 +175,6 @@ class BySearch extends Find {
       }
       exit(1);
     }
-    $this->template->table_end();
     $this->template->end();
 
   }

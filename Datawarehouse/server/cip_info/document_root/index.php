@@ -12,8 +12,8 @@
  *  add. js for handeling search filter of result set
  *  add. turnover report
  *  add. app to find items by name, brand, category, barcode etc..
- *  add. app to update shelf value mobile and desktop freindly
- *  add. click on location column in result and get map view (make svg image over floor plan)
+ *  add. app to update shelf value (mobile and desktop freindly)
+ *  add. click on location in result and get map view (make svg image over floor plan)
  *  add. top navigation bar
  */
 
@@ -25,10 +25,3 @@ error_reporting(E_ALL);
 require_once '../applications/Request.php';
 $main = new Apprequest;
 $main = null;
-// die;
-
-// print out globals
-echo '<pre>';
-print_r($_SERVER);
-print_r($_GET);
-echo '</pre>';

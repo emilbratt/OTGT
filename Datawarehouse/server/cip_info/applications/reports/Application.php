@@ -1,9 +1,9 @@
 <?php
 
 /**
- * NOTE:
- * for turnover reports, maybe include graphs using some graphing tool for web view
- * fix global way to show time on 'thisday' and date on 'thisweek' and 'thismonth'
+ * TODO:
+ * rewrite QueryReports.php from static methods to instance methods
+ * add turnover reports, maybe include graphs using some graphing tool for web view
  *
  * example request: http://host:port/reports/soldout/&type=thismonth&include=none-defaults&filter=default&sort=brand&order=accendings
  *
@@ -11,6 +11,8 @@
 
 class Reports {
 
+  protected $template;
+  protected $config;
   protected $visitor_url;
   protected $order;
   protected $hyper_link;
@@ -20,6 +22,7 @@ class Reports {
     require_once '../applications/Database.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
+    require_once '../applications/reports/NavigationReports.php';
     require_once '../applications/reports/TemplateReports.php';
     require_once '../applications/reports/QueryReports.php';
 
@@ -30,35 +33,22 @@ class Reports {
         $this->order = 'descending';
       }
     }
+
+    $config_file = '../../../../environment.ini';
+    $this->config = parse_ini_file($config_file, $process_sections = true);
+
+    $this->template = new TemplateReports();
+    $this->template->start();
   }
 
-  public function run () {
-    echo 'this is reports Rerports()';
-  }
-
-  protected function add_query_parameter ($old_url, $key, $val) {
-    // first, remove or replace with empty string if key exist
-    // regex: starts with either ? or & followed by $key followed by = and any value until & or end of string
-    $filtered_url = preg_replace('/(\?|&)'.$key.'=[^&]*/', '', $old_url);
-    // then add key=val to the end of the url
-    $new_url = $filtered_url . '&' . "$key=$val";
-    return $new_url;
-  }
 }
 
-
 class Home extends Reports {
-
   public function run () {
-    // links to the reports listed as classes below
-    $template = new ReportTemplate();
-    $template->start();
-    $template->title_left('this is reports -> home');
-    $template->title_right('not done yet');
-    $template->end();
-    $template->print();
-    die;
-
+    $navigation = new NavigationReports();
+    $this->template->top_navbar($navigation->top_nav_links);
+    $this->template->title('Rapporter');
+    $this->template->print();
   }
 }
 
@@ -93,42 +83,37 @@ class Soldout extends Reports {
       ['Lev. ID', 'supplyid'],
     ];
 
-    // html starts here
-    $template = new TemplateReports();
-    $template->start();
-    $template->title_left($left_title);
-    $template->title_right($right_title);
+    $this->template->title_left($left_title);
+    $this->template->title_right($right_title);
 
     // report table starts here
-    $template->table_start();
-    $template->table_row_start();
+    $this->template->table_start();
+    $this->template->table_row_start();
     $this->hyper_link = new HyperLink();
     foreach ($table_headers as $header) {
       $this->hyper_link->add_query('sort', $header[1]);
       $this->hyper_link->add_query('order', $this->order);
       $header_val = '<a href="' . $this->hyper_link->url . '">' . $header[0] .'</a>';
-      $template->table_row_header($header_val);
+      $this->template->table_row_header($header_val);
     }
-    $template->table_row_end();
+    $this->template->table_row_end();
     $query = QuerySoldout::get($type);
     $this->cnxn = Database::get_retail_connection();
     try {
       foreach ($this->cnxn->query($query) as $row) {
-        $template->table_row_start();
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastsold']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
-        $template->table_row_end();
+        $this->template->table_row_start();
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastsold']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
+        $this->template->table_row_end();
       }
     }
     catch(Exception $e)  {
-      $config_file = '../../../../environment.ini';
-      $config = parse_ini_file($config_file, $process_sections = true);
-      if($config['developement']['show_errors']) {
+      if($this->config['developement']['show_errors']) {
         echo '<pre>';
         print_r($e->getMessage());
         echo $query;
@@ -136,13 +121,9 @@ class Soldout extends Reports {
       }
       exit(1);
     }
-    $template->table_end();
+    $this->template->table_end();
 
-    // html ends here
-    $template->end();
-
-    // prints out the whole template that is generated
-    $template->print();
+    $this->template->print();
   }
 }
 
@@ -178,43 +159,38 @@ class Imported extends Reports {
       ['Lev. ID', 'supplyid'],
     ];
 
-    // html starts here
-    $template = new TemplateReports();
-    $template->start();
-    $template->title_left($left_title);
-    $template->title_right($right_title);
+    $this->template->title_left($left_title);
+    $this->template->title_right($right_title);
 
     // report table starts here
-    $template->table_start();
-    $template->table_row_start();
+    $this->template->table_start();
+    $this->template->table_row_start();
 
     $this->hyper_link = new HyperLink();
     foreach ($table_headers as $header) {
       $this->hyper_link->add_query('sort', $header[1]);
       $this->hyper_link->add_query('order', $this->order);
       $header_val = '<a href="' . $this->hyper_link->url . '">' . $header[0] .'</a>';
-      $template->table_row_header($header_val);
+      $this->template->table_row_header($header_val);
     }
-    $template->table_row_end();
+    $this->template->table_row_end();
     $query = QueryImported::get($type);
     $this->cnxn = Database::get_retail_connection();
     try {
       foreach ($this->cnxn->query($query) as $row) {
-        $template->table_row_start();
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
-        $template->table_row_end();
+        $this->template->table_row_start();
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
+        $this->template->table_row_end();
       }
     }
     catch(Exception $e)  {
-      $config_file = '../../../../environment.ini';
-      $config = parse_ini_file($config_file, $process_sections = true);
-      if($config['developement']['show_errors']) {
+      if($this->config['developement']['show_errors']) {
         echo '<pre>';
         print_r($e->getMessage());
         echo $query;
@@ -222,13 +198,9 @@ class Imported extends Reports {
       }
       exit(1);
     }
-    $template->table_end();
+    $this->template->table_end();
 
-    // html ends here
-    $template->end();
-
-    // prints out the whole template that is generated
-    $template->print();
+    $this->template->print();
   }
 }
 
@@ -272,45 +244,40 @@ class Sold extends Reports {
       // ['Lev. ID', 'supplyid'],
     ];
 
-    // html starts here
-    $template = new TemplateReports();
-    $template->start();
-    $template->title_left($left_title);
-    $template->title_right($right_title);
+    $this->template->title_left($left_title);
+    $this->template->title_right($right_title);
 
     // report table starts here
-    $template->table_start();
-    $template->table_row_start();
+    $this->template->table_start();
+    $this->template->table_row_start();
     $this->hyper_link = new HyperLink();
     foreach ($table_headers as $header) {
       $this->hyper_link->add_query('sort', $header[1]);
       $this->hyper_link->add_query('order', $this->order);
       $header_val = '<a href="' . $this->hyper_link->url . '">' . $header[0] .'</a>';
-      $template->table_row_header($header_val);
+      $this->template->table_row_header($header_val);
     }
-    $template->table_row_end();
+    $this->template->table_row_end();
     $query = QuerySold::get($type);
     $this->cnxn = Database::get_retail_connection();
     try {
       foreach ($this->cnxn->query($query) as $row) {
-        $template->table_row_start();
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['name']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['soldqty']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['salesdate']));
-        // $template->table_row_value(CharacterConvert::utf_to_norwegian($row['salestime']));
-        $template->table_row_value(CharacterConvert::utf_to_norwegian($row['price']));
-        // $template->table_row_value(CharacterConvert::utf_to_norwegian($row['discount']));
-        // $template->table_row_value(CharacterConvert::utf_to_norwegian($row['paymentmethod']));
-        // $template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
-        $template->table_row_end();
+        $this->template->table_row_start();
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['name']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['soldqty']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['salesdate']));
+        // $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['salestime']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['price']));
+        // $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['discount']));
+        // $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['paymentmethod']));
+        // $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
+        $this->template->table_row_end();
       }
     }
     catch(Exception $e)  {
-      $config_file = '../../../../environment.ini';
-      $config = parse_ini_file($config_file, $process_sections = true);
-      if($config['developement']['show_errors']) {
+      if($this->config['developement']['show_errors']) {
         echo '<pre>';
         print_r($e->getMessage());
         echo $query;
@@ -318,12 +285,8 @@ class Sold extends Reports {
       }
       exit(1);
     }
-    $template->table_end();
+    $this->template->table_end();
 
-    // html ends here
-    $template->end();
-
-    // prints out the whole template that is generated
-    $template->print();
+    $this->template->print();
   }
 }

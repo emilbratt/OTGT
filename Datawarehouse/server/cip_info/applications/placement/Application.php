@@ -1,29 +1,43 @@
 <?php
 
+/**
+ *
+ * TODO:
+ * register by scanning item, then scanning shelf
+ * on screen verification should be implemented
+ *
+ */
 
-class Home {
+
+class Register {
+  // shows reports of soldout items for today, this week or this month
+  protected $template;
+
   function __construct () {
-    echo 'register item to a specified location';
-    require_once './applications/Helpers.php';
-    echo '<br>';
-    if(UserAgent::is_mobile()) {
-      echo 'yes';
-      return;
-    };
-    echo 'no';
+    require_once '../applications/Helpers.php';
+    require_once '../applications/placement/TemplatePlacement.php';
+    require_once '../applications/placement/NavigationPlacement.php';
+    // html starts here
+    $this->template = new TemplatePlacement();
+    $this->template->start();
+
   }
 }
 
 
+class Home extends Register {
 
-// register by scanning item, then scanning shelf
-// on screen verification should be implemented
+  public function run () {
+    if(UserAgent::is_mobile()) {
+      // if on mobile
+    }
+    else {
+      // if on desktop;
+    }
+    $navigation = new NavigationPlacement();
+    $this->template->top_navbar($navigation->top_nav_links);
+    $this->template->title('Plassering');
+    $this->template->print();
+  }
 
-class Mobile {
-  // if user agent is mobile
-}
-
-
-class Desktop {
-  // if user agent is desktop pc
 }

@@ -4,8 +4,10 @@ class Template {
 
   // protected gives the inherited object access to this
   protected $html;
+  protected $debug;
 
   function __construct () {
+    $this->debug = true;
     // this will add global css to our html template
     // any additional css will have to be added after the
     // constructor for each inherited class after
@@ -21,6 +23,26 @@ class Template {
       background: linear-gradient(#222222, #000000);
       color: #BBBBFF;
     }
+
+    /* top nav background */
+    .topnav {
+      background-color: #303030;
+      overflow: hidden;
+    }
+    /* top nav clickable area */
+    .topnav a {
+      float: left;
+      color: #BBBBFF;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+    /* top nav hover colour */
+    .topnav a:hover {
+      background-color: #404040;
+    }
+
     title {
       display: inline-block;
     }
@@ -112,9 +134,9 @@ class Template {
     $this->html .= <<<EOT
     <div class="topnav">\n
     EOT;
-    foreach ($arr as $title => $hyperlink) {
+    foreach ($arr as $title => $redirect) {
       $this->html .= <<<EOT
-      <a href="$hyperlink">$title</a>
+      <a href="$redirect">$title</a>
       EOT;
     }
     $this->html .= <<<EOT
@@ -195,17 +217,50 @@ class Template {
     EOT;
   }
 
-  public function end () {
+  public function print () {
+
+    // only if debugging is set, we show php globals
+    if ($this->debug) {
+      $this->print_debug();
+
+    }
+    // print out the final html template as the last step
     $this->html .= <<<EOT
     </body>
     </html>
     EOT;
+    echo $this->html;
+    $this->html = null;
   }
 
-  public function print () {
-    // print out the final html template as the last step
-    echo $this->html;
-    $this->html = '';
+
+  private function print_debug () {
+    $this->html .= <<<EOT
+    <br><br>
+    <p>----------------------------</p>
+    <p>--Debug Enabled--</p>
+    <p>----------------------------</p>\n
+    EOT;
+    $this->html .= <<<EOT
+    <p>\$_SERVER</p>
+    <pre>\n
+    EOT;
+    foreach ($_SERVER as $key => $val) {
+      $this->html .= "$key --> $val\n";
+    }
+    $this->html .= <<<EOT
+    </pre>\n
+    EOT;
+    $this->html .= <<<EOT
+    <p>\$_GET</p>
+    <pre>
+    EOT;
+    foreach ($_GET as $key => $val) {
+      $this->html .= "$key --> $val\n";
+    }
+    $this->html .= <<<EOT
+    </pre>\n
+    EOT;
   }
 
   function __destruct () {
