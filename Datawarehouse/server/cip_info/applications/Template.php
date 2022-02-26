@@ -43,7 +43,7 @@ class Template {
       background-color: #404040;
     }
 
-    title {
+    .title {
       display: inline-block;
     }
     table, th, td {
