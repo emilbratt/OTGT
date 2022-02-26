@@ -128,21 +128,20 @@ class BySearch extends Find {
     }
 
     $table_headers = [
-      ['Merke', 'brand'],
-      ['Navn', 'article'],
-      ['Lager', 'quantity'],
-      ['Plassering', 'location'],
-      ['Lev. ID', 'supplyid'],
+      'Merke' => 'brand',
+      'Navn' => 'article',
+      'Lager' => 'quantity',
+      'Plassering' => 'location',
+      'Lev. ID' => 'supplyid',
     ];
 
     $this->template->table_start();
     $this->template->table_row_start();
     $hyper_link_header = new HyperLink();
-    $hyper_link_header->link_home('hei', 'sann');
-    foreach ($table_headers as $header) {
-      $hyper_link_header->add_query('sort', $header[1]);
+    foreach ($table_headers as $alias => $name) {
+      $hyper_link_header->add_query('sort', $name);
       $hyper_link_header->add_query('order', $this->order);
-      $header_val = '<a href="' . $hyper_link_header->url . '">' . $header[0] . '</a>';
+      $header_val = '<a href="' . $hyper_link_header->url . '">' . $alias . '</a>';
       $this->template->table_row_header($header_val);
     }
     $this->template->table_row_end();
