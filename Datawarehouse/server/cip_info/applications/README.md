@@ -1,4 +1,4 @@
-
+### quick over-view
 * creating a new application is as simple as creating a new directory
 inside the ./applications directory with the name of the directory
 determing the name (query string) that you pass after the '/' in the hyperlink
@@ -13,7 +13,8 @@ Note: class with Upper case name convention and query string all lower case
 * Lastly, within the class that is called, you need a public available method
 called run() because this is the method that is called by hard-code
 
-* example app applications/lemon (we call this app for, you guessed it; lemon)
+### example:
+* This is hypothetical code inside applications/lemon/Application.php (we call this app for, you guessed it; lemon)
 ```
 <?php
 // creating a mother class (optionally) with core functions for the app
