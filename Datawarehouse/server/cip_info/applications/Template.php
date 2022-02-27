@@ -38,6 +38,12 @@ class Template {
     .top_navbar {
       background-color: #303030;
       overflow: hidden;
+      position: fixed; /* Make it stick/fixed */
+      top: 0; /* Stay on top */
+      width: 100%; /* Full width */
+      transition: top 0.3s; /* Transition effect when sliding down (and up) */
+      margin-bottom: 50px;
+
     }
     /* top nav clickable area */
     .top_navbar a {
@@ -144,9 +150,24 @@ class Template {
   }
 
   public function top_navbar ($arr, $page = 'Hjem') {
-    // the $page var indicates what link to highligt
+    // the $page var indicates current page -> link is highlighted
     $this->html .= <<<EOT
-    <div class="top_navbar">\n
+    <script>
+    var prevScrollpos = window.pageYOffset;
+    window.onscroll = function() {
+      var currentScrollPos = window.pageYOffset;
+      if (prevScrollpos > currentScrollPos) {
+        document.getElementById("top_navbar").style.top = "0";
+      } else {
+        document.getElementById("top_navbar").style.top = "-50px";
+      }
+      prevScrollpos = currentScrollPos;
+    }
+    </script>
+    EOT;
+
+    $this->html .= <<<EOT
+    <div class="top_navbar" id="top_navbar">\n
     EOT;
     foreach ($arr as $title => $redirect) {
       if ($title == $page) {
@@ -158,6 +179,7 @@ class Template {
     }
     $this->html .= <<<EOT
     </div>
+    <br> <!-- br tag for forcing the next html objects to start from under the top nav -->\n
     EOT;
   }
 
