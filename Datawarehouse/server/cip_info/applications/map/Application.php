@@ -2,14 +2,15 @@
 
 
 class Map {
-  // shows reports of soldout items for today, this week or this month
+
+  protected $page;
   protected $template;
 
   function __construct () {
     require_once '../applications/Helpers.php';
     require_once '../applications/map/TemplateMap.php';
     require_once '../applications/map/NavigationMap.php';
-    // html starts here
+    $this->page = 'Kart';
     $this->template = new TemplateMap();
     $this->template->start();
 
@@ -27,7 +28,7 @@ class Home extends Map {
       // if on desktop;
     }
     $navigation = new NavigationMap();
-    $this->template->top_navbar($navigation->top_nav_links);
+    $this->template->top_navbar($navigation->top_nav_links, $this->page);
     $this->template->title('Kart');
     $this->template->print();
   }

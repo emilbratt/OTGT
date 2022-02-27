@@ -12,6 +12,7 @@
 
 class Find {
 
+  protected $page;
   protected $template;
   protected $visitor_url;
   protected $order; // keeping track of what order should be passed when clicking header col of result table
@@ -27,8 +28,7 @@ class Find {
     require_once '../applications/find/NavigationFind.php';
     require_once '../applications/find/TemplateFind.php';
     require_once '../applications/find/QueryFind.php';
-
-    // html starts here
+    $this->page = 'Søk';
     $this->template = new TemplateFind();
     $this->template->start();
 
@@ -67,7 +67,7 @@ class Find {
 class Home extends Find {
     public function run () {
       $navigation = new NavigationFind();
-      $this->template->top_navbar($navigation->top_nav_links);
+      $this->template->top_navbar($navigation->top_nav_links, $this->page);
       $this->template->title('Søk etter vare');
       $this->template->print();
     }

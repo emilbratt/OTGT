@@ -11,6 +11,7 @@
 
 class Reports {
 
+  protected $page;
   protected $template;
   protected $config;
   protected $visitor_url;
@@ -25,6 +26,7 @@ class Reports {
     require_once '../applications/reports/NavigationReports.php';
     require_once '../applications/reports/TemplateReports.php';
     require_once '../applications/reports/QueryReports.php';
+    $this->page = 'Rapporter';
 
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
@@ -46,7 +48,7 @@ class Reports {
 class Home extends Reports {
   public function run () {
     $navigation = new NavigationReports();
-    $this->template->top_navbar($navigation->top_nav_links);
+    $this->template->top_navbar($navigation->top_nav_links, $this->page);
     $this->template->title('Rapporter');
     $this->template->print();
   }

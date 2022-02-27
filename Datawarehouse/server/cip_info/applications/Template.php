@@ -1,4 +1,14 @@
 <?php
+/**
+ * colours
+ * text: BBBBFF
+ * top nav bar active / hover 404040
+ * a href CCCCFF
+ * search field background 111111
+ * table row (even) 222222
+ * table row (odd) 333333
+ */
+
 
 class Template {
 
@@ -25,12 +35,12 @@ class Template {
     }
 
     /* top nav background */
-    .topnav {
+    .top_navbar {
       background-color: #303030;
       overflow: hidden;
     }
     /* top nav clickable area */
-    .topnav a {
+    .top_navbar a {
       float: left;
       color: #BBBBFF;
       text-align: center;
@@ -39,7 +49,10 @@ class Template {
       font-size: 17px;
     }
     /* top nav hover colour */
-    .topnav a:hover {
+    .top_navbar a:hover {
+      background-color: #404040;
+    }
+    .top_navbar a.active {
       background-color: #404040;
     }
 
@@ -130,13 +143,17 @@ class Template {
     EOT;
   }
 
-  public function top_navbar ($arr) {
+  public function top_navbar ($arr, $page = 'Hjem') {
+    // the $page var indicates what link to highligt
     $this->html .= <<<EOT
-    <div class="topnav">\n
+    <div class="top_navbar">\n
     EOT;
     foreach ($arr as $title => $redirect) {
+      if ($title == $page) {
+        $redirect .= '" class="active';
+      }
       $this->html .= <<<EOT
-      <a href="$redirect">$title</a>
+      <a href="$redirect">$title</a>\n
       EOT;
     }
     $this->html .= <<<EOT

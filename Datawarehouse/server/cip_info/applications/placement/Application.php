@@ -11,13 +11,14 @@
 
 class Register {
   // shows reports of soldout items for today, this week or this month
+  protected $page;
   protected $template;
 
   function __construct () {
     require_once '../applications/Helpers.php';
     require_once '../applications/placement/TemplatePlacement.php';
     require_once '../applications/placement/NavigationPlacement.php';
-    // html starts here
+    $this->page = 'Plassering';
     $this->template = new TemplatePlacement();
     $this->template->start();
 
@@ -35,7 +36,7 @@ class Home extends Register {
       // if on desktop;
     }
     $navigation = new NavigationPlacement();
-    $this->template->top_navbar($navigation->top_nav_links);
+    $this->template->top_navbar($navigation->top_nav_links, $this->page);
     $this->template->title('Plassering');
     $this->template->print();
   }
