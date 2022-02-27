@@ -3,13 +3,50 @@
 inside the ./applications directory with the name of the directory
 determing the name (query string) that you pass after the '/' in the hyperlink
 
-* In Application.php you need to create a class named Home (is called) if you
-omit the second query string after the application name
+* In Application.php you need to create a class named Home which is called by
+default if you omit the second query string after the application name
 
-* For the second query string, youll create a Class with the name
-you want
-Note: uppercase class naming convention will be accessable with an all lowercase
-query string
+* For the second query string, you will have to create a Class with the name
+according to the second query string
+Note: class with Upper case name convention and query string all lower case
 
-* Lastly, within the class you need a public available method called run()
-as this is the method that is called as it is hard-coded
+* Lastly, within the class that is called, you need a public available method
+called run() because this is the method that is called by hard-code
+
+* example app applications/lemon (we call this app for, you guessed it; lemon)
+```
+<?php
+// creating a mother class (optionally) with core functions for the app
+class Lemon {
+  function __construct () {
+    ...
+    ...
+  }
+  protected function some_func () {
+    ... // a protected function can be called by an inherited instance of this class
+    ... // is NOT available through any url, but functionality can be served via this class
+    ...
+  }
+}
+
+// creating the home class that will be called if second query string is omitted
+class Home extends Lemon {
+  public function run () {
+    ... // this is where the entrypoint is for home | visit from mydomain/lemon
+    ...
+    ...
+
+  }
+
+}
+
+class Juice extends Lemon {
+  public function run () {
+    ... // this is where the entrypoint is for juice | visit from mydomain/lemon/juice
+    ...
+    ...
+  }
+
+}
+
+```
