@@ -14,7 +14,9 @@
  *  add. app to find items by name, brand, category, barcode etc..
  *  add. app to update shelf value (mobile and desktop freindly)
  *  add. click on location in result and get map view (make svg image over floor plan)
- *  add. top navigation bar
+ *  add. show last imported items and feature for updateing location
+ *  add. batch update loction for items
+ *  add. create barcodes (python backend with python-barcode?)
  */
 
 // temporary enable error reporting
