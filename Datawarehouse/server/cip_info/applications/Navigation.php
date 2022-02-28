@@ -11,16 +11,16 @@ class Navigation {
 
   public $top_nav_links;
   protected $nav_links;
-  protected $home_address; // example: http://hostname:8080
+  protected $home; // links to: domain/
 
   function __construct () {
-    $this->home_address = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+    $this->home_ = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
     $this->top_nav_links = [
-      'Hjem' => $this->home_address . '/',
-      'Søk' => $this->home_address . '/find',
-      'Rapporter' => $this->home_address . '/reports',
-      'Plassering' => $this->home_address . '/placement',
-      'Kart' => $this->home_address . '/map',
+      'Hjem' => $this->home_,
+      'Vare' => $this->home_ . '/find',
+      'Rapporter' => $this->home_ . '/reports',
+      'Plassering' => $this->home_ . '/placement',
+      'Kart' => $this->home_ . '/map',
     ];
   }
 

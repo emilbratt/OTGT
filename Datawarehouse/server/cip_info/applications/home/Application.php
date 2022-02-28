@@ -2,14 +2,14 @@
 
 class Home {
 
-  protected $page;
+  protected $page = 'Hjem';
 
   function __construct () {
     // shows reports of soldout items for today, this week or this month
     require_once '../applications/Helpers.php';
     require_once '../applications/home/TemplateHome.php';
     require_once '../applications/Navigation.php';
-    $this->page = 'Hjem';
+
     $this->template = new TemplateHome();
     $navigation = new Navigation();
     $this->template->start();

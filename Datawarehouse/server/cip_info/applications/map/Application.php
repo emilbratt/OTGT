@@ -3,14 +3,14 @@
 
 class Map {
 
-  protected $page;
+  protected $page = 'Kart';
   protected $template;
 
   function __construct () {
     require_once '../applications/Helpers.php';
     require_once '../applications/map/TemplateMap.php';
     require_once '../applications/map/NavigationMap.php';
-    $this->page = 'Kart';
+
     $this->template = new TemplateMap();
     $this->template->start();
 

@@ -12,7 +12,7 @@
 
 class Find {
 
-  protected $page;
+  protected $page = 'Vare'; # alias for top_navbar
   protected $template;
   protected $visitor_url;
   protected $order; // keeping track of what order should be passed when clicking header col of result table
@@ -28,11 +28,12 @@ class Find {
     require_once '../applications/find/NavigationFind.php';
     require_once '../applications/find/TemplateFind.php';
     require_once '../applications/find/QueryFind.php';
-    $this->page = 'Søk';
+
     $this->template = new TemplateFind();
     $navigation = new NavigationFind();
     $this->template->start();
     $this->template->top_navbar($navigation->top_nav_links, $this->page);
+    $this->template->sub_navbar($navigation->sub_nav_links);
 
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
@@ -68,8 +69,6 @@ class Find {
 
 class Home extends Find {
     public function run () {
-
-
       $this->template->title('Søk etter vare');
       $hyperlink_test = new HyperLink();
       $this->template->print();

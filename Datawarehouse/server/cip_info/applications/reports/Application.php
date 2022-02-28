@@ -11,7 +11,7 @@
 
 class Reports {
 
-  protected $page;
+  protected $page = 'Rapporter';
   protected $template;
   protected $config;
   protected $visitor_url;
@@ -26,7 +26,7 @@ class Reports {
     require_once '../applications/reports/NavigationReports.php';
     require_once '../applications/reports/TemplateReports.php';
     require_once '../applications/reports/QueryReports.php';
-    $this->page = 'Rapporter';
+
 
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';

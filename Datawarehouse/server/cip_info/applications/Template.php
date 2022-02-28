@@ -13,11 +13,13 @@
 class Template {
 
   // protected gives the inherited object access to this
+  protected $config;
   protected $html;
-  protected $debug;
+  protected $script;
 
   function __construct () {
-    $this->debug = true;
+    $config_file = '../../../../environment.ini';
+    $this->config = parse_ini_file($config_file, $process_sections = true);
     // this will add global css to our html template
     // any additional css will have to be added after the
     // constructor for each inherited class after
@@ -33,32 +35,61 @@ class Template {
       background: linear-gradient(#222222, #000000);
       color: #BBBBFF;
     }
+    a {
+      text-decoration: none;
+      font-family: arial;
+      color: #CCCCFF;
+    }
 
-    /* top nav background */
+    /* TOP NAVIGATION */
     .top_navbar {
       background-color: #303030;
       overflow: hidden;
-      position: fixed; /* Make it stick/fixed */
-      top: 0; /* Stay on top */
-      width: 100%; /* Full width */
-      transition: top 0.3s; /* Transition effect when sliding down (and up) */
+    EOT;
+    if(!($this->config['developement']['show_debug'])) {
+      // this hides the internal error warnings from php that shows on top of page
+      // therefore we only activate this css if debug in environment = false
+      $this->html .= <<<EOT
+      position: fixed; /* force to stay on same place */
+      top: 0;
+      transition: top 0.3s; /* hide/dhow transition effect from script call in seconds */
       margin-bottom: 50px;
-
+      EOT;
     }
-    /* top nav clickable area */
+    $this->html .= <<<EOT
+      width: 100%; /* Full width */
+    }
     .top_navbar a {
+      /* clickable area */
       float: left;
       color: #BBBBFF;
       text-align: center;
       padding: 14px 16px;
-      text-decoration: none;
       font-size: 17px;
     }
-    /* top nav hover colour */
     .top_navbar a:hover {
       background-color: #404040;
     }
     .top_navbar a.active {
+      background-color: #404040;
+    }
+
+    /* SUB NAVIGATION */
+    .sub_navbar {
+      background-color: #303030;
+      overflow: auto;
+      width: 200px;
+      color: #BBBBFF;
+    }
+    .sub_navbar a {
+      display: block;
+      padding: 14px;
+    }
+    /* hover colour */
+    .sub_navbar a:hover {
+      background-color: #404040;
+    }
+    .sub_navbar a.active {
       background-color: #404040;
     }
 
@@ -131,13 +162,13 @@ class Template {
     #input_field_brand {
       display: inline;
       width: 170px;
-    }
-    a {
-      text-decoration: none;
-      font-family: arial;
-      color: #CCCCFF;
     }\n
     EOT;
+  }
+
+  protected function add_script () {
+    $this->html .= $this->script;
+    $this->script = '';
   }
 
   public function start () {
@@ -151,7 +182,7 @@ class Template {
 
   public function top_navbar ($arr, $page = 'Hjem') {
     // the $page var indicates current page -> link is highlighted
-    $this->html .= <<<EOT
+    $this->script .= <<<EOT
     <script>
     var prevScrollpos = window.pageYOffset;
     window.onscroll = function() {
@@ -165,8 +196,9 @@ class Template {
     }
     </script>
     EOT;
-
+    $this->add_script();
     $this->html .= <<<EOT
+
     <div class="top_navbar" id="top_navbar">\n
     EOT;
     foreach ($arr as $title => $redirect) {
@@ -174,7 +206,31 @@ class Template {
         $redirect .= '" class="active';
       }
       $this->html .= <<<EOT
-      <a href="$redirect">$title</a>\n
+        <a href="$redirect">$title</a>\n
+      EOT;
+    }
+    $this->html .= <<<EOT
+    </div>
+    EOT;
+    if(!($this->config['developement']['show_debug'])) {
+      // this hides the internal error warnings from php that shows on top of page
+      // therefore we only activate this css if debug in environment = false
+      $this->html .= <<<EOT
+      <!-- we have to add some empty space to force next html tag to show -->
+      <div style="height: 50px;"></div> \n
+      EOT;
+    }
+
+  }
+
+  public function sub_navbar ($arr) {
+    $this->html .= <<<EOT
+    <div class="sub_navbar">\n
+    EOT;
+    foreach ($arr as $title => $redirect) {
+
+      $this->html .= <<<EOT
+        <a href="$redirect">$title</a>\n
       EOT;
     }
     $this->html .= <<<EOT
@@ -259,7 +315,7 @@ class Template {
   public function print () {
 
     // only if debugging is set, we show php globals
-    if ($this->debug) {
+    if($this->config['developement']['show_debug']) {
       $this->add_debug();
     }
     // print out the final html template as the last step

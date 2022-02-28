@@ -11,14 +11,14 @@
 
 class Register {
   // shows reports of soldout items for today, this week or this month
-  protected $page;
+  protected $page = 'Plassering';
   protected $template;
 
   function __construct () {
     require_once '../applications/Helpers.php';
     require_once '../applications/placement/TemplatePlacement.php';
     require_once '../applications/placement/NavigationPlacement.php';
-    $this->page = 'Plassering';
+
     $this->template = new TemplatePlacement();
     $this->template->start();
 
