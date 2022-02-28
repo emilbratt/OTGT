@@ -13,6 +13,7 @@
 class Find {
 
   protected $page = 'Vare'; # alias for top_navbar
+  protected $sub_page; # alias for sub_navbar
   protected $template;
   protected $visitor_url;
   protected $order; // keeping track of what order should be passed when clicking header col of result table
@@ -69,18 +70,14 @@ class Find {
 
 class Home extends Find {
     public function run () {
-      $this->template->title('Søk etter vare');
-      $hyperlink_test = new HyperLink();
       $this->template->print();
     }
 }
 
 class BySearch extends Find {
   public function run () {
-    $title = 'Søk etter vare';
+    $this->sub_page = 'bysearch';
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
-
-    $this->template->title($title);
 
     // preserving the previous brand and title search if passed, else empty
     $brand = '';
@@ -92,7 +89,6 @@ class BySearch extends Find {
       $title = $_GET['input_field_article'];
     }
     $this->template->form_search($brand, $title);
-
 
     // if form is passed, handle query
     if(isset($_GET['input_field_brand']) or isset($_GET['input_field_article'])) {

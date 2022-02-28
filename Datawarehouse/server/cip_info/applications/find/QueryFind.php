@@ -1,7 +1,5 @@
 <?php
 
-// the "pages" inside each directory uses this file to get their
-// needed sql queries to generate correct reports
 require_once '../applications/Query.php';
 
 class QueryFindBySearch extends QueryRetail {

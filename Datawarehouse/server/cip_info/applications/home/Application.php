@@ -20,5 +20,4 @@ class Home {
     $this->template->title('Hjem');
     $this->template->print();
   }
-
 }

@@ -43,17 +43,18 @@ class Template {
 
     /* TOP NAVIGATION */
     .top_navbar {
+      margin-top: 5px;
       background-color: #303030;
       overflow: hidden;
     EOT;
-    if(!($this->config['developement']['show_debug'])) {
+    if( !($this->config['developement']['show_debug']) ) {
       // this hides the internal error warnings from php that shows on top of page
       // therefore we only activate this css if debug in environment = false
       $this->html .= <<<EOT
-      position: fixed; /* force to stay on same place */
-      top: 0;
-      transition: top 0.3s; /* hide/dhow transition effect from script call in seconds */
-      margin-bottom: 50px;
+        position: fixed; /* force to stay on same place */
+        top: 0;
+        transition: top 0.3s; /* hide/dhow transition effect from script call in seconds */
+        /* margin-bottom: 5px; */
       EOT;
     }
     $this->html .= <<<EOT
@@ -76,6 +77,7 @@ class Template {
 
     /* SUB NAVIGATION */
     .sub_navbar {
+      margin-top: 5px;
       background-color: #303030;
       overflow: auto;
       width: 200px;
@@ -212,7 +214,7 @@ class Template {
     $this->html .= <<<EOT
     </div>
     EOT;
-    if(!($this->config['developement']['show_debug'])) {
+    if( !($this->config['developement']['show_debug']) ) {
       // this hides the internal error warnings from php that shows on top of page
       // therefore we only activate this css if debug in environment = false
       $this->html .= <<<EOT

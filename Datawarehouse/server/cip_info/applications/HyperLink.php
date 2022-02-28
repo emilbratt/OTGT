@@ -43,7 +43,6 @@ class HyperLink {
     $search = $_SERVER['REDIRECT_URL'] . '&';
     $replace = $_SERVER['REDIRECT_URL'] . '?';
     $this->url = preg_replace("~$search~", $replace, $this->url);
-
   }
 
   public function link_redirect ($redirect = '') {

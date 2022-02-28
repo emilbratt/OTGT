@@ -1,6 +1,5 @@
 <?php
 
-
 class QueryRetail {
   protected $query;
   protected $illegal_reserved_words; // simple way to prevent script kiddie level sql injection
@@ -12,7 +11,6 @@ class QueryRetail {
     $this->illegal_reserved_words = [
       'DATABASE', 'DELETE', 'MODIFY', 'UPDATE', 'INSERT', 'DROP', 'KAKE'
     ];
-
   }
 
   protected function check_illegal_word ($string) {
@@ -159,6 +157,5 @@ class QueryRetail {
     // $this->print_query(); // comment / uncomment for debugging
     return $this->query;
   }
-
 
 }

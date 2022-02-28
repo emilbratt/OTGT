@@ -1,9 +1,5 @@
 <?php
 
-// the "pages" inside each directory uses this file to get their
-// needed sql queries to generate correct reports
-
-
 class QuerySoldout {
 
   public static function get ($type) {

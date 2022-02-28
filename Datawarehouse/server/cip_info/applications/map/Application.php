@@ -13,7 +13,6 @@ class Map {
 
     $this->template = new TemplateMap();
     $this->template->start();
-
   }
 }
 
@@ -32,5 +31,4 @@ class Home extends Map {
     $this->template->title('Kart');
     $this->template->print();
   }
-
 }

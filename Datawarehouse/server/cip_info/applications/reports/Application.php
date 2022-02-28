@@ -27,7 +27,6 @@ class Reports {
     require_once '../applications/reports/TemplateReports.php';
     require_once '../applications/reports/QueryReports.php';
 
-
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
     if (isset($_GET['order'])) {
@@ -42,7 +41,6 @@ class Reports {
     $this->template = new TemplateReports();
     $this->template->start();
   }
-
 }
 
 class Home extends Reports {
@@ -88,7 +86,6 @@ class Soldout extends Reports {
     $this->template->title_left($left_title);
     $this->template->title_right($right_title);
 
-    // report table starts here
     $this->template->table_start();
     $this->template->table_row_start();
     $this->hyper_link = new HyperLink();
@@ -124,7 +121,6 @@ class Soldout extends Reports {
       exit(1);
     }
     $this->template->table_end();
-
     $this->template->print();
   }
 }
@@ -164,7 +160,6 @@ class Imported extends Reports {
     $this->template->title_left($left_title);
     $this->template->title_right($right_title);
 
-    // report table starts here
     $this->template->table_start();
     $this->template->table_row_start();
 
@@ -207,7 +202,6 @@ class Imported extends Reports {
 }
 
 
-
 class Sold extends Reports {
 
   public function run () {
@@ -238,12 +232,7 @@ class Sold extends Reports {
       ['Navn', 'article'],
       ['Antall', 'soldqty'],
       [$_key, 'salesdate'],
-      // ['Dato', 'salesdate'],
-      // ['Tid', 'salestime'],
       ['Pris', 'price'],
-      // ['Rabatt', 'discount'],
-      // ['Betalingsmåte', 'paymentmethod'],
-      // ['Lev. ID', 'supplyid'],
     ];
 
     $this->template->title_left($left_title);
@@ -270,11 +259,7 @@ class Sold extends Reports {
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['soldqty']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['salesdate']));
-        // $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['salestime']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['price']));
-        // $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['discount']));
-        // $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['paymentmethod']));
-        // $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
         $this->template->table_row_end();
       }
     }
