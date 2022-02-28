@@ -134,7 +134,7 @@ class BySearch extends Find {
     $this->template->table_start();
 
     $this->template->table_row_start();
-    $this->template->table_row_header_button($this->toggle_expired_message, $hyperlink_toggle->url);
+    $this->template->table_row_header($this->toggle_expired_message, $hyperlink_toggle->url);
     $this->template->table_row_header_filter();
     $this->template->table_row_end();
 
@@ -143,11 +143,12 @@ class BySearch extends Find {
     foreach ($table_headers as $alias => $name) {
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
-      $header_val = '<a href="' . $hyperlink_header->url . '" style="width: 100%;">' . $alias . '</a>';
+      // $header_val = '<a href="' . $hyperlink_header->url . '" style="width: 100%;">' . $alias . '</a>';
       // $this->template->table_row_header($header_val);
-      $this->template->table_row_header_button($alias, $hyperlink_header->url);
+      $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
+
     $query = new QueryFindBySearch();
     $query->where_brand();
     $query->where_article();
@@ -167,7 +168,7 @@ class BySearch extends Find {
         $this->template->table_row_end();
       }
       $this->template->table_end();
-          $this->template->script_filter_row();
+      $this->template->script_filter_row();
     }
     catch(Exception $e)  {
       $config_file = '../../../../environment.ini';

@@ -74,13 +74,13 @@ class Soldout extends Reports {
     }
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
     $table_headers = [
-      ['Merke', 'brand'],
-      ['Navn', 'article'],
-      ['Lager', 'quantity'],
-      ['Plassering', 'location'],
-      ['Sist Importert', 'lastimported'],
-      ['Sist Solgt', 'lastsold'],
-      ['Lev. ID', 'supplyid'],
+      'Merke' => 'brand',
+      'Navn' => 'article',
+      'Lager' => 'quantity',
+      'Plassering' => 'location',
+      'Sist Importert' => 'lastimported',
+      'Sist Solgt' => 'lastsold',
+      'Lev. ID' => 'supplyid',
     ];
 
     $this->template->title_left($left_title);
@@ -88,12 +88,13 @@ class Soldout extends Reports {
 
     $this->template->table_start();
     $this->template->table_row_start();
-    $this->hyper_link = new HyperLink();
-    foreach ($table_headers as $header) {
-      $this->hyper_link->add_query('sort', $header[1]);
-      $this->hyper_link->add_query('order', $this->order);
-      $header_val = '<a href="' . $this->hyper_link->url . '">' . $header[0] .'</a>';
-      $this->template->table_row_header($header_val);
+    $hyperlink_header = new HyperLink();
+    foreach ($table_headers as $alias => $name) {
+      $hyperlink_header->add_query('sort', $name);
+      $hyperlink_header->add_query('order', $this->order);
+      // $header_val = '<a href="' . $hyperlink_header->url . '" style="width: 100%;">' . $alias . '</a>';
+      // $this->template->table_row_header($header_val);
+      $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
     $query = QuerySoldout::get($type);
@@ -146,15 +147,18 @@ class Imported extends Reports {
       break;
     }
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
-
+    $_key = 'Dato';
+    if ($type == 'thisday') {
+      $_key = 'Tid';
+    }
     $table_headers = [
-      ['Merke', 'brand'],
-      ['Navn', 'article'],
-      ['Importert', 'importquantity'],
-      ['Lager', 'quantity'],
-      ['Plassering', 'location'],
-      ['Importert', 'lastimported'],
-      ['Lev. ID', 'supplyid'],
+      'Merke' => 'brand',
+      'Navn' => 'article',
+      'Importert' => 'importquantity',
+      'Lager' => 'quantity',
+      'Plassering' => 'location',
+      $_key => 'lastimported',
+      'Lev. ID' => 'supplyid',
     ];
 
     $this->template->title_left($left_title);
@@ -163,12 +167,13 @@ class Imported extends Reports {
     $this->template->table_start();
     $this->template->table_row_start();
 
-    $this->hyper_link = new HyperLink();
-    foreach ($table_headers as $header) {
-      $this->hyper_link->add_query('sort', $header[1]);
-      $this->hyper_link->add_query('order', $this->order);
-      $header_val = '<a href="' . $this->hyper_link->url . '">' . $header[0] .'</a>';
-      $this->template->table_row_header($header_val);
+    $hyperlink_header = new HyperLink();
+    foreach ($table_headers as $alias => $name) {
+      $hyperlink_header->add_query('sort', $name);
+      $hyperlink_header->add_query('order', $this->order);
+      // $header_val = '<a href="' . $hyperlink_header->url . '" style="width: 100%;">' . $alias . '</a>';
+      // $this->template->table_row_header($header_val);
+      $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
     $query = QueryImported::get($type);
@@ -227,12 +232,12 @@ class Sold extends Reports {
       $_key = 'Tid';
     }
     $table_headers = [
-      ['Navn', 'name'],
-      ['Merke', 'brand'],
-      ['Navn', 'article'],
-      ['Antall', 'soldqty'],
-      [$_key, 'salesdate'],
-      ['Pris', 'price'],
+      'Selger' => 'name',
+      'Merke' => 'brand',
+      'Navn' => 'article',
+      'Antall' => 'soldqty',
+      $_key => 'salesdate',
+      'Pris' => 'price',
     ];
 
     $this->template->title_left($left_title);
@@ -241,12 +246,13 @@ class Sold extends Reports {
     // report table starts here
     $this->template->table_start();
     $this->template->table_row_start();
-    $this->hyper_link = new HyperLink();
-    foreach ($table_headers as $header) {
-      $this->hyper_link->add_query('sort', $header[1]);
-      $this->hyper_link->add_query('order', $this->order);
-      $header_val = '<a href="' . $this->hyper_link->url . '">' . $header[0] .'</a>';
-      $this->template->table_row_header($header_val);
+    $hyperlink_header = new HyperLink();
+    foreach ($table_headers as $alias => $name) {
+      $hyperlink_header->add_query('sort', $name);
+      $hyperlink_header->add_query('order', $this->order);
+      // $header_val = '<a href="' . $hyperlink_header->url . '" style="width: 100%;">' . $alias . '</a>';
+      // $this->template->table_row_header($header_val);
+      $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
     $query = QuerySold::get($type);

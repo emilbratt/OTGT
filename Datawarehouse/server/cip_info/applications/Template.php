@@ -278,13 +278,20 @@ class Template {
     EOT;
   }
 
-  public function table_row_header ($string) {
-    $this->html .= <<<EOT
-    <th>$string</th>\n
-    EOT;
-  }
+  // public function table_row_header ($string) {
+  //   $this->html .= <<<EOT
+  //   <th>$string</th>\n
+  //   EOT;
+  // }
 
-  public function table_row_header_button ($string, $hyperlink) {
+  public function table_row_header ($string, $hyperlink = null) {
+    // passing a url as second arg will make it a clickabel button
+    if ($hyperlink == null) {
+      $this->html .= <<<EOT
+      <th>$string</th>\n
+      EOT;
+      return;
+    }
     $this->html .= <<<EOT
     <th>
       <a href="$hyperlink">
@@ -294,9 +301,20 @@ class Template {
     EOT;
   }
 
-  public function table_row_value ($string) {
+  public function table_row_value ($string, $hyperlink = null) {
+    // passing a url as second arg will make it a clickabel button
+    if ($hyperlink == null) {
+      $this->html .= <<<EOT
+      <td>$string</td>\n
+      EOT;
+      return;
+    }
     $this->html .= <<<EOT
-    <td>$string</td>\n
+    <td>
+      <a href="$hyperlink">
+        <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
+      </a>
+    </th>\n
     EOT;
   }
 
