@@ -20,7 +20,6 @@ class TemplateHome extends Template {
     $this->html .= <<<EOT
     <h1 style="float: left;">$string</h1>\n
     EOT;
-
   }
 
   public function title_right ($string = 'right title') {

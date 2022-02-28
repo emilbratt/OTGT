@@ -121,7 +121,7 @@ class BySearch extends Find {
 
     $hyperlink_toggle = new HyperLink();
     $hyperlink_toggle->add_query('items', $this->toggle_expired);
-    $this->template->hyperlink($this->toggle_expired_message, $hyperlink_toggle->url);
+    $this->template->hyperlink_button($this->toggle_expired_message, $hyperlink_toggle->url);
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
@@ -136,7 +136,7 @@ class BySearch extends Find {
     foreach ($table_headers as $alias => $name) {
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
-      $header_val = '<a href="' . $hyperlink_header->url . '">' . $alias . '</a>';
+      $header_val = '<a href="' . $hyperlink_header->url . '" style="width: 100%;">' . $alias . '</a>';
       $this->template->table_row_header($header_val);
     }
     $this->template->table_row_end();

@@ -1,5 +1,13 @@
 <?php
 
+/**
+ *
+ * add: quick input box for barcode scanning
+ * add: overview over todays turnover
+ * add: diagram
+ *
+ */
+
 class Home {
 
   protected $page = 'Hjem';
@@ -17,7 +25,8 @@ class Home {
   }
 
   public function run () {
-    $this->template->title('Hjem');
+    $this->template->title('C.I.Pedersen Trondheim');
+    $this->template->message('Velg fra toppmenyen');
     $this->template->print();
   }
 }

@@ -1,8 +1,9 @@
 <?php
 /**
  * colours
+ * text navigation,header BBBBFF
  * text: BBBBFF
- * top nav bar active / hover 404040
+ * top nav bar active, hover, table row
  * a href CCCCFF
  * search field background 111111
  * table row (even) 222222
@@ -12,7 +13,6 @@
 
 class Template {
 
-  // protected gives the inherited object access to this
   protected $config;
   protected $html;
   protected $script;
@@ -23,7 +23,7 @@ class Template {
     // this will add global css to our html template
     // any additional css will have to be added after the
     // constructor for each inherited class after
-    // calling this as a parent
+    // calling this as a parent in the inherited constructor method
     $this->html = <<<EOT
     <!DOCTYPE html>
     <html>
@@ -43,21 +43,10 @@ class Template {
 
     /* TOP NAVIGATION */
     .top_navbar {
-      margin-top: 5px;
+      margin-left: auto;
+      margin-right: auto;
       background-color: #303030;
       overflow: hidden;
-    EOT;
-    if( !($this->config['developement']['show_debug']) ) {
-      // this hides the internal error warnings from php that shows on top of page
-      // therefore we only activate this css if debug in environment = false
-      $this->html .= <<<EOT
-        position: fixed; /* force to stay on same place */
-        top: 0;
-        transition: top 0.3s; /* hide/dhow transition effect from script call in seconds */
-        /* margin-bottom: 5px; */
-      EOT;
-    }
-    $this->html .= <<<EOT
       width: 100%; /* Full width */
     }
     .top_navbar a {
@@ -69,15 +58,14 @@ class Template {
       font-size: 17px;
     }
     .top_navbar a:hover {
-      background-color: #404040;
+      background-color: #444444;
     }
     .top_navbar a.active {
-      background-color: #404040;
+      background-color: #444444;
     }
 
     /* SUB NAVIGATION */
     .sub_navbar {
-      margin-top: 5px;
       background-color: #303030;
       overflow: auto;
       width: 200px;
@@ -98,6 +86,7 @@ class Template {
     .title {
       display: inline-block;
     }
+
     table, th, td {
       border:1px solid black;
     }
@@ -107,20 +96,27 @@ class Template {
       opacity: 0.8;
       width: 100%;
     }
-    td {
-      text-align: right;
+    td, th {
+      border: 1px solid #111111;
+      text-align: left;
+      padding-left: 2px;
     }
-    input[type="text"], input[type="search"] {
-      background-color : #111111;
-      color: #BBBBFF;
-      border: 1px solid #AAAAAA;
+    th {
+      background-color: #303030;
+      height: 32px;
     }
-    #form_barcode  {
-      font-size: 150%;
-      text-align: center;
+    th a {
+      height: 27px;
+      font-size: 20px;
     }
-    form {
-      padding-bottom: 10px;
+    th a:hover {
+      background-color: #404040;
+    }
+    tr:nth-child(even) {
+      background-color: #222222;
+    }
+    tr:nth-child(odd) {
+      background-color: #333333;
     }
     form, input {
       width:250px;
@@ -131,39 +127,38 @@ class Template {
       width:250px;
       height: 26px;
     }
+    input[type="text"], input[type="search"] {
+      background-color : #111111;
+      color: #BBBBFF;
+      font-size: 20px;
+      border: 1px solid #BBBBFF;
+    }
+    input[type="submit"] {
+      border: 1px solid #BBBBFF;
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      font-size: 15px;
+      color: #BBBBFF;
+      background: #222222;
+      width: 150px;
+      height: 30px;
+    }
+    #input_field_div {
+      display: block;
+    }
     #search_field {
       background: #111111;
       display: inline-block;
     }
-    td, th {
-      border: 1px solid #111111;
-      text-align: left;
-      padding-left: 2px;
-    }
-    tr:nth-child(even) {
-      background-color: #222222;
-    }
-    tr:nth-child(odd) {
-      background-color: #333333 ;
-    }
-    #input_field_div {
+    button {
+      border: 1px solid #BBBBFF;
       display: inline;
-    }
-    input[type="submit"], button {
-      display: inline;
+      font-size: 15px;
       color: #BBBBFF;
       background: #222222;
-      display: inline;
       width: 150px;
       height: 30px;
-    }
-    #input_field_article {
-      display: inline;
-      width: 400px;
-    }
-    #input_field_brand {
-      display: inline;
-      width: 170px;
     }\n
     EOT;
   }
@@ -183,24 +178,22 @@ class Template {
   }
 
   public function top_navbar ($arr, $page = 'Hjem') {
-    // the $page var indicates current page -> link is highlighted
-    $this->script .= <<<EOT
-    <script>
-    var prevScrollpos = window.pageYOffset;
-    window.onscroll = function() {
-      var currentScrollPos = window.pageYOffset;
-      if (prevScrollpos > currentScrollPos) {
-        document.getElementById("top_navbar").style.top = "0";
-      } else {
-        document.getElementById("top_navbar").style.top = "-50px";
-      }
-      prevScrollpos = currentScrollPos;
-    }
-    </script>
-    EOT;
-    $this->add_script();
+    // $this->script .= <<<EOT
+    // <script>
+    // var prevScrollpos = window.pageYOffset;
+    // window.onscroll = function() {
+    //   var currentScrollPos = window.pageYOffset;
+    //   if (prevScrollpos > currentScrollPos) {
+    //     document.getElementById("top_navbar").style.top = "0";
+    //   } else {
+    //     document.getElementById("top_navbar").style.top = "-50px";
+    //   }
+    //   prevScrollpos = currentScrollPos;
+    // }
+    // </script>
+    // EOT;
+    // $this->add_script();
     $this->html .= <<<EOT
-
     <div class="top_navbar" id="top_navbar">\n
     EOT;
     foreach ($arr as $title => $redirect) {
@@ -212,17 +205,8 @@ class Template {
       EOT;
     }
     $this->html .= <<<EOT
-    </div>
+    </div>\n
     EOT;
-    if( !($this->config['developement']['show_debug']) ) {
-      // this hides the internal error warnings from php that shows on top of page
-      // therefore we only activate this css if debug in environment = false
-      $this->html .= <<<EOT
-      <!-- we have to add some empty space to force next html tag to show -->
-      <div style="height: 50px;"></div> \n
-      EOT;
-    }
-
   }
 
   public function sub_navbar ($arr) {
@@ -230,7 +214,6 @@ class Template {
     <div class="sub_navbar">\n
     EOT;
     foreach ($arr as $title => $redirect) {
-
       $this->html .= <<<EOT
         <a href="$redirect">$title</a>\n
       EOT;
@@ -257,7 +240,7 @@ class Template {
     EOT;
   }
 
-  public function hyperlink ($string, $hyperlink) {
+  public function hyperlink_button ($string, $hyperlink) {
     $this->html .= <<<EOT
     <a href="$hyperlink">
       <button id="input_field_submit">$string</button>
