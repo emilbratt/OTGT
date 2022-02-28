@@ -1,5 +1,10 @@
 <?php
 
+/*
+ *
+ * rename this file to Locale.php (and fix require_once on all files depending on this file)
+ *
+ */
 
 class Dates {
 
