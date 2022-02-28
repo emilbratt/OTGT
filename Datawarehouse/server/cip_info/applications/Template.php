@@ -40,7 +40,9 @@ class Template {
       font-family: arial;
       color: #CCCCFF;
     }
-
+    a button:hover {
+      background-color: #444444;
+    }
     /* TOP NAVIGATION */
     .top_navbar {
       margin-left: auto;
@@ -87,16 +89,13 @@ class Template {
       display: inline-block;
     }
 
-    table, th, td {
-      border:1px solid black;
-    }
     table {
       font-family: arial;
       border-collapse: collapse;
       opacity: 0.8;
       width: 100%;
     }
-    td, th {
+    td {
       border: 1px solid #111111;
       text-align: left;
       padding-left: 2px;
@@ -133,6 +132,9 @@ class Template {
       font-size: 20px;
       border: 1px solid #BBBBFF;
     }
+    form input:hover {
+      background-color: #444444;
+    }
     input[type="submit"] {
       border: 1px solid #BBBBFF;
       display: block;
@@ -143,6 +145,9 @@ class Template {
       background: #222222;
       width: 150px;
       height: 30px;
+    }
+    #hidden_submit {
+      display: none;
     }
     #input_field_div {
       display: block;
@@ -276,6 +281,16 @@ class Template {
   public function table_row_header ($string) {
     $this->html .= <<<EOT
     <th>$string</th>\n
+    EOT;
+  }
+
+  public function table_row_header_button ($string, $hyperlink) {
+    $this->html .= <<<EOT
+    <th>
+      <a href="$hyperlink">
+        <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
+      </a>
+    </th>\n
     EOT;
   }
 

@@ -19,6 +19,31 @@ class TemplateFind extends Template {
     EOT;
   }
 
+  public function script_filter_row () {
+    $this->html .= <<<EOT
+    <script>
+    function filter_row() {
+      var input, filter, table, tr, td, i, text_val;
+      input = document.getElementById("filter_row");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("find_item");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[1];
+        if (td) {
+          text_val = td.textContent || td.innerText;
+          if (text_val.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    </script>\n
+    EOT;
+  }
+
   public function form_search ($brand = '', $article = '') {
     $this->html .= <<<EOT
     <div id="input_field_div">
@@ -34,10 +59,36 @@ class TemplateFind extends Template {
           type="search" id="input_field_article" name="input_field_article"
           placeholder="Artikkel" value="$article">
 
-        <input type="submit" value="Søk" id="input_field_submit">
+        <input type="submit" value="Søk" id="hidden_submit">
 
       </form>
-    </div>\n
+    </div><br>\n
+    EOT;
+  }
+
+  public function table_row_header_filter () {
+    $this->html .= <<<EOT
+    <th>
+      <input style="width: 100%;" type="text" id="filter_row" onkeyup="filter_row()" placeholder="Filtrer" title="Type in a name">
+    </th>\n
+    EOT;
+  }
+
+  public function table_start () {
+    $this->html .= <<<EOT
+    <table id="find_item">
+    EOT;
+  }
+
+  public function table_row_start () {
+    $this->html .= <<<EOT
+    <tr>\n
+    EOT;
+  }
+
+  public function table_row_value ($string) {
+    $this->html .= <<<EOT
+    <td>$string</td>\n
     EOT;
   }
 
