@@ -8,7 +8,6 @@ class Apprequest {
   private $show_errors;
 
   function __construct ()  {
-
     $config_file = '../../../../environment.ini';
     $config = parse_ini_file($config_file, $process_sections = true);
     $this->show_errors = $config['developement']['show_errors'];
@@ -19,7 +18,6 @@ class Apprequest {
     $app = new $this->app_class;
     $app->run();
   }
-
 
   private function load_directory () {
     // the 1st word in the url = app directory which resides in ../applications
@@ -57,14 +55,17 @@ class Apprequest {
       $this->app_class = 'Home';
       return;
     }
+
     $this->app_class = 'Home';
     if (isset($this->url_split[1])) {
       $this->app_class = ucfirst($this->url_split[1]);
     }
+
     // load class in Application.php
     if (class_exists($this->app_class)) {
       return;
     }
+
     $this->app_class = explode('&', $this->url_split[1])[0];
     if(class_exists($this->app_class)) {
       return;
