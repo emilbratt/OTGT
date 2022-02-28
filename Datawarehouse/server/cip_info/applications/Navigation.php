@@ -3,6 +3,7 @@
 /*
  *
  * simple way to create navigation links
+ * these are links that are hard-coded
  *
  */
 

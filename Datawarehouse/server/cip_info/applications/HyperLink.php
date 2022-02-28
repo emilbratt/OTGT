@@ -4,6 +4,9 @@
  *
  * this is ment to handle dynamic links based on interaction by
  * the visitor and what content is presented
+ * unlike Naviagtion.php, these links are dynamic in the way that they
+ * preserves the visitors current url, that is it adds whatever query
+ * string is passed to the visitors current url
  *
  */
 
@@ -43,20 +46,13 @@ class HyperLink {
 
   }
 
-  public function link_home ($key = null, $val = null) {
-    if($key !== null and $val !== null) {
-      $this->url = $this->home_address;
-      return;
-    }
-    $this->url = $this->home_address . '?' . "$key=$val";
-  }
-
-  public function link_redirect ($redirect = '/home/home') {
+  public function link_redirect ($redirect = '') {
     // redirect example: /reports/imported
+    // if parameter is omitted, it will redirect to home (hence the = '')
     $this->url = $this->home_address . $redirect;
   }
 
-  public function link_redirect_query ($redirect = '/home/home', $key = null, $val = null) {
+  public function link_redirect_query ($redirect = '', $key = null, $val = null) {
     // redirect example: /reports/imported
     // optionally add a key value as a query string for eaxmple: $key = 'foo' and $val = 'bar'
     if($key === null or $val === null) {

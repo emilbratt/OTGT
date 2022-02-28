@@ -11,13 +11,12 @@ class Home {
     require_once '../applications/Navigation.php';
     $this->page = 'Hjem';
     $this->template = new TemplateHome();
+    $navigation = new Navigation();
     $this->template->start();
+    $this->template->top_navbar($navigation->top_nav_links, $this->page);
   }
 
   public function run () {
-
-    $navigation = new Navigation();
-    $this->template->top_navbar($navigation->top_nav_links, $this->page);
     $this->template->title('Hjem');
     $this->template->print();
   }

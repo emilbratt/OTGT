@@ -30,7 +30,9 @@ class Find {
     require_once '../applications/find/QueryFind.php';
     $this->page = 'Søk';
     $this->template = new TemplateFind();
+    $navigation = new NavigationFind();
     $this->template->start();
+    $this->template->top_navbar($navigation->top_nav_links, $this->page);
 
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
@@ -66,9 +68,10 @@ class Find {
 
 class Home extends Find {
     public function run () {
-      $navigation = new NavigationFind();
-      $this->template->top_navbar($navigation->top_nav_links, $this->page);
+
+
       $this->template->title('Søk etter vare');
+      $hyperlink_test = new HyperLink();
       $this->template->print();
     }
 }
@@ -77,9 +80,6 @@ class BySearch extends Find {
   public function run () {
     $title = 'Søk etter vare';
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
-
-    $navigation = new NavigationFind();
-    $this->template->top_navbar($navigation->top_nav_links);
 
     $this->template->title($title);
 
@@ -124,9 +124,9 @@ class BySearch extends Find {
       return;
     }
 
-    $hyper_link_toggle = new HyperLink();
-    $hyper_link_toggle->add_query('items', $this->toggle_expired);
-    $this->template->hyperlink($this->toggle_expired_message, $hyper_link_toggle->url);
+    $hyperlink_toggle = new HyperLink();
+    $hyperlink_toggle->add_query('items', $this->toggle_expired);
+    $this->template->hyperlink($this->toggle_expired_message, $hyperlink_toggle->url);
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
@@ -137,11 +137,11 @@ class BySearch extends Find {
 
     $this->template->table_start();
     $this->template->table_row_start();
-    $hyper_link_header = new HyperLink();
+    $hyperlink_header = new HyperLink();
     foreach ($table_headers as $alias => $name) {
-      $hyper_link_header->add_query('sort', $name);
-      $hyper_link_header->add_query('order', $this->order);
-      $header_val = '<a href="' . $hyper_link_header->url . '">' . $alias . '</a>';
+      $hyperlink_header->add_query('sort', $name);
+      $hyperlink_header->add_query('order', $this->order);
+      $header_val = '<a href="' . $hyperlink_header->url . '">' . $alias . '</a>';
       $this->template->table_row_header($header_val);
     }
     $this->template->table_row_end();
