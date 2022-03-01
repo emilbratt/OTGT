@@ -4,7 +4,7 @@
  * text, boarders: BBBBFF
  * top nav bar active, hover, table row
  * a href CCCCFF
- * search field background 111111
+ * search field background 202020
  * table row (even) 222222
  * table row (odd) 333333
  */
@@ -38,7 +38,7 @@ class Template {
     body {
       font-family: arial;
       /* background: linear-gradient(#222222, #000000); */
-      background-color: #111111;
+      background-color: #202020;
       color: #BBBBFF;
     }
     a {
@@ -55,6 +55,7 @@ class Template {
       color: #BBBBFF;
       font-size: 18px;
     }
+
     /* TOP NAVIGATION */
     .top_navbar {
       margin-left: auto;
@@ -80,7 +81,8 @@ class Template {
 
     /* SUB NAVIGATION */
     .sub_navbar {
-      background-color: #303030;
+      /* background: linear-gradient(#303030, #242424); */
+      background-color: #303030; */
       overflow: auto;
       width: 100%;
       color: #BBBBFF;
@@ -110,48 +112,22 @@ class Template {
       display: inline-block;
       margin-right: 10px;
     }
-    table {
-      font-family: arial;
-      border-collapse: collapse;
-      opacity: 0.8;
-      width: 100%;
-    }
-    td {
-      border: 1px solid #111111;
-      text-align: left;
-      padding-left: 2px;
-    }
-    th {
-      background-color: #303030;
-      height: 32px;
-    }
-    th a {
-      height: 27px;
-      font-size: 20px;
-    }
-    th:active {
-      background-color: #FFFFFF;
-    }
-    th a:hover {
-      background-color: #404040;
-    }
-    tr:nth-child(even) {
-      background-color: #222222;
-    }
-    tr:nth-child(odd) {
-      background-color: #333333;
-    }
-    form, input {
-      width:250px;
-      height: 30px;
+
+    /* FORM */
+    .template_form {
+      width: 700px;
     }
     form, input {
       display: inline;
       width:250px;
       height: 26px;
     }
-    input[type="text"], input[type="search"] {
-      background-color : #111111;
+    input[type="date"] {
+      /* somehow this will be same hight as 26px.. */
+      height: 22px;
+    }
+    input[type="text"], input[type="search"], input[type="date"] {
+      background-color : #202020;
       color: #BBBBFF;
       border: 1px solid #BBBBFF;
     }
@@ -164,6 +140,35 @@ class Template {
       color: #BBBBFF;
       background: #222222;
     }
+
+    /* TABLE */
+    table {
+      font-family: arial;
+      border-collapse: collapse;
+    }
+    .full_width_table {
+      width: 100%;
+    }
+    td {
+      border: 1px solid #202020;
+      text-align: left;
+      padding-left: 2px;
+    }
+    th {
+      background-color: #303030;
+      height: 32px;
+    }
+    th a {
+      height: 27px;
+      font-size: 20px;
+    }
+    tr:nth-child(even) {
+      background-color: #333333;
+    }
+    tr:nth-child(odd) {
+      background-color: #222222;
+    }
+
     #hidden_submit {
       display: none;
     }
@@ -171,7 +176,7 @@ class Template {
       display: block;
     }
     #search_field {
-      background: #111111;
+      background: #202020;
       display: inline-block;
     }
     button {
@@ -237,7 +242,7 @@ class Template {
   public function hyperlink_button ($string, $hyperlink) {
     $this->html .= <<<EOT
     <a href="$hyperlink">
-      <button id="input_field_submit">$string</button>
+      <button >$string</button>
     </a>\n
     EOT;
   }
@@ -245,12 +250,12 @@ class Template {
   public function title_left_and_right ($left = 'left', $right = 'right') {
     $this->html .= <<<EOT
     <div style="width: 100%;">
-    <table>
+    <table class="full_width_table">
     <tr>
-      <td style="border:none; text-align: left; background-color: #111111;">
+      <td style="border:none; text-align: left; background-color: #202020;">
         <h1 style="display: inline; width: 100%;">$left</h1>
       </td>
-      <td style="border:none; text-align: right; background-color: #111111;">
+      <td style="border:none; text-align: right; background-color: #202020;">
         <h1 style="display: inline; width: 100%;">$right</h1>
       </td>
     </tr>
@@ -259,9 +264,76 @@ class Template {
     EOT;
   }
 
+  public function form_start ($method = 'GET') {
+    $this->html .= <<<EOT
+    <div id="template_form">
+    <form method="$method">
+    <table>
+    <tr>
+    EOT;
+  }
+
+  public function form_input_search ($ref = 'form_input_search') {
+    // $ref = what key to reference in GET / POST array
+    $this->html .= <<<EOT
+    <td>
+      <input
+        type="search"
+        id="form_input_search"
+        name="$ref">
+    </td>\n
+    EOT;
+  }
+
+  public function form_input_text ($ref = 'form_input_text') {
+    // $ref = what key to reference in GET / POST array
+    $this->html .= <<<EOT
+    <td>
+      <input
+         type="search"
+         id="form_input_text"
+         name="$ref">
+    </td>\n
+    EOT;
+  }
+
+  public function form_input_date ($ref = 'form_input_date') {
+    // $ref = what key to reference in GET / POST array
+    $this->html .= <<<EOT
+    <td>
+      <input
+        type="date"
+        id="form_input_date"
+        value="2018-07-22"
+        min="2018-01-01" max="2018-12-31"
+        name="$ref">
+    </td>\n
+    EOT;
+  }
+
+  public function form_end ($val = 'Enter') {
+    $this->html .= <<<EOT
+    <td>
+      <input
+        type="submit"
+        value="$val" >
+    </td>
+    </tr>
+    </table>
+    </form>
+    </div><br>\n
+    EOT;
+  }
+
   public function table_start () {
     $this->html .= <<<EOT
-    <table>\n
+    <table id="find_item">\n
+    EOT;
+  }
+
+  public function table_full_width_start () {
+    $this->html .= <<<EOT
+    <table class="full_width_table" id="find_item">\n
     EOT;
   }
 

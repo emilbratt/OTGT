@@ -62,12 +62,6 @@ class TemplateFind extends Template {
     EOT;
   }
 
-  public function table_start () {
-    $this->html .= <<<EOT
-    <table id="find_item">
-    EOT;
-  }
-
   public function table_row_start () {
     $this->html .= <<<EOT
     <tr>\n

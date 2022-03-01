@@ -142,7 +142,7 @@ class BySearch extends Find {
     $this->template->hyperlink_button($this->toggle_expired_message, $hyperlink_toggle->url);
     $this->template->script_filter_row_button();
 
-    $this->template->table_start();
+    $this->template->table_full_width_start();
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
     foreach ($table_headers as $alias => $name) {

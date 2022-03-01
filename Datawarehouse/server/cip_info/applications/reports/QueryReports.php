@@ -47,21 +47,35 @@ class QueryReports extends QueryRetail {
 
     switch ($this->time_span) {
       case 'thisday':
-        $string_time_span = 'DAYOFYEAR';
+        $this->query .= <<<EOT
+          AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+          AND DATEPART(DAYOFYEAR, articleStock.lastSold) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP)\n
+        EOT;
         break;
       case 'thisweek':
-        $string_time_span = 'WEEK';
+      $this->query .= <<<EOT
+        AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+        AND DATEPART(WEEK, articleStock.lastSold) = DATEPART(WEEK, CURRENT_TIMESTAMP)\n
+      EOT;
       break;
       case 'thismonth':
-        $string_time_span = 'MONTH';
+      $this->query .= <<<EOT
+        AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+        AND DATEPART(MONTH, articleStock.lastSold) = DATEPART(MONTH, CURRENT_TIMESTAMP)\n
+      EOT;
       break;
       default:
-        $string_time_span = 'DAYOFYEAR';
+        if (strtotime($this->time_span)) {
+          $_year = date('Y', strtotime($this->time_span));
+          $_month = date('m', strtotime($this->time_span));
+          $_day = date('d', strtotime($this->time_span));
+          $this->query .= <<<EOT
+            AND DATEPART(YEAR, articleStock.lastSold) = $_year
+            AND DATEPART(MONTH, articleStock.lastSold) = $_month
+            AND DATEPART(DAY, articleStock.lastSold) = $_day\n
+          EOT;
+        }
     }
-    $this->query .= <<<EOT
-      AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-      AND DATEPART($string_time_span, articleStock.lastSold) = DATEPART($string_time_span, CURRENT_TIMESTAMP)\n
-    EOT;
 
     switch ($this->items) {
       case 'all':
@@ -167,24 +181,41 @@ class QueryReports extends QueryRetail {
         break;
     }
 
+
+
+
     switch ($this->time_span) {
       case 'thisday':
-        $string_time_span = 'DAYOFYEAR';
+        $this->query .= <<<EOT
+          AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+          AND DATEPART(DAYOFYEAR, [adjustmentDate]) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP)\n
+        EOT;
         break;
       case 'thisweek':
-        $string_time_span = 'WEEK';
+      $this->query .= <<<EOT
+        AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+        AND DATEPART(WEEK, [adjustmentDate]) = DATEPART(WEEK, CURRENT_TIMESTAMP)\n
+      EOT;
       break;
       case 'thismonth':
-        $string_time_span = 'MONTH';
+      $this->query .= <<<EOT
+        AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+        AND DATEPART(MONTH, [adjustmentDate]) = DATEPART(MONTH, CURRENT_TIMESTAMP)\n
+      EOT;
       break;
       default:
-        $string_time_span = 'DAYOFYEAR';
+        if (strtotime($this->time_span)) {
+          $_year = date('Y', strtotime($this->time_span));
+          $_month = date('m', strtotime($this->time_span));
+          $_day = date('d', strtotime($this->time_span));
+          $this->query .= <<<EOT
+            AND DATEPART(YEAR, [adjustmentDate]) = $_year
+            AND DATEPART(MONTH, [adjustmentDate]) = $_month
+            AND DATEPART(DAY, [adjustmentDate]) = $_day\n
+          EOT;
+        }
     }
-    $this->query .= <<<EOT
-        AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-        AND DATEPART($string_time_span, [adjustmentDate]) = DATEPART($string_time_span, CURRENT_TIMESTAMP)
-    )\n
-    EOT;
+    $this->query .= ")\n";
 
     $this->sort = 'lastimported';
     if(isset($_GET['sort'])) {
@@ -262,23 +293,62 @@ class QueryReports extends QueryRetail {
       Article.articleId IS NOT NULL\n
     EOT;
 
+
+
+
+
+
     switch ($this->time_span) {
       case 'thisday':
-        $string_time_span = 'DAYOFYEAR';
+        $this->query .= <<<EOT
+          AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+          AND DATEPART(DAYOFYEAR, CustomerSaleHeader.salesDate) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP)\n
+        EOT;
         break;
       case 'thisweek':
-        $string_time_span = 'WEEK';
+      $this->query .= <<<EOT
+        AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+        AND DATEPART(WEEK, CustomerSaleHeader.salesDate) = DATEPART(WEEK, CURRENT_TIMESTAMP)\n
+      EOT;
       break;
       case 'thismonth':
-        $string_time_span = 'MONTH';
+      $this->query .= <<<EOT
+        AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+        AND DATEPART(MONTH, CustomerSaleHeader.salesDate) = DATEPART(MONTH, CURRENT_TIMESTAMP)\n
+      EOT;
       break;
       default:
-        $string_time_span = 'DAYOFYEAR';
+        if (strtotime($this->time_span)) {
+          $_year = date('Y', strtotime($this->time_span));
+          $_month = date('m', strtotime($this->time_span));
+          $_day = date('d', strtotime($this->time_span));
+          $this->query .= <<<EOT
+            AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = $_year
+            AND DATEPART(MONTH, CustomerSaleHeader.salesDate) = $_month
+            AND DATEPART(DAY, CustomerSaleHeader.salesDate) = $_day\n
+          EOT;
+        }
     }
-    $this->query .= <<<EOT
-      AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-      AND DATEPART($string_time_span, CustomerSaleHeader.salesDate) = DATEPART($string_time_span, CURRENT_TIMESTAMP)\n
-    EOT;
+
+
+    // 
+    // switch ($this->time_span) {
+    //   case 'thisday':
+    //     $string_time_span = 'DAYOFYEAR';
+    //     break;
+    //   case 'thisweek':
+    //     $string_time_span = 'WEEK';
+    //   break;
+    //   case 'thismonth':
+    //     $string_time_span = 'MONTH';
+    //   break;
+    //   default:
+    //     $string_time_span = 'DAYOFYEAR';
+    // }
+    // $this->query .= <<<EOT
+    //   AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+    //   AND DATEPART($string_time_span, CustomerSaleHeader.salesDate) = DATEPART($string_time_span, CURRENT_TIMESTAMP)\n
+    // EOT;
 
     switch ($this->items) {
       case 'all':

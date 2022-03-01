@@ -2,8 +2,8 @@
 
 /*
  *
- * rename this file to Locale.php (and fix require_once on all files depending on this file)
- *
+ * deprecate date stuff and move to Date.php
+ * create own file for UserAgent and CharacterConvert
  */
 
 class Dates {

@@ -29,6 +29,7 @@ class Reports {
     require_once '../applications/Database.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
+    require_once '../applications/Date.php';
     require_once '../applications/reports/NavigationReports.php';
     require_once '../applications/reports/TemplateReports.php';
     require_once '../applications/reports/QueryReports.php';
@@ -62,7 +63,6 @@ class Home extends Reports {
   public function run () {
 
     $this->template->sub_navbar($this->navigation->sub_nav_links);
-    $this->template->title('Rapporter');
     $this->template->print();
   }
 }
@@ -86,6 +86,10 @@ class Soldout extends Reports {
       case 'thismonth':
         $this->title_left .= ' Utsolgte varer '. Dates::get_this_month() . ' ' . date("Y");
       break;
+      default:
+        $date = new Date();
+        $date->format_from_string($type);
+        $this->title_left .= ' Utsolgte varer ' . $date->display;
     }
     $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
 
@@ -101,6 +105,8 @@ class Soldout extends Reports {
 
     $this->template->title_left_and_right($this->title_left, $this->title_right);
 
+    $this->template->reports_form_input_date();
+
     $hyperlink_time_span = new HyperLink();
     $hyperlink_time_span->add_query('type', 'thisday');
     $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
@@ -109,7 +115,7 @@ class Soldout extends Reports {
     $hyperlink_time_span->add_query('type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
-    $this->template->table_start();
+    $this->template->table_full_width_start();
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
     foreach ($this->table_headers as $alias => $name) {
@@ -174,6 +180,10 @@ class Imported extends Reports {
       case 'thismonth':
         $this->title_left .= ' Importerte varer ' . Dates::get_this_month() . ' ' . date("Y");
       break;
+      default:
+        $date = new Date();
+        $date->format_from_string($type);
+        $this->title_left .= ' Importerte varer ' . $date->display;
     }
     $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
     $_key = 'Dato';
@@ -192,6 +202,8 @@ class Imported extends Reports {
 
     $this->template->title_left_and_right($this->title_left, $this->title_right);
 
+    $this->template->reports_form_input_date();
+
     $hyperlink_time_span = new HyperLink();
     $hyperlink_time_span->add_query('type', 'thisday');
     $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
@@ -200,7 +212,7 @@ class Imported extends Reports {
     $hyperlink_time_span->add_query('type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
-    $this->template->table_start();
+    $this->template->table_full_width_start();
     $this->template->table_row_start();
 
     $hyperlink_header = new HyperLink();
@@ -215,6 +227,7 @@ class Imported extends Reports {
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->imported();
+    // $query->print_query();
     $this->cnxn = Database::get_retail_connection();
     try {
       foreach ($this->cnxn->query($query->get()) as $row) {
@@ -264,6 +277,10 @@ class Sold extends Reports {
       case 'thismonth':
         $this->title_left .= ' Alle salg '. Dates::get_this_month() . ' ' . date("Y");
       break;
+      default:
+        $date = new Date();
+        $date->format_from_string($type);
+        $this->title_left .= ' Alle salg ' . $date->display;
     }
     $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
 
@@ -282,6 +299,8 @@ class Sold extends Reports {
 
     $this->template->title_left_and_right($this->title_left, $this->title_right);
 
+    $this->template->reports_form_input_date();
+
     $hyperlink_time_span = new HyperLink();
     $hyperlink_time_span->add_query('type', 'thisday');
     $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
@@ -290,7 +309,7 @@ class Sold extends Reports {
     $hyperlink_time_span->add_query('type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
-    $this->template->table_start();
+    $this->template->table_full_width_start();
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
     foreach ($table_headers as $alias => $name) {
@@ -304,6 +323,7 @@ class Sold extends Reports {
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->sold();
+    // $query->print_query();
     $this->cnxn = Database::get_retail_connection();
     try {
       foreach ($this->cnxn->query($query->get()) as $row) {

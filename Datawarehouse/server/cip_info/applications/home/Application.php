@@ -28,4 +28,5 @@ class Home {
     $this->template->message('Velg fra toppmenyen');
     $this->template->print();
   }
+
 }

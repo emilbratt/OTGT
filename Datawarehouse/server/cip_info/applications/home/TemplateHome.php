@@ -9,23 +9,4 @@ class TemplateHome extends Template {
     parent::__construct();
   }
 
-  public function start () {
-    $this->html .= <<<EOT
-    </style>
-    <body>\n
-    EOT;
-  }
-
-  public function title_left ($string = 'left title') {
-    $this->html .= <<<EOT
-    <h1 style="float: left;">$string</h1>\n
-    EOT;
-  }
-
-  public function title_right ($string = 'right title') {
-    $this->html .= <<<EOT
-    <h1 style="float: right;">$string</h1>\n
-    EOT;
-  }
-
 }
