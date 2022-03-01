@@ -8,6 +8,22 @@ class TemplateFind extends Template {
   function __construct () {
     parent::__construct();
     $this->html .= <<<EOT
+    /* set fixed length for each table column */
+    td:nth-child(1) {
+      width: 10%;
+    }
+    td:nth-child(2) {
+      width: 60%;
+    }
+    td:nth-child(3) {
+      width: 5%;
+    }
+    td:nth-child(4) {
+      width: 5%;
+    }
+    td:nth-child(5) {
+      width: 20%;
+    }
     #input_field_article {
       display: inline;
       width: 400px;
@@ -19,58 +35,30 @@ class TemplateFind extends Template {
     EOT;
   }
 
-  public function script_filter_row () {
-    $this->html .= <<<EOT
-    <script>
-    function filter_row() {
-      var input, filter, table, tr, td, i, text_val;
-      input = document.getElementById("filter_row");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("find_item");
-      tr = table.getElementsByTagName("tr");
-      for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[1];
-        if (td) {
-          text_val = td.textContent || td.innerText;
-          if (text_val.toUpperCase().indexOf(filter) > -1) {
-            tr[i].style.display = "";
-          } else {
-            tr[i].style.display = "none";
-          }
-        }
-      }
-    }
-    </script>\n
-    EOT;
-  }
-
   public function form_search ($brand = '', $article = '') {
     $this->html .= <<<EOT
-    <div id="input_field_div">
-      <form>
-        <!-- <label for="input_field_brand"><h3 class="inline">Merke:</h3></label> -->
-        <input
-          type="search" autofocus="autofocus" onfocus="this.select()"
-          id="input_field_brand" name="input_field_brand"
-          placeholder="Merke" value="$brand">
-
-        <!-- <label for="input_field_article"><h3 class="inline">Artikkel:</h3></label> -->
-        <input
-          type="search" id="input_field_article" name="input_field_article"
-          placeholder="Artikkel" value="$article">
-
-        <input type="submit" value="Søk" id="hidden_submit">
-
+    <div id="input_field_div" style="width: 700px;">
+      <form method="GET">
+        <table>
+        <tr>
+          <td style="width: 30%;">
+            <input style="width: 100%;"
+            type="search" autofocus="autofocus" onfocus="this.select()"
+            id="input_field_brand" name="input_field_brand"
+            placeholder="Merke" value="$brand">
+          </td>
+          <td style="width: 60%;">
+            <input style="width: 100%;"
+            type="search" id="input_field_article" name="input_field_article"
+            placeholder="Artikkel" value="$article">
+          </td>
+          <td style="width: 10%;">
+            <input style="width: 100%;" type="submit" value="Søk" >
+          </td>
+        </tr>
+        </table>
       </form>
     </div><br>\n
-    EOT;
-  }
-
-  public function table_row_header_filter () {
-    $this->html .= <<<EOT
-    <th>
-      <input style="width: 100%;" type="text" id="filter_row" onkeyup="filter_row()" placeholder="Filtrer" title="Type in a name">
-    </th>\n
     EOT;
   }
 
@@ -83,12 +71,6 @@ class TemplateFind extends Template {
   public function table_row_start () {
     $this->html .= <<<EOT
     <tr>\n
-    EOT;
-  }
-
-  public function table_row_value ($string) {
-    $this->html .= <<<EOT
-    <td>$string</td>\n
     EOT;
   }
 

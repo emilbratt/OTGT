@@ -12,6 +12,7 @@
 class Reports {
 
   protected $page = 'Rapporter';
+  protected $navigation;
   protected $template;
   protected $config;
   protected $visitor_url;
@@ -37,16 +38,18 @@ class Reports {
 
     $config_file = '../../../../environment.ini';
     $this->config = parse_ini_file($config_file, $process_sections = true);
-
+    $this->navigation = new NavigationReports();
     $this->template = new TemplateReports();
     $this->template->start();
+    $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
+
   }
 }
 
 class Home extends Reports {
   public function run () {
-    $navigation = new NavigationReports();
-    $this->template->top_navbar($navigation->top_nav_links, $this->page);
+
+    $this->template->sub_navbar($this->navigation->sub_nav_links);
     $this->template->title('Rapporter');
     $this->template->print();
   }

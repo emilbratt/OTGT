@@ -14,13 +14,13 @@ class Navigation {
   protected $home; // links to: domain/
 
   function __construct () {
-    $this->home_ = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+    $this->home = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
     $this->top_nav_links = [
-      'Hjem' => $this->home_,
-      'Vare' => $this->home_ . '/find',
-      'Rapporter' => $this->home_ . '/reports',
-      'Plassering' => $this->home_ . '/placement',
-      'Kart' => $this->home_ . '/map',
+      'Hjem' => $this->home,
+      'Vare' => $this->home . '/find',
+      'Rapporter' => $this->home . '/reports',
+      'Plassering' => $this->home . '/placement',
+      'Kart' => $this->home . '/map',
     ];
   }
 

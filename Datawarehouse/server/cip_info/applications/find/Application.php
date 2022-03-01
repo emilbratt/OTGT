@@ -13,10 +13,12 @@
 class Find {
 
   protected $page = 'Vare'; # alias for top_navbar
-  protected $sub_page; # alias for sub_navbar
   protected $template;
+  protected $navigation;
   protected $visitor_url;
+  protected $sort_by; // keeping track of what column is sorted by
   protected $order; // keeping track of what order should be passed when clicking header col of result table
+  protected $arrow_symbol; // show arrow pointing at the way the table is ordered
   protected $toggle_expired;
   protected $toggle_expired_message;
   protected $search_string_brand_len;
@@ -31,17 +33,24 @@ class Find {
     require_once '../applications/find/QueryFind.php';
 
     $this->template = new TemplateFind();
-    $navigation = new NavigationFind();
     $this->template->start();
-    $this->template->top_navbar($navigation->top_nav_links, $this->page);
-    $this->template->sub_navbar($navigation->sub_nav_links);
+    $this->navigation = new NavigationFind();
+    $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
 
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
+    $this->arrow_symbol = ' &#8595;';
     if (isset($_GET['order'])) {
       if ($_GET['order'] == 'ascending') {
         $this->order = 'descending';
+        $this->arrow_symbol = ' &#8593;';
       }
+    }
+
+    // default is ascending, but we flip the order of rows if ascending is already set
+    $this->sort_by = null;
+    if (isset($_GET['sort'])) {
+      $this->sort_by = $_GET['sort'];
     }
 
     // default is none-expired (show only active articles), can be flipped with button
@@ -70,13 +79,13 @@ class Find {
 
 class Home extends Find {
     public function run () {
+      $this->template->sub_navbar($this->navigation->sub_nav_links);
       $this->template->print();
     }
 }
 
 class BySearch extends Find {
   public function run () {
-    $this->sub_page = 'bysearch';
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
 
     // preserving the previous brand and title search if passed, else empty
@@ -121,7 +130,13 @@ class BySearch extends Find {
 
     $hyperlink_toggle = new HyperLink();
     $hyperlink_toggle->add_query('items', $this->toggle_expired);
-    // $this->template->hyperlink_button($this->toggle_expired_message, $hyperlink_toggle->url);
+
+    $query = new QueryFindBySearch();
+    $query->where_brand();
+    $query->where_article();
+    $query->where_article_expired();
+    $query->sort_by();
+
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
@@ -130,30 +145,27 @@ class BySearch extends Find {
       'Lev. ID' => 'supplyid',
     ];
 
+    $this->template->hyperlink_button($this->toggle_expired_message, $hyperlink_toggle->url);
+    $string = <<<EOT
+    <input style="width: 30%;" type="text" id="filter_row" onkeyup="filter_row()" placeholder="Filtrer" title="Type in a name">\n
+    EOT;
+    $this->template->custom_html($string);
 
     $this->template->table_start();
-
-    $this->template->table_row_start();
-    $this->template->table_row_header($this->toggle_expired_message, $hyperlink_toggle->url);
-    $this->template->table_row_header_filter();
-    $this->template->table_row_end();
-
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
     foreach ($table_headers as $alias => $name) {
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
-      // $header_val = '<a href="' . $hyperlink_header->url . '" style="width: 100%;">' . $alias . '</a>';
-      // $this->template->table_row_header($header_val);
-      $this->template->table_row_header($alias, $hyperlink_header->url);
+      if ($name == $this->sort_by) {
+        $alias .= $this->arrow_symbol;
+        $this->template->table_row_header_active($alias, $hyperlink_header->url);
+      }
+      else {
+        $this->template->table_row_header($alias, $hyperlink_header->url);
+      }
     }
     $this->template->table_row_end();
-
-    $query = new QueryFindBySearch();
-    $query->where_brand();
-    $query->where_article();
-    $query->where_article_expired();
-    $query->sort_by();
 
     $this->cnxn = Database::get_retail_connection();
     try {

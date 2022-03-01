@@ -70,7 +70,7 @@ class Template {
     .sub_navbar {
       background-color: #303030;
       overflow: auto;
-      width: 200px;
+      width: 100%;
       color: #BBBBFF;
     }
     .sub_navbar a {
@@ -79,16 +79,15 @@ class Template {
     }
     /* hover colour */
     .sub_navbar a:hover {
-      background-color: #404040;
+      background-color: #444444;
     }
     .sub_navbar a.active {
-      background-color: #404040;
+      background-color: #444444;
     }
 
     .title {
       display: inline-block;
     }
-
     table {
       font-family: arial;
       border-collapse: collapse;
@@ -107,6 +106,9 @@ class Template {
     th a {
       height: 27px;
       font-size: 20px;
+    }
+    th:active {
+      background-color: #FFFFFF;
     }
     th a:hover {
       background-color: #404040;
@@ -129,7 +131,6 @@ class Template {
     input[type="text"], input[type="search"] {
       background-color : #111111;
       color: #BBBBFF;
-      font-size: 20px;
       border: 1px solid #BBBBFF;
     }
     form input:hover {
@@ -138,13 +139,8 @@ class Template {
     input[type="submit"] {
       border: 1px solid #BBBBFF;
       display: block;
-      margin-top: 10px;
-      margin-bottom: 10px;
-      font-size: 15px;
       color: #BBBBFF;
       background: #222222;
-      width: 150px;
-      height: 30px;
     }
     #hidden_submit {
       display: none;
@@ -168,11 +164,6 @@ class Template {
     EOT;
   }
 
-  protected function add_script () {
-    $this->html .= $this->script;
-    $this->script = '';
-  }
-
   public function start () {
     // when the style is added, we call this function to start
     // adding html content to the body tag
@@ -182,22 +173,13 @@ class Template {
     EOT;
   }
 
+  public function custom_html ($string) {
+    $this->html .= <<<EOT
+    $string\n
+    EOT;
+  }
+
   public function top_navbar ($arr, $page = 'Hjem') {
-    // $this->script .= <<<EOT
-    // <script>
-    // var prevScrollpos = window.pageYOffset;
-    // window.onscroll = function() {
-    //   var currentScrollPos = window.pageYOffset;
-    //   if (prevScrollpos > currentScrollPos) {
-    //     document.getElementById("top_navbar").style.top = "0";
-    //   } else {
-    //     document.getElementById("top_navbar").style.top = "-50px";
-    //   }
-    //   prevScrollpos = currentScrollPos;
-    // }
-    // </script>
-    // EOT;
-    // $this->add_script();
     $this->html .= <<<EOT
     <div class="top_navbar" id="top_navbar">\n
     EOT;
@@ -301,6 +283,23 @@ class Template {
     EOT;
   }
 
+  public function table_row_header_active ($string, $hyperlink = null) {
+    // passing a url as second arg will make it a clickabel button
+    if ($hyperlink == null) {
+      $this->html .= <<<EOT
+      <th>$string</th>\n
+      EOT;
+      return;
+    }
+    $this->html .= <<<EOT
+    <th class="active">
+      <a href="$hyperlink">
+        <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
+      </a>
+    </th>\n
+    EOT;
+  }
+
   public function table_row_value ($string, $hyperlink = null) {
     // passing a url as second arg will make it a clickabel button
     if ($hyperlink == null) {
@@ -327,6 +326,33 @@ class Template {
   public function table_end () {
     $this->html .= <<<EOT
     </table>\n
+    EOT;
+  }
+
+
+  public function script_filter_row ($col_index = '1') {
+    // $col_index = what column to search from left to right starting at 0
+    $this->html .= <<<EOT
+    <script>
+    function filter_row() {
+      var input, filter, table, tr, td, i, text_val;
+      input = document.getElementById("filter_row");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("find_item");
+      tr = table.getElementsByTagName("tr");
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[$col_index];
+        if (td) {
+          text_val = td.textContent || td.innerText;
+          if (text_val.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    </script>\n
     EOT;
   }
 
