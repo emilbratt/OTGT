@@ -329,10 +329,10 @@ class Template {
     EOT;
   }
 
-
-  public function script_filter_row ($col_index = '1') {
-    // $col_index = what column to search from left to right starting at 0
+  public function script_filter_row_button ($col_index = '1') {
+    // filter (remove rows) from a html table by searching string in this box
     $this->html .= <<<EOT
+    <input style="width: 30%;" type="text" id="filter_row" onkeyup="filter_row()" placeholder="Filtrer" title="Type in a name">
     <script>
     function filter_row() {
       var input, filter, table, tr, td, i, text_val;

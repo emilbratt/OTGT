@@ -16,7 +16,9 @@ class Reports {
   protected $template;
   protected $config;
   protected $visitor_url;
-  protected $order;
+  protected $sort_by; // keeping track of what column is sorted by
+  protected $order; // keeping track of what order should be passed when clicking header col of result table
+  protected $arrow_symbol; // show arrow pointing at the way the table is ordered
   protected $hyper_link;
 
   function __construct () {
@@ -30,10 +32,18 @@ class Reports {
 
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
+    $this->arrow_symbol = ' &#8595;';
     if (isset($_GET['order'])) {
       if ($_GET['order'] == 'ascending') {
         $this->order = 'descending';
+        $this->arrow_symbol = ' &#8593;';
       }
+    }
+
+    // default is ascending, but we flip the order of rows if ascending is already set
+    $this->sort_by = null;
+    if (isset($_GET['sort'])) {
+      $this->sort_by = $_GET['sort'];
     }
 
     $config_file = '../../../../environment.ini';

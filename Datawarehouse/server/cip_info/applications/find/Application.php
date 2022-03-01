@@ -146,10 +146,7 @@ class BySearch extends Find {
     ];
 
     $this->template->hyperlink_button($this->toggle_expired_message, $hyperlink_toggle->url);
-    $string = <<<EOT
-    <input style="width: 30%;" type="text" id="filter_row" onkeyup="filter_row()" placeholder="Filtrer" title="Type in a name">\n
-    EOT;
-    $this->template->custom_html($string);
+    $this->template->script_filter_row_button();
 
     $this->template->table_start();
     $this->template->table_row_start();
@@ -180,7 +177,6 @@ class BySearch extends Find {
         $this->template->table_row_end();
       }
       $this->template->table_end();
-      $this->template->script_filter_row();
     }
     catch(Exception $e)  {
       $config_file = '../../../../environment.ini';
