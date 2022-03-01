@@ -12,7 +12,6 @@ class Map {
     require_once '../applications/map/NavigationMap.php';
 
     $this->template = new TemplateMap();
-    $this->template->start();
   }
 }
 

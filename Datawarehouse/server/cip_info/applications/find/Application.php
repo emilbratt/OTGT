@@ -33,7 +33,6 @@ class Find {
     require_once '../applications/find/QueryFind.php';
 
     $this->template = new TemplateFind();
-    $this->template->start();
     $this->navigation = new NavigationFind();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
 
@@ -86,18 +85,13 @@ class Home extends Find {
 
 class BySearch extends Find {
   public function run () {
-    $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
-
     // preserving the previous brand and title search if passed, else empty
-    $brand = '';
-    $title = '';
-    if(isset($_GET['input_field_brand'])) {
-      $brand = $_GET['input_field_brand'];
+    if(isset($_GET['input_field_brand']) and isset($_GET['input_field_article'])) {
+      $this->template->form_search($_GET['input_field_brand'], $_GET['input_field_article']);
     }
-    if(isset($_GET['input_field_article'])) {
-      $title = $_GET['input_field_article'];
+    else {
+      $this->template->form_search();
     }
-    $this->template->form_search($brand, $title);
 
     // if form is passed, handle query
     if(isset($_GET['input_field_brand']) or isset($_GET['input_field_article'])) {
@@ -113,7 +107,7 @@ class BySearch extends Find {
     $this->get_search_string_brand_len();
     $this->get_search_string_article_len();
     if ($this->search_string_brand_len < 1 and $this->search_string_article_len < 1) {
-      return;
+      return; // clicking search with both search boxes empty, just return (it might be a miss-click)
     }
     else if ($this->search_string_brand_len < 1 and $this->search_string_article_len < 5) {
       $this->template->message('Hvis du utelater Merke, bruk minst 5 tegn for å søke på artikkel');

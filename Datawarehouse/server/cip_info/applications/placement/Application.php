@@ -20,7 +20,6 @@ class Register {
     require_once '../applications/placement/NavigationPlacement.php';
 
     $this->template = new TemplatePlacement();
-    $this->template->start();
   }
 }
 

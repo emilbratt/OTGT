@@ -7,7 +7,7 @@ class TemplateFind extends Template {
 
   function __construct () {
     parent::__construct();
-    $this->html .= <<<EOT
+    $this->css .= <<<EOT
     /* set fixed length for each table column */
     td:nth-child(1) {
       width: 10%;
@@ -31,7 +31,7 @@ class TemplateFind extends Template {
     #input_field_brand {
       display: inline;
       width: 170px;
-    }\n
+    }
     EOT;
   }
 

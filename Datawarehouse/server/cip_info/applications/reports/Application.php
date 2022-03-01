@@ -50,9 +50,7 @@ class Reports {
     $this->config = parse_ini_file($config_file, $process_sections = true);
     $this->navigation = new NavigationReports();
     $this->template = new TemplateReports();
-    $this->template->start();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
-
   }
 }
 

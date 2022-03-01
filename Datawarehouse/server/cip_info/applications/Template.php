@@ -1,8 +1,7 @@
 <?php
 /**
  * colours
- * text navigation,header BBBBFF
- * text: BBBBFF
+ * text, boarders: BBBBFF
  * top nav bar active, hover, table row
  * a href CCCCFF
  * search field background 111111
@@ -14,8 +13,12 @@
 class Template {
 
   protected $config;
+  protected $declaration;
+  // protected $start;
   protected $html;
+  protected $css;
   protected $script;
+  protected $wrapper; // wraps all individual parts (css, html and scripts)
 
   function __construct () {
     $config_file = '../../../../environment.ini';
@@ -24,14 +27,16 @@ class Template {
     // any additional css will have to be added after the
     // constructor for each inherited class after
     // calling this as a parent in the inherited constructor method
-    $this->html = <<<EOT
+    $this->declaration = <<<EOT
     <!DOCTYPE html>
-    <html>
-    <style>
+    EOT;
+
+    $this->css = <<<EOT
     html {
       min-height: 100%;
     }
     body {
+            font-family: arial;
       background: linear-gradient(#222222, #000000);
       color: #BBBBFF;
     }
@@ -42,6 +47,12 @@ class Template {
     }
     a button:hover {
       background-color: #444444;
+    }
+
+    .message {
+      width: 100%;
+      color: #BBBBFF;
+      font-size: 18px;
     }
     /* TOP NAVIGATION */
     .top_navbar {
@@ -164,21 +175,6 @@ class Template {
     EOT;
   }
 
-  public function start () {
-    // when the style is added, we call this function to start
-    // adding html content to the body tag
-    $this->html .= <<<EOT
-    </style>
-    <body>\n
-    EOT;
-  }
-
-  public function custom_html ($string) {
-    $this->html .= <<<EOT
-    $string\n
-    EOT;
-  }
-
   public function top_navbar ($arr, $page = 'Hjem') {
     $this->html .= <<<EOT
     <div class="top_navbar" id="top_navbar">\n
@@ -222,7 +218,7 @@ class Template {
   public function message ($string) {
     $this->html .= <<<EOT
     <div class="message">
-      <h3>$string</h3>
+      <p>Info: <i>$string</i></p>
     </div>\n
     EOT;
   }
@@ -333,7 +329,8 @@ class Template {
     // filter (remove rows) from a html table by searching string in this box
     $this->html .= <<<EOT
     <input style="width: 30%;" type="text" id="filter_row" onkeyup="filter_row()" placeholder="Filtrer" title="Type in a name">
-    <script>
+    EOT;
+    $this->script .= <<<EOT
     function filter_row() {
       var input, filter, table, tr, td, i, text_val;
       input = document.getElementById("filter_row");
@@ -351,28 +348,39 @@ class Template {
           }
         }
       }
-    }
-    </script>\n
+    }\n
     EOT;
   }
 
   public function print () {
+    $this->wrapper = "$this->declaration\n";
+    $this->wrapper .= <<<EOT
+    <html>
+    <style>
+    $this->css
+    </style>
 
-    // only if debugging is set, we show php globals
+    <body>\n
+    EOT;
+
     if($this->config['developement']['show_debug']) {
       $this->add_debug();
     }
-    // print out the final html template as the last step
-    $this->html .= <<<EOT
+
+    $this->wrapper .= <<<EOT
+    $this->html
+    <script>
+    $this->script
+    </script>
     </body>
-    </html>
+    </html>\n
     EOT;
-    echo $this->html;
-    $this->html = null;
+
+    echo $this->wrapper;
   }
 
-
   private function add_debug () {
+    // custom debug material can be added here
     $this->html .= <<<EOT
     <br><br>
     <p>------------------------------------------</p>
