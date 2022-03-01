@@ -36,8 +36,9 @@ class Template {
       min-height: 100%;
     }
     body {
-            font-family: arial;
-      background: linear-gradient(#222222, #000000);
+      font-family: arial;
+      /* background: linear-gradient(#222222, #000000); */
+      background-color: #111111;
       color: #BBBBFF;
     }
     a {
@@ -98,6 +99,16 @@ class Template {
 
     .title {
       display: inline-block;
+    }
+
+    .title_left {
+      display: inline-block;
+      margin-left: 10px;
+    }
+
+    .title_right {
+      display: inline-block;
+      margin-right: 10px;
     }
     table {
       font-family: arial;
@@ -231,18 +242,22 @@ class Template {
     EOT;
   }
 
-  public function title_left ($string = 'left title') {
+  public function title_left_and_right ($left = 'left', $right = 'right') {
     $this->html .= <<<EOT
-    <h1 style="float: left;">$string</h1>\n
+    <div style="width: 100%;">
+    <table>
+    <tr>
+      <td style="border:none; text-align: left; background-color: #111111;">
+        <h1 style="display: inline; width: 100%;">$left</h1>
+      </td>
+      <td style="border:none; text-align: right; background-color: #111111;">
+        <h1 style="display: inline; width: 100%;">$right</h1>
+      </td>
+    </tr>
+    </table>
+    </div>
     EOT;
   }
-
-  public function title_right ($string = 'right title') {
-    $this->html .= <<<EOT
-    <h1 style="float: right;">$string</h1>\n
-    EOT;
-  }
-
 
   public function table_start () {
     $this->html .= <<<EOT

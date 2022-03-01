@@ -99,8 +99,15 @@ class Soldout extends Reports {
       'Lev. ID' => 'supplyid',
     ];
 
-    $this->template->title_left($this->title_left);
-    $this->template->title_right($this->title_right);
+    $this->template->title_left_and_right($this->title_left, $this->title_right);
+
+    $hyperlink_time_span = new HyperLink();
+    $hyperlink_time_span->add_query('type', 'thisday');
+    $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
+    $hyperlink_time_span->add_query('type', 'thisweek');
+    $this->template->hyperlink_button('Denne Uka', $hyperlink_time_span->url);
+    $hyperlink_time_span->add_query('type', 'thismonth');
+    $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
     $this->template->table_start();
     $this->template->table_row_start();
@@ -168,7 +175,7 @@ class Imported extends Reports {
         $this->title_left .= ' Importerte varer ' . Dates::get_this_month() . ' ' . date("Y");
       break;
     }
-    $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
+    $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
     $_key = 'Dato';
     if ($type == 'thisday') {
       $_key = 'Tid';
@@ -183,8 +190,15 @@ class Imported extends Reports {
       'Lev. ID' => 'supplyid',
     ];
 
-    $this->template->title_left($this->title_left);
-    $this->template->title_right($right_title);
+    $this->template->title_left_and_right($this->title_left, $this->title_right);
+
+    $hyperlink_time_span = new HyperLink();
+    $hyperlink_time_span->add_query('type', 'thisday');
+    $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
+    $hyperlink_time_span->add_query('type', 'thisweek');
+    $this->template->hyperlink_button('Denne Uka', $hyperlink_time_span->url);
+    $hyperlink_time_span->add_query('type', 'thismonth');
+    $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
     $this->template->table_start();
     $this->template->table_row_start();
@@ -251,7 +265,7 @@ class Sold extends Reports {
         $this->title_left .= ' Alle salg '. Dates::get_this_month() . ' ' . date("Y");
       break;
     }
-    $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
+    $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
 
     $_key = 'Dato';
     if ($type == 'thisday') {
@@ -266,8 +280,15 @@ class Sold extends Reports {
       'Pris' => 'price',
     ];
 
-    $this->template->title_left($this->title_left);
-    $this->template->title_right($right_title);
+    $this->template->title_left_and_right($this->title_left, $this->title_right);
+
+    $hyperlink_time_span = new HyperLink();
+    $hyperlink_time_span->add_query('type', 'thisday');
+    $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
+    $hyperlink_time_span->add_query('type', 'thisweek');
+    $this->template->hyperlink_button('Denne Uka', $hyperlink_time_span->url);
+    $hyperlink_time_span->add_query('type', 'thismonth');
+    $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
     $this->template->table_start();
     $this->template->table_row_start();
