@@ -1,10 +1,34 @@
 <?php
 
-class QuerySoldout {
+require_once '../applications/Query.php';
 
-  public static function get ($type) {
-    $query = <<<EOT
-    SET LANGUAGE NORWEGIAN
+class QueryReports extends QueryRetail {
+
+  protected $time_span;
+  protected $items;
+  protected $sort;
+  protected $order;
+
+  function __construct () {
+    parent::__construct();
+
+    $this->time_span = 'thisday';
+    if(isset($_GET['type'])) {
+      $this->time_span = $_GET['type'];
+    }
+    $this->items = 'all';
+    if(isset($_GET['items'])) {
+      $this->items = $_GET['items'];
+    }
+    $this->order = 'ascending';
+    if(isset($_GET['order'])) {
+      $this->order = $_GET['order'];
+    }
+  }
+
+  public function sold_out () {
+
+    $this->query = <<<EOT
     SELECT
       Brands.brandLabel AS brand,
       Article.articleName AS article,
@@ -18,91 +42,86 @@ class QuerySoldout {
       INNER JOIN articleStock ON Article.articleId = articleStock.articleId
       INNER JOIN Brands ON Article.brandId = Brands.brandId
     WHERE
-      ArticleStatus = '0' AND stockQty <= '0'
-      AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+      ArticleStatus = '0' AND stockQty <= '0'\n
     EOT;
 
-    if(isset($_GET['type'])) {
-      $type = $_GET['type'];
-    }
-    switch ($type) {
+    switch ($this->time_span) {
       case 'thisday':
-        $query .= ' AND DATEPART(DAYOFYEAR, articleStock.lastSold) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP)';
+        $string_time_span = 'DAYOFYEAR';
         break;
       case 'thisweek':
-        $query .= ' AND DATEPART(WEEK, articleStock.lastSold) = DATEPART(WEEK, CURRENT_TIMESTAMP)';
+        $string_time_span = 'WEEK';
       break;
       case 'thismonth':
-        $query .= ' AND DATEPART(MONTH, articleStock.lastSold) = DATEPART(MONTH, CURRENT_TIMESTAMP)';
+        $string_time_span = 'MONTH';
       break;
+      default:
+        $string_time_span = 'DAYOFYEAR';
     }
+    $this->query .= <<<EOT
+      AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+      AND DATEPART($string_time_span, articleStock.lastSold) = DATEPART($string_time_span, CURRENT_TIMESTAMP)\n
+    EOT;
 
-    $items = 'all';
-    if(isset($_GET['items'])) {
-      $items = $_GET['items'];
-    }
-    switch ($items) {
+    switch ($this->items) {
       case 'all':
         break;
       case 'expired':
-        $query .= " AND Article.articleName LIKE '[.]%'";
+        $this->query .= <<<EOT
+          AND Article.articleName LIKE '[.]%'\n
+        EOT;
         break;
       case 'none-expired':
-        $query .= " AND Article.articleName NOT LIKE '[.]%'";
+        $this->query .= <<<EOT
+          AND Article.articleName NOT LIKE '[.]%'\n
+        EOT;
         break;
     }
 
-    $sort = 'lastsold';
+    $this->sort = 'lastsold';
     if(isset($_GET['sort'])) {
-      $sort = $_GET['sort'];
+      $this->sort = $_GET['sort'];
     }
-    switch ($sort) {
+    switch ($this->sort) {
       case 'article':
-        $query .= ' ORDER BY Article.articleName';
+        $string_sort = 'Article.articleName';
         break;
       case 'brand':
-        $query .= ' ORDER BY Brands.brandLabel';
+        $string_sort = 'Brands.brandLabel';
         break;
       case 'quantity':
-        $query .= ' ORDER BY stockQty';
+        $string_sort = 'stockQty';
         break;
       case 'location':
-        $query .= ' ORDER BY articleStock.StorageShelf';
+        $string_sort = 'articleStock.StorageShelf';
         break;
       case 'lastsold':
-        $query .= ' ORDER BY articleStock.lastSold';
+        $string_sort = 'articleStock.lastSold';
         break;
       case 'lastimported':
-        $query .= ' ORDER BY articleStock.lastReceivedFromSupplier';
+        $string_sort = 'articleStock.lastReceivedFromSupplier';
         break;
       case 'supplyid':
-        $query .= ' ORDER BY Article.suppliers_art_no';
+        $string_sort = 'Article.suppliers_art_no';
         break;
     }
 
-    $order = 'ascending';
-    if(isset($_GET['order'])) {
-      $order = $_GET['order'];
-    }
-    switch ($order) {
+    switch ($this->order) {
       case 'ascending':
-        $query .= ' ASC';
+        $string_order = 'ASC';
         break;
       case 'descending':
-        $query .= ' DESC';
+        $string_order = 'DESC';
         break;
     }
-
-    return $query;
+    $this->query .= <<<EOT
+    ORDER BY $string_sort $string_order\n
+    EOT;
   }
-}
 
+  public function imported () {
 
-class QueryImported {
-
-  public static function get ($type) {
-    $query = <<<EOT
-    SET LANGUAGE NORWEGIAN
+    $this->query = <<<EOT
     SELECT
       Brands.brandLabel AS brand,
       Article.articleName AS article,
@@ -131,108 +150,101 @@ class QueryImported {
         adjustmentCode ='41'
         AND Stock_Ad.articleId = Article.articleId
         AND Stock_Ad.stockAdjustmenId = StockAdjustment.stockAdjustmenId
-        AND Stock_Ad.adjustmentDate = StockAdjustment.adjustmentDate
-        AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+        AND Stock_Ad.adjustmentDate = StockAdjustment.adjustmentDate\n
     EOT;
 
-
-    if(isset($_GET['type'])) {
-      $type = $_GET['type'];
-    }
-    switch ($type) {
-      case 'thisday':
-        $query .= ' AND DATEPART(DAYOFYEAR, [adjustmentDate]) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP) )';
-        break;
-      case 'thisweek':
-        $query .= ' AND DATEPART(WEEK, [adjustmentDate]) = DATEPART(WEEK, CURRENT_TIMESTAMP) )';
-      break;
-      case 'thismonth':
-        $query .= ' AND DATEPART(MONTH, [adjustmentDate]) = DATEPART(MONTH, CURRENT_TIMESTAMP) )';
-      break;
-      default:
-        $query .= ' AND DATEPART(DAYOFYEAR, [adjustmentDate]) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP) )';
-    }
-
-    $items = 'all';
-    if(isset($_GET['items'])) {
-      $items = $_GET['items'];
-    }
-    switch ($items) {
+    switch ($this->items) {
       case 'all':
         break;
       case 'expired':
-        $query .= " AND Article.articleName LIKE '[.]%'";
+        $this->query .= <<<EOT
+          AND Article.articleName LIKE '[.]%'\n
+        EOT;
         break;
       case 'none-expired':
-        $query .= " AND Article.articleName NOT LIKE '[.]%'";
+        $this->query .= <<<EOT
+          AND Article.articleName NOT LIKE '[.]%'\n
+        EOT;
         break;
     }
 
-    $sort = 'lastimported';
-    if(isset($_GET['sort'])) {
-      $sort = $_GET['sort'];
+    switch ($this->time_span) {
+      case 'thisday':
+        $string_time_span = 'DAYOFYEAR';
+        break;
+      case 'thisweek':
+        $string_time_span = 'WEEK';
+      break;
+      case 'thismonth':
+        $string_time_span = 'MONTH';
+      break;
+      default:
+        $string_time_span = 'DAYOFYEAR';
     }
-    switch ($sort) {
+    $this->query .= <<<EOT
+        AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+        AND DATEPART($string_time_span, [adjustmentDate]) = DATEPART($string_time_span, CURRENT_TIMESTAMP)
+    )\n
+    EOT;
+
+    $this->sort = 'lastimported';
+    if(isset($_GET['sort'])) {
+      $this->sort = $_GET['sort'];
+    }
+
+    switch ($this->sort) {
       case 'article':
-        $query .= ' ORDER BY article';
+        $string_sort = 'article';
         break;
       case 'brand':
-        $query .= ' ORDER BY brand';
+        $string_sort = 'brand';
         break;
       case 'quantity':
-        $query .= ' ORDER BY quantity';
+        $string_sort = 'quantity';
         break;
       case 'location':
-        $query .= ' ORDER BY location';
+        $string_sort = 'location';
         break;
       case 'importquantity':
-        $query .= ' ORDER BY StockAdjustment.adjustmentQty';
+        $string_sort = 'StockAdjustment.adjustmentQty';
         break;
       case 'lastimported':
-        $query .= ' ORDER BY lastimported';
+        $string_sort = 'lastimported';
         break;
       case 'supplyid':
-        $query .= ' ORDER BY supplyid';
+        $string_sort = 'supplyid';
         break;
     }
-
-    $order = 'ascending';
-    if(isset($_GET['order'])) {
-      $order = $_GET['order'];
-    }
-    switch ($order) {
+    switch ($this->order) {
       case 'ascending':
-        $query .= ' ASC';
+        $string_order = 'ASC';
         break;
       case 'descending':
-        $query .= ' DESC';
+        $string_order = 'DESC';
         break;
     }
+    $this->query .= <<<EOT
+    ORDER BY $string_sort $string_order\n
+    EOT;
 
-    return $query;
+
+
+
   }
-}
-
-
-class QuerySold {
-
-  public static function get ($type) {
-    $query = <<<EOT
+  public function sold () {
+    $this->query = <<<EOT
     SELECT
       hipUser.userFirstName AS name,
       Brands.brandLabel AS brand,
       Article.articleName AS article,
-      CAST(CustomerSales.noOfArticles AS INT) AS soldqty,
+      CAST(CustomerSales.noOfArticles AS INT) AS soldqty,\n
     EOT;
-
     $_date = 'CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 8) AS salesdate,';
-    if(isset($_GET['type'])) {
-      if($_GET['type'] != 'thisday') {
-        $_date .= 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate,';
-      }
+    if($this->time_span != 'thisday') {
+      $_date = 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate,';
     }
-    $query .= $_date;
-    $query .= <<<EOT
+    $this->query .= <<<EOT
+      $_date
       CustomerSales.usedPricePerUnit AS price,
       CustomerSales.disCount AS discount,
       CustomerSaleHeader.additionalInfo AS paymentmethod,
@@ -251,90 +263,86 @@ class QuerySold {
       ON CustomerSaleHeader.userId = hipUser.userId
 
     WHERE
-      Article.articleId IS NOT NULL AND
-      DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-
+      Article.articleId IS NOT NULL\n
     EOT;
 
-
-    if(isset($_GET['type'])) {
-      $type = $_GET['type'];
-    }
-    switch ($type) {
+    switch ($this->time_span) {
       case 'thisday':
-        $query .= ' AND DATEPART(DAYOFYEAR, CustomerSaleHeader.salesDate) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP)';
+        $string_time_span = 'DAYOFYEAR';
         break;
       case 'thisweek':
-        $query .= ' AND DATEPART(WEEK, CustomerSaleHeader.salesDate) = DATEPART(WEEK, CURRENT_TIMESTAMP)';
+        $string_time_span = 'WEEK';
       break;
       case 'thismonth':
-        $query .= ' AND DATEPART(MONTH, CustomerSaleHeader.salesDate) = DATEPART(MONTH, CURRENT_TIMESTAMP)';
+        $string_time_span = 'MONTH';
       break;
       default:
-        $query .= ' AND DATEPART(DAYOFYEAR, CustomerSaleHeader.salesDate) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP)';
+        $string_time_span = 'DAYOFYEAR';
     }
+    $this->query .= <<<EOT
+      AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+      AND DATEPART($string_time_span, CustomerSaleHeader.salesDate) = DATEPART($string_time_span, CURRENT_TIMESTAMP)\n
+    EOT;
 
-    $items = 'all';
-    if(isset($_GET['items'])) {
-      $items = $_GET['items'];
-    }
-    switch ($items) {
+    switch ($this->items) {
       case 'all':
         break;
       case 'expired':
-        $query .= " AND Article.articleName LIKE '[.]%'";
+        $this->query .= <<<EOT
+          AND Article.articleName LIKE '[.]%'\n
+        EOT;
         break;
       case 'none-expired':
-        $query .= " AND Article.articleName NOT LIKE '[.]%'";
+        $this->query .= <<<EOT
+          AND Article.articleName NOT LIKE '[.]%'\n
+        EOT;
         break;
     }
 
-    $sort = 'salesdate';
+    $this->sort = 'salesdate';
     if(isset($_GET['sort'])) {
-      $sort = $_GET['sort'];
+      $this->sort = $_GET['sort'];
     }
-    switch ($sort) {
+    switch ($this->sort) {
       case 'article':
-        $query .= ' ORDER BY Article.articleName';
+        $string_sort = 'Article.articleName';
         break;
       case 'brand':
-        $query .= ' ORDER BY Brands.brandLabel';
+        $string_sort = 'Brands.brandLabel';
         break;
       case 'salesdate':
-        $query .= ' ORDER BY CustomerSaleHeader.salesDate';
+        $string_sort = 'CustomerSaleHeader.salesDate';
         break;
       case 'supplyid':
-        $query .= ' ORDER BY Article.suppliers_art_no';
+        $string_sort = 'Article.suppliers_art_no';
       case 'price':
-        $query .= ' ORDER BY customerSales.usedPricePerUnit';
+        $string_sort = 'customerSales.usedPricePerUnit';
         break;
       case 'discount':
-        $query .= ' ORDER BY CustomerSales.disCount';
+        $string_sort = 'CustomerSales.disCount';
         break;
       case 'paymentmethod':
-        $query .= ' ORDER BY CustomerSaleHeader.additionalInfo';
+        $string_sort = 'CustomerSaleHeader.additionalInfo';
         break;
       case 'name':
-        $query .= ' ORDER BY hipUser.userFirstName';
+        $string_sort = 'hipUser.userFirstName';
         break;
       case 'soldqty':
-        $query .= ' ORDER BY CustomerSales.noOfArticles';
+        $string_sort = 'CustomerSales.noOfArticles';
         break;
     }
-
-    $order = 'ascending';
-    if(isset($_GET['order'])) {
-      $order = $_GET['order'];
-    }
-    switch ($order) {
+    switch ($this->order) {
       case 'ascending':
-        $query .= ' ASC';
+        $string_order = 'ASC';
         break;
       case 'descending':
-        $query .= ' DESC';
+        $string_order = 'DESC';
         break;
     }
+    $this->query .= <<<EOT
+    ORDER BY $string_sort $string_order\n
+    EOT;
 
-    return $query;
   }
+
 }

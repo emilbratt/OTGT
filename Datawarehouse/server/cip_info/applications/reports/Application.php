@@ -49,6 +49,7 @@ class Reports {
 
     $config_file = '../../../../environment.ini';
     $this->config = parse_ini_file($config_file, $process_sections = true);
+
     $this->navigation = new NavigationReports();
     $this->template = new TemplateReports();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
@@ -112,10 +113,13 @@ class Soldout extends Reports {
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
-    $query = QuerySoldout::get($type);
+
+    $query = new QueryReports();
+    $query->sold_out();
+    // $query->print_query();
     $this->cnxn = Database::get_retail_connection();
     try {
-      foreach ($this->cnxn->query($query) as $row) {
+      foreach ($this->cnxn->query($query->get()) as $row) {
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
@@ -192,10 +196,11 @@ class Imported extends Reports {
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
-    $query = QueryImported::get($type);
+    $query = new QueryReports();
+    $query->imported();
     $this->cnxn = Database::get_retail_connection();
     try {
-      foreach ($this->cnxn->query($query) as $row) {
+      foreach ($this->cnxn->query($query->get()) as $row) {
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
@@ -272,10 +277,11 @@ class Sold extends Reports {
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
-    $query = QuerySold::get($type);
+    $query = new QueryReports();
+    $query->sold();
     $this->cnxn = Database::get_retail_connection();
     try {
-      foreach ($this->cnxn->query($query) as $row) {
+      foreach ($this->cnxn->query($query->get()) as $row) {
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['name']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
