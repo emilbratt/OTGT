@@ -10,7 +10,7 @@
 
 class Home {
 
-  protected $page = 'Hjem';
+  protected $page = 'Hjem'; // alias for top_navbar
 
   function __construct () {
     // shows reports of soldout items for today, this week or this month

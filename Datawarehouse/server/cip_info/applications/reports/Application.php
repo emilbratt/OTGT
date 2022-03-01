@@ -11,7 +11,7 @@
 
 class Reports {
 
-  protected $page = 'Rapporter';
+  protected $page = 'Rapporter'; // alias for top_navbar
   protected $title_left = 'Rapport: ';
   protected $title_right;
   protected $navigation;

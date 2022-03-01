@@ -3,7 +3,7 @@
 
 class Map {
 
-  protected $page = 'Kart';
+  protected $page = 'Kart'; // alias for top_navbar
   protected $template;
 
   function __construct () {

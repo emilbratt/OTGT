@@ -12,7 +12,7 @@
 
 class Find {
 
-  protected $page = 'Vare'; # alias for top_navbar
+  protected $page = 'Vare'; // alias for top_navbar
   protected $template;
   protected $navigation;
   protected $visitor_url;

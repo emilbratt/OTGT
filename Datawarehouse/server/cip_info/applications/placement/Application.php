@@ -1,4 +1,4 @@
-<?php
+ // alias for top_navbar<?php
 
 /**
  *
@@ -11,7 +11,7 @@
 
 class Register {
   // shows reports of soldout items for today, this week or this month
-  protected $page = 'Plassering';
+  protected $page = 'Plassering'; // alias for top_navbar
   protected $template;
 
   function __construct () {
