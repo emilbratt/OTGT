@@ -21,6 +21,7 @@ class Navigation {
       'Rapporter' => $this->home . '/reports',
       'Plassering' => $this->home . '/placement',
       'Kart' => $this->home . '/map',
+      'Instrukser' => $this->home . '/instructions',
     ];
   }
 
