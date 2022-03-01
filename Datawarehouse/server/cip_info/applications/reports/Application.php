@@ -12,6 +12,8 @@
 class Reports {
 
   protected $page = 'Rapporter';
+  protected $title_left = 'Rapport: ';
+  protected $title_right;
   protected $navigation;
   protected $template;
   protected $table_headers;
@@ -54,7 +56,6 @@ class Reports {
     $this->template = new TemplateReports();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }
-
 }
 
 class Home extends Reports {
@@ -77,16 +78,16 @@ class Soldout extends Reports {
     }
     switch ($type) {
       case 'thisday':
-        $left_title = 'Rapport: Utsolgte varer i dag';
+        $this->title_left .= ' Utsolgte varer i dag';
         break;
       case 'thisweek':
-        $left_title = 'Rapport: Utsolgte varer denne uken';
+        $this->title_left .= ' Utsolgte varer denne uken';
       break;
       case 'thismonth':
-        $left_title = 'Rapport: Utsolgte varer '. Dates::get_this_month() . ' ' . date("Y");
+        $this->title_left .= ' Utsolgte varer '. Dates::get_this_month() . ' ' . date("Y");
       break;
     }
-    $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
+    $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
 
     $this->table_headers = [
       'Merke' => 'brand',
@@ -98,8 +99,8 @@ class Soldout extends Reports {
       'Lev. ID' => 'supplyid',
     ];
 
-    $this->template->title_left($left_title);
-    $this->template->title_right($right_title);
+    $this->template->title_left($this->title_left);
+    $this->template->title_right($this->title_right);
 
     $this->template->table_start();
     $this->template->table_row_start();
@@ -141,8 +142,10 @@ class Soldout extends Reports {
       exit(1);
     }
     $this->template->table_end();
+
     $this->template->print();
   }
+
 }
 
 
@@ -156,13 +159,13 @@ class Imported extends Reports {
     }
     switch ($type) {
       case 'thisday':
-        $left_title = 'Rapport: Importerte varer i dag';
+        $this->title_left .= ' Importerte varer i dag';
         break;
       case 'thisweek':
-        $left_title = 'Rapport: Importerte varer denne uken';
+        $this->title_left .= ' Importerte varer denne uken';
       break;
       case 'thismonth':
-        $left_title = 'Rapport: Importerte varer '. Dates::get_this_month() . ' ' . date("Y");
+        $this->title_left .= ' Importerte varer ' . Dates::get_this_month() . ' ' . date("Y");
       break;
     }
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
@@ -180,7 +183,7 @@ class Imported extends Reports {
       'Lev. ID' => 'supplyid',
     ];
 
-    $this->template->title_left($left_title);
+    $this->template->title_left($this->title_left);
     $this->template->title_right($right_title);
 
     $this->template->table_start();
@@ -225,6 +228,7 @@ class Imported extends Reports {
 
     $this->template->print();
   }
+
 }
 
 
@@ -238,16 +242,16 @@ class Sold extends Reports {
     }
     switch ($type) {
       case 'thisday':
-        $left_title = 'Rapport: Alle salg i dag';
+        $this->title_left .= ' Alle salg i dag';
         break;
       case 'thisweek':
-        $left_title = 'Rapport: Alle salg denne uken';
+        $this->title_left .= ' Alle salg denne uken';
       break;
       case 'thismonth':
-        $left_title = 'Rapport: Alle salg '. Dates::get_this_month() . ' ' . date("Y");
+        $this->title_left .= ' Alle salg '. Dates::get_this_month() . ' ' . date("Y");
       break;
     }
-    $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
+    $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
 
     $_key = 'Dato';
     if ($type == 'thisday') {
@@ -262,7 +266,7 @@ class Sold extends Reports {
       'Pris' => 'price',
     ];
 
-    $this->template->title_left($left_title);
+    $this->template->title_left($this->title_left);
     $this->template->title_right($right_title);
 
     $this->template->table_start();
@@ -305,4 +309,5 @@ class Sold extends Reports {
 
     $this->template->print();
   }
+
 }

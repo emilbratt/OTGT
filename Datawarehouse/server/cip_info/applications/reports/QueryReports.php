@@ -105,7 +105,6 @@ class QueryReports extends QueryRetail {
         $string_sort = 'Article.suppliers_art_no';
         break;
     }
-
     switch ($this->order) {
       case 'ascending':
         $string_order = 'ASC';
@@ -226,11 +225,8 @@ class QueryReports extends QueryRetail {
     $this->query .= <<<EOT
     ORDER BY $string_sort $string_order\n
     EOT;
-
-
-
-
   }
+
   public function sold () {
     $this->query = <<<EOT
     SELECT
@@ -342,7 +338,6 @@ class QueryReports extends QueryRetail {
     $this->query .= <<<EOT
     ORDER BY $string_sort $string_order\n
     EOT;
-
   }
 
 }
