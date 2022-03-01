@@ -150,11 +150,8 @@ class BySearch extends Find {
       $hyperlink_header->add_query('order', $this->order);
       if ($name == $this->sort_by) {
         $alias .= $this->arrow_symbol;
-        $this->template->table_row_header_active($alias, $hyperlink_header->url);
       }
-      else {
-        $this->template->table_row_header($alias, $hyperlink_header->url);
-      }
+      $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
 

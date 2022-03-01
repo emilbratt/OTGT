@@ -19,10 +19,10 @@ class TemplateFind extends Template {
       width: 5%;
     }
     td:nth-child(4) {
-      width: 5%;
+      width: 7%;
     }
     td:nth-child(5) {
-      width: 20%;
+      width: 18%;
     }
     #input_field_article {
       display: inline;

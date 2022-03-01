@@ -14,6 +14,7 @@ class Reports {
   protected $page = 'Rapporter';
   protected $navigation;
   protected $template;
+  protected $table_headers;
   protected $config;
   protected $visitor_url;
   protected $sort_by; // keeping track of what column is sorted by
@@ -52,6 +53,7 @@ class Reports {
     $this->template = new TemplateReports();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }
+
 }
 
 class Home extends Reports {
@@ -84,7 +86,8 @@ class Soldout extends Reports {
       break;
     }
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
-    $table_headers = [
+
+    $this->table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
       'Lager' => 'quantity',
@@ -100,11 +103,12 @@ class Soldout extends Reports {
     $this->template->table_start();
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
-    foreach ($table_headers as $alias => $name) {
+    foreach ($this->table_headers as $alias => $name) {
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
-      // $header_val = '<a href="' . $hyperlink_header->url . '" style="width: 100%;">' . $alias . '</a>';
-      // $this->template->table_row_header($header_val);
+      if ($name == $this->sort_by) {
+        $alias .= $this->arrow_symbol;
+      }
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
@@ -182,8 +186,9 @@ class Imported extends Reports {
     foreach ($table_headers as $alias => $name) {
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
-      // $header_val = '<a href="' . $hyperlink_header->url . '" style="width: 100%;">' . $alias . '</a>';
-      // $this->template->table_row_header($header_val);
+      if ($name == $this->sort_by) {
+        $alias .= $this->arrow_symbol;
+      }
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
@@ -238,6 +243,7 @@ class Sold extends Reports {
       break;
     }
     $right_title = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
+
     $_key = 'Dato';
     if ($type == 'thisday') {
       $_key = 'Tid';
@@ -254,15 +260,15 @@ class Sold extends Reports {
     $this->template->title_left($left_title);
     $this->template->title_right($right_title);
 
-    // report table starts here
     $this->template->table_start();
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
     foreach ($table_headers as $alias => $name) {
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
-      // $header_val = '<a href="' . $hyperlink_header->url . '" style="width: 100%;">' . $alias . '</a>';
-      // $this->template->table_row_header($header_val);
+      if ($name == $this->sort_by) {
+        $alias .= $this->arrow_symbol;
+      }
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
