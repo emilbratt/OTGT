@@ -1,4 +1,4 @@
- // alias for top_navbar<?php
+<?php
 
 /**
  *
