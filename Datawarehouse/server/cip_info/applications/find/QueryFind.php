@@ -33,23 +33,24 @@ class QueryFindByBarcode extends QueryRetail {
     // so that we are able to use barcode in the where clause
     $this->query .= <<<EOT
     SELECT
-      Article.articleId AS articleid,
-      Brands.brandLabel AS brand,
-      Article.articleName AS article,
-      CAST (stockQty AS INT) AS quantity,
-      articleStock.StorageShelf AS location,
-      Article.suppliers_art_no AS supplyid
-
+      view_HIP_Productinfo.articleId,
+      view_HIP_Productinfo.brandId,
+      view_HIP_Productinfo.brandLabel,
+      view_HIP_Productinfo.ArticleGroupName,
+      view_HIP_Productinfo.articleName,
+      view_HIP_Productinfo.articleUnitPrice,
+      CAST (articleStock.stockQty AS INT) AS Antall,
+      articleStock.StorageShelf AS Lagerplass,
+      articleStock.lastSold AS Sist_Solgt,
+      articleStock.lastReceivedFromSupplier AS Sist_Importert
     FROM
-      Article
-
+      view_HIP_Productinfo
     INNER JOIN
-      articleStock ON Article.articleId = articleStock.articleId
+      ArticleEAN ON view_HIP_Productinfo.articleId = ArticleEAN.articleId
     INNER JOIN
-      Brands ON Article.brandId = Brands.brandId
-    INNER JOIN
-      ArticleEAN ON Article.articleId = ArticleEAN.articleId
+      articleStock ON view_HIP_Productinfo.articleId = articleStock.articleId
     WHERE
+      ArticleEAN.eanCode=(:barcode)
     EOT;
   }
 
