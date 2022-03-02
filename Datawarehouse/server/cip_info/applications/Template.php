@@ -14,7 +14,6 @@ class Template {
 
   protected $config;
   protected $declaration;
-  // protected $start;
   protected $html;
   protected $css;
   protected $script;
