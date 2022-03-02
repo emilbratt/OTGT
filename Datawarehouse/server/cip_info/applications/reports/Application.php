@@ -130,7 +130,7 @@ class Soldout extends Reports {
 
     $query = new QueryReports();
     $query->sold_out();
-    // $query->print_query();
+    // $query->print();
     $this->cnxn = Database::get_retail_connection();
     try {
       foreach ($this->cnxn->query($query->get()) as $row) {
@@ -227,7 +227,7 @@ class Imported extends Reports {
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->imported();
-    // $query->print_query();
+    // $query->print();
     $this->cnxn = Database::get_retail_connection();
     try {
       foreach ($this->cnxn->query($query->get()) as $row) {
@@ -323,7 +323,7 @@ class Sold extends Reports {
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->sold();
-    // $query->print_query();
+    // $query->print();
     $this->cnxn = Database::get_retail_connection();
     try {
       foreach ($this->cnxn->query($query->get()) as $row) {

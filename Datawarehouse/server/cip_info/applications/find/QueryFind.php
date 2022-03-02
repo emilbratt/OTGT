@@ -14,10 +14,8 @@ class QueryFindBySearch extends QueryRetail {
       CAST (stockQty AS INT) AS quantity,
       articleStock.StorageShelf AS location,
       Article.suppliers_art_no AS supplyid
-
     FROM
       Article
-
     INNER JOIN
       articleStock ON Article.articleId = articleStock.articleId
     INNER JOIN
@@ -66,10 +64,6 @@ class QueryFindByBarcode extends QueryRetail {
     $this->query .= <<<EOT
       ArticleEAN.eanCode = '$part'
     EOT;
-  }
-
-  public function prnit () {
-    echo $this->qiery;
   }
 
 }

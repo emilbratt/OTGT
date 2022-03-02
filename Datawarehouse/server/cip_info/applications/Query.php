@@ -74,7 +74,7 @@ class QueryRetail {
   }
 
   public function where_article_expired () {
-    $items = 'active';
+    $items = 'all';
     if(isset($_GET['items'])) {
       $items = $_GET['items'];
     }
@@ -144,7 +144,7 @@ class QueryRetail {
     }
   }
 
-  public function print_query () {
+  public function print () {
     // for debugging only (show current query)
     echo '<pre>';
     echo $this->query;
@@ -154,7 +154,6 @@ class QueryRetail {
 
   public function get () {
     $this->query = preg_replace('/(\ø|æ|å|Ø|Æ|Å)/', '_', $this->query);
-    // $this->print_query(); // comment / uncomment for debugging
     return $this->query;
   }
 

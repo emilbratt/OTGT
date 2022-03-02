@@ -52,17 +52,31 @@ class Find {
       $this->sort_by = $_GET['sort'];
     }
 
+    // // default is none-expired (show only active articles), can be flipped with button
+    // $this->toggle_expired = 'all';
+    // $this->toggle_expired_message = 'Vis Aktive & Utgåtte';
+    // if(isset($_GET['items'])) {
+    //   if($_GET['items'] == 'active') {
+    //     $this->toggle_expired = 'expired';
+    //     $this->toggle_expired_message = 'Vis Kun Utgåtte';
+    //   }
+    //   else if($_GET['items'] == 'all') {
+    //     $this->toggle_expired = 'active';
+    //     $this->toggle_expired_message = 'Vis Kun Aktive';
+    //   }
+    // }
+
     // default is none-expired (show only active articles), can be flipped with button
-    $this->toggle_expired = 'all';
-    $this->toggle_expired_message = 'Vis Aktive & Utgåtte';
+    $this->toggle_expired = 'active';
+    $this->toggle_expired_message = 'Vis Kun Aktive';
     if(isset($_GET['items'])) {
-      if($_GET['items'] == 'active') {
+      if($_GET['items'] == 'expired') {
+        $this->toggle_expired = 'all';
+        $this->toggle_expired_message = 'Vis Aktive & Utgåtte';
+      }
+      else if($_GET['items'] == 'active') {
         $this->toggle_expired = 'expired';
         $this->toggle_expired_message = 'Vis Kun Utgåtte';
-      }
-      else if($_GET['items'] == 'all') {
-        $this->toggle_expired = 'active';
-        $this->toggle_expired_message = 'Vis Kun Aktive';
       }
     }
   }

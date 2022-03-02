@@ -181,9 +181,6 @@ class QueryReports extends QueryRetail {
         break;
     }
 
-
-
-
     switch ($this->time_span) {
       case 'thisday':
         $this->query .= <<<EOT
@@ -276,10 +273,8 @@ class QueryReports extends QueryRetail {
       CustomerSales.disCount AS discount,
       CustomerSaleHeader.additionalInfo AS paymentmethod,
       Article.suppliers_art_no AS supplyid
-
     FROM
       CustomerSales
-
     FULL JOIN Article
       ON CustomerSales.articleId = Article.articleId
     FULL JOIN CustomerSaleHeader
@@ -288,15 +283,9 @@ class QueryReports extends QueryRetail {
       ON Brands.brandId = Article.brandId
     FULL JOIN hipUser
       ON CustomerSaleHeader.userId = hipUser.userId
-
     WHERE
       Article.articleId IS NOT NULL\n
     EOT;
-
-
-
-
-
 
     switch ($this->time_span) {
       case 'thisday':
@@ -329,26 +318,6 @@ class QueryReports extends QueryRetail {
           EOT;
         }
     }
-
-
-    // 
-    // switch ($this->time_span) {
-    //   case 'thisday':
-    //     $string_time_span = 'DAYOFYEAR';
-    //     break;
-    //   case 'thisweek':
-    //     $string_time_span = 'WEEK';
-    //   break;
-    //   case 'thismonth':
-    //     $string_time_span = 'MONTH';
-    //   break;
-    //   default:
-    //     $string_time_span = 'DAYOFYEAR';
-    // }
-    // $this->query .= <<<EOT
-    //   AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-    //   AND DATEPART($string_time_span, CustomerSaleHeader.salesDate) = DATEPART($string_time_span, CURRENT_TIMESTAMP)\n
-    // EOT;
 
     switch ($this->items) {
       case 'all':
