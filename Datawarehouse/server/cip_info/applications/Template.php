@@ -464,8 +464,10 @@ class Template {
     <p>\$_GET</p>
     <pre>
     EOT;
-    foreach ($_GET as $key => $val) {
-      $this->html .= "$key --> $val\n";
+    if (isset($_GET)) {
+      foreach ($_GET as $key => $val) {
+        $this->html .= "$key --> $val\n";
+      }
     }
     $this->html .= <<<EOT
     </pre>\n

@@ -33,38 +33,36 @@ class QueryFindByBarcode extends QueryRetail {
     // so that we are able to use barcode in the where clause
     $this->query .= <<<EOT
     SELECT
-      view_HIP_Productinfo.articleId,
+      view_HIP_Productinfo.articleId AS articleid,
       view_HIP_Productinfo.brandId,
-      view_HIP_Productinfo.brandLabel,
-      view_HIP_Productinfo.ArticleGroupName,
-      view_HIP_Productinfo.articleName,
-      view_HIP_Productinfo.articleUnitPrice,
-      CAST (articleStock.stockQty AS INT) AS Antall,
-      articleStock.StorageShelf AS Lagerplass,
-      articleStock.lastSold AS Sist_Solgt,
-      articleStock.lastReceivedFromSupplier AS Sist_Importert
+      view_HIP_Productinfo.brandLabel AS brand,
+      view_HIP_Productinfo.articleName AS article,
+      view_HIP_Productinfo.ArticleGroupName AS category,
+      view_HIP_Productinfo.articleUnitPrice AS price,
+      CAST (articleStock.stockQty AS INT) AS quantity,
+      articleStock.StorageShelf AS location,
+      articleStock.lastSold AS lastsold,
+      articleStock.lastReceivedFromSupplier AS lastimported
     FROM
       view_HIP_Productinfo
     INNER JOIN
       ArticleEAN ON view_HIP_Productinfo.articleId = ArticleEAN.articleId
     INNER JOIN
-      articleStock ON view_HIP_Productinfo.articleId = articleStock.articleId
-    WHERE
-      ArticleEAN.eanCode=(:barcode)
+      articleStock ON view_HIP_Productinfo.articleId = articleStock.articleId\n
     EOT;
   }
 
 
-  public function add_barcode ($part) {
-    if(!(is_numeric($part))) {
-      // barcode should be all numbers
-      // also, no sql injection here, this is a simple way to avoid it
-      echo "$part is not a barcode";
-      exit(1);
-    }
-    $this->query .= <<<EOT
-      ArticleEAN.eanCode = '$part'
-    EOT;
-  }
+  // public function add_barcode ($part) {
+  //   if(!(is_numeric($part))) {
+  //     // barcode should be all numbers
+  //     // also, no sql injection here, this is a simple way to avoid it
+  //     echo "$part is not a barcode";
+  //     exit(1);
+  //   }
+  //   $this->query .= <<<EOT
+  //     ArticleEAN.eanCode = '$part'
+  //   EOT;
+  // }
 
 }

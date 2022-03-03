@@ -91,11 +91,7 @@ class QueryRetail {
   }
 
   public function where_barcode () {
-    $ean = $_GET['barcode'];
-    if(!(is_numeric($ean))) {
-      echo "<p>Could not verify that $ean is a valid barcode</p>";
-      $this->print_query();
-    }
+    $ean = $_GET['input_field_barcode'];
     if ( $this->has_where() ) {
       $this->query .= <<<EOT
       AND ArticleEAN.eanCode = '$ean'\n

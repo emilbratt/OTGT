@@ -23,6 +23,7 @@ class Find {
   protected $toggle_expired_message;
   protected $search_string_brand_len;
   protected $search_string_article_len;
+  protected $search_string_barcode;
 
   function __construct () {
     require_once '../applications/Database.php';
@@ -74,16 +75,26 @@ class Find {
   protected function get_search_string_article_len () {
     $this->search_string_article_len = strlen($_GET['input_field_article']);
   }
+
+  protected function validate_search_string_barcode () {
+    $check_num = is_numeric($_GET['input_field_barcode']);
+    $check_len = (strlen($_GET['input_field_barcode']) == 13 or strlen($_GET['input_field_barcode']) >= 8);
+    $this->search_string_barcode = ($check_num == true and $check_len == true);
+  }
 }
 
+
 class Home extends Find {
+
     public function run () {
       $this->template->sub_navbar($this->navigation->sub_nav_links);
       $this->template->print();
     }
 }
 
+
 class BySearch extends Find {
+
   public function run () {
     // preserving the previous brand and title search if passed, else empty
     if(isset($_GET['input_field_brand']) and isset($_GET['input_field_article'])) {
@@ -168,6 +179,7 @@ class BySearch extends Find {
         $this->template->table_row_end();
       }
       $this->template->table_end();
+      $this->template->css_by_search();
     }
     catch(Exception $e)  {
       $config_file = '../../../../environment.ini';
@@ -184,8 +196,88 @@ class BySearch extends Find {
   }
 }
 
+
 class ByBarcode extends Find {
   public function run () {
-    echo 'This is Find->ByBarcide';
+    // preserving the previous brand and title search if passed, else empty
+    if(isset($_GET['input_field_barcode'])) {
+      $this->template->form_barcode($_GET['input_field_barcode']);
+    }
+    else {
+      $this->template->form_barcode();
+    }
+
+
+    // if form is passed, handle query
+    if(isset($_GET['input_field_barcode'])) {
+      $this->result_set();
+    }
+
+    $this->template->print();
   }
+
+  private function result_set () {
+    // if search string is to short, the query will become to expensive
+    // and potentially to many rows; we set a lower limit to characters
+    $this->validate_search_string_barcode();
+    if ( !($this->search_string_barcode) ) {
+      return; // could not validate that a barcode as input
+    }
+
+    $query = new QueryFindByBarcode();
+    $query->where_barcode();
+
+    $table_headers = [
+      'Merke' => 'brand',
+      'Navn' => 'article',
+      'Kategori' => 'category',
+      'Pris' => 'price',
+      'Lager' => 'quantity',
+      'Plassering' => 'location',
+      'Sist Importert' => 'lastimported',
+      'Sist Solgt' => 'lastsold',
+      // 'Lev. ID' => 'supplyid',
+    ];
+
+    $this->template->table_full_width_start();
+    $this->template->table_row_start();
+    $hyperlink_header = new HyperLink();
+    foreach ($table_headers as $alias => $name) {
+      $this->template->table_row_value($alias);
+    }
+    $this->template->table_row_end();
+
+    $this->cnxn = Database::get_retail_connection();
+    try {
+      foreach ($this->cnxn->query($query->get()) as $row) {
+        $article = $row['articleid'];
+        $this->template->table_row_start();
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['category']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['price']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastsold']));
+        // $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
+        $this->template->table_row_end();
+      }
+      $this->template->table_end();
+      $this->template->css_by_barcode();
+
+    }
+    catch(Exception $e)  {
+      $config_file = '../../../../environment.ini';
+      $config = parse_ini_file($config_file, $process_sections = true);
+      if($config['developement']['show_errors']) {
+        echo '<pre>';
+        print_r($e->getMessage());
+        echo $query;
+        echo '</pre>';
+      }
+      exit(1);
+    }
+  }
+
 }
