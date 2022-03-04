@@ -24,15 +24,15 @@
      inkscape:pagecheckerboard="0"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.70710678"
-     inkscape:cx="341.53258"
-     inkscape:cy="310.41988"
+     inkscape:zoom="1"
+     inkscape:cx="340.5"
+     inkscape:cy="459"
      inkscape:window-width="1920"
-     inkscape:window-height="1200"
+     inkscape:window-height="1131"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer7"
+     inkscape:current-layer="layer15"
      inkscape:object-paths="true"
      inkscape:snap-intersection-paths="true"
      inkscape:snap-smooth-nodes="true"
@@ -48,7 +48,7 @@
        inkscape:groupmode="layer"
        id="g29790"
        inkscape:label="main_frame_path_svg"
-       style="display:none">
+       style="display:inline">
       <path
          id="rect29788"
          style="fill:none;stroke:#bbbbff;stroke-width:0.983847;stroke-linecap:square"
@@ -58,7 +58,7 @@
        inkscape:groupmode="layer"
        id="layer5"
        inkscape:label="main_frame_object_svg"
-       style="display:none">
+       style="display:inline">
       <rect
          style="fill:none;stroke:#bbbbff;stroke-width:0.983847;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="rect5633"
@@ -68,12 +68,35 @@
          y="44.949844"
          ry="0" />
     </g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer19"
+       inkscape:label="main_circle_marker">
+      <circle
+         style="fill:#e30000;fill-opacity:0;stroke:#9fdf9f;stroke-width:0.429882;stroke-linecap:square"
+         id="path1095"
+         cx="139.12614"
+         cy="130.50557"
+         r="4.4706187" />
+    </g>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer7"
      inkscape:label="floor_U1"
-     style="display:inline">
+     style="display:none">
+    <g
+       inkscape:groupmode="layer"
+       id="g2543"
+       inkscape:label="floor_U1_circle"
+       style="display:inline">
+      <circle
+         style="fill:#e30000;fill-opacity:0;stroke:#9fdf9f;stroke-width:0.429882;stroke-linecap:square"
+         id="circle2541"
+         cx="113.43443"
+         cy="136.41141"
+         r="4.4706187" />
+    </g>
     <g
        inkscape:groupmode="layer"
        id="layer3"
@@ -230,26 +253,26 @@
        inkscape:groupmode="layer"
        id="layer6"
        inkscape:label="floor_U1_title"
-       style="display:none">
+       style="display:inline">
       <rect
          style="fill:none;stroke:#bbbbff;stroke-width:1;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none"
          id="rect13559"
          width="17.913366"
          height="12.084007"
-         x="11.341432"
-         y="26.193237" />
+         x="186.33844"
+         y="240.81821" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:12.7px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#bbbbff;fill-opacity:1;stroke:none;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
-         x="12.225732"
-         y="36.273613"
+         x="190.37592"
+         y="247.09984"
          id="text17435"
-         transform="scale(0.98230053,1.0180184)"><tspan
+         transform="scale(0.98230052,1.0180184)"><tspan
            sodipodi:role="line"
            id="tspan17433"
            style="font-size:12.7px;fill:#bbbbff;fill-opacity:1;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
-           x="12.225732"
-           y="36.273613">U1</tspan></text>
+           x="190.37592"
+           y="247.09984">U1</tspan></text>
     </g>
     <g
        inkscape:groupmode="layer"
@@ -650,31 +673,43 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="floor_U"
-     style="display:inline">
+     style="display:none">
+    <g
+       inkscape:groupmode="layer"
+       id="g2531"
+       inkscape:label="floor_U_circle"
+       style="display:inline">
+      <circle
+         style="fill:#e30000;fill-opacity:0;stroke:#9fdf9f;stroke-width:0.429882;stroke-linecap:square"
+         id="circle2529"
+         cx="98.971359"
+         cy="137.14458"
+         r="4.4706187" />
+    </g>
     <g
        inkscape:groupmode="layer"
        id="g37793"
        inkscape:label="floor_U_title"
-       style="display:none">
+       style="display:inline">
       <rect
          style="fill:none;stroke:#bbbbff;stroke-width:1;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none"
          id="rect37787"
          width="17.913366"
          height="12.084007"
-         x="11.341432"
-         y="26.193237" />
+         x="186.33844"
+         y="240.81821" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:12.7px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#bbbbff;fill-opacity:1;stroke:none;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
-         x="16.048132"
-         y="36.273613"
+         x="194.1983"
+         y="247.09984"
          id="text37791"
          transform="scale(0.98230052,1.0180184)"><tspan
            sodipodi:role="line"
            id="tspan37789"
            style="font-size:12.7px;fill:#bbbbff;fill-opacity:1;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
-           x="16.048132"
-           y="36.273613">U</tspan></text>
+           x="194.1983"
+           y="247.09984">U</tspan></text>
     </g>
     <g
        inkscape:groupmode="layer"
@@ -940,37 +975,49 @@
      inkscape:groupmode="layer"
      id="layer15"
      inkscape:label="floor_1"
-     style="display:inline">
+     style="display:none">
+    <g
+       inkscape:groupmode="layer"
+       id="g2537"
+       inkscape:label="floor_1_circle"
+       style="display:inline">
+      <circle
+         style="fill:#e30000;fill-opacity:0;stroke:#9fdf9f;stroke-width:0.429882;stroke-linecap:square"
+         id="circle2535"
+         cx="130.50548"
+         cy="137.53123"
+         r="4.4706187" />
+    </g>
     <g
        inkscape:groupmode="layer"
        id="g41139"
        inkscape:label="floor_1_title"
-       style="display:none">
+       style="display:inline">
       <rect
          style="fill:none;stroke:#bbbbff;stroke-width:1;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none"
          id="rect41133"
          width="17.913366"
          height="12.084007"
-         x="11.341432"
-         y="26.193237" />
+         x="186.33846"
+         y="240.81821" />
       <text
          xml:space="preserve"
          style="font-style:normal;font-weight:normal;font-size:12.7px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#bbbbff;fill-opacity:1;stroke:none;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
-         x="16.431376"
-         y="36.273613"
+         x="194.58157"
+         y="247.09984"
          id="text41137"
          transform="scale(0.98230052,1.0180184)"><tspan
            sodipodi:role="line"
            id="tspan41135"
            style="font-size:12.7px;fill:#bbbbff;fill-opacity:1;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none"
-           x="16.431376"
-           y="36.273613">1</tspan></text>
+           x="194.58157"
+           y="247.09984">1</tspan></text>
     </g>
     <g
        inkscape:label="floor_1_png"
        inkscape:groupmode="layer"
        id="layer1"
-       style="display:inline;opacity:0.265328">
+       style="display:none;opacity:0.265328">
       <image
          width="211.81741"
          height="217.55118"

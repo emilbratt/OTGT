@@ -36,6 +36,8 @@ class Home extends Register {
     $navigation = new NavigationPlacement();
     $this->template->top_navbar($navigation->top_nav_links, $this->page);
     $this->template->title('Plassering');
+    $this->template->css_svg();
+    $this->template->html_svg();
     $this->template->print();
   }
 

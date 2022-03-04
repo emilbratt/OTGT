@@ -7,6 +7,7 @@
  * search field background 202020
  * table row (even) 222222
  * table row (odd) 333333
+ * location circle 9FDF9F
  */
 
 
