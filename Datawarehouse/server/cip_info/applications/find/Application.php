@@ -239,33 +239,39 @@ class ByBarcode extends Find {
       // 'Lev. ID' => 'supplyid',
     ];
 
-    $this->template->table_full_width_start();
-    $this->template->table_row_start();
-    $hyperlink_header = new HyperLink();
-    foreach ($table_headers as $alias => $name) {
-      $this->template->table_row_value($alias);
-    }
-    $this->template->table_row_end();
+
 
     $this->cnxn = Database::get_retail_connection();
+
     try {
-      foreach ($this->cnxn->query($query->get()) as $row) {
-        $article = $row['articleid'];
-        $this->template->table_row_start();
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['category']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['price']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastsold']));
-        // $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
-        $this->template->table_row_end();
+      $sth = $this->cnxn->prepare($query->get());
+      $sth->execute();
+      $result = $sth->fetch(PDO::FETCH_ASSOC);
+      if (!($result)) {$this->template->message('Ingen Treff'); return;}
+      $this->template->table_full_width_start();
+      $this->template->table_row_start();
+      foreach ($table_headers as $alias => $name) {
+        $this->template->table_row_value($alias);
       }
+      $this->template->table_row_end();
+      $this->template->table_row_start();
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['brand']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['article']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['category']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['price']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['quantity']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['location']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['lastimported']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['lastsold']));
+      $this->template->table_row_end();
       $this->template->table_end();
       $this->template->css_by_barcode();
 
+      if($result['location'] == null) {
+        $this->template->image_location('empty');
+        return;
+      }
+      $this->template->image_location($result['location'][0]);
     }
     catch(Exception $e)  {
       $config_file = '../../../../environment.ini';

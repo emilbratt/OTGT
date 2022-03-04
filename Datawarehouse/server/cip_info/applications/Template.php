@@ -18,7 +18,8 @@ class Template {
   protected $html;
   protected $css;
   protected $script;
-  protected $wrapper; // wraps all individual parts (css, html and scripts)
+  protected $image_path = '../assets/image';
+  private $wrapper; // wraps all individual parts (css, html and scripts)
 
   function __construct () {
     $config_file = '../../../../environment.ini';
