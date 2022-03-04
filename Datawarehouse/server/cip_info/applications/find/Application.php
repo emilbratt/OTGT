@@ -8,6 +8,7 @@
  * TODO:
  *  add: all queries that have user-input should be logged
  *  add: click on result row to open detailed info about article
+ *  add: check if image location exists to avoid throwing image not found error
  */
 
 class Find {
