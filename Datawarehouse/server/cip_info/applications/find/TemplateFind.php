@@ -3,11 +3,12 @@
 require_once '../applications/Template.php';
 
 class TemplateFind extends Template {
-  // methods with same name here will override the method in Template
+
+  protected $image_path_location;
 
   function __construct () {
     parent::__construct();
-
+    $this->image_path_location = $this->image_path . '/location';
   }
 
   public function css_by_search () {
@@ -127,8 +128,8 @@ class TemplateFind extends Template {
   }
 
   public function image_location ($png) {
-    $png = $this->image_path . '/location/' . $png . '.png';
-    $b64image = base64_encode(file_get_contents($png));
+    $image = $this->image_path_location . "/$png.png";
+    $b64image = base64_encode(file_get_contents($image));
     $this->html .= <<<EOT
     <img src="data:image/png;base64,$b64image" width="600">
     EOT;
