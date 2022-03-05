@@ -23,6 +23,7 @@ class Home extends Instructions {
     $navigation = new NavigationInstructions();
     $this->template->top_navbar($navigation->top_nav_links, $this->page);
     $this->template->title('Instrukser');
+    $this->template->message('her skal det komme instrukser');
     $this->template->print();
   }
 

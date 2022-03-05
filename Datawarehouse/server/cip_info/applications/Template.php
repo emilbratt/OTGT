@@ -235,7 +235,7 @@ class Template {
   public function message ($string) {
     $this->html .= <<<EOT
     <div class="message">
-      <p>Info: <i>$string</i></p>
+      <p><i>$string</i></p>
     </div>\n
     EOT;
   }

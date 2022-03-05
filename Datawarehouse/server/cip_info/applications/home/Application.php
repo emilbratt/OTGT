@@ -25,7 +25,9 @@ class Home {
 
   public function run () {
     $this->template->title('C.I.Pedersen Trondheim');
-    $this->template->message('Velg fra toppmenyen');
+    $this->template->message('denne siden er fremdeles under utvikling');
+    $this->template->message('du kan likevel benytte eksisterende funksjoner');
+    $this->template->message('Emil B. B.');
     $this->template->print();
   }
 

@@ -237,10 +237,7 @@ class ByBarcode extends Find {
       'Plassering' => 'location',
       'Sist Importert' => 'lastimported',
       'Sist Solgt' => 'lastsold',
-      // 'Lev. ID' => 'supplyid',
     ];
-
-
 
     $this->cnxn = Database::get_retail_connection();
 

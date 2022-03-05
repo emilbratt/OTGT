@@ -37,6 +37,7 @@ class Home extends Register {
     $navigation = new NavigationPlacement();
     $this->template->top_navbar($navigation->top_nav_links, $this->page);
     $this->template->title('Plassering');
+    $this->template->message('funksjon for å legge inn plassering etc. vil komme her');
     $this->template->print();
   }
 
