@@ -1,6 +1,7 @@
 <?php
 
 class QueryRetail {
+
   protected $query;
   protected $illegal_reserved_words; // simple way to prevent script kiddie level sql injection
   protected $special_characters; // mainly to swap "æ", "ø" and "å" to  "_"

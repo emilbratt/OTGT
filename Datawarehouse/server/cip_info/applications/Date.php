@@ -23,4 +23,5 @@ class Date {
     $this->day = date('d', strtotime($string));
     $this->display = $this->day.'-'.$this->month.'-'.$this->year;
   }
+
 }

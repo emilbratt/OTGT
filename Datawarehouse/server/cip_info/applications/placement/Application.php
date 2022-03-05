@@ -21,6 +21,7 @@ class Register {
 
     $this->template = new TemplatePlacement();
   }
+
 }
 
 

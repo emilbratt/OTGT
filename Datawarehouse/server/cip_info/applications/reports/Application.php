@@ -60,11 +60,13 @@ class Reports {
 }
 
 class Home extends Reports {
+
   public function run () {
 
     $this->template->sub_navbar($this->navigation->sub_nav_links);
     $this->template->print();
   }
+
 }
 
 

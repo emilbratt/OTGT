@@ -14,6 +14,6 @@ class NavigationPlacement extends Navigation {
       'Legge Inn Vareplassering' => $this->home_sub . '/register',
       'Finn Vareplassering' => $this->home_sub . '/get',
     ];
-
   }
+
 }

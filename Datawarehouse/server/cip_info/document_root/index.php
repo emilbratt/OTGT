@@ -9,13 +9,11 @@
  * one specific service
  *
  * TODO:
- *  add. js for handeling search filter of result set
  *  add. turnover report
  *  add. app to find items by name, brand, category, barcode etc..
- *  add. app to update shelf value (mobile and desktop freindly)
- *  add. click on location in result and get map view (make svg image over floor plan)
- *  add. show last imported items and feature for updateing location
+ *  add. app to update shelf value
  *  add. batch update loction for items
+ *  add. click on location in result and get map view
  *  add. create barcodes (python backend with python-barcode?)
  */
 

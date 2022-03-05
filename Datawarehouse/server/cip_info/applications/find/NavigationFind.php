@@ -15,4 +15,5 @@ class NavigationFind extends Navigation {
       'Skann Vare' => $this->home_sub . '/bybarcode',
     ];
   }
+
 }

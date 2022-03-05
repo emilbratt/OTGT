@@ -7,4 +7,5 @@ class NavigationMap extends Navigation {
   function __construct () {
     parent::__construct();
   }
+
 }

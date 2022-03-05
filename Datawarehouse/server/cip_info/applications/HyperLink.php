@@ -11,6 +11,7 @@
  */
 
 class HyperLink {
+
   public $url; // example: http://hostname:8080/some/where?foo=bar&this=that
   protected $home_address; // example: http://hostname:8080
   protected $query_string; // example: foo=bar&this=that

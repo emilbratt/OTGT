@@ -13,6 +13,7 @@ class Instructions {
 
     $this->template = new TemplateInstructions();
   }
+
 }
 
 
@@ -24,4 +25,5 @@ class Home extends Instructions {
     $this->template->title('Instrukser');
     $this->template->print();
   }
+
 }

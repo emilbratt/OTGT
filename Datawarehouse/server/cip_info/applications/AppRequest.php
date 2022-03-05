@@ -48,7 +48,6 @@ class Apprequest {
     exit(1);
   }
 
-
   private function load_class () {
     // the 2nd word in the url = app class which is loaded in Application.php
     if($_SERVER['REDIRECT_URL'] === '/') {
@@ -78,4 +77,5 @@ class Apprequest {
     http_response_code(404);
     exit(1);
     }
+
 }

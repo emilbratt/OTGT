@@ -13,4 +13,5 @@ class NavigationReports extends Navigation {
       'Salg' => $this->home_sub . '/sold',
     ];
   }
+
 }

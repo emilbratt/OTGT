@@ -30,6 +30,7 @@ class Dates {
     ];
     return $months[date('M')];
   }
+
 }
 
 
@@ -42,6 +43,7 @@ class UserAgent {
     }
     return false;
   }
+
 }
 
 
@@ -50,4 +52,5 @@ class CharacterConvert {
   public static function utf_to_norwegian ($string) {
     return mb_convert_encoding($string, "UTF-8", "ISO-8859-1");
   }
+
 }
