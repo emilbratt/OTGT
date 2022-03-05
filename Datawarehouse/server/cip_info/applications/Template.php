@@ -219,8 +219,7 @@ class Template {
       EOT;
     }
     $this->html .= <<<EOT
-    </div>
-    <br> <!-- br tag for forcing the next html objects to start from under the top nav -->\n
+    </div>\n
     EOT;
   }
 
@@ -261,7 +260,7 @@ class Template {
       </td>
     </tr>
     </table>
-    </div>
+    </div>\n
     EOT;
   }
 
@@ -270,7 +269,7 @@ class Template {
     <div id="template_form">
     <form method="$method">
     <table>
-    <tr>
+    <tr>\n
     EOT;
   }
 

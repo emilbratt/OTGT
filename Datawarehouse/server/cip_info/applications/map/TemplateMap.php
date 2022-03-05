@@ -20,7 +20,7 @@ class TemplateMap extends Template {
       margin-right: auto;
       */
       width: 50%;
-    }
+    }\n
     EOT;
 
     $image = $this->image_path_floor . "/$name.png";
@@ -28,7 +28,7 @@ class TemplateMap extends Template {
     $this->html .= <<<EOT
     <div class="image_map">
     <img src="data:image/png;base64,$b64image">
-    </div>
+    </div>\n
     EOT;
   }
 
