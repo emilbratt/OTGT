@@ -127,8 +127,8 @@ class TemplateFind extends Template {
     EOT;
   }
 
-  public function image_location ($png) {
-    $image = $this->image_path_location . "/$png.png";
+  public function image_location ($image) {
+    $image = $this->image_path_location . "/$image.png";
     $b64image = base64_encode(file_get_contents($image));
     $this->html .= <<<EOT
     <img src="data:image/png;base64,$b64image" width="600">
