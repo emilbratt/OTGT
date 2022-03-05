@@ -34,6 +34,8 @@ class Reports {
     require_once '../applications/reports/TemplateReports.php';
     require_once '../applications/reports/QueryReports.php';
 
+    $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
+
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
     $this->arrow_symbol = ' &#8595;';
@@ -93,7 +95,7 @@ class Soldout extends Reports {
         $date->format_from_string($type);
         $this->title_left .= ' Utsolgte varer ' . $date->display;
     }
-    $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
+
 
     $this->table_headers = [
       'Merke' => 'brand',
@@ -187,7 +189,6 @@ class Imported extends Reports {
         $date->format_from_string($type);
         $this->title_left .= ' Importerte varer ' . $date->display;
     }
-    $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' '. date("d/m-Y");
     $_key = 'Dato';
     if ($type == 'thisday') {
       $_key = 'Tid';
@@ -284,7 +285,6 @@ class Sold extends Reports {
         $date->format_from_string($type);
         $this->title_left .= ' Alle salg ' . $date->display;
     }
-    $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
 
     $_key = 'Dato';
     if ($type == 'thisday') {
