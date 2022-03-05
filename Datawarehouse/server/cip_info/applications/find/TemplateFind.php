@@ -5,10 +5,20 @@ require_once '../applications/Template.php';
 class TemplateFind extends Template {
 
   protected $image_path_location;
+  protected $location_index;
 
   function __construct () {
     parent::__construct();
     $this->image_path_location = $this->image_path . '/location';
+    $this->location_index = [
+      'A' => '1', 'B' => '1', 'C' => 'U',
+      'D' => 'U', 'E' => 'U', 'F' => 'U1',
+      'G' => 'U1', 'H' => 'U1', 'I' => 'U1',
+      'J' => 'U1', 'K' => 'U1', 'L' => 'U1',
+      'M' => 'U1', 'O' => 'U1', 'P' => 'U1',
+      'Q' => 'U1', 'R' => 'U1', 'S' => 'U1',
+      'T' => 'U1', 'O' => 'U1'
+    ];
   }
 
   public function css_by_search () {
@@ -128,11 +138,56 @@ class TemplateFind extends Template {
   }
 
   public function image_location ($image) {
-    $image = $this->image_path_location . "/$image.png";
-    $b64image = base64_encode(file_get_contents($image));
-    $this->html .= <<<EOT
-    <img src="data:image/png;base64,$b64image" width="600">
-    EOT;
+
+    $floor = false;
+    $circle = false;
+
+    // grab first letter for the location (example: L-A-30 = L)
+    $letter = strtoupper($image[0]);
+    foreach ($this->location_index as $index => $value) {
+      if ($index == $letter) {
+        // base might for eaxmple be floor_U1
+        $floor = $value;
+        $circle = $index;
+      }
+    }
+    if (($floor !== false) and ($circle !== false)) {
+      $image = $this->image_path_location . "/floor/$floor.png";
+      $b64_map = base64_encode(file_get_contents($image));
+      $image = $this->image_path_location . "/circle/$circle.png";
+      $b64_circle = base64_encode(file_get_contents($image));
+
+      $this->css .= <<<EOT
+      #image_map {
+          display: block;
+          / *margin-left: auto;
+          margin-right: auto; */
+          width: 50%;
+      }
+      #image_base {
+        position: absolute;
+      }
+
+      #image_circle {
+        position: relative;
+        animation-name: circle_animate;
+        animation-duration: 1s;
+      }
+      @keyframes circle_animate {
+
+        0%  {left:0px; top:-40px;}
+        100% {left:0px; top:0px;}
+      }
+      EOT;
+
+      $this->html .= <<<EOT
+      <div id="image_map">
+        <img id="image_base"  src="data:image/png;base64,$b64_map" width="700">
+        <img id="image_circle" src="data:image/png;base64,$b64_circle" width="700">
+      </div>
+      EOT;
+    }
+
   }
 
 }

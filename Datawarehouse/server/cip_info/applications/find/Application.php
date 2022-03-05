@@ -272,7 +272,7 @@ class ByBarcode extends Find {
         $this->template->image_location('empty');
         return;
       }
-      $this->template->image_location($result['location'][0]);
+      $this->template->image_location($result['location']);
     }
     catch(Exception $e)  {
       $config_file = '../../../../environment.ini';
