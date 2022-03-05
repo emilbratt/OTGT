@@ -11,21 +11,22 @@ class TemplateMap extends Template {
     $this->image_path_floor = $this->image_path . '/location/floor';
   }
 
-
   public function image_map ($name) {
     $this->css .= <<<EOT
-    .center_map {
+    .image_map {
       display: block;
+      /*
       margin-left: auto;
       margin-right: auto;
+      */
       width: 50%;
     }
-
     EOT;
+
     $image = $this->image_path_floor . "/$name.png";
     $b64image = base64_encode(file_get_contents($image));
     $this->html .= <<<EOT
-    <div class="center_map">
+    <div class="image_map">
     <img src="data:image/png;base64,$b64image">
     </div>
     EOT;
