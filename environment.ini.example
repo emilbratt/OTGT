@@ -29,7 +29,7 @@
   show_debug = false
   show_nav_links = false
 
-[contact_dev] ; contact info to the guy(s) developing this codebase
+[contact_dev]
   name = "INSERT"
   email = "INSERT"
   phone = "INSERT"
