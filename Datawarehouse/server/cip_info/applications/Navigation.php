@@ -21,10 +21,14 @@ class Navigation {
       'Hjem' => $this->address,
       'Vare' => $this->address . '/find',
       'Rapporter' => $this->address . '/reports',
-      'Plassering' => $this->address . '/placement',
       'Kart' => $this->address . '/map',
-      'Instrukser' => $this->address . '/instructions',
     ];
+
+    if ($this->environment->developement('show_nav_links')) {
+      $this->top_nav_links['Utvikling'] = $this->address . '/developing';
+      $this->top_nav_links['Plassering'] = $this->address . '/placement';
+      $this->top_nav_links['Instrukser'] = $this->address . '/instructions';
+    }
   }
 
 }
