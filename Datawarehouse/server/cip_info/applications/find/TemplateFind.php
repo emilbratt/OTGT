@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * TODO:
+ *  add check for image existing and fallback to default in: public function image_location
+ *
+ *
+ *
+ */
+
 require_once '../applications/Template.php';
 
 class TemplateFind extends Template {
@@ -152,6 +160,7 @@ class TemplateFind extends Template {
       }
     }
     if (($floor !== false) and ($circle !== false)) {
+      // TODO: add check if file exists and fallback to default image if not
       $image = $this->image_path_location . "/floor/$floor.png";
       $b64_map = base64_encode(file_get_contents($image));
       $image = $this->image_path_location . "/circle/$circle.png";

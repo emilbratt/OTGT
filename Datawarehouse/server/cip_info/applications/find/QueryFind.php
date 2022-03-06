@@ -1,6 +1,6 @@
 <?php
 
-require_once '../applications/Query.php';
+require_once '../applications/QueryRetail.php';
 
 class QueryFindBySearch extends QueryRetail {
 

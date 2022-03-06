@@ -24,6 +24,22 @@
   user_autoreport = "INSERT"
   password_autoreport = "INSERT"
 
-[developement] ; custom configs for developing
+[developement] ; enables the server to behave differently production and dev env.
   show_errors = false
   show_debug = false
+  show_nav_links = false
+
+[contact_dev] ; contact info to the guy(s) developing this codebase
+  name = "INSERT"
+  email = "INSERT"
+  phone = "INSERT"
+
+[contact_staff]
+  name = "INSERT"
+  email = "INSERT"
+  phone = "INSERT"
+
+[contact_sysadmin]
+  name = "INSERT"
+  email = "INSERT"
+  phone = "INSERT"

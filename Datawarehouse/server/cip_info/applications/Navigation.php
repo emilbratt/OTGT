@@ -2,26 +2,28 @@
 
 /*
  *
- * simple way to create navigation links
- * these are links that are hard-coded
+ * TODO;
+ *  add: method for adding extra top nav links for developer tools (sql shell etc.)
  *
  */
 
 class Navigation {
 
   public $top_nav_links;
+  private $environment;
   protected $nav_links;
-  protected $home; // links to: domain/
+  protected $address; // links to: domain/
 
-  function __construct () {
-    $this->home = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+  function __construct ($environment) {
+    $this->environment = $environment;
+    $this->address = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
     $this->top_nav_links = [
-      'Hjem' => $this->home,
-      'Vare' => $this->home . '/find',
-      'Rapporter' => $this->home . '/reports',
-      'Plassering' => $this->home . '/placement',
-      'Kart' => $this->home . '/map',
-      'Instrukser' => $this->home . '/instructions',
+      'Hjem' => $this->address,
+      'Vare' => $this->address . '/find',
+      'Rapporter' => $this->address . '/reports',
+      'Plassering' => $this->address . '/placement',
+      'Kart' => $this->address . '/map',
+      'Instrukser' => $this->address . '/instructions',
     ];
   }
 

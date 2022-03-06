@@ -389,11 +389,18 @@ class Template {
     EOT;
   }
 
-  public function script_filter_row_button ($col_index = '1') {
+  public function script_filter_row_button ($col_index = '1', $placeholder = 'Filtrer Resultat') {
     // filter (remove rows) from a html table by searching string in this box
     $this->html .= <<<EOT
-    <input style="width: 30%;" type="text" id="filter_row" onkeyup="filter_row()" placeholder="Filtrer" title="Type in a name">
+    <input
+      style="width: 30%;"
+      type="text"
+      id="filter_row"
+      onkeyup="filter_row()"
+      placeholder="$placeholder"
+      title="novalue">
     EOT;
+
     $this->script .= <<<EOT
     function filter_row() {
       var input, filter, table, tr, td, i, text_val;

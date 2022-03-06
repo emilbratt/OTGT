@@ -7,14 +7,16 @@
  *
  * TODO:
  *  add: all queries that have user-input should be logged
- *  add: click on result row to open detailed info about article
- *  add: check if image location exists to avoid throwing image not found error
+ *  add: app "BySearch" click on result row to open detailed info about article
+ *  fix: layout for table on app "ByBarcode"
  */
 
 class Find {
 
   protected $page = 'Vare'; // alias for top_navbar
   protected $template;
+  protected $environment;
+  protected $database;
   protected $navigation;
   protected $visitor_url;
   protected $sort_by; // keeping track of what column is sorted by
@@ -27,15 +29,18 @@ class Find {
   protected $search_string_barcode;
 
   function __construct () {
-    require_once '../applications/Database.php';
+    require_once '../applications/DatabaseRetail.php';
+    require_once '../applications/Environment.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
     require_once '../applications/find/NavigationFind.php';
     require_once '../applications/find/TemplateFind.php';
     require_once '../applications/find/QueryFind.php';
 
-    $this->template = new TemplateFind();
-    $this->navigation = new NavigationFind();
+    $this->environment = new Environment();
+    $this->database = new DatabaseRetail($this->environment);
+    $this->template = new TemplateFind($this->environment);
+    $this->navigation = new NavigationFind($this->environment);
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
 
     // default is ascending, but we flip the order of rows if ascending is already set
@@ -91,6 +96,7 @@ class Home extends Find {
       $this->template->sub_navbar($this->navigation->sub_nav_links);
       $this->template->print();
     }
+
 }
 
 
@@ -167,9 +173,10 @@ class BySearch extends Find {
     }
     $this->template->table_row_end();
 
-    $this->cnxn = Database::get_retail_connection();
-    try {
-      foreach ($this->cnxn->query($query->get()) as $row) {
+
+    $this->database->select_multi_row($query->get());
+    if ($this->database->result) {
+      foreach ($this->database->result as $row) {
         $article = $row['articleid'];
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
@@ -182,19 +189,8 @@ class BySearch extends Find {
       $this->template->table_end();
       $this->template->css_by_search();
     }
-    catch(Exception $e)  {
-      $config_file = '../../../../environment.ini';
-      $config = parse_ini_file($config_file, $process_sections = true);
-      if($config['developement']['show_errors']) {
-        echo '<pre>';
-        print_r($e->getMessage());
-        echo $query;
-        echo '</pre>';
-      }
-      exit(1);
-    }
-
   }
+
 }
 
 
@@ -207,7 +203,6 @@ class ByBarcode extends Find {
     else {
       $this->template->form_barcode();
     }
-
 
     // if form is passed, handle query
     if(isset($_GET['input_field_barcode'])) {
@@ -238,14 +233,8 @@ class ByBarcode extends Find {
       'Sist Importert' => 'lastimported',
       'Sist Solgt' => 'lastsold',
     ];
-
-    $this->cnxn = Database::get_retail_connection();
-
-    try {
-      $sth = $this->cnxn->prepare($query->get());
-      $sth->execute();
-      $result = $sth->fetch(PDO::FETCH_ASSOC);
-      if (!($result)) {$this->template->message('Ingen Treff'); return;}
+    $this->database->select_one_row($query->get());
+    if ($this->database->result) {
       $this->template->table_full_width_start();
       $this->template->table_row_start();
       foreach ($table_headers as $alias => $name) {
@@ -253,34 +242,22 @@ class ByBarcode extends Find {
       }
       $this->template->table_row_end();
       $this->template->table_row_start();
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['brand']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['article']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['category']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['price']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['quantity']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['location']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['lastimported']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($result['lastsold']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['brand']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['article']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['category']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['price']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['quantity']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['location']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['lastimported']));
+      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['lastsold']));
       $this->template->table_row_end();
       $this->template->table_end();
       $this->template->css_by_barcode();
-
-      if($result['location'] == null) {
+      if($this->database->result['location'] == null) {
         $this->template->image_location('empty');
         return;
       }
-      $this->template->image_location($result['location']);
-    }
-    catch(Exception $e)  {
-      $config_file = '../../../../environment.ini';
-      $config = parse_ini_file($config_file, $process_sections = true);
-      if($config['developement']['show_errors']) {
-        echo '<pre>';
-        print_r($e->getMessage());
-        echo $query;
-        echo '</pre>';
-      }
-      exit(1);
+      $this->template->image_location($this->database->result['location']);
     }
   }
 

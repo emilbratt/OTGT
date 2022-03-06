@@ -7,8 +7,8 @@ class NavigationFind extends Navigation {
   public $sub_nav_links;
   protected $home_sub; // links to domain/find
 
-  function __construct () {
-    parent::__construct();
+  function __construct ($environment) {
+    parent::__construct($environment);
     $this->home_sub = $this->top_nav_links['Vare'];
       $this->sub_nav_links = [
       'Søk Etter Vare' => $this->home_sub . '/bysearch',

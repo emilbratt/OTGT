@@ -12,12 +12,13 @@
 class Reports {
 
   protected $page = 'Rapporter'; // alias for top_navbar
+  protected $environment;
   protected $title_left = 'Rapport: ';
   protected $title_right;
+  protected $database;
   protected $navigation;
   protected $template;
   protected $table_headers;
-  protected $config;
   protected $visitor_url;
   protected $sort_by; // keeping track of what column is sorted by
   protected $order; // keeping track of what order should be passed when clicking header col of result table
@@ -26,7 +27,8 @@ class Reports {
 
   function __construct () {
     // shows reports of soldout items for today, this week or this month
-    require_once '../applications/Database.php';
+    require_once '../applications/Environment.php';
+    require_once '../applications/DatabaseRetail.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
     require_once '../applications/Date.php';
@@ -52,10 +54,9 @@ class Reports {
       $this->sort_by = $_GET['sort'];
     }
 
-    $config_file = '../../../../environment.ini';
-    $this->config = parse_ini_file($config_file, $process_sections = true);
-
-    $this->navigation = new NavigationReports();
+    $this->environment = new Environment();
+    $this->navigation = new NavigationReports($this->environment);
+    $this->database = new DatabaseRetail($this->environment);
     $this->template = new TemplateReports();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }
@@ -135,9 +136,8 @@ class Soldout extends Reports {
     $query = new QueryReports();
     $query->sold_out();
     // $query->print();
-    $this->cnxn = Database::get_retail_connection();
     try {
-      foreach ($this->cnxn->query($query->get()) as $row) {
+      foreach ($this->database->cnxn->query($query->get()) as $row) {
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
@@ -150,7 +150,7 @@ class Soldout extends Reports {
       }
     }
     catch(Exception $e)  {
-      if($this->config['developement']['show_errors']) {
+      if($this->environment->developement('show_errors')) {
         echo '<pre>';
         print_r($e->getMessage());
         echo $query;
@@ -231,9 +231,8 @@ class Imported extends Reports {
     $query = new QueryReports();
     $query->imported();
     // $query->print();
-    $this->cnxn = Database::get_retail_connection();
     try {
-      foreach ($this->cnxn->query($query->get()) as $row) {
+      foreach ($this->database->cnxn->query($query->get()) as $row) {
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
@@ -246,7 +245,7 @@ class Imported extends Reports {
       }
     }
     catch(Exception $e)  {
-      if($this->config['developement']['show_errors']) {
+      if($this->environment->developement('show_errors')) {
         echo '<pre>';
         print_r($e->getMessage());
         echo $query;
@@ -326,9 +325,8 @@ class Sold extends Reports {
     $query = new QueryReports();
     $query->sold();
     // $query->print();
-    $this->cnxn = Database::get_retail_connection();
     try {
-      foreach ($this->cnxn->query($query->get()) as $row) {
+      foreach ($this->database->cnxn->query($query->get()) as $row) {
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['name']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
@@ -340,7 +338,7 @@ class Sold extends Reports {
       }
     }
     catch(Exception $e)  {
-      if($this->config['developement']['show_errors']) {
+      if($this->environment->developement('show_errors')) {
         echo '<pre>';
         print_r($e->getMessage());
         echo $query;

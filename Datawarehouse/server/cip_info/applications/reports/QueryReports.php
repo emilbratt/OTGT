@@ -1,6 +1,6 @@
 <?php
 
-require_once '../applications/Query.php';
+require_once '../applications/QueryRetail.php';
 
 class QueryReports extends QueryRetail {
 
@@ -28,7 +28,7 @@ class QueryReports extends QueryRetail {
 
   public function sold_out () {
 
-    $this->query = <<<EOT
+    $this->query .= <<<EOT
     SELECT
       Brands.brandLabel AS brand,
       Article.articleName AS article,
@@ -134,7 +134,7 @@ class QueryReports extends QueryRetail {
 
   public function imported () {
 
-    $this->query = <<<EOT
+    $this->query .= <<<EOT
     SELECT
       Brands.brandLabel AS brand,
       Article.articleName AS article,
@@ -256,7 +256,7 @@ class QueryReports extends QueryRetail {
   }
 
   public function sold () {
-    $this->query = <<<EOT
+    $this->query .= <<<EOT
     SELECT
       hipUser.userFirstName AS name,
       Brands.brandLabel AS brand,
