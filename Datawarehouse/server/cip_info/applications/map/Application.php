@@ -8,7 +8,6 @@ class Map {
   protected $template;
   protected $navigation;
 
-
   function __construct () {
     require_once '../applications/Environment.php';
     require_once '../applications/Helpers.php';
@@ -40,6 +39,7 @@ class floor_1 extends Map {
     $this->template->image_map('1');
     $this->template->print();
   }
+
 }
 
 
@@ -49,6 +49,7 @@ class floor_U extends Map {
     $this->template->image_map('U');
     $this->template->print();
   }
+
 }
 
 class floor_U1 extends Map {
@@ -57,4 +58,5 @@ class floor_U1 extends Map {
     $this->template->image_map('U1');
     $this->template->print();
   }
+
 }

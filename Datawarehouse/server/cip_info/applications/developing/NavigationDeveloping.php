@@ -8,8 +8,8 @@ class NavigationDeveloping extends Navigation {
     parent::__construct($environment);
     $this->home_sub = $this->top_nav_links['Utvikling'];
       $this->sub_nav_links = [
-      'SQL Shell' => $this->home_sub . '/SQLShell',
-      'API' => $this->home_sub . '/API',
+      'SQL Shell' => $this->home_sub . '/sqlshell',
+      'API' => $this->home_sub . '/api',
     ];
   }
 

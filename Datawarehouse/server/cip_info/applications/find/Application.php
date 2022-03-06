@@ -195,6 +195,7 @@ class BySearch extends Find {
 
 
 class ByBarcode extends Find {
+
   public function run () {
     // preserving the previous brand and title search if passed, else empty
     if(isset($_GET['input_field_barcode'])) {

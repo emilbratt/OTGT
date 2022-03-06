@@ -4,14 +4,12 @@ require_once '../applications/Template.php';
 
 class TemplateDeveloping extends Template {
 
-  protected $image_path_floor;
-
   function __construct () {
     parent::__construct();
     $this->image_path_floor = $this->image_path . '/location/floor';
   }
 
-  public function sql_shell_query ($query) {
+  public function sql_shell_form ($query) {
     $this->css .= <<<EOT
     .sql_shell_form {
       background-color: #202020;

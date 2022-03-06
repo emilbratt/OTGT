@@ -1,6 +1,5 @@
 <?php
 
-
 class Developing {
 
   protected $page = 'Utvikling'; // alias for top_navbar
@@ -45,18 +44,19 @@ class Home extends Developing {
 class SQLShell extends Developing {
 
   public function run () {
+
     $this->query = 'SELECT TOP 3 articleId AS Vareid, articleName AS Varenavn FROM Article';
     if(isset($_POST['sql_shell_query'])) {
       $this->query = $_POST['sql_shell_query'];
     }
-    $this->template->sql_shell_query($this->query);
+
+    $this->template->sql_shell_form($this->query);
     if(isset($_POST['sql_shell_query'])) {
       $this->run_query();
     }
 
     $this->template->print();
   }
-
 
   private function run_query () {
     $this->result = $this->database->cnxn->query($this->query)->fetch();
@@ -102,7 +102,6 @@ class SQLShell extends Developing {
     }
   }
 
-
 }
 
 
@@ -112,4 +111,5 @@ class API extends Developing {
     $this->template->message('api for testing');
     $this->template->print();
   }
+
 }

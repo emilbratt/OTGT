@@ -25,6 +25,7 @@ class QueryFindBySearch extends QueryRetail {
 
 }
 
+
 class QueryFindByBarcode extends QueryRetail {
 
   function __construct () {
@@ -51,18 +52,5 @@ class QueryFindByBarcode extends QueryRetail {
       articleStock ON view_HIP_Productinfo.articleId = articleStock.articleId\n
     EOT;
   }
-
-
-  // public function add_barcode ($part) {
-  //   if(!(is_numeric($part))) {
-  //     // barcode should be all numbers
-  //     // also, no sql injection here, this is a simple way to avoid it
-  //     echo "$part is not a barcode";
-  //     exit(1);
-  //   }
-  //   $this->query .= <<<EOT
-  //     ArticleEAN.eanCode = '$part'
-  //   EOT;
-  // }
 
 }
