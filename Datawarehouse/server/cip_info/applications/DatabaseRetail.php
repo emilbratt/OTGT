@@ -15,6 +15,7 @@ class DatabaseRetail {
   public $result;
   public $columns;
   public $rows;
+  public $col_count;
 
   function __construct ($environment) {
     $this->environment = $environment;
@@ -54,6 +55,7 @@ class DatabaseRetail {
       $stmt = $this->cnxn->prepare($query);
       $stmt->execute();
       $this->result = $stmt->fetch(PDO::FETCH_ASSOC);
+      $this->col_count = $stmt->columnCount();
     }
     catch(Exception $e)  {
       if($this->environment->developement('show_errors')) {
@@ -71,6 +73,7 @@ class DatabaseRetail {
       $stmt = $this->cnxn->prepare($query);
       $stmt->execute();
       $this->result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      $this->col_count = $stmt->columnCount();
     }
     catch(Exception $e)  {
       if($this->environment->developement('show_errors')) {
