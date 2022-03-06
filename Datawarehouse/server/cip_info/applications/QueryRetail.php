@@ -23,6 +23,20 @@ class QueryRetail {
     }
   }
 
+  public function article_id ($ean) {
+    // query to get only the article id from barcode
+    $this->query .= <<<EOT
+    SELECT
+      Article.articleId AS articleid
+    FROM
+      Article
+    INNER JOIN
+      ArticleEAN ON Article.articleId = ArticleEAN.articleId
+    WHERE
+      ArticleEAN.eanCode = '$ean'\n
+    EOT;
+  }
+
   protected function has_where () {
     // check if our query has the reserved word WHERE in it
     return strpos($this->query, 'WHERE') !== false;

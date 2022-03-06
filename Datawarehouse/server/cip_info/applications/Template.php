@@ -313,7 +313,7 @@ class Template {
     $this->html .= <<<EOT
     <td>
       <input
-         type="search"
+         type="text"
          id="form_input_text"
          name="$ref">
     </td>\n
