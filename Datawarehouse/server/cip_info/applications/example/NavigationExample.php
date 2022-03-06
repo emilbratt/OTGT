@@ -22,6 +22,7 @@ class NavigationExample extends Navigation {
     /**
      *
      * SET THE CORRECT NAME FOR THE PAGE (AS FOUND IN application.php)
+     * TO PRESERVE THE CORRECT APPLICATION ADDRESS
      *
      */
     $this->home_sub = $this->top_nav_links['Eksempel'];

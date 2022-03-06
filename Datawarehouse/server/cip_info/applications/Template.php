@@ -101,7 +101,7 @@ class Template {
     }
 
     .title {
-      display: inline-block;
+      display: block;
     }
 
     .title_left {
@@ -189,6 +189,25 @@ class Template {
       width: 150px;
       height: 30px;
     }\n
+    EOT;
+  }
+
+
+  public function custom_html ($str) {
+    $this->html .= <<<EOT
+    $str\n
+    EOT;
+  }
+
+  public function custom_css ($str) {
+    $this->css .= <<<EOT
+    $str\n
+    EOT;
+  }
+
+  public function custom_script ($str) {
+    $this->script .= <<<EOT
+    $str\n
     EOT;
   }
 

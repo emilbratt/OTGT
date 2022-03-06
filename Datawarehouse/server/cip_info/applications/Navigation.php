@@ -22,6 +22,7 @@ class Navigation {
       'Vare' => $this->address . '/find',
       'Rapporter' => $this->address . '/reports',
       'Kart' => $this->address . '/map',
+      'Om' => $this->address . '/about',
     ];
 
     if ($this->environment->developement('show_nav_links')) {
