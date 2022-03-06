@@ -113,3 +113,13 @@ class API extends Developing {
   }
 
 }
+
+
+class Testing extends Developing {
+
+  public function run () {
+    $this->template->message('Testing whatever needs testing');
+    $this->template->print();
+  }
+
+}

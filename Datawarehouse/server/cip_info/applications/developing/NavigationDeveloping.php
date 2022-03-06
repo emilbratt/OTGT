@@ -10,6 +10,7 @@ class NavigationDeveloping extends Navigation {
       $this->sub_nav_links = [
       'SQL Shell' => $this->home_sub . '/sqlshell',
       'API' => $this->home_sub . '/api',
+      'Testing' => $this->home_sub . '/testing',
     ];
   }
 
