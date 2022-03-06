@@ -1,10 +1,11 @@
 <?php
 /**
  * colours
- * text, boarders: BBBBFF
+ * text, border: BBBBFF
  * top nav bar active, hover, table row
  * a href CCCCFF
  * search field background 202020
+ * table header 2A2A2A (unless clickable hyperlink)
  * table row (even) 222222
  * table row (odd) 333333
  * location circle 9FDF9F
@@ -156,8 +157,11 @@ class Template {
       padding-left: 2px;
     }
     th {
-      background-color: #303030;
+      background-color: #2A2A2A;
       height: 32px;
+    }
+    #th_no_hyperlink {
+      border: 1px solid #BBBBFF;
     }
     th a {
       height: 27px;
@@ -366,7 +370,7 @@ class Template {
     // passing a url as second arg will make it a clickabel button
     if ($hyperlink == null) {
       $this->html .= <<<EOT
-      <th>$string</th>\n
+      <th id="th_no_hyperlink">$string</th>\n
       EOT;
       return;
     }
