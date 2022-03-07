@@ -17,14 +17,15 @@ class TemplatePlacement extends Template {
          autofocus="autofocus"
          onfocus="this.select()"
          id="form_input_text"
-         name="placement_scan_item">
+         name="barcode">
     </td>\n
     EOT;
   }
 
-  public function _form_scan_shelf ($barcode) {
-    // $ref = what key to reference in GET / POST array
-    // article id for previous scanned value that is passed along the form
+  public function _form_scan_shelf ($article_id, $article = '', $brand = '') {
+    // we need article_id to register placement
+    // we need article_name and brand_name for showing what sas registered
+    $ean = $_POST['barcode'];
     $this->html .= <<<EOT
     <td>
       <input
@@ -32,12 +33,27 @@ class TemplatePlacement extends Template {
          autofocus="autofocus"
          onfocus="this.select()"
          id="form_input_text"
-         name="placement_scan_shelf">
+         name="shelf">
 
       <input
         type="hidden"
-        name="placement_scan_item"
-        value="$barcode">
+        name="barcode"
+        value="$ean">
+
+      <input
+        type="hidden"
+        name="article_id"
+        value="$article_id">
+
+      <input
+        type="hidden"
+        name="article"
+        value="$article">
+
+      <input
+        type="hidden"
+        name="brand"
+        value="$brand">
     </td>\n
     EOT;
   }

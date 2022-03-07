@@ -3,9 +3,10 @@
 /**
  *
  * TODO:
- * validate item and shelf value scan input in ScanItemScanShelf
- * validate successfull placement update
- *
+ *  add: validate item and shelf value scan input in ScanItemScanShelf
+ *  add: validate successfull placement update
+ *  add: show latest registered placement for articles
+ *  add: string to uppercase when storing shelf value
  */
 
 
@@ -17,11 +18,18 @@ class Placement {
   protected $database;
   protected $navigation;
   protected $query;
-  protected $article_id;
-  protected $article_name;
-  protected $brand_name;
   protected $ean;
+  protected $message;
+  protected $article_id;
+  protected $article_id_ok;
+  protected $ean_ok;
   protected $shelf;
+  protected $shelf_ok;
+  // protected $article_id;
+  // protected $article;
+  // protected $brand;
+  // protected $ean;
+
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
@@ -57,20 +65,19 @@ class ScanItemScanShelf extends Placement {
     public function run () {
 
       // step 1: scan item (this form sets placement_scan_item)
-      if ( !(isset($_POST['placement_scan_item'])) ) {
+      if ( !(isset($_POST['barcode'])) ) {
         $this->placement_scan_item();
         $this->template->message('Det er enkelt å legge inn plassering');
         $this->template->message('Skann en vare først');
         $this->template->message('Deretter skanner du hyllen');
         $this->template->message('Du trenger ikke å bruke mus og tastatur for å gjør dette');
-
       }
       // step 2: validate item scan and then scan shelf (this form sets both placement_scan_item and placement_scan_shelf)
-      else if ( isset($_POST['placement_scan_item']) and (!(isset($_POST['placement_scan_shelf']))) ) {
+      else if ( isset($_POST['barcode']) and (!(isset($_POST['shelf']))) ) {
         $this->placement_scan_shelf();
       }
       // step 3: upload new shelf value for item using placement_scan_item and placement_scan_shelf
-      else if ( isset($_POST['placement_scan_item']) and isset($_POST['placement_scan_shelf']) ) {
+      else if ( isset($_POST['article_id']) and isset($_POST['shelf']) ) {
         $this->placement_update();
       }
 
@@ -85,70 +92,97 @@ class ScanItemScanShelf extends Placement {
     }
 
     private function placement_scan_shelf () {
-      $ean = $_POST['placement_scan_item'];
-      if ($ean == '') {
+      $this->ean = $_POST['barcode'];
+      $this->validate_barcode();
+      if ( !($this->ean_ok) ) {
         $this->placement_scan_item();
-        $this->template->title('Tom strekkode');
+        $this->template->title($this->message);
         return;
       }
-      if ( !(is_numeric($ean)) ) {
-        $this->placement_scan_item();
-        $this->template->title('en strekkode skal kun inneholde tall');
-        return;
-      }
+
       $query = new QueryPlacement();
-      $query->basic_article_info_by_ean($ean);
+      $query->basic_article_info_by_ean();
       // $this->query->print();
       $this->database->select_sinlge_row($query->get());
       if ( !($this->database->result) ) {
         $this->placement_scan_item();
-        $this->template->title('Ingen vare med strekkode: ' . $_POST['placement_scan_item']);
+        $this->template->title('Ingen vare med strekkode: ' . $_POST['barcode']);
         return;
       }
 
-      $this->article_id = $this->database->result['articleid'];
-      $this->article_name = CharacterConvert::utf_to_norwegian($this->database->result['article']);
-      $this->brand_name = CharacterConvert::utf_to_norwegian($this->database->result['brand']);
+      $article_id = $this->database->result['articleid'];
+      $article = CharacterConvert::utf_to_norwegian($this->database->result['article']);
+      $brand = CharacterConvert::utf_to_norwegian($this->database->result['brand']);
       $this->template->title('Skann Hylle');
       $this->template->form_start('POST');
-      $this->template->_form_scan_shelf($ean);
+      $this->template->_form_scan_shelf($article_id, $article, $brand);
       $this->template->_form_end();
-      $this->template->title($this->brand_name . ' ' . $this->article_name);
+      $this->template->title($brand . ' ' . $article);
     }
 
     private function placement_update () {
-      $ean = $_POST['placement_scan_item'];
-      $shelf = $_POST['placement_scan_shelf'];
-      if (strlen($shelf) < 1) {
+      $article_id = $_POST['article_id'];
+      $this->shelf = $_POST['shelf'];
+      $this->validate_shelf();
+      if ( !($this->shelf_ok) ) {
         $this->placement_scan_shelf();
-        $this->template->title('Hyllelplass må være minst en karakter');
-        return;
-      }
-      if (strlen($shelf) > 1) {
-        if ( !(strpos($shelf, '-'))) {
-          $this->placement_scan_shelf();
-          $this->template->title('Det må brukes bindestrek - for å skille mellom Lager, Hylle og Plass');
-          $this->template->title('Eksempel: F-B-10');
-          $this->template->title('..hvor F = lager, B = hylle og 10 er plass på hylla');
-          $this->template->title('Tips: du kan også skrive kun F hvis du ikke vil registrere hylle og plass');
-          return;
-        }
-      }
-      $query = new QueryPlacement();
-      $query->article_id($ean);
-      $this->database->select_sinlge_row($query->get());
-      if ($this->database->result) {
-        $this->article_id = $this->database->result['articleid'];
-        $query = new QueryPlacement();
-        $query->update_location_by_article_id($this->article_id, $shelf);
-        $stmt = $this->database->cnxn->prepare($query->get());
-        $this->placement_scan_item('placement_scan_item');
-        $this->template->message('skipping query execution. commented out $stmt->execute(); because not ready yet because need validating of input');
-        // $stmt->execute();
+        $this->template->title($this->message);
         return;
       }
 
+      $query = new QueryPlacement();
+      $query->update_placement_by_article_id($article_id, $this->shelf);
+      $query->print(); die;
+      $stmt = $this->database->cnxn->prepare($query->get());
       $this->placement_scan_item('placement_scan_item');
+      $this->template->message('skipping query execution. commented out $stmt->execute(); because not ready yet because need validating of input');
+      // $stmt->execute();
+      return;
+
+      $this->placement_scan_item('placement_scan_item');
+    }
+
+    private function validate_article_id () {
+
+    }
+
+    private function validate_barcode () {
+      $this->ean_ok = false;
+      if ( $this->ean == '') {
+        $this->message('Tom strekkode');
+        return;
+      }
+      else if (!(is_numeric($this->ean)) ) {
+        $this->message = 'Strekkoder skal kun inneholde tall';
+        return;
+      }
+      else if ( strlen($this->ean) < 8 ) {
+        $this->message = 'Strekkode skal ha minimum 8 tall';
+        return;
+      }
+      else if ( strlen($this->ean) > 13 ) {
+        $this->message = 'Strekkode skal ha maksimum 13 tall';
+        return;
+      }
+      $this->ean_ok = true;
+    }
+
+    private function validate_shelf () {
+      $this->shelf_ok = false;
+      if (strlen($this->shelf) < 1) {
+        $this->message = 'Hyllelplass må være minst en karakter';
+        return;
+      }
+      if (strlen($this->shelf) > 1) {
+        if ( !(strpos($this->shelf, '-'))) {
+          $this->message = 'Det må brukes bindestrek - for å skille mellom Lager, Hylle og Plass<br>';
+          $this->message .= 'Eksempel: F-B-10<br>';
+          $this->message .= '..hvor F = lager, B = hylle og 10 er plass på hylla<br>';
+          $this->message .= 'Tips: du kan også skrive kun F hvis du ikke vil registrere hylle og plass<br>';
+          return;
+        }
+      }
+    $this->shelf_ok = true;
     }
 
 }

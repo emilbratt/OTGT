@@ -23,6 +23,35 @@ class QueryRetail {
     }
   }
 
+  public function update_placement_by_article_id ($article_id, $shelf) {
+    $this->query .= <<<EOT
+    UPDATE
+      articleStock
+    SET
+      StorageShelf = '$shelf'
+    WHERE
+      articleStock.articleId = '$article_id'\n
+    EOT;
+  }
+
+  public function update_placement_by_barcode ($ean, $shelf) {
+    $this->query .= <<<EOT
+    UPDATE
+      articleStock
+    SET
+      StorageShelf = '$shelf'
+    FROM
+      articleStock
+    JOIN
+      ArticleEAN
+    ON
+      articleStock.articleId = ArticleEAN.articleId
+    WHERE
+      ArticleEAN.eanCode = '$ean'\n
+    EOT;
+  }
+
+
   public function article_id ($ean) {
     // query to get only the article id from barcode
     $this->query .= <<<EOT

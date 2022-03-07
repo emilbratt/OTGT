@@ -13,7 +13,8 @@ class QueryPlacement extends QueryRetail {
     parent::__construct();
   }
 
-  public function basic_article_info_by_ean ($ean) {
+  public function basic_article_info_by_ean () {
+    $ean = $_POST['barcode'];
     $this->query .= <<<EOT
     SELECT
       Article.articleId AS articleid,
@@ -27,17 +28,6 @@ class QueryPlacement extends QueryRetail {
       Brands ON Article.brandId = Brands.brandId
     WHERE
       ArticleEAN.eanCode = '$ean'\n
-    EOT;
-  }
-
-  public function update_location_by_article_id ($article_id, $shelf) {
-    $this->query .= <<<EOT
-    UPDATE
-      articleStock
-    SET
-      StorageShelf = '$shelf'
-    WHERE
-      articleStock.articleId = '$article_id'\n
     EOT;
   }
 
