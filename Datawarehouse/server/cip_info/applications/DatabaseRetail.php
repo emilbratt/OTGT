@@ -50,7 +50,7 @@ class DatabaseRetail {
 
 
 
-  public function select_one_row ($query) {
+  public function select_sinlge_row ($query) {
     try {
       $stmt = $this->cnxn->prepare($query);
       $stmt->execute();

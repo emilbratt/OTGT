@@ -15,7 +15,7 @@ class QueryPlacement extends QueryRetail {
   }
 
 
-  public function basic_item_info_by_ean ($ean) {
+  public function basic_article_info_by_ean ($ean) {
     $this->query .= <<<EOT
     SELECT
       Article.articleId AS articleid,

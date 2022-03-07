@@ -234,7 +234,7 @@ class ByBarcode extends Find {
       'Sist Importert' => 'lastimported',
       'Sist Solgt' => 'lastsold',
     ];
-    $this->database->select_one_row($query->get());
+    $this->database->select_sinlge_row($query->get());
     if ($this->database->result) {
       $this->template->table_full_width_start();
       $this->template->table_row_start();
