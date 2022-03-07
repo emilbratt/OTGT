@@ -42,7 +42,7 @@ class TemplatePlacement extends Template {
     EOT;
   }
 
-  public function form_end ($val = 'Enter') {
+  public function _form_end ($val = 'Enter') {
     $this->html .= <<<EOT
     </tr>
     </table>

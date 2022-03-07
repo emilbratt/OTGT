@@ -33,11 +33,11 @@ class QueryPlacement extends QueryRetail {
   public function update_location_by_article_id ($article_id, $shelf) {
     $this->query .= <<<EOT
     UPDATE
-        articleStock
+      articleStock
     SET
-        StorageShelf = '$shelf'
+      StorageShelf = '$shelf'
     WHERE
-        articleStock.articleId = '$article_id'\n
+      articleStock.articleId = '$article_id'\n
     EOT;
   }
 
