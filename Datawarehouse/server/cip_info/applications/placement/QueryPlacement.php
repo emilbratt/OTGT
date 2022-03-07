@@ -11,9 +11,7 @@ class QueryPlacement extends QueryRetail {
 
   function __construct () {
     parent::__construct();
-
   }
-
 
   public function basic_article_info_by_ean ($ean) {
     $this->query .= <<<EOT
