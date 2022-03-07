@@ -12,7 +12,7 @@ class NavigationPlacement extends Navigation {
     $this->home_sub = $this->top_nav_links['Plassering'];
       $this->sub_nav_links = [
       'Legg inn med bruk av skanner' => $this->home_sub . '/scanitemscanshelf',
-      'Finn Vareplassering' => $this->home_sub . '/getplacement',
+      // 'Finn Vareplassering' => $this->home_sub . '/getplacement',
     ];
   }
 

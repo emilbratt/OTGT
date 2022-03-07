@@ -45,6 +45,7 @@ class Home extends Placement {
 
   public function run () {
     $this->template->sub_navbar($this->navigation->sub_nav_links);
+    $this->template->message('det kommer flere funksjoner her etter hvert');
     $this->template->print();
   }
 
