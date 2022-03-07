@@ -31,6 +31,10 @@ class Home extends About {
     $dev_email = $this->environment->contact_dev('email');
     $sysadm_email =$this->environment->contact_sysadmin('email');
     $staff_email = $this->environment->contact_staff('email');
+    $dev_phone = $this->environment->contact_dev('phone');
+    $sysadm_phone =$this->environment->contact_sysadmin('phone');
+    $staff_phone = $this->environment->contact_staff('phone');
+
     $m = <<<EOT
     <p>
     Denne siden brukes av ansatte hos C.I.Pedersen til å<br>
@@ -39,19 +43,23 @@ class Home extends About {
     </p>
     EOT;
     $this->template->custom_html($m);
+
     $m = <<<EOT
     <p>
-    Systemadministrator:
-    <br><i>$sysadm<br>$sysadm_email
-    </i><br><br>
+    Systemadministrator for datamaskiner og nettverk:
+    <br><i>$sysadm<br>
+    epost: $sysadm_email<br>
+    telefon: $sysadm_phone</i><br><br>
 
-    Drift:<br>
+    Ansvarlig for daglig drift:<br>
     <i>$staff<br>
-    $staff_email</i><br><br>
+    epost: $staff_email<br>
+    telefon: $staff_phone</i><br><br>
 
-    Utvikler:<br>
+    Lagerarbeider og utvikler:<br>
     <i>$dev<br>
-    $dev_email</i><br><br>
+    epost: $dev_email<br>
+    telefon: $dev_phone</i><br><br>
 
     Siden er fremdeles under utvikling
     </p>
