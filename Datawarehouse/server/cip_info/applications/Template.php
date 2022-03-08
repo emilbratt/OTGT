@@ -14,6 +14,7 @@
 
 class Template {
 
+  protected $environment;
   protected $colour_page_background = '#202020';
   protected $colour_default_background = '#222222';
   protected $colour_default_text = '#BBBBFF';
@@ -26,7 +27,6 @@ class Template {
   protected $colour_search_background = '#202020';
   protected $colour_default_hover = '#444444';
   protected $colour_default_active = '#444444';
-  protected $config;
   protected $declaration;
   protected $html;
   protected $css;
@@ -35,12 +35,11 @@ class Template {
   private $wrapper; // wraps all individual parts (css, html and scripts)
 
   function __construct () {
-    $config_file = '../../../../environment.ini';
-    $this->config = parse_ini_file($config_file, $process_sections = true);
-    // this will add global css to our html template
+    $this->environment = new Environment();
+    // this will add global html, css and scripts to our html template
     // any additional css will have to be added after the
-    // constructor for each inherited class after
-    // calling this as a parent in the inherited constructor method
+    // constructor for each inherited class by calling this as a parent
+    // in the inherited objects constructor
     $this->declaration = <<<EOT
     <!DOCTYPE html>
     EOT;
@@ -467,7 +466,7 @@ class Template {
     <body>\n
     EOT;
 
-    if($this->config['developement']['show_debug']) {
+    if ($this->environment->developement('show_debug')) {
       $this->add_debug();
     }
 
