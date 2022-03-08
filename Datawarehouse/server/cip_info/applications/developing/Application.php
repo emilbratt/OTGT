@@ -13,6 +13,7 @@ class Developing {
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
+    require_once '../applications/DatabaseDatawarehouse.php';
     require_once '../applications/developing/TemplateDeveloping.php';
     require_once '../applications/developing/NavigationDeveloping.php';
 
@@ -115,6 +116,19 @@ class Testing extends Developing {
 
   public function run () {
     $this->template->message('Testing whatever needs testing');
+    $cnxn = new DatabaseDatawarehouse();
+    $query = <<<EOT
+    SELECT
+      barcodes.barcode AS registered
+    FROM
+      barcodes
+    LIMIT
+        10
+    EOT;
+    $cnxn->select_multi_row($query);
+    foreach ($cnxn->result as $row) {
+      $this->template->message($row['registered']);
+    }
     $this->template->print();
   }
 

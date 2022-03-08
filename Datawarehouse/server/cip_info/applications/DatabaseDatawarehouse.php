@@ -8,7 +8,7 @@
  *  environment.ini file that is used globally throughout the repo
  */
 
-class DatabaseRetail {
+class DatabaseDatawarehouse {
 
   private $environment;
   public $cnxn;
@@ -19,17 +19,17 @@ class DatabaseRetail {
 
   function __construct () {
     $this->environment = new Environment();
-    $db_server = $this->environment->retail('db_server');
-    $db_port = $this->environment->retail('db_port');
-    $db_name = $this->environment->retail('db_name');
-    $cnxn_str = "odbc:Driver=FreeTDS; Server=$db_server; Port=$db_port; Database=$db_name;";
-    $db_user = $this->environment->retail('db_user');
-    $db_password = $this->environment->retail('db_password');
+    $db_server = $this->environment->datawarehouse('db_server');
+    $db_port = $this->environment->datawarehouse('db_port');
+    $db_name = $this->environment->datawarehouse('db_name');
+    $cnxn_str = "mysql:host=$db_server;dbname=$db_name;port=$db_port";
+    $db_user = $this->environment->datawarehouse('db_user_post');
+    $db_password = $this->environment->datawarehouse('db_password_post');
     try {
       $this->cnxn = new PDO($cnxn_str, $db_user, $db_password);
       $this->cnxn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
-    catch (Exception $e)  {
+    catch (Exception $e) {
       if($this->environment->developement('show_errors')) {
         echo '<pre>';
         print_r($e->getMessage());
