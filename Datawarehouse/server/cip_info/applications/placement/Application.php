@@ -4,7 +4,7 @@
  *
  * TODO:
  *  add: validate item and shelf value scan input in ScanItemScanShelf
- *  add: validate successfull placement update
+ *  add: validate successfull placement update and maybe show history using session_start()
  *  add: show latest registered placement for articles
  *  add: string to uppercase when storing shelf value
  */

@@ -9,7 +9,7 @@ class NavigationFind extends Navigation {
 
   function __construct () {
     parent::__construct();
-    $this->app_uri = $this->top_nav_links['Vare'];
+    $this->app_uri = $this->top_nav_links['Finn Vare'];
       $this->sub_nav_links = [
       'Søk Etter Vare' => $this->app_uri . '/bysearch',
       'Skann Vare' => $this->app_uri . '/bybarcode',

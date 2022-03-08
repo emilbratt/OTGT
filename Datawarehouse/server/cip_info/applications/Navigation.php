@@ -18,7 +18,7 @@ class Navigation {
     $this->uri = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
     $this->top_nav_links = array();
     $this->top_nav_links['Hjem'] = $this->uri ;
-    $this->top_nav_links['Vare'] = $this->uri . '/find';
+    $this->top_nav_links['Finn Vare'] = $this->uri . '/find';
     $this->top_nav_links['Rapporter'] = $this->uri . '/reports';
     $this->top_nav_links['Kart'] = $this->uri . '/map';
     $this->top_nav_links['Om'] = $this->uri . '/about';

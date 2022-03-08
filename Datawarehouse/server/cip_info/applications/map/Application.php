@@ -1,6 +1,5 @@
 <?php
 
-
 class Map {
 
   protected $page = 'Kart'; // alias for top_navbar

@@ -11,9 +11,9 @@ class NavigationReports extends Navigation {
     parent::__construct();
     $this->app_uri = $this->top_nav_links['Rapporter'];
       $this->sub_nav_links = [
-      'Import' => $this->app_uri . '/imported',
-      'Utsolgt' => $this->app_uri . '/soldout',
-      'Salg' => $this->app_uri . '/sold',
+      'Varer som har kommet inn' => $this->app_uri . '/imported',
+      'Utsolgte varer' => $this->app_uri . '/soldout',
+      'Alle Salg' => $this->app_uri . '/sold',
     ];
   }
 
