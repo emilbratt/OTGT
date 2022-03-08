@@ -95,6 +95,7 @@ class SQLShell extends Developing {
         }
       $this->template->table_row_end();
     }
+  $this->template->table_end();
   }
 
 }

@@ -101,3 +101,14 @@ Enable virtual host
 ```
 sudo a2ensite datawarehouse
 ```
+
+
+### PHP ini
+
+Open php ini for apache /etc/php/<php_version>/apache2/php.ini and uncomment / add lines
+```
+extension=pdo_odbc
+extension=pdo_mysql
+post_max_size = 20M
+upload_max_filesize = 20M
+```

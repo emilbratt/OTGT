@@ -434,6 +434,7 @@ class Template {
     EOT;
 
     $this->script .= <<<EOT
+    <script>
     function filter_row() {
       var input, filter, table, tr, td, i, text_val;
       input = document.getElementById("filter_row");
@@ -451,7 +452,8 @@ class Template {
           }
         }
       }
-    }\n
+    }
+    </script>\n
     EOT;
   }
 
@@ -472,11 +474,9 @@ class Template {
 
     $this->wrapper .= <<<EOT
     $this->html
-    <script>
     $this->script
-    </script>
     </body>
-    </html>\n
+    </html>
     EOT;
 
     echo $this->wrapper;
