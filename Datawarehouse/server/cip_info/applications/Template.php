@@ -14,6 +14,18 @@
 
 class Template {
 
+  protected $colour_page_background = '#202020';
+  protected $colour_default_background = '#222222';
+  protected $colour_default_text = '#BBBBFF';
+  protected $colour_default_border = '#BBBBFF';
+  protected $colour_default_menu_background = '#303030';
+  protected $colour_input_background = '#222222';
+  protected $colour_header_background = '#2A2A2A';
+  protected $colour_row_background_1 = '#222222';
+  protected $colour_row_background_2 = '#333333';
+  protected $colour_search_background = '#202020';
+  protected $colour_default_hover = '#444444';
+  protected $colour_default_active = '#444444';
   protected $config;
   protected $declaration;
   protected $html;
@@ -39,9 +51,8 @@ class Template {
     }
     body {
       font-family: arial;
-      /* background: linear-gradient(#222222, #000000); */
-      background-color: #202020;
-      color: #BBBBFF;
+      background-color: $this->colour_page_background;
+      color: $this->colour_default_text;
     }
     a {
       text-decoration: none;
@@ -49,12 +60,12 @@ class Template {
       color: #CCCCFF;
     }
     a button:hover {
-      background-color: #444444;
+      background-color: $this->colour_default_hover;
     }
 
     .message {
       width: 100%;
-      color: #BBBBFF;
+      color: $this->colour_default_text;
       font-size: 18px;
     }
 
@@ -62,32 +73,31 @@ class Template {
     .top_navbar {
       margin-left: auto;
       margin-right: auto;
-      background-color: #303030;
+      background-color: $this->colour_default_menu_background;
       overflow: hidden;
       width: 100%; /* Full width */
     }
     .top_navbar a {
-      /* clickable area */
       float: left;
-      color: #BBBBFF;
+      display: inline;
+      color: $this->colour_default_text;
       text-align: center;
       padding: 14px 16px;
       font-size: 17px;
     }
     .top_navbar a:hover {
-      background-color: #444444;
+      background-color: $this->colour_default_hover;
     }
     .top_navbar a.active {
-      background-color: #444444;
+      background-color: $this->colour_default_active;
     }
 
     /* SUB NAVIGATION */
     .sub_navbar {
-      /* background: linear-gradient(#303030, #242424); */
-      background-color: #303030; */
+      background-color: $this->colour_default_menu_background; */
       overflow: auto;
       width: 100%;
-      color: #BBBBFF;
+      color: $this->colour_default_text;
     }
     .sub_navbar a {
       display: block;
@@ -95,10 +105,10 @@ class Template {
     }
     /* hover colour */
     .sub_navbar a:hover {
-      background-color: #444444;
+      background-color: $this->colour_default_hover;
     }
     .sub_navbar a.active {
-      background-color: #444444;
+      background-color: $this->colour_default_active;
     }
 
     .title {
@@ -129,18 +139,18 @@ class Template {
       height: 22px;
     }
     input[type="text"], input[type="search"], input[type="date"] {
-      background-color : #202020;
-      color: #BBBBFF;
-      border: 1px solid #BBBBFF;
+      background-color: $this->colour_input_background;
+      color: $this->colour_default_text;
+      border: 1px solid $this->colour_default_border;
     }
     form input:hover {
-      background-color: #444444;
+      background-color: $this->colour_default_hover;
     }
     input[type="submit"] {
-      border: 1px solid #BBBBFF;
+      border: 1px solid $this->colour_default_border;
       display: block;
-      color: #BBBBFF;
-      background: #222222;
+      color: $this->colour_default_text;
+      background: $this->colour_input_background;
     }
 
     /* TABLE */
@@ -157,21 +167,21 @@ class Template {
       padding-left: 2px;
     }
     th {
-      background-color: #2A2A2A;
+      background-color: $this->colour_header_background;
       height: 32px;
     }
     #th_no_hyperlink {
-      border: 1px solid #BBBBFF;
+      border: 1px solid $this->colour_default_text;
     }
     th a {
       height: 27px;
       font-size: 20px;
     }
     tr:nth-child(even) {
-      background-color: #333333;
+      background-color: $this->colour_row_background_2;
     }
     tr:nth-child(odd) {
-      background-color: #222222;
+      background-color: $this->colour_row_background_1;
     }
 
     #hidden_submit {
@@ -181,15 +191,15 @@ class Template {
       display: block;
     }
     #search_field {
-      background: #202020;
+      background-color: $this->colour_search_background;
       display: inline-block;
     }
     button {
-      border: 1px solid #BBBBFF;
+      border: 1px solid $this->colour_default_text;
       display: inline;
       font-size: 15px;
-      color: #BBBBFF;
-      background: #222222;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
       width: 150px;
       height: 30px;
     }\n
