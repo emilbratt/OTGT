@@ -7,8 +7,14 @@
  *
  * TODO:
  *  add: all queries that have user-input should be logged
- *  add: app "BySearch" click on result row to open detailed info about article
- *  fix: layout for table on app "ByBarcode"
+ *
+ *    BySearch
+ *      add: app "BySearch" click on result row to open detailed info about article
+ *
+ *    ByBarcode:
+ *      fix: layout for table
+ *      add: show shelf history
+ *      add: show extended info from scanbybarcode
  */
 
 class Find {
@@ -253,7 +259,7 @@ class ByBarcode extends Find {
       $this->template->table_row_end();
       $this->template->table_end();
       $this->template->css_by_barcode();
-      if($this->database->result['location'] == null) {
+      if ( ($this->database->result['location'] == null) or (strlen($this->database->result['location']) < 1) ) {
         $this->template->image_location('empty');
         return;
       }
