@@ -2,7 +2,7 @@
 
 require_once '../applications/QueryRetail.php';
 
-class QueryPlacement extends QueryRetail {
+class QueryRetailPlacement extends QueryRetail {
 
   protected $time_span;
   protected $items;

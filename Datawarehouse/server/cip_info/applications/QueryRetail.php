@@ -10,7 +10,7 @@ class QueryRetail {
     $this->query = "SET LANGUAGE NORWEGIAN\n"; // always use norwegian
 
     $this->illegal_reserved_words = [
-      'DATABASE', 'DELETE', 'MODIFY', 'UPDATE', 'INSERT', 'DROP', 'KAKE'
+      'DATABASE', 'DELETE', 'MODIFY', 'UPDATE', 'INSERT', 'DROP',
     ];
   }
 
@@ -52,7 +52,7 @@ class QueryRetail {
   }
 
 
-  public function article_id ($ean) {
+  public function article_id_by_barcode ($ean) {
     // query to get only the article id from barcode
     $this->query .= <<<EOT
     SELECT

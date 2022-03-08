@@ -6,8 +6,12 @@ class Date {
   public $month;
   public $day;
   public $display;
+  public $timestamp_datawarehouse;
+  public $yyyymmdd;
 
   function __construct () {
+    $this->timestamp_datawarehouse = date('Y-m-d_H:i:s');
+    $this->yyyymmdd = date('Ymd');
     $this->display = date('d').'-'.date('m').'-'.date('Y');
   }
 

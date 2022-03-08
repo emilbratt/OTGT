@@ -7,6 +7,10 @@
  *  add: validate successfull placement update and maybe show history using session_start()
  *  add: show latest registered placement for articles
  *  add: string to uppercase when storing shelf value
+ *
+ *  change: datawarehous database_retail to use primary key autoincrement
+ *          to keep track of latest placement instead of timestamp
+ *
  */
 
 
@@ -15,9 +19,9 @@ class Placement {
   protected $page = 'Plassering'; // alias for top_navbar
   protected $environment;
   protected $template;
-  protected $database;
+  protected $database_retail;
+  protected $database_datawarehouse;
   protected $navigation;
-  protected $query;
   protected $ean;
   protected $message;
   protected $article_id;
@@ -28,15 +32,18 @@ class Placement {
 
 
   function __construct () {
+    require_once '../applications/Date.php';
     require_once '../applications/DatabaseRetail.php';
+    require_once '../applications/DatabaseDatawarehouse.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/placement/TemplatePlacement.php';
-    require_once '../applications/placement/QueryPlacement.php';
+    require_once '../applications/placement/QueryRetailPlacement.php';
+    require_once '../applications/placement/QueryDatawarehousePlacement.php';
     require_once '../applications/placement/NavigationPlacement.php';
 
     $this->environment = new Environment();
     $this->navigation = new NavigationPlacement();
-    $this->database = new DatabaseRetail();
+    $this->database_retail = new DatabaseRetail();
     $this->template = new TemplatePlacement();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }
@@ -95,28 +102,32 @@ class ScanItemScanShelf extends Placement {
         return;
       }
 
-      $query = new QueryPlacement();
-      $query->basic_article_info_by_ean();
-      // $this->query->print();
-      $this->database->select_sinlge_row($query->get());
-      if ( !($this->database->result) ) {
+      $query_retail = new QueryRetailPlacement();
+      $query_retail->basic_article_info_by_ean();
+      $this->database_retail->select_sinlge_row($query_retail->get());
+      if ( !($this->database_retail->result) ) {
         $this->placement_scan_item();
         $this->template->title('Ingen vare med strekkode: ' . $_POST['barcode']);
         return;
       }
 
-      $article_id = $this->database->result['articleid'];
-      $article = CharacterConvert::utf_to_norwegian($this->database->result['article']);
-      $brand = CharacterConvert::utf_to_norwegian($this->database->result['brand']);
+      $this->article_id = $this->database_retail->result['articleid'];
+      $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
+      $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
       $this->template->title('Skann Hylle');
       $this->template->form_start('POST');
-      $this->template->_form_scan_shelf($article_id, $article, $brand);
+      $this->template->_form_scan_shelf($this->article_id, $article, $brand);
       $this->template->_form_end();
       $this->template->title($brand . ' ' . $article);
     }
 
     private function placement_update () {
-      $article_id = $_POST['article_id'];
+      $this->article_id = $_POST['article_id'];
+      $this->validate_article_id();
+      if ( !($this->article_id_ok)) {
+        $this->template->message($this->message);
+        return;
+      }
       $this->shelf = $_POST['shelf'];
       $this->validate_shelf();
       if ( !($this->shelf_ok) ) {
@@ -125,20 +136,51 @@ class ScanItemScanShelf extends Placement {
         return;
       }
 
-      $query = new QueryPlacement();
-      $query->update_placement_by_article_id($article_id, $this->shelf);
-      $query->print(); die;
-      $stmt = $this->database->cnxn->prepare($query->get());
-      $this->placement_scan_item('placement_scan_item');
-      $this->template->message('skipping query execution. commented out $stmt->execute(); because not ready yet because need validating of input');
-      // $stmt->execute();
-      return;
+      // at this point, we can update the new shelf value to retial db and datawarehouse db
+      $this->update_placement_to_retail();
+      $this->insert_placement_to_datawarehouse();
 
-      $this->placement_scan_item('placement_scan_item');
+      // re-load the scan item form for continuation
+      $this->placement_scan_item();
+    }
+
+    private function update_placement_to_retail () {
+      $query_retail = new QueryRetailPlacement();
+      $query_retail->update_placement_by_article_id($this->article_id, $this->shelf);
+      $stmt = $this->database_retail->cnxn->prepare($query_retail->get());
+      $stmt->execute();
+    }
+
+    private function insert_placement_to_datawarehouse () {
+      $date_obj = new Date;
+      $query_datawarehouse = new QueryDatawarehousePlacement();
+      $database_datawarehouse = new DatabaseDatawarehouse();
+
+      $timestamp = $date_obj->timestamp_datawarehouse;
+      $yyyymmdd = $date_obj->yyyymmdd;
+
+      $query_datawarehouse->insert_placement();
+      $stmt = $database_datawarehouse->cnxn->prepare($query_datawarehouse->get());
+
+      $values = ['article_id' => $this->article_id, 'shelf' => $this->shelf, 'timestamp' => $timestamp, 'yyyymmdd' => $yyyymmdd];
+      $stmt->execute($values);
     }
 
     private function validate_article_id () {
-
+      // this should never error out, but we include it just in case
+      $this->article_id_ok = false;
+      if ( !(is_numeric($this->article_id)) ) {
+        $this->message = 'Artikkel id stemmer ikke, noe galt skjedde<br>';
+        $this->message .= 'For hjelp, kontakt<br>';
+        $dev_phone = $this->environment->contact_dev('phone');
+        $dev_email = $this->environment->contact_dev('email');
+        $dev = $this->environment->contact_dev('name');
+        $this->message .= 'Utvikler: ' . $dev . '<br>';
+        $this->message .= 'Epost: ' . $dev_email . '<br>';
+        $this->message .= 'Telefon: ' . $dev_phone;
+        return;
+      }
+    $this->article_id_ok = true;
     }
 
     private function validate_barcode () {
@@ -164,8 +206,16 @@ class ScanItemScanShelf extends Placement {
 
     private function validate_shelf () {
       $this->shelf_ok = false;
+      // format the shelf value first in case
+      $this->shelf = str_replace('+', '-', $this->shelf);
+      $this->shelf = strtoupper($this->shelf);
+      // then check integrity of the format
       if (strlen($this->shelf) < 1) {
         $this->message = 'Hyllelplass må være minst en karakter';
+        return;
+      }
+      if ( (strlen($this->shelf) == 1) and ($this->shelf == ' ') ) {
+        $this->message = 'Hvis du kun skal ha en bokstav så kan det ikke være mellomrom tegn';
         return;
       }
       if (strlen($this->shelf) > 1) {
