@@ -22,12 +22,11 @@ class Example {
   protected $navigation;
 
   function __construct () {
-    require_once '../applications/Environment.php';
     require_once '../applications/example/TemplateExample.php';
     require_once '../applications/example/NavigationExample.php';
 
     $this->environment = new Environment();
-    $this->navigation = new NavigationExample($this->environment);
+    $this->navigation = new NavigationExample();
     $this->template = new TemplateExample();
 
     /**

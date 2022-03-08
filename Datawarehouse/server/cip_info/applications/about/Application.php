@@ -8,12 +8,11 @@ class About {
   protected $navigation;
 
   function __construct () {
-    require_once '../applications/Environment.php';
     require_once '../applications/about/TemplateAbout.php';
     require_once '../applications/about/NavigationAbout.php';
 
     $this->environment = new Environment();
-    $this->navigation = new NavigationAbout($this->environment);
+    $this->navigation = new NavigationAbout();
     $this->template = new TemplateAbout();
 
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);

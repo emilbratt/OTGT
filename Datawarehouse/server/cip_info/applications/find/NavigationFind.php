@@ -5,14 +5,14 @@ require_once '../applications/Navigation.php';
 class NavigationFind extends Navigation {
 
   public $sub_nav_links;
-  protected $home_sub; // links to domain/find
+  protected $app_uri;
 
-  function __construct ($environment) {
-    parent::__construct($environment);
-    $this->home_sub = $this->top_nav_links['Vare'];
+  function __construct () {
+    parent::__construct();
+    $this->app_uri = $this->top_nav_links['Vare'];
       $this->sub_nav_links = [
-      'Søk Etter Vare' => $this->home_sub . '/bysearch',
-      'Skann Vare' => $this->home_sub . '/bybarcode',
+      'Søk Etter Vare' => $this->app_uri . '/bysearch',
+      'Skann Vare' => $this->app_uri . '/bybarcode',
     ];
   }
 

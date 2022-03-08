@@ -8,18 +8,26 @@ class Apprequest {
   private $show_errors;
 
   function __construct ()  {
-    $config_file = '../../../../environment.ini';
-    $config = parse_ini_file($config_file, $process_sections = true);
-    $this->show_errors = $config['developement']['show_errors'];
+    require_once '../applications/Environment.php';
+    $environment = new Environment();
+    $this->show_errors = $environment->developement('show_errors');
+    if ($this->show_errors) {
+      ini_set('display_errors', 1);
+      ini_set('display_startup_errors', 1);
+      error_reporting(E_ALL);
+    }
+    unset ($environment);
 
-    $this->load_directory();
+    // this is where the application is loaded and instantiated based on URI
+    $this->load_app_dir();
     require_once "../applications/$this->app_dir/Application.php";
-    $this->load_class();
+    $this->load_app_class();
     $app = new $this->app_class;
     $app->run();
+    // atthis point the app has terminated and the script is done
   }
 
-  private function load_directory () {
+  private function load_app_dir () {
     // the 1st word in the url = app directory which resides in ../applications
     // defaults that is changed if specified in URL
     if($_SERVER['REDIRECT_URL'] === '/') {
@@ -48,7 +56,7 @@ class Apprequest {
     exit(1);
   }
 
-  private function load_class () {
+  private function load_app_class () {
     // the 2nd word in the url = app class which is loaded in Application.php
     if($_SERVER['REDIRECT_URL'] === '/') {
       $this->app_class = 'Home';

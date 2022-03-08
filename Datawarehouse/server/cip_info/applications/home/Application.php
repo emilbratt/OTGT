@@ -18,15 +18,13 @@ class Home {
   protected $title_right;
 
   function __construct () {
-    // shows reports of soldout items for today, this week or this month
-    require_once '../applications/Environment.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/home/TemplateHome.php';
     require_once '../applications/Navigation.php';
 
     $this->environment = new Environment();
     $this->template = new TemplateHome();
-    $this->navigation = new Navigation($this->environment);
+    $this->navigation = new Navigation();
 
     $this->title_left = 'C.I.Pedersen';
     $this->title_right = Dates::get_this_weekday() . ' ' . date("d/m-Y");

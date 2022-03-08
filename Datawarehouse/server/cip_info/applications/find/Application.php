@@ -30,7 +30,6 @@ class Find {
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
-    require_once '../applications/Environment.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
     require_once '../applications/find/NavigationFind.php';
@@ -38,9 +37,9 @@ class Find {
     require_once '../applications/find/QueryFind.php';
 
     $this->environment = new Environment();
-    $this->database = new DatabaseRetail($this->environment);
-    $this->template = new TemplateFind($this->environment);
-    $this->navigation = new NavigationFind($this->environment);
+    $this->database = new DatabaseRetail();
+    $this->template = new TemplateFind();
+    $this->navigation = new NavigationFind();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
 
     // default is ascending, but we flip the order of rows if ascending is already set

@@ -17,8 +17,8 @@ class DatabaseRetail {
   public $rows;
   public $col_count;
 
-  function __construct ($environment) {
-    $this->environment = $environment;
+  function __construct () {
+    $this->environment = new Environment();
     $db_server = $this->environment->retail('db_server');
     $db_port = $this->environment->retail('db_port');
     $db_name = $this->environment->retail('db_name');

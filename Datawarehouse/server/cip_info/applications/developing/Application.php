@@ -12,18 +12,13 @@ class Developing {
 
 
   function __construct () {
-    require_once '../applications/Environment.php';
     require_once '../applications/DatabaseRetail.php';
     require_once '../applications/developing/TemplateDeveloping.php';
     require_once '../applications/developing/NavigationDeveloping.php';
 
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-
     $this->environment = new Environment();
-    $this->database = new DatabaseRetail($this->environment);
-    $this->navigation = new NavigationDeveloping($this->environment);
+    $this->database = new DatabaseRetail();
+    $this->navigation = new NavigationDeveloping();
     $this->template = new TemplateDeveloping();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }

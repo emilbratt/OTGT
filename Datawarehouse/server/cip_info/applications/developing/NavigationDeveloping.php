@@ -4,13 +4,16 @@ require_once '../applications/Navigation.php';
 
 class NavigationDeveloping extends Navigation {
 
-  function __construct ($environment) {
-    parent::__construct($environment);
-    $this->home_sub = $this->top_nav_links['Utvikling'];
+  public $sub_nav_links;
+  protected $app_uri;
+
+  function __construct () {
+    parent::__construct();
+    $this->app_uri = $this->top_nav_links['Utvikling'];
       $this->sub_nav_links = [
-      'SQL Shell' => $this->home_sub . '/sqlshell',
-      'API' => $this->home_sub . '/api',
-      'Testing' => $this->home_sub . '/testing',
+      'SQL Shell' => $this->app_uri . '/sqlshell',
+      'API' => $this->app_uri . '/api',
+      'Testing' => $this->app_uri . '/testing',
     ];
   }
 

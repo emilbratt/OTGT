@@ -9,13 +9,12 @@ class Instructions {
   protected $navigation;
 
   function __construct () {
-    require_once '../applications/Environment.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/instructions/TemplateInstructions.php';
     require_once '../applications/instructions/NavigationInstructions.php';
 
     $this->environment = new Environment();
-    $this->navigation = new NavigationInstructions($this->environment);
+    $this->navigation = new NavigationInstructions();
     $this->template = new TemplateInstructions();
   }
 

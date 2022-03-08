@@ -9,13 +9,12 @@ class Map {
   protected $navigation;
 
   function __construct () {
-    require_once '../applications/Environment.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/map/TemplateMap.php';
     require_once '../applications/map/NavigationMap.php';
 
     $this->environment = new Environment();
-    $this->navigation = new NavigationMap($this->environment);
+    $this->navigation = new NavigationMap();
     $this->template = new TemplateMap();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }

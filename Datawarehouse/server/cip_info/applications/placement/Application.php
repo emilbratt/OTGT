@@ -25,23 +25,18 @@ class Placement {
   protected $ean_ok;
   protected $shelf;
   protected $shelf_ok;
-  // protected $article_id;
-  // protected $article;
-  // protected $brand;
-  // protected $ean;
 
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
-    require_once '../applications/Environment.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/placement/TemplatePlacement.php';
     require_once '../applications/placement/QueryPlacement.php';
     require_once '../applications/placement/NavigationPlacement.php';
 
     $this->environment = new Environment();
-    $this->navigation = new NavigationPlacement($this->environment);
-    $this->database = new DatabaseRetail($this->environment);
+    $this->navigation = new NavigationPlacement();
+    $this->database = new DatabaseRetail();
     $this->template = new TemplatePlacement();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }
@@ -96,7 +91,7 @@ class ScanItemScanShelf extends Placement {
       $this->validate_barcode();
       if ( !($this->ean_ok) ) {
         $this->placement_scan_item();
-        $this->template->title($this->message);
+        $this->template->message($this->message);
         return;
       }
 
@@ -126,7 +121,7 @@ class ScanItemScanShelf extends Placement {
       $this->validate_shelf();
       if ( !($this->shelf_ok) ) {
         $this->placement_scan_shelf();
-        $this->template->title($this->message);
+        $this->template->message($this->message);
         return;
       }
 
@@ -153,15 +148,15 @@ class ScanItemScanShelf extends Placement {
         return;
       }
       else if (!(is_numeric($this->ean)) ) {
-        $this->message = 'Strekkoder skal kun inneholde tall';
+        $this->message = 'Strekkoder kan kun inneholde tall';
         return;
       }
       else if ( strlen($this->ean) < 8 ) {
-        $this->message = 'Strekkode skal ha minimum 8 tall';
+        $this->message = 'Strekkoder kan ha minimum 8 tall';
         return;
       }
       else if ( strlen($this->ean) > 13 ) {
-        $this->message = 'Strekkode skal ha maksimum 13 tall';
+        $this->message = 'Strekkoder kan ha maksimum 13 tall';
         return;
       }
       $this->ean_ok = true;
@@ -175,7 +170,7 @@ class ScanItemScanShelf extends Placement {
       }
       if (strlen($this->shelf) > 1) {
         if ( !(strpos($this->shelf, '-'))) {
-          $this->message = 'Det må brukes bindestrek - for å skille mellom Lager, Hylle og Plass<br>';
+          $this->message = 'Det må brukes bindestrek for å skille mellom lager, hylle og plass<br>';
           $this->message .= 'Eksempel: F-B-10<br>';
           $this->message .= '..hvor F = lager, B = hylle og 10 er plass på hylla<br>';
           $this->message .= 'Tips: du kan også skrive kun F hvis du ikke vil registrere hylle og plass<br>';

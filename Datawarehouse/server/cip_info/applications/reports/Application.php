@@ -55,8 +55,8 @@ class Reports {
     }
 
     $this->environment = new Environment();
-    $this->navigation = new NavigationReports($this->environment);
-    $this->database = new DatabaseRetail($this->environment);
+    $this->navigation = new NavigationReports();
+    $this->database = new DatabaseRetail();
     $this->template = new TemplateReports();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }
