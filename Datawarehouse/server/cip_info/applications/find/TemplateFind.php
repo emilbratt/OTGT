@@ -209,8 +209,8 @@ class TemplateFind extends Template {
 
       $this->html .= <<<EOT
       <div id="image_map">
-        <img id="image_base"  src="data:image/png;base64,$b64_map" width="700">
-        <img id="image_circle" src="data:image/png;base64,$b64_circle" width="700">
+        <img id="image_base"  src="data:image/png;base64,$b64_map" width="600">
+        <img id="image_circle" src="data:image/png;base64,$b64_circle" width="600">
       </div>
       EOT;
     }
