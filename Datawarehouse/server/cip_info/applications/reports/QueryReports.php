@@ -58,17 +58,17 @@ class QueryReports extends QueryRetail {
         EOT;
         break;
       case 'thisweek':
-      $this->query .= <<<EOT
-        AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-        AND DATEPART(WEEK, articleStock.lastSold) = DATEPART(WEEK, CURRENT_TIMESTAMP)\n
-      EOT;
-      break;
+        $this->query .= <<<EOT
+          AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+          AND DATEPART(WEEK, articleStock.lastSold) = DATEPART(WEEK, CURRENT_TIMESTAMP)\n
+        EOT;
+        break;
       case 'thismonth':
-      $this->query .= <<<EOT
-        AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-        AND DATEPART(MONTH, articleStock.lastSold) = DATEPART(MONTH, CURRENT_TIMESTAMP)\n
-      EOT;
-      break;
+        $this->query .= <<<EOT
+          AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+          AND DATEPART(MONTH, articleStock.lastSold) = DATEPART(MONTH, CURRENT_TIMESTAMP)\n
+        EOT;
+        break;
       default:
         if (strtotime($this->time_span)) {
           $_year = date('Y', strtotime($this->time_span));
@@ -194,17 +194,17 @@ class QueryReports extends QueryRetail {
         EOT;
         break;
       case 'thisweek':
-      $this->query .= <<<EOT
-        AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-        AND DATEPART(WEEK, [adjustmentDate]) = DATEPART(WEEK, CURRENT_TIMESTAMP)\n
-      EOT;
-      break;
+        $this->query .= <<<EOT
+          AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+          AND DATEPART(WEEK, [adjustmentDate]) = DATEPART(WEEK, CURRENT_TIMESTAMP)\n
+        EOT;
+        break;
       case 'thismonth':
-      $this->query .= <<<EOT
-        AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-        AND DATEPART(MONTH, [adjustmentDate]) = DATEPART(MONTH, CURRENT_TIMESTAMP)\n
-      EOT;
-      break;
+        $this->query .= <<<EOT
+          AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+          AND DATEPART(MONTH, [adjustmentDate]) = DATEPART(MONTH, CURRENT_TIMESTAMP)\n
+        EOT;
+        break;
       default:
         if (strtotime($this->time_span)) {
           $_year = date('Y', strtotime($this->time_span));
@@ -300,17 +300,17 @@ class QueryReports extends QueryRetail {
         EOT;
         break;
       case 'thisweek':
-      $this->query .= <<<EOT
-        AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-        AND DATEPART(WEEK, CustomerSaleHeader.salesDate) = DATEPART(WEEK, CURRENT_TIMESTAMP)\n
-      EOT;
-      break;
+        $this->query .= <<<EOT
+          AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+          AND DATEPART(WEEK, CustomerSaleHeader.salesDate) = DATEPART(WEEK, CURRENT_TIMESTAMP)\n
+        EOT;
+        break;
       case 'thismonth':
-      $this->query .= <<<EOT
-        AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-        AND DATEPART(MONTH, CustomerSaleHeader.salesDate) = DATEPART(MONTH, CURRENT_TIMESTAMP)\n
-      EOT;
-      break;
+        $this->query .= <<<EOT
+          AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
+          AND DATEPART(MONTH, CustomerSaleHeader.salesDate) = DATEPART(MONTH, CURRENT_TIMESTAMP)\n
+        EOT;
+        break;
       default:
         if (strtotime($this->time_span)) {
           $_year = date('Y', strtotime($this->time_span));

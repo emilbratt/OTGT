@@ -119,6 +119,8 @@ class Soldout extends Reports {
     $hyperlink_time_span->add_query('type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
+    $this->template->script_filter_row_button();
+
     $this->template->table_full_width_start();
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
@@ -213,6 +215,8 @@ class Imported extends Reports {
     $this->template->hyperlink_button('Denne Uka', $hyperlink_time_span->url);
     $hyperlink_time_span->add_query('type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
+
+    $this->template->script_filter_row_button();
 
     $this->template->table_full_width_start();
     $this->template->table_row_start();
@@ -309,7 +313,9 @@ class Sold extends Reports {
     $hyperlink_time_span->add_query('type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
+    $this->template->script_filter_row_button('2');
     $this->template->table_full_width_start();
+
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
     foreach ($table_headers as $alias => $name) {
@@ -402,6 +408,8 @@ class NotSoldLately extends Reports {
       'Sist Importert' => 'lastimported',
       'Lev. ID' => 'supplyid',
     ];
+
+    $this->template->script_filter_row_button();
 
     $this->template->table_full_width_start();
     $this->template->table_row_start();
