@@ -16,7 +16,7 @@
 
 class Placement {
   // shows reports of soldout items for today, this week or this month
-  protected $page = 'Plassering'; // alias for top_navbar
+  protected $page = 'Plasser Vare'; // alias for top_navbar
   protected $environment;
   protected $template;
   protected $database_retail;
@@ -55,7 +55,6 @@ class Home extends Placement {
 
   public function run () {
     $this->template->sub_navbar($this->navigation->sub_nav_links);
-    $this->template->message('her kommer det flere funksjoner etter hvert');
     $this->template->print();
   }
 

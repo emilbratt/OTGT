@@ -18,12 +18,28 @@ class TemplateFind extends Template {
     parent::__construct();
     $this->image_path_location = $this->image_path . '/location';
     $this->location_index = [
-      '1' => '1', 'A' => '1', 'B' => '1',
-      '2' => 'U', 'C' => 'U', 'D' => 'U', 'E' => 'U',
-      'F' => 'U', 'G' => 'U1', 'H' => 'U1', 'I' => 'U1',
-      'J' => 'U1', 'K' => 'U1', 'L' => 'U1', 'M' => 'U1',
-      'O' => 'U1', 'P' => 'U1', 'Q' => 'U1', 'R' => 'U1',
-      'S' => 'U1', 'T' => 'U1', 'O' => 'U1'
+      '1' => '1',
+      'A' => '1',
+      'B' => '1',
+      '2' => 'U',
+      'C' => 'U',
+      'D' => 'U',
+      'E' => 'U',
+      'F' => 'U',
+      'G' => 'U1',
+      'H' => 'U1',
+      'I' => 'U1',
+      'J' => 'U1',
+      'K' => 'U1',
+      'L' => 'U1',
+      'M' => 'U1',
+      'O' => 'U1',
+      'P' => 'U1',
+      'Q' => 'U1',
+      'R' => 'U1',
+      'S' => 'U1',
+      'T' => 'U1',
+      'O' => 'U1',
     ];
   }
 
@@ -159,16 +175,12 @@ class TemplateFind extends Template {
       }
     }
     if (($floor !== false) and ($circle !== false)) {
-      // TODO: add check if file exists and fallback to default image if not
-      $image_map = $this->image_path_location . "/floor/$floor.png";
-
-
-      // for items stored in shop, we do not have location as the whole floor serves as one location
-      $image_location = $this->image_path_location . "/circle/$circle.png";
       if ( is_numeric($floor) ) {
-        $image_location = $this->image_path_location . "/circle/pick_item.png";
+        // for items stored in shop, we show label saying the item is in the store
+        $circle = "store_$circle";
       }
-
+      $image_map = $this->image_path_location . "/floor/$floor.png";
+      $image_location = $this->image_path_location . "/circle/$circle.png";
       $b64_map = base64_encode(file_get_contents($image_map));
       $b64_circle = base64_encode(file_get_contents($image_location));
 

@@ -20,7 +20,7 @@ class Navigation {
     $this->top_nav_links['Hjem'] = $this->uri ;
     $this->top_nav_links['Finn Vare'] = $this->uri . '/find';
     $this->top_nav_links['Rapporter'] = $this->uri . '/reports';
-    $this->top_nav_links['Plassering'] = $this->uri . '/placement';
+    $this->top_nav_links['Plasser Vare'] = $this->uri . '/placement';
     $this->top_nav_links['Kart'] = $this->uri . '/map';
     $this->top_nav_links['Om'] = $this->uri . '/about';
 
