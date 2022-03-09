@@ -351,3 +351,95 @@ class Sold extends Reports {
   }
 
 }
+
+class NotSoldLately extends Reports {
+
+  public function run () {
+    $this->title_left = 'Rapport: Varer på lager som ikke er solgt på lenge';
+    $this->template->title_left_and_right($this->title_left, $this->title_right);
+    $this->template->reports_form_brand_year_num_stock_limit();
+
+    if ( isset($_GET['input_field_brand']) and isset($_GET['input_field_date_part_type']) and isset($_GET['input_field_date_part_num']) and isset($_GET['input_field_stock_num']) and isset($_GET['input_field_stock_operator']) ) {
+        $this->show_report();
+    }
+    $this->template->print();
+  }
+
+  private function show_form () {
+
+  }
+
+  private function show_report () {
+    if ( strlen($_GET['input_field_brand']) < '3' ) {
+      $this->template->message('Minst 3 bokstaver på merke');
+      return;
+    }
+
+    // for message string, we gather some values
+    $b = $_GET['input_field_brand'];
+    $s_n = $_GET['input_field_stock_num'];
+    $d_p_y = $_GET['input_field_date_part_type'];
+    $arr_convert_sql_to_nor = [
+      'YEAR' => 'År',
+      'MONTH' => 'Måneder',
+      'WEEK' => 'Uker',
+      'DAY' => 'Dager',
+    ];
+    $d_p = $_GET['input_field_date_part_num'];
+    $s_o = 'mere enn';
+    if ( $_GET['input_field_stock_operator'] == '<' ) {
+      $s_o = 'mindre enn';
+    }
+    $this->template->message("Alle varer for $b hvor lager antall er $s_o  $s_n og ikke solgt siste $d_p $arr_convert_sql_to_nor[$d_p_y]");
+
+    $table_headers = [
+      'Merke' => 'brand',
+      'Navn' => 'article',
+      'Sist Solgt' => 'lastsold',
+      'Lager' => 'quantity',
+      'Plassering' => 'location',
+      'Sist Importert' => 'lastimported',
+      'Lev. ID' => 'supplyid',
+    ];
+
+    $this->template->table_full_width_start();
+    $this->template->table_row_start();
+    $hyperlink_header = new HyperLink();
+    foreach ($table_headers as $alias => $name) {
+      $hyperlink_header->add_query('sort', $name);
+      $hyperlink_header->add_query('order', $this->order);
+      if ($name == $this->sort_by) {
+        $alias .= $this->arrow_symbol;
+      }
+      $this->template->table_row_header($alias, $hyperlink_header->url);
+    }
+    $this->template->table_row_end();
+    $query = new QueryReports();
+    $query->in_stock_not_sold_lately();
+    // $query->print();
+    try {
+      foreach ($this->database->cnxn->query($query->get()) as $row) {
+        $this->template->table_row_start();
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastsold']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
+        $this->template->table_row_end();
+      }
+    }
+    catch(Exception $e)  {
+      if($this->environment->developement('show_errors')) {
+        echo '<pre>';
+        print_r($e->getMessage());
+        echo $query;
+        echo '</pre>';
+      }
+      exit(1);
+    }
+    $this->template->table_end();
+  }
+
+}

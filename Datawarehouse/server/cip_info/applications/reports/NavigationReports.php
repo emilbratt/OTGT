@@ -14,6 +14,7 @@ class NavigationReports extends Navigation {
       'Varer som har kommet inn' => $this->app_uri . '/imported',
       'Utsolgte varer' => $this->app_uri . '/soldout',
       'Alle Salg' => $this->app_uri . '/sold',
+      'Varer på lager uten registrert salg på lenge' => $this->app_uri . '/notsoldlately',
     ];
   }
 

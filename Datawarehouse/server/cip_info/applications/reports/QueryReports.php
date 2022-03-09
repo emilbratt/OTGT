@@ -5,6 +5,7 @@ require_once '../applications/QueryRetail.php';
 class QueryReports extends QueryRetail {
 
   protected $time_span;
+  protected $date_part;
   protected $items;
   protected $sort;
   protected $order;
@@ -23,6 +24,10 @@ class QueryReports extends QueryRetail {
     $this->order = 'ascending';
     if(isset($_GET['order'])) {
       $this->order = $_GET['order'];
+    }
+    $this->date_part_type = 'year';
+    if(isset($_GET['input_field_date_part_type'])) {
+      $this->date_part_type = $_GET['input_field_date_part_type'];
     }
   }
 
@@ -364,6 +369,90 @@ class QueryReports extends QueryRetail {
         break;
       case 'soldqty':
         $string_sort = 'CustomerSales.noOfArticles';
+        break;
+    }
+    switch ($this->order) {
+      case 'ascending':
+        $string_order = 'ASC';
+        break;
+      case 'descending':
+        $string_order = 'DESC';
+        break;
+    }
+    $this->query .= <<<EOT
+    ORDER BY $string_sort $string_order\n
+    EOT;
+  }
+
+  public function in_stock_not_sold_lately () {
+    $this->order = 'descending';
+    $brand = $_GET['input_field_brand'];
+    $num_year = $_GET['input_field_date_part_num'];
+    $stock_operator = '>';
+    $stock_operator = $_GET['input_field_stock_operator'];
+    if (isset($_GET['input_field_stock_operator'])) {
+      $stock_operator = $_GET['input_field_stock_operator'];
+    }
+    $this->date_part_type = strtoupper($this->date_part_type);
+    $stock_limit = '0';
+    if (isset($_GET['input_field_stock_num'])) {
+      $stock_limit = $_GET['input_field_stock_num'];
+    }
+    $stock_limit = $_GET['input_field_stock_num'];
+    $this->query .= <<<EOT
+    SELECT
+      Brands.brandLabel AS brand,
+      Article.articleName AS article,
+      CONVERT(VARCHAR(10), articleStock.lastSold, 23) AS lastsold,
+      articleStock.stockQty AS quantity,
+      articleStock.StorageShelf AS location,
+      CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS lastimported,
+      Article.suppliers_art_no AS supplyid
+
+    FROM
+      Article
+
+    INNER JOIN
+      articleStock ON Article.articleId = articleStock.articleId
+    INNER JOIN
+      Brands ON Article.brandId = Brands.brandId
+
+    WHERE
+      Brands.brandLabel LIKE '%$brand%'
+      AND articleStock.stockQty $stock_operator '$stock_limit'
+      AND articleStock.lastSold < DATEADD($this->date_part_type, -$num_year, CURRENT_TIMESTAMP)
+      /**
+       *  optionally, we could use datepart and set a fixed year like so (uncommented for now)
+       *  AND DATEPART(YEAR, articleStock.lastSold) < DATEPART(YEAR, '2021') -- DATEADD(YEAR, -1, CURRENT_TIMESTAMP)
+       */
+
+    EOT;
+
+    $this->sort = 'lastsold';
+    if(isset($_GET['sort'])) {
+      $this->sort = $_GET['sort'];
+    }
+    switch ($this->sort) {
+      case 'article':
+        $string_sort = 'Article.articleName';
+        break;
+      case 'brand':
+        $string_sort = 'Brands.brandLabel';
+        break;
+      case 'quantity':
+        $string_sort = 'stockQty';
+        break;
+      case 'location':
+        $string_sort = 'articleStock.StorageShelf';
+        break;
+      case 'lastsold':
+        $string_sort = 'articleStock.lastSold';
+        break;
+      case 'lastimported':
+        $string_sort = 'articleStock.lastReceivedFromSupplier';
+        break;
+      case 'supplyid':
+        $string_sort = 'Article.suppliers_art_no';
         break;
     }
     switch ($this->order) {

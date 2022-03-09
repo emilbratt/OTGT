@@ -27,6 +27,7 @@ class Template {
   protected $colour_search_background = '#202020';
   protected $colour_default_hover = '#444444';
   protected $colour_default_active = '#444444';
+  protected $form_default_height = '26px';
   protected $declaration;
   protected $html;
   protected $css;
@@ -131,13 +132,13 @@ class Template {
     form, input {
       display: inline;
       width:250px;
-      height: 26px;
+      height: $this->form_default_height;
     }
     input[type="date"] {
-      /* somehow this will be same hight as 26px.. */
+      /* somehow this will be same hight as $this->form_default_height.. */
       height: 22px;
     }
-    input[type="text"], input[type="search"], input[type="date"] {
+    input[type="text"], input[type="search"], input[type="date"], input[type="number"] {
       background-color: $this->colour_input_background;
       color: $this->colour_default_text;
       border: 1px solid $this->colour_default_border;
@@ -201,6 +202,22 @@ class Template {
       background-color: $this->colour_default_background;
       width: 150px;
       height: 30px;
+    }
+    #table_td_label {
+      border: 1px solid $this->colour_default_text;
+      display: inline;
+      font-size: 15px;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
+    }
+    select {
+      border: 1px solid $this->colour_default_text;
+      display: inline;
+      font-size: 15px;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
+      width: 150px;
+      height: $this->form_default_height;
     }\n
     EOT;
   }
