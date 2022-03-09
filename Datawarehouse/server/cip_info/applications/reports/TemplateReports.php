@@ -41,14 +41,29 @@ class TemplateReports extends Template {
     EOT;
   }
 
-  public function reports_form_brand_year_num_stock_limit ($brand = '', $date_part_num = '1', $stock_limit = '0') {
+  public function reports_form_brand_year_num_stock_limit () {
     // this form fetches:
     // brand name
     // datepart: years/months/weeks
     // datepart num: N years/months/weeks back in time
     // stock operator < or >
     // N stock limit
-
+    $brand = '';
+    if (isset($_GET['input_field_brand'])) {
+      $brand = $_GET['input_field_brand'];
+    }
+    $date_part_num = '1';
+    if (isset($_GET['input_field_date_part_num'])) {
+      $date_part_num = $_GET['input_field_date_part_num'];
+    }
+    $stock_limit = '0';
+    if (isset($_GET['input_field_stock_num'])) {
+      $stock_limit = $_GET['input_field_stock_num'];
+    }
+    $location = '';
+    if (isset($_GET['input_field_location'])) {
+      $location = $_GET['input_field_location'];
+    }
     $this->html .= <<<EOT
     <div id="input_field_div" style="width: 300px;">
       <form method="GET">
@@ -60,9 +75,16 @@ class TemplateReports extends Template {
             id="input_field_brand" name="input_field_brand"
             placeholder="Merke" value="$brand">
           </td>
-          </tr>
-          <tr>
-
+        </tr>
+        <tr>
+          <td colspan="2">
+            <input style="width: 100%;"
+            type="search"
+            id="input_field_location" name="input_field_location"
+            placeholder="Lager" value="$location">
+          </td>
+        </tr>
+        <tr>
           <td style="width: 75%;">
             <select style="width: 100%;" id="input_field_date_part_type" name="input_field_date_part_type">\n
     EOT;

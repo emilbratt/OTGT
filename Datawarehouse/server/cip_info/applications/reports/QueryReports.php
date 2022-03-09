@@ -387,17 +387,10 @@ class QueryReports extends QueryRetail {
   public function in_stock_not_sold_lately () {
     $this->order = 'descending';
     $brand = $_GET['input_field_brand'];
+    $location = $_GET['input_field_location'];
     $num_year = $_GET['input_field_date_part_num'];
-    $stock_operator = '>';
     $stock_operator = $_GET['input_field_stock_operator'];
-    if (isset($_GET['input_field_stock_operator'])) {
-      $stock_operator = $_GET['input_field_stock_operator'];
-    }
-    $this->date_part_type = strtoupper($this->date_part_type);
-    $stock_limit = '0';
-    if (isset($_GET['input_field_stock_num'])) {
-      $stock_limit = $_GET['input_field_stock_num'];
-    }
+    $date_part_type = $_GET['input_field_date_part_type'];
     $stock_limit = $_GET['input_field_stock_num'];
     $this->query .= <<<EOT
     SELECT
@@ -419,13 +412,13 @@ class QueryReports extends QueryRetail {
 
     WHERE
       Brands.brandLabel LIKE '%$brand%'
+      AND articleStock.StorageShelf LIKE '$location%'
       AND articleStock.stockQty $stock_operator '$stock_limit'
       AND articleStock.lastSold < DATEADD($this->date_part_type, -$num_year, CURRENT_TIMESTAMP)
       /**
        *  optionally, we could use datepart and set a fixed year like so (uncommented for now)
        *  AND DATEPART(YEAR, articleStock.lastSold) < DATEPART(YEAR, '2021') -- DATEADD(YEAR, -1, CURRENT_TIMESTAMP)
-       */
-
+       */\n
     EOT;
 
     $this->sort = 'lastsold';

@@ -359,7 +359,7 @@ class NotSoldLately extends Reports {
     $this->template->title_left_and_right($this->title_left, $this->title_right);
     $this->template->reports_form_brand_year_num_stock_limit();
 
-    if ( isset($_GET['input_field_brand']) and isset($_GET['input_field_date_part_type']) and isset($_GET['input_field_date_part_num']) and isset($_GET['input_field_stock_num']) and isset($_GET['input_field_stock_operator']) ) {
+    if ( isset($_GET['input_field_brand']) and  isset($_GET['input_field_location']) and isset($_GET['input_field_date_part_type']) and isset($_GET['input_field_date_part_num']) and isset($_GET['input_field_stock_num']) and isset($_GET['input_field_stock_operator']) ) {
         $this->show_report();
     }
     $this->template->print();
@@ -370,13 +370,14 @@ class NotSoldLately extends Reports {
   }
 
   private function show_report () {
-    if ( strlen($_GET['input_field_brand']) < '3' ) {
-      $this->template->message('Minst 3 bokstaver på merke');
-      return;
-    }
+    // if ( ( strlen($_GET['input_field_brand']) < '3' ) and ($_GET['input_field_brand'] == '') ) {
+    //   $this->template->message('Minst 3 bokstaver på merke');
+    //   return;
+    // }
 
     // for message string, we gather some values
     $b = $_GET['input_field_brand'];
+    $l = $_GET['input_field_location'];
     $s_n = $_GET['input_field_stock_num'];
     $d_p_y = $_GET['input_field_date_part_type'];
     $arr_convert_sql_to_nor = [
@@ -390,7 +391,7 @@ class NotSoldLately extends Reports {
     if ( $_GET['input_field_stock_operator'] == '<' ) {
       $s_o = 'mindre enn';
     }
-    $this->template->message("Alle varer for $b hvor lager antall er $s_o  $s_n og ikke solgt siste $d_p $arr_convert_sql_to_nor[$d_p_y]");
+    $this->template->message("Alle varer for $b på lager $l hvor lager antall er $s_o  $s_n og ikke solgt siste $d_p $arr_convert_sql_to_nor[$d_p_y]");
 
     $table_headers = [
       'Merke' => 'brand',
