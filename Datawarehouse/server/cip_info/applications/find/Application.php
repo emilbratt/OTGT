@@ -178,7 +178,6 @@ class BySearch extends Find {
     }
     $this->template->table_row_end();
 
-
     $this->database->select_multi_row($query->get());
     if ($this->database->result) {
       foreach ($this->database->result as $row) {
