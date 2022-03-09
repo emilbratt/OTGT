@@ -1,14 +1,5 @@
 #!/usr/bin/env bash
 
-# install raspberry pi os lite
-# run sudo raspi-config to:
-#   set locale settings
-#   setup ssh for connecting
-#   set autologin
-#   setup wifi if needed
-
-# run this script (you will be promted for password occasionally)
-
 # update system
 sudo apt update && sudo apt upgrade -y
 
