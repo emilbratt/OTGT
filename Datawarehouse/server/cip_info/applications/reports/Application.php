@@ -371,16 +371,7 @@ class NotSoldLately extends Reports {
     $this->template->print();
   }
 
-  private function show_form () {
-
-  }
-
   private function show_report () {
-    // if ( ( strlen($_GET['input_field_brand']) < '3' ) and ($_GET['input_field_brand'] == '') ) {
-    //   $this->template->message('Minst 3 bokstaver på merke');
-    //   return;
-    // }
-
     // for message string, we gather some values
     $b = $_GET['input_field_brand'];
     $l = $_GET['input_field_location'];
@@ -397,7 +388,7 @@ class NotSoldLately extends Reports {
     if ( $_GET['input_field_stock_operator'] == '<' ) {
       $s_o = 'mindre enn';
     }
-    $this->template->message("Alle varer for $b på lager $l hvor lager antall er $s_o  $s_n og ikke solgt siste $d_p $arr_convert_sql_to_nor[$d_p_y]");
+    $this->template->message("Alle varer $b på lager $l hvor lager antall er $s_o  $s_n og ikke solgt siste $d_p $arr_convert_sql_to_nor[$d_p_y]");
 
     $table_headers = [
       'Merke' => 'brand',
