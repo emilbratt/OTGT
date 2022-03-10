@@ -118,6 +118,30 @@ class Template {
     .top_navbar a.active {
       background-color: $this->colour_default_active;
     }
+    .top_navbar button {
+      float: left;
+      display: inline;
+      color: $this->colour_default_text;
+      text-align: center;
+      padding: 14px 16px;
+      font-size: 17px;
+      width: 80px;
+      float: right;
+    }
+    .top_navbar button:hover {
+      background-color: $this->colour_default_hover;
+    }
+    .top_navbar button.active {
+      background-color: $this->colour_default_active;
+    }
+    #button_top_navbar {
+      border: none;
+      height: 100%;
+      background-color: $this->colour_default_menu_background;
+    }
+    .top_navbar #button_top_navbar:hover {
+      background-color: $this->colour_default_hover;
+    }
 
     /* SUB NAVIGATION */
     .sub_navbar {
@@ -230,6 +254,7 @@ class Template {
       width: 150px;
       height: 30px;
     }
+
     #table_td_label {
       border: 1px solid $this->colour_default_text;
       display: inline;
@@ -281,7 +306,21 @@ class Template {
       EOT;
     }
     $this->html .= <<<EOT
+    <button id="button_top_navbar"   onclick="go_forward()">&rarr;</button>
+    <button id="button_top_navbar"  onclick="go_back()">&larr;</button>
     </div>\n
+    EOT;
+    $this->script .= <<<EOT
+    <script id="jsbin-javascript">
+    function go_back() {
+      window.history.back();
+      console.log('We are in previous page');
+    }
+    function go_forward() {
+      window.history.forward();
+      console.log('We are in next page');
+    }
+    </script>
     EOT;
   }
 
