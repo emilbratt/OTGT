@@ -307,8 +307,8 @@ class Template {
       EOT;
     }
     $this->html .= <<<EOT
-    <button id="button_top_navbar"   onclick="go_forward()">&rarr;</button>
-    <button id="button_top_navbar"  onclick="go_back()">&larr;</button>
+    <button id="button_top_navbar"   onclick="go_forward()">&xrarr;</button>
+    <button id="button_top_navbar"  onclick="go_back()">&xlarr;</button>
     </div>\n
     EOT;
     $this->script .= <<<EOT
