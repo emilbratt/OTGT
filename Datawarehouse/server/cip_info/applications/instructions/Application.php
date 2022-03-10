@@ -1,5 +1,11 @@
 <?php
 
+/**
+ *
+ * TODO:
+ *  add: feature for uploading instruction in pdf file and place it in a category (remember to add upload dir to gitignore)
+ *
+ */
 
 class Instructions {
 
