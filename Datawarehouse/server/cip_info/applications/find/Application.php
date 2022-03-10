@@ -19,7 +19,7 @@
 
 class Find {
 
-  protected $page = 'Vare'; // alias for top_navbar
+  protected $page = 'Finn Vare'; // alias for top_navbar
   protected $template;
   protected $environment;
   protected $database;
