@@ -142,11 +142,11 @@ class Soldout extends Reports {
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastsold']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
+        $this->template->table_row_value($row['quantity']);
+        $this->template->table_row_value($row['location']);
+        $this->template->table_row_value($row['lastimported']);
+        $this->template->table_row_value($row['lastsold']);
+        $this->template->table_row_value($row['supplyid']);
         $this->template->table_row_end();
       }
     }
@@ -240,10 +240,10 @@ class Imported extends Reports {
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
+        $this->template->table_row_value($row['quantity']);
+        $this->template->table_row_value($row['location']);
+        $this->template->table_row_value($row['lastimported']);
+        $this->template->table_row_value($row['supplyid']);
         $this->template->table_row_end();
       }
     }
@@ -336,9 +336,9 @@ class Sold extends Reports {
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['name']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['soldqty']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['salesdate']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['price']));
+        $this->template->table_row_value($row['soldqty']);
+        $this->template->table_row_value($row['salesdate']);
+        $this->template->table_row_value(round($row['price'], 2));
         $this->template->table_row_end();
       }
     }
@@ -422,11 +422,11 @@ class NotSoldLately extends Reports {
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastsold']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['lastimported']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
+        $this->template->table_row_value($row['lastsold']);
+        $this->template->table_row_value($row['quantity']);
+        $this->template->table_row_value($row['location']);
+        $this->template->table_row_value($row['lastimported']);
+        $this->template->table_row_value($row['supplyid']);
         $this->template->table_row_end();
       }
     }
