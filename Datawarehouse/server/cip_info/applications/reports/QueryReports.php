@@ -32,7 +32,6 @@ class QueryReports extends QueryRetail {
   }
 
   public function sold_out () {
-
     $this->query .= <<<EOT
     SELECT
       Brands.brandLabel AS brand,
@@ -138,7 +137,6 @@ class QueryReports extends QueryRetail {
   }
 
   public function imported () {
-
     $this->query .= <<<EOT
     SELECT
       Brands.brandLabel AS brand,
