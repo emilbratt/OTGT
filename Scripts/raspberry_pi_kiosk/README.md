@@ -9,5 +9,5 @@
  set autologin
  setup wifi if needed
  ```
-* copy over the autostart and setuo.sh file to the same directory
+* copy over the autostart and setuo.sh file to the same directory (or an esaier way: git clone this repo and navigate to this directory)
 * run setup.sh as pi user
