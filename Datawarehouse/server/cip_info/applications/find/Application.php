@@ -259,7 +259,6 @@ class ByBarcode extends Find {
       $this->template->table_end();
       $this->template->css_by_barcode();
       if ( ($this->database->result['location'] == null) or (strlen($this->database->result['location']) < 1) ) {
-        $this->template->image_location('empty');
         return;
       }
       $this->template->image_location($this->database->result['location']);

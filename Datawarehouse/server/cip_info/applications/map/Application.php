@@ -25,6 +25,10 @@ class Home extends Map {
 
   public function run () {
     $this->template->sub_navbar($this->navigation->sub_nav_links);
+    $this->template->map_form_location();
+    if (isset($_GET['input_field_location'])) {
+      $this->template->image_location();
+    }
     $this->template->print();
   }
 

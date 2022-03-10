@@ -29,9 +29,11 @@ class Template {
   protected $colour_default_active = '#444444';
   protected $form_default_height = '26px';
   protected $declaration;
+  protected $location_index;
   protected $html;
   protected $css;
   protected $script;
+  protected $assets_path = '../assets';
   protected $image_path = '../assets/image';
   private $wrapper; // wraps all individual parts (css, html and scripts)
 
@@ -41,6 +43,31 @@ class Template {
     // any additional css will have to be added after the
     // constructor for each inherited class by calling this as a parent
     // in the inherited objects constructor
+    $this->location_index = [
+      '1' => '1',
+      'A' => '1',
+      'B' => '1',
+      '2' => 'U',
+      'C' => 'U',
+      'D' => 'U',
+      'E' => 'U',
+      'F' => 'U',
+      'G' => 'U1',
+      'H' => 'U1',
+      'I' => 'U1',
+      'J' => 'U1',
+      'K' => 'U1',
+      'L' => 'U1',
+      'M' => 'U1',
+      'O' => 'U1',
+      'P' => 'U1',
+      'Q' => 'U1',
+      'R' => 'U1',
+      'S' => 'U1',
+      'T' => 'U1',
+      'O' => 'U1',
+    ];
+
     $this->declaration = <<<EOT
     <!DOCTYPE html>
     EOT;
@@ -472,6 +499,69 @@ class Template {
     }
     </script>\n
     EOT;
+  }
+
+  public function image_location ($location = null) {
+    if ($location === null) {
+      if ( !(isset($_GET['input_field_location'])) ) {
+        return;
+      }
+      $location = $_GET['input_field_location'];
+    }
+    if ($location == 'empty') {
+      return;
+    }
+    $floor = false;
+    $circle = false;
+
+    // grab first letter for the location (example: L-A-30 = L)
+    $letter = strtoupper($location[0]);
+    foreach ($this->location_index as $index => $value) {
+      if ($index == $letter) {
+        $floor = $value;
+        $circle = $index;
+      }
+    }
+    if (($floor !== false) and ($circle !== false)) {
+      if ( is_numeric($circle) ) {
+        // for items stored in shop, we show label saying the item is in the store
+        $circle = "store_$circle";
+      }
+      $image_map = $this->image_path . "/location/floor/$floor.png";
+      $image_location = $this->image_path . "/location/circle/$circle.png";
+      $b64_map = base64_encode(file_get_contents($image_map));
+      $b64_circle = base64_encode(file_get_contents($image_location));
+
+      $this->css .= <<<EOT
+      #image_map {
+          display: block;
+          / *margin-left: auto;
+          margin-right: auto; */
+          width: 50%;
+      }
+      #image_base {
+        position: absolute;
+      }
+
+      #image_circle {
+        position: relative;
+        animation-name: circle_animate;
+        animation-duration: 1s;
+      }
+      @keyframes circle_animate {
+
+        0%  {left:0px; top:-40px;}
+        100% {left:0px; top:0px;}
+      }
+      EOT;
+
+      $this->html .= <<<EOT
+      <div id="image_map">
+        <img id="image_base"  src="data:image/png;base64,$b64_map" width="600">
+        <img id="image_circle" src="data:image/png;base64,$b64_circle" width="600">
+      </div>
+      EOT;
+    }
   }
 
   public function print () {
