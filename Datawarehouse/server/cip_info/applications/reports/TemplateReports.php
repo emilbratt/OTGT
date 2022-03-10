@@ -35,7 +35,7 @@ class TemplateReports extends Template {
 
     <input
       type="submit"
-      value="Velg Dato" >
+      value="Velg Dato">
     </form>
     </div>
     EOT;
