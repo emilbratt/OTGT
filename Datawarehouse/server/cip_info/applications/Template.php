@@ -136,7 +136,8 @@ class Template {
     }
     #button_top_navbar {
       border: none;
-      height: 100%;
+      overflow: hidden;
+      height: 47px;
       background-color: $this->colour_default_menu_background;
     }
     .top_navbar #button_top_navbar:hover {
