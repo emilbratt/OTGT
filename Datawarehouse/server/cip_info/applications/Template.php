@@ -119,7 +119,6 @@ class Template {
       background-color: $this->colour_default_active;
     }
     .top_navbar button {
-      float: left;
       display: inline;
       color: $this->colour_default_text;
       text-align: center;
@@ -127,12 +126,6 @@ class Template {
       font-size: 17px;
       width: 80px;
       float: right;
-    }
-    .top_navbar button:hover {
-      background-color: $this->colour_default_hover;
-    }
-    .top_navbar button.active {
-      background-color: $this->colour_default_active;
     }
     #button_top_navbar {
       border: none;
