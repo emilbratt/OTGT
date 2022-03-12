@@ -409,16 +409,23 @@ class QueryReports extends QueryRetail {
       Brands ON Article.brandId = Brands.brandId
 
     WHERE
-      Brands.brandLabel LIKE '%$brand%'
-      AND articleStock.StorageShelf LIKE '$location%'
+      articleStock.lastSold < DATEADD($this->date_part_type, -$num_year, CURRENT_TIMESTAMP)
       AND articleStock.stockQty $stock_operator '$stock_limit'
-      AND articleStock.lastSold < DATEADD($this->date_part_type, -$num_year, CURRENT_TIMESTAMP)
       /**
        *  optionally, we could use datepart and set a fixed year like so (uncommented for now)
        *  AND DATEPART(YEAR, articleStock.lastSold) < DATEPART(YEAR, '2021') -- DATEADD(YEAR, -1, CURRENT_TIMESTAMP)
        */\n
     EOT;
-
+    if ($location !== '') {
+      $this->query .= <<<EOT
+      AND articleStock.StorageShelf LIKE '$location%'
+      EOT;
+    }
+    if ($brand !== '') {
+      $this->query .= <<<EOT
+      AND Brands.brandLabel LIKE '%$brand%'
+      EOT;
+    }
     $this->sort = 'lastsold';
     if(isset($_GET['sort'])) {
       $this->sort = $_GET['sort'];
