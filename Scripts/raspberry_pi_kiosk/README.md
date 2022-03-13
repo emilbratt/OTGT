@@ -8,7 +8,6 @@ sudo apt update && sudo apt install git -y
 ```
 * run sudo raspi-config to:
 ```
-set locale settings
 setup ssh for connecting
 set autologin
 setup wifi if needed
