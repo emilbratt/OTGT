@@ -264,7 +264,7 @@ class Imported extends Reports {
 }
 
 
-class Sold extends Reports {
+class Sales extends Reports {
 
   public function run () {
 
@@ -328,7 +328,7 @@ class Sold extends Reports {
     }
     $this->template->table_row_end();
     $query = new QueryReports();
-    $query->sold();
+    $query->sales();
     // $query->print();
     try {
       foreach ($this->database->cnxn->query($query->get()) as $row) {

@@ -13,7 +13,7 @@ class NavigationReports extends Navigation {
       $this->sub_nav_links = [
       'Varer som har kommet inn' => $this->app_uri . '/imported',
       'Utsolgte varer' => $this->app_uri . '/soldout',
-      'Alle Salg' => $this->app_uri . '/sold',
+      'Alle Salg' => $this->app_uri . '/sales',
       'Ikke solgt på lenge' => $this->app_uri . '/notsoldlately',
     ];
   }

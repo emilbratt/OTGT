@@ -43,8 +43,10 @@ class QueryReports extends QueryRetail {
       Article.suppliers_art_no AS supplyid
     FROM
       Article
-      INNER JOIN articleStock ON Article.articleId = articleStock.articleId
-      INNER JOIN Brands ON Article.brandId = Brands.brandId
+    INNER JOIN
+      articleStock ON Article.articleId = articleStock.articleId
+    INNER JOIN
+      Brands ON Article.brandId = Brands.brandId
     WHERE
       ArticleStatus = '0' AND stockQty <= '0'\n
     EOT;
@@ -258,7 +260,7 @@ class QueryReports extends QueryRetail {
     EOT;
   }
 
-  public function sold () {
+  public function sales () {
     $this->query .= <<<EOT
     SELECT
       hipUser.userFirstName AS name,
@@ -267,7 +269,7 @@ class QueryReports extends QueryRetail {
       CAST(CustomerSales.noOfArticles AS INT) AS soldqty,\n
     EOT;
     $_date = 'CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 8) AS salesdate,';
-    if($this->time_span != 'thisday') {
+    if ($this->time_span != 'thisday') {
       $_date = 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate,';
     }
     $this->query .= <<<EOT
@@ -399,22 +401,15 @@ class QueryReports extends QueryRetail {
       articleStock.StorageShelf AS location,
       CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS lastimported,
       Article.suppliers_art_no AS supplyid
-
     FROM
       Article
-
     INNER JOIN
       articleStock ON Article.articleId = articleStock.articleId
     INNER JOIN
       Brands ON Article.brandId = Brands.brandId
-
     WHERE
-      articleStock.lastSold < DATEADD($this->date_part_type, -$num_year, CURRENT_TIMESTAMP)
-      AND articleStock.stockQty $stock_operator '$stock_limit'
-      /**
-       *  optionally, we could use datepart and set a fixed year like so (uncommented for now)
-       *  AND DATEPART(YEAR, articleStock.lastSold) < DATEPART(YEAR, '2021') -- DATEADD(YEAR, -1, CURRENT_TIMESTAMP)
-       */\n
+      articleStock.stockQty $stock_operator '$stock_limit'
+      AND articleStock.lastSold < DATEADD($this->date_part_type, -$num_year, CURRENT_TIMESTAMP)\n
     EOT;
     if ($location !== '') {
       $this->query .= <<<EOT
