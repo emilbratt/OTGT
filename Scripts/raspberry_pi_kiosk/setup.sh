@@ -5,7 +5,7 @@ declare DEPENDENCIES
 DEPENDENCIES=(
   autostart
   keyboard
-  mywifi
+  wifisignal
 )
 
 function check_dependencies () {
