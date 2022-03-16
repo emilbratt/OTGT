@@ -2,9 +2,9 @@
 
 # un-comment to disable screensaver
 xset s off
-# un-comment to disable the blank screen setting
+# un-comment to disable screen blanking
 xset s noblank
-# un-comment to disable Display Power Management Signaling (power-saving feature of your monitor)
+# un-comment to disable DPMS (Display Power Management Signaling - power-saving feature of your monitor)
 xset -dpms
 
 # add hot-key to exit X server with CTRL-ATL-Backspace
