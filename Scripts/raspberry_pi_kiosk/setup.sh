@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
+#────────────────────────────────────────────#
+# Author:
+#   Emil Bratt Børsting
+#────────────────────────────────────────────#
+# Description:
+#   automatically setup kiosk running chromium
+#────────────────────────────────────────────#
+# Customization of this script
+#   add dependencies (files) and make sure they
+#   are listed in the DEPENDENCIES variable
+#────────────────────────────────────────────#
 
 declare DEPENDENCIES
 
@@ -16,7 +27,6 @@ function check_dependencies () {
       exit 1
     fi
   done
-  exit
 }
 
 # ensure dependencies are met before continuing
