@@ -10,15 +10,11 @@
  *
  * TODO:
  *  add. turnover report
- *  add. app to find items by name, brand, category, barcode etc..
- *  add. app to update shelf value
+ *  add. app find -> items by category
  *  add. batch update loction for items
  *  add. click on location in result and get map view
  *  add. create barcodes (python backend with python-barcode?)
  */
-
-// temporary enable error reporting
-
 
 require_once '../applications/AppRequest.php';
 $main = new Apprequest;
