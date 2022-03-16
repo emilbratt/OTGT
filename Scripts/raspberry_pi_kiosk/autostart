@@ -1,12 +1,16 @@
-# Disable any form of screen saver / screen blanking / power management
+# handeling xserver with xset (xset affects behavior for xserver)
+
+# un-comment to disable screensaver
 xset s off
+# un-comment to disable the blank screen setting
 xset s noblank
+# un-comment to disable Display Power Management Signaling (power-saving feature of your monitor)
 xset -dpms
 
-# Allow quitting the X server with CTRL-ATL-Backspace
+# add hot-key to exit X server with CTRL-ATL-Backspace
 setxkbmap -option terminate:ctrl_alt_bksp
 
-# Start Chromium in kiosk mode
+# start Chromium-browser in kiosk mode
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' ~/.config/chromium/'Local State'
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' ~/.config/chromium/Default/Preferences
 chromium-browser --disable-features=TranslateUI --noerrdialogs --disable-infobars --kiosk 'http://salesreport'
