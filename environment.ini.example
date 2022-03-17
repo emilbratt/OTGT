@@ -1,14 +1,15 @@
 ; replace INSERT with correct values and change filename to environment.ini
 ; NOTE: keep values inside double qoutes to avoid errors on special chars
 
-[retail] ; database used in our shop
+[retail] ; retail server and database used in our shop
   db_server = "INSERT"
   db_port = "INSERT"
   db_name = "INSERT"
   db_user = "INSERT"
   db_password = "INSERT"
 
-[datawarehouse] ; database used for data collection
+[datawarehouse] ; connect to the datawarehouse server and/or database
+  server_ip = "INSERT"
   db_server = "INSERT"
   db_port = "INSERT"
   db_name = "INSERT"
