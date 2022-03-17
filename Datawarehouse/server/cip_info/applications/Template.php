@@ -436,13 +436,13 @@ class Template {
 
   public function table_start () {
     $this->html .= <<<EOT
-    <table id="find_item">\n
+    <table id="template_table">\n
     EOT;
   }
 
   public function table_full_width_start () {
     $this->html .= <<<EOT
-    <table class="full_width_table" id="find_item">\n
+    <table class="full_width_table" id="template_table">\n
     EOT;
   }
 
@@ -585,14 +585,14 @@ class Template {
 
         0%  {left:0px; top:-40px;}
         100% {left:0px; top:0px;}
-      }
+      }\n
       EOT;
 
       $this->html .= <<<EOT
       <div id="image_map">
         <img id="image_base"  src="data:image/png;base64,$b64_map" width="600">
         <img id="image_circle" src="data:image/png;base64,$b64_circle" width="600">
-      </div>
+      </div>\n
       EOT;
     }
   }
@@ -642,7 +642,7 @@ class Template {
     EOT;
     $this->html .= <<<EOT
     <p>\$_GET</p>
-    <pre>
+    <pre>\n
     EOT;
     if (isset($_GET)) {
       foreach ($_GET as $key => $val) {
