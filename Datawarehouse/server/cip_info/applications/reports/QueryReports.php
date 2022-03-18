@@ -140,6 +140,10 @@ class QueryReports extends QueryRetail {
   }
 
   public function imported () {
+    $_date = 'CONVERT(VARCHAR(5), articleStock.lastReceivedFromSupplier, 8) AS lastimported';
+    if ($this->time_span != 'thisday') {
+      $_date = 'CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS lastimported';
+    }
     $this->query .= <<<EOT
     SELECT
       Brands.brandLabel AS brand,
@@ -148,7 +152,7 @@ class QueryReports extends QueryRetail {
       CAST (stockQty AS INT) AS quantity,
       articleStock.StorageShelf AS location,
       Article.suppliers_art_no AS supplyid,
-      CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS lastimported
+      $_date
     FROM
       Article
     INNER JOIN
@@ -262,19 +266,17 @@ class QueryReports extends QueryRetail {
   }
 
   public function sales () {
+    $_date = 'CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 8) AS salesdate';
+    if ($this->time_span != 'thisday') {
+      $_date = 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate';
+    }
     $this->query .= <<<EOT
     SELECT
       hipUser.userFirstName AS name,
       Brands.brandLabel AS brand,
       Article.articleName AS article,
-      CAST(CustomerSales.noOfArticles AS INT) AS soldqty,\n
-    EOT;
-    $_date = 'CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 8) AS salesdate,';
-    if ($this->time_span != 'thisday') {
-      $_date = 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate,';
-    }
-    $this->query .= <<<EOT
-      $_date
+      CAST(CustomerSales.noOfArticles AS INT) AS soldqty,
+      $_date,
       CustomerSales.usedPricePerUnit AS price,
       CustomerSales.disCount AS discount,
       CustomerSaleHeader.additionalInfo AS paymentmethod,
