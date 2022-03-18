@@ -314,7 +314,7 @@ class Template {
       window.history.forward();
       console.log('We are in next page');
     }
-    </script>
+    </script>\n
     EOT;
   }
 
