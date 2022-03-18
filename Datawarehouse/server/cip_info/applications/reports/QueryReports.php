@@ -385,7 +385,6 @@ class QueryReports extends QueryRetail {
   }
 
   public function in_stock_not_sold_lately () {
-    $this->order = 'descending';
     $brand = $_GET['input_field_brand'];
     $location = $_GET['input_field_location'];
     $num_year = $_GET['input_field_date_part_num'];
@@ -413,12 +412,12 @@ class QueryReports extends QueryRetail {
     EOT;
     if ($location !== '') {
       $this->query .= <<<EOT
-      AND articleStock.StorageShelf LIKE '$location%'
+        AND articleStock.StorageShelf LIKE '$location%'\n
       EOT;
     }
     if ($brand !== '') {
       $this->query .= <<<EOT
-      AND Brands.brandLabel LIKE '%$brand%'
+        AND Brands.brandLabel LIKE '%$brand%'\n
       EOT;
     }
     $this->sort = 'lastsold';
@@ -457,7 +456,8 @@ class QueryReports extends QueryRetail {
         break;
     }
     $this->query .= <<<EOT
-    ORDER BY $string_sort $string_order\n
+    ORDER BY
+      $string_sort $string_order\n
     EOT;
   }
 

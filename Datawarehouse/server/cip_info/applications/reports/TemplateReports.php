@@ -15,6 +15,76 @@ class TemplateReports extends Template {
       'WEEK' => 'Uker tilbake',
       'DAY' => 'Dager tilbake',
     ];
+
+    $this->css .= <<<EOT
+    /* TABLE */
+    table {
+      font-family: arial;
+      border-collapse: collapse;
+    }
+    .full_width_table {
+      width: 100%;
+    }
+    td {
+      border: 1px solid #202020;
+      text-align: left;
+      padding-left: 2px;
+    }
+    th {
+      background-color: $this->colour_header_background;
+      height: 32px;
+    }
+    #th_no_hyperlink {
+      border: 1px solid $this->colour_default_text;
+    }
+    th a {
+      height: 27px;
+      font-size: 20px;
+    }
+    tr:nth-child(even) {
+      background-color: $this->colour_row_background_2;
+    }
+    tr:nth-child(odd) {
+      background-color: $this->colour_row_background_1;
+    }
+
+    #hidden_submit {
+      display: none;
+    }
+    #input_field_div {
+      display: block;
+    }
+    #search_field {
+      background-color: $this->colour_search_background;
+      display: inline-block;
+    }
+    button {
+      border: 1px solid $this->colour_default_text;
+      display: inline;
+      font-size: 15px;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
+      width: 150px;
+      height: 30px;
+    }
+
+    #table_td_label {
+      border: 1px solid $this->colour_default_text;
+      display: inline;
+      font-size: 15px;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
+    }
+    select {
+      border: 1px solid $this->colour_default_text;
+      display: inline;
+      font-size: 15px;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
+      width: 150px;
+      height: $this->form_default_height;
+    }\n
+    EOT;
   }
 
   public function reports_form_input_date () {
