@@ -14,6 +14,7 @@ class NavigationDeveloping extends Navigation {
       'SQL Shell' => $this->app_uri . '/sqlshell',
       'API' => $this->app_uri . '/api',
       'Testing' => $this->app_uri . '/testing',
+      'Fetch Api' => $this->app_uri . '/fetchapi',
     ];
   }
 

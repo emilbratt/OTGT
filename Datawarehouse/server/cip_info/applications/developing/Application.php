@@ -112,6 +112,17 @@ class API extends Developing {
 }
 
 
+class FetchAPI extends Developing {
+
+  public function run () {
+    $this->template->title('testing requests using fetch api');
+    $this->template->message('about: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API');
+    $this->template->print();
+  }
+
+}
+
+
 class Testing extends Developing {
 
   public function run () {
