@@ -16,10 +16,78 @@ class TemplateFind extends Template {
   function __construct () {
     parent::__construct();
     $this->image_path_location = $this->image_path . '/location';
+
   }
 
   public function css_by_search () {
     $this->css .= <<<EOT
+    /* TABLE */
+    table {
+      font-family: arial;
+      border-collapse: collapse;
+    }
+    .full_width_table {
+      width: 100%;
+    }
+    td {
+      border: 1px solid #202020;
+      text-align: left;
+      padding-left: 2px;
+    }
+    th {
+      background-color: $this->colour_header_background;
+      height: 32px;
+    }
+    #th_no_hyperlink {
+      border: 1px solid $this->colour_default_text;
+    }
+    th a {
+      height: 27px;
+      font-size: 20px;
+    }
+    tr:nth-child(even) {
+      background-color: $this->colour_row_background_2;
+    }
+    tr:nth-child(odd) {
+      background-color: $this->colour_row_background_1;
+    }
+
+    #hidden_submit {
+      display: none;
+    }
+    #input_field_div {
+      display: block;
+    }
+    #search_field {
+      background-color: $this->colour_search_background;
+      display: inline-block;
+    }
+    button {
+      border: 1px solid $this->colour_default_text;
+      display: inline;
+      font-size: 15px;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
+      width: 150px;
+      height: 30px;
+    }
+
+    #table_td_label {
+      border: 1px solid $this->colour_default_text;
+      display: inline;
+      font-size: 15px;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
+    }
+    select {
+      border: 1px solid $this->colour_default_text;
+      display: inline;
+      font-size: 15px;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
+      width: 150px;
+      height: $this->form_default_height;
+    }
     /* set fixed length for each table column */
     td:nth-child(1) {
       width: 10%;
@@ -43,37 +111,19 @@ class TemplateFind extends Template {
     #input_field_brand {
       display: inline;
       width: 170px;
-    }
+    }\n
     EOT;
   }
 
   public function css_by_barcode () {
     $this->css .= <<<EOT
-    /* set fixed length for each table column */
+    /* set fixed length for first table column */
+
     td:nth-child(1) {
-      width: 9%;
+      width: 150px;
     }
-    td:nth-child(2) {
-      width: 30%;
-    }
-    td:nth-child(3) {
-      width: 9%;
-    }
-    td:nth-child(4) {
-      width: 7%;
-    }
-    td:nth-child(5) {
-      width: 8%;
-    }
-    td:nth-child(6) {
-      width: 11%;
-    }
-    td:nth-child(7) {
-      width: 13%;
-    }
-    td:nth-child(8) {
-      width: 13%;
-    }
+
+
     #input_field_article {
       display: inline;
       width: 400px;
@@ -83,6 +133,48 @@ class TemplateFind extends Template {
       width: 170px;
     }
     EOT;
+
+    // $this->css .= <<<EOT
+    // /* set fixed length for each table column */
+    // td:nth-child(1) {
+    //   width: 9%;
+    // }
+    // td:nth-child(2) {
+    //   width: 30%;
+    // }
+    // td:nth-child(3) {
+    //   width: 9%;
+    // }
+    // td:nth-child(4) {
+    //   width: 7%;
+    // }
+    // td:nth-child(5) {
+    //   width: 8%;
+    // }
+    // td:nth-child(6) {
+    //   width: 11%;
+    // }
+    // td:nth-child(7) {
+    //   width: 8%;
+    // }
+    // td:nth-child(8) {
+    //   width: 8%;
+    // }
+    // td:nth-child(9) {
+    //   width: 5%;
+    // }
+    // td:nth-child(10) {
+    //   width: 5%;
+    // }
+    // #input_field_article {
+    //   display: inline;
+    //   width: 400px;
+    // }
+    // #input_field_brand {
+    //   display: inline;
+    //   width: 170px;
+    // }
+    // EOT;
   }
 
   public function form_search ($brand = '', $article = '') {
@@ -133,6 +225,32 @@ class TemplateFind extends Template {
         </table>
       </form>
     </div><br>\n
+    EOT;
+  }
+
+  public function title ($string = 'title') {
+    $this->html .= <<<EOT
+    <div class="title">
+      <h3>$string</h3>
+    </div>\n
+    EOT;
+  }
+
+  public function _table_row_value ($string, $text_align = 'center', $font_size = '18', $hyperlink = null) {
+    // passing a url as second arg will make it a clickabel button
+    $font_size = $font_size . 'px';
+    if ($hyperlink == null) {
+      $this->html .= <<<EOT
+          <td style="font-size: $font_size; text-align: $text_align;">$string</td>\n
+      EOT;
+      return;
+    }
+    $this->html .= <<<EOT
+        <td style="font-size: $font_size; text-align: $text_align;">
+          <a href="$hyperlink">
+            <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
+          </a>
+        </th>\n
     EOT;
   }
 

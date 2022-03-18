@@ -52,7 +52,7 @@ class QueryRetail {
   }
 
 
-  public function article_id_by_barcode ($ean) {
+  public function select_article_id_by_barcode ($ean) {
     // query to get only the article id from barcode
     $this->query .= <<<EOT
     SELECT
@@ -134,8 +134,15 @@ class QueryRetail {
     }
   }
 
-  public function where_barcode () {
+  public function where_barcode ($force_where = false) {
     $ean = $_GET['input_field_barcode'];
+    if ($force_where) {
+      // skip checking if WHERE is present in the query (mostly for nested queries that has where in them)
+      $this->query .= <<<EOT
+      WHERE ArticleEAN.eanCode = '$ean'\n
+      EOT;
+      return;
+    }
     if ( $this->has_where() ) {
       $this->query .= <<<EOT
       AND ArticleEAN.eanCode = '$ean'\n

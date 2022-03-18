@@ -22,7 +22,8 @@ class Find {
   protected $page = 'Finn Vare'; // alias for top_navbar
   protected $template;
   protected $environment;
-  protected $database;
+  protected $database_retail;
+  protected $database_datawarehouse;
   protected $navigation;
   protected $visitor_url;
   protected $sort_by; // keeping track of what column is sorted by
@@ -36,14 +37,14 @@ class Find {
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
+    require_once '../applications/DatabaseDatawarehouse.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
     require_once '../applications/find/NavigationFind.php';
     require_once '../applications/find/TemplateFind.php';
-    require_once '../applications/find/QueryFind.php';
+    require_once '../applications/find/QueryRetailFind.php';
+    require_once '../applications/find/QueryDatawarehouseFind.php';
 
-    $this->environment = new Environment();
-    $this->database = new DatabaseRetail();
     $this->template = new TemplateFind();
     $this->navigation = new NavigationFind();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
@@ -57,8 +58,6 @@ class Find {
         $this->arrow_symbol = ' &#8593;';
       }
     }
-
-    // default is ascending, but we flip the order of rows if ascending is already set
     $this->sort_by = null;
     if (isset($_GET['sort'])) {
       $this->sort_by = $_GET['sort'];
@@ -108,6 +107,10 @@ class Home extends Find {
 class BySearch extends Find {
 
   public function run () {
+    $this->environment = new Environment();
+    $this->database_retail = new DatabaseRetail();
+    $this->database_datawarehouse = new DatabaseDatawarehouse();
+
     // preserving the previous brand and title search if passed, else empty
     if(isset($_GET['input_field_brand']) and isset($_GET['input_field_article'])) {
       $this->template->form_search($_GET['input_field_brand'], $_GET['input_field_article']);
@@ -148,7 +151,7 @@ class BySearch extends Find {
     $hyperlink_toggle = new HyperLink();
     $hyperlink_toggle->add_query('items', $this->toggle_expired);
 
-    $query = new QueryFindBySearch();
+    $query = new QueryRetailFindBySearch();
     $query->where_brand();
     $query->where_article();
     $query->where_article_expired();
@@ -178,9 +181,9 @@ class BySearch extends Find {
     }
     $this->template->table_row_end();
 
-    $this->database->select_multi_row($query->get());
-    if ($this->database->result) {
-      foreach ($this->database->result as $row) {
+    $this->database_retail->select_multi_row($query->get());
+    if ($this->database_retail->result) {
+      foreach ($this->database_retail->result as $row) {
         $article = $row['articleid'];
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
@@ -201,6 +204,9 @@ class BySearch extends Find {
 class ByBarcode extends Find {
 
   public function run () {
+    $this->environment = new Environment();
+    $this->database_retail = new DatabaseRetail();
+
     // preserving the previous brand and title search if passed, else empty
     if(isset($_GET['input_field_barcode'])) {
       $this->template->form_barcode($_GET['input_field_barcode']);
@@ -225,8 +231,8 @@ class ByBarcode extends Find {
       return; // could not validate that a barcode as input
     }
 
-    $query = new QueryFindByBarcode();
-    $query->where_barcode();
+    $query = new QueryRetailFindByBarcode();
+    $query->where_barcode($force_where = true);
 
     $table_headers = [
       'Merke' => 'brand',
@@ -235,33 +241,114 @@ class ByBarcode extends Find {
       'Pris' => 'price',
       'Lager' => 'quantity',
       'Plassering' => 'location',
+      'Lev. ID' => 'supplyid',
       'Sist Importert' => 'lastimported',
       'Sist Solgt' => 'lastsold',
+      'Solgt siste 6 måneder' => 'qty_sold_last_6_months',
     ];
-    $this->database->select_sinlge_row($query->get());
-    if ($this->database->result) {
-      $this->template->table_full_width_start();
+
+    $this->database_retail->select_sinlge_row($query->get());
+    $query = null;
+
+    // all results are handled and printed on screen here
+    if ($this->database_retail->result) {
+      $article_id = $this->database_retail->result['article_id'];
+      $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
+      $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
+      $category = CharacterConvert::utf_to_norwegian($this->database_retail->result['category']);
+      $price = $this->database_retail->result['price'];
+      $quantity = $this->database_retail->result['quantity'];
+      $retail_location = $this->database_retail->result['location'];
+      $supplyid = $this->database_retail->result['supplyid'];
+      $lastimported = $this->database_retail->result['lastimported'];
+      $lastsold = $this->database_retail->result['lastsold'];
+      $qty_sold_last_6_months = $this->database_retail->result['qty_sold_last_6_months'];
+
+      $this->template->div_start('100', 'block');
+
+      $this->template->div_start('40', 'inline-block', 'left');
+      $this->template->title($brand . ' - ' . '<i>' . $article . '</i>');
+
+      $this->template->table_start();
       $this->template->table_row_start();
-      foreach ($table_headers as $alias => $name) {
-        $this->template->table_row_value($alias);
-      }
+      $this->template->_table_row_value('Antall: ', 'left');
+      $this->template->_table_row_value($quantity . ' på lager.', 'left');
       $this->template->table_row_end();
       $this->template->table_row_start();
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['brand']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['article']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['category']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['price']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['quantity']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['location']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['lastimported']));
-      $this->template->table_row_value(CharacterConvert::utf_to_norwegian($this->database->result['lastsold']));
+      $this->template->_table_row_value('Pris:', 'left');
+      $this->template->_table_row_value($price . ' kr.', 'left');
+      $this->template->table_row_end();
+      $this->template->table_row_start();
+      $this->template->_table_row_value('Kategori:', 'left');
+      $this->template->_table_row_value($category, 'left');
       $this->template->table_row_end();
       $this->template->table_end();
-      $this->template->css_by_barcode();
-      if ( ($this->database->result['location'] == null) or (strlen($this->database->result['location']) < 1) ) {
-        return;
+
+      $this->template->line_break();
+
+      $this->template->table_start();
+      $this->template->table_row_start();
+      $this->template->_table_row_value('Sist mottatt:', 'left');
+      $this->template->_table_row_value($lastimported, 'left');
+      $this->template->table_row_end();
+      $this->template->table_row_start();
+      $this->template->_table_row_value('Sist solgt:', 'left');
+      $this->template->_table_row_value($lastsold, 'left');
+      $this->template->table_row_end();
+      $this->template->table_row_start();
+      $this->template->_table_row_value('Solgt siste halvår:', 'left');
+      $this->template->_table_row_value($qty_sold_last_6_months . ' stk.', 'left');
+      $this->template->table_row_end();
+      $this->template->table_end();
+
+      // if we have a registered location, fetch extra location (if exists) from datawarehouse
+      $has_location = false;
+      if ( ($retail_location != null) and (strlen($retail_location) > 0) ) {
+        $has_location = true;
       }
-      $this->template->image_location($this->database->result['location']);
+
+      // print out all placement registered for item
+      if ($has_location) {
+        $this->template->line_break();
+
+        $this->template->table_start();
+        $this->template->table_row_start();
+        $this->template->_table_row_value('Plasseringer:', 'left');
+        $this->template->_table_row_value($retail_location . ' (sist registrert)', 'left');
+        $this->template->table_row_end();
+
+        // add extra registered placement from datawarehouse
+        $this->database_datawarehouse = new DatabaseDatawarehouse();
+        $query = new QueryDatawarehouseFind();
+        $query->_select_placements_by_article_id();
+        $stmt = $this->database_datawarehouse->cnxn->prepare($query->get());
+        $stmt->execute([':article_id' => $article_id]);
+        if ($stmt->rowCount() > 0) {
+          $arr_datawarehouse_locations = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+          foreach ($arr_datawarehouse_locations as $datawarehouse_location) {
+            if ($datawarehouse_location != $retail_location) {
+              $this->template->table_row_start();
+              $this->template->_table_row_value('', 'left');
+              $this->template->_table_row_value($datawarehouse_location, 'left');
+              $this->template->table_row_end();
+            }
+          }
+        }
+        $this->template->table_end();
+      }
+      // end div for for left side info
+      $this->template->div_end();
+
+      if ($has_location) {
+        // show placement map on right side
+        $this->template->div_start('60', 'inline-block', 'right');
+        $this->template->image_location($retail_location);
+        $this->template->div_end();
+      }
+      // end div that contains item info and placement map
+      $this->template->div_end();
+
+      $this->template->css_by_barcode();
     }
   }
 

@@ -196,74 +196,6 @@ class Template {
       display: block;
       color: $this->colour_default_text;
       background: $this->colour_input_background;
-    }
-
-    /* TABLE */
-    table {
-      font-family: arial;
-      border-collapse: collapse;
-    }
-    .full_width_table {
-      width: 100%;
-    }
-    td {
-      border: 1px solid #202020;
-      text-align: left;
-      padding-left: 2px;
-    }
-    th {
-      background-color: $this->colour_header_background;
-      height: 32px;
-    }
-    #th_no_hyperlink {
-      border: 1px solid $this->colour_default_text;
-    }
-    th a {
-      height: 27px;
-      font-size: 20px;
-    }
-    tr:nth-child(even) {
-      background-color: $this->colour_row_background_2;
-    }
-    tr:nth-child(odd) {
-      background-color: $this->colour_row_background_1;
-    }
-
-    #hidden_submit {
-      display: none;
-    }
-    #input_field_div {
-      display: block;
-    }
-    #search_field {
-      background-color: $this->colour_search_background;
-      display: inline-block;
-    }
-    button {
-      border: 1px solid $this->colour_default_text;
-      display: inline;
-      font-size: 15px;
-      color: $this->colour_default_text;
-      background-color: $this->colour_default_background;
-      width: 150px;
-      height: 30px;
-    }
-
-    #table_td_label {
-      border: 1px solid $this->colour_default_text;
-      display: inline;
-      font-size: 15px;
-      color: $this->colour_default_text;
-      background-color: $this->colour_default_background;
-    }
-    select {
-      border: 1px solid $this->colour_default_text;
-      display: inline;
-      font-size: 15px;
-      color: $this->colour_default_text;
-      background-color: $this->colour_default_background;
-      width: 150px;
-      height: $this->form_default_height;
     }\n
     EOT;
   }
@@ -344,6 +276,31 @@ class Template {
     $this->html .= <<<EOT
     <div class="message">
       <p><i>$string</i></p>
+    </div>\n
+    EOT;
+  }
+
+  public function line_break () {
+    $this->html .= <<<EOT
+    <br>\n
+    EOT;
+  }
+
+  public function div_start ($width = '100', $display = 'inline-block', $float = false) {
+    // a simple way to add a div object to wrap other html stuff inside
+    if ( $float === false ) {
+      $this->html .= <<<EOT
+      <div style="width: $width%; display: $display;">\n
+      EOT;
+      return;
+    }
+    $this->html .= <<<EOT
+    <div style="width: $width%; display: $display; float: $float">\n
+    EOT;
+  }
+
+  public function div_end () {
+    $this->html .= <<<EOT
     </div>\n
     EOT;
   }
@@ -436,19 +393,19 @@ class Template {
 
   public function table_start () {
     $this->html .= <<<EOT
-    <table id="template_table">\n
+    <table id="find_item">\n
     EOT;
   }
 
   public function table_full_width_start () {
     $this->html .= <<<EOT
-    <table class="full_width_table" id="template_table">\n
+    <table class="full_width_table" id="find_item">\n
     EOT;
   }
 
   public function table_row_start () {
     $this->html .= <<<EOT
-    <tr>\n
+      <tr>\n
     EOT;
   }
 
@@ -456,16 +413,16 @@ class Template {
     // passing a url as second arg will make it a clickabel button
     if ($hyperlink == null) {
       $this->html .= <<<EOT
-      <th id="th_no_hyperlink">$string</th>\n
+          <th id="th_no_hyperlink">$string</th>\n
       EOT;
       return;
     }
     $this->html .= <<<EOT
-    <th>
-      <a href="$hyperlink">
-        <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
-      </a>
-    </th>\n
+        <th>
+          <a href="$hyperlink">
+            <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
+          </a>
+        </th>\n
     EOT;
   }
 
@@ -473,22 +430,22 @@ class Template {
     // passing a url as second arg will make it a clickabel button
     if ($hyperlink == null) {
       $this->html .= <<<EOT
-      <td>$string</td>\n
+          <td>$string</td>\n
       EOT;
       return;
     }
     $this->html .= <<<EOT
-    <td>
-      <a href="$hyperlink">
-        <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
-      </a>
-    </th>\n
+        <td>
+          <a href="$hyperlink">
+            <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
+          </a>
+        </th>\n
     EOT;
   }
 
   public function table_row_end () {
     $this->html .= <<<EOT
-    </tr>\n
+      </tr>\n
     EOT;
   }
 
@@ -507,7 +464,7 @@ class Template {
       id="filter_row"
       onkeyup="filter_row()"
       placeholder="$placeholder"
-      title="novalue">
+      title="novalue">\n
     EOT;
 
     $this->script .= <<<EOT
@@ -547,10 +504,9 @@ class Template {
     $floor = false;
     $circle = false;
 
-    // grab first letter for the location (example: L-A-30 = L)
-    $letter = strtoupper($location[0]);
+    $first_char = strtoupper($location[0]);
     foreach ($this->location_index as $index => $value) {
-      if ($index == $letter) {
+      if ($index == $first_char) {
         $floor = $value;
         $circle = $index;
       }
@@ -575,14 +531,12 @@ class Template {
       #image_base {
         position: absolute;
       }
-
       #image_circle {
         position: relative;
         animation-name: circle_animate;
         animation-duration: 1s;
       }
       @keyframes circle_animate {
-
         0%  {left:0px; top:-40px;}
         100% {left:0px; top:0px;}
       }\n

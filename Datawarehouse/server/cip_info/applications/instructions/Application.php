@@ -32,7 +32,7 @@ class Home extends Instructions {
   public function run () {
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
     $this->template->title('Instrukser');
-    $this->template->message('her skal det komme instrukser');
+    $this->template->_form_upload_instruction();
     $this->template->print();
   }
 
