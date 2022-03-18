@@ -53,16 +53,6 @@ class Placement {
 
 class Home extends Placement {
 
-  public function run () {
-    $this->template->sub_navbar($this->navigation->sub_nav_links);
-    $this->template->print();
-  }
-
-}
-
-
-class ScanItemScanShelf extends Placement {
-
     public function run () {
 
       // step 1: scan item (this form sets placement_scan_item)
@@ -227,16 +217,6 @@ class ScanItemScanShelf extends Placement {
         }
       }
     $this->shelf_ok = true;
-    }
-
-}
-
-
-class GetPlacement extends Placement {
-
-    public function run () {
-      $this->template->title('finn vareplassering');
-      $this->template->print();
     }
 
 }

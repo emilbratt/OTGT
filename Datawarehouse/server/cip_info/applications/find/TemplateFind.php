@@ -250,7 +250,7 @@ class TemplateFind extends Template {
           <a href="$hyperlink">
             <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
           </a>
-        </th>\n
+        </td>\n
     EOT;
   }
 

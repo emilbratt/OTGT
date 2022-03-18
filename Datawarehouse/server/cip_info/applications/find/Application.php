@@ -311,26 +311,36 @@ class ByBarcode extends Find {
       if ($has_location) {
         $this->template->line_break();
 
+        $this->template->title('Plassering');
         $this->template->table_start();
         $this->template->table_row_start();
-        $this->template->_table_row_value('Plasseringer:', 'left');
-        $this->template->_table_row_value($retail_location . ' (sist registrert)', 'left');
+        $this->template->_table_row_value('Nå:', 'left');
+        $this->template->_table_row_value($retail_location, 'left');
         $this->template->table_row_end();
+        $this->template->table_row_start();
+        $this->template->_table_row_value('------------', 'left');
+        $this->template->_table_row_value('--------', 'left');
+        $this->template->table_row_end();
+        $this->template->table_end();
+        // $this->template->line_break();
 
         // add extra registered placement from datawarehouse
+        $this->template->table_start();
         $this->database_datawarehouse = new DatabaseDatawarehouse();
         $query = new QueryDatawarehouseFind();
         $query->_select_placements_by_article_id();
         $stmt = $this->database_datawarehouse->cnxn->prepare($query->get());
         $stmt->execute([':article_id' => $article_id]);
+        $title = 'Tidligere:';
         if ($stmt->rowCount() > 0) {
           $arr_datawarehouse_locations = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
           foreach ($arr_datawarehouse_locations as $datawarehouse_location) {
             if ($datawarehouse_location != $retail_location) {
               $this->template->table_row_start();
-              $this->template->_table_row_value('', 'left');
+              $this->template->_table_row_value($title, 'left');
               $this->template->_table_row_value($datawarehouse_location, 'left');
               $this->template->table_row_end();
+              $title = '';
             }
           }
         }
@@ -341,7 +351,7 @@ class ByBarcode extends Find {
 
       if ($has_location) {
         // show placement map on right side
-        $this->template->div_start('60', 'inline-block', 'right');
+        $this->template->div_start('60', 'inline-block');
         $this->template->image_location($retail_location);
         $this->template->div_end();
       }

@@ -115,20 +115,7 @@ class API extends Developing {
 class Testing extends Developing {
 
   public function run () {
-    require_once '../applications/placement/QueryPlacement.php';
-    $this->template->message('Testing whatever needs testing');
-    $query = new QueryPlacement();
-    $query->insert_placement_datawarehouse();
-    $c = $query->get();
-
-    $database = new DatabaseDatawarehouse();
-    $stmt = $database->cnxn->prepare($query->get());
-    $timestamp = time();
-    $timestamp = '1234567890'; // correct timestamp format according to db: 2022-03-08_12:22:15.39
-    $values =  ['article_id' => '64600', 'shelf' => 'O-A-15', 'timestamp' => $timestamp, 'yyyymmdd' => '20220308'];
-    $stmt->execute($values);
-    // check after update: select * from placement where article_id = 64600
-    // remove record: delete from placement where timestamp = '1234567890';
+    $this->template->message('testing stuff');
     $this->template->print();
   }
 

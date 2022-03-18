@@ -48,7 +48,8 @@ class QueryReports extends QueryRetail {
     INNER JOIN
       Brands ON Article.brandId = Brands.brandId
     WHERE
-      ArticleStatus = '0' AND stockQty <= '0'\n
+            /* items less than -100 are ignored */
+      ArticleStatus = '0' AND stockQty BETWEEN '-100' AND '0'\n
     EOT;
 
     switch ($this->time_span) {
