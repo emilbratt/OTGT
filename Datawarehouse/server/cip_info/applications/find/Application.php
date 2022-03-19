@@ -157,6 +157,7 @@ class BySearch extends Find {
     $hyperlink_toggle->add_query('items', $this->toggle_expired);
 
     $query = new QueryRetailFindBySearch();
+    $query->select_items_by_search();
     $query->where_brand();
     $query->where_article();
     $query->where_article_expired();
@@ -187,6 +188,7 @@ class BySearch extends Find {
     $this->template->table_row_end();
 
     $this->database_retail->select_multi_row($query->get());
+    $query = null;
     if ($this->database_retail->result) {
       foreach ($this->database_retail->result as $row) {
         $article_id = $row['article_id'];
@@ -230,12 +232,14 @@ class ByArticle extends Find {
     if ( isset($_GET['input_field_barcode']) ) {
       $this->validate_search_string_barcode();
       if ( !($this->search_string_barcode) ) {
+        $this->template->message('Ugyldig strekkode');
         return; // could not validate that a barcode was submitted
       }
     }
     if ( isset($_GET['article_id']) ) {
       $this->validate_search_string_article_id();
       if ( !($this->search_string_article_id)) {
+        $this->template->message('Ugyldig artikkel id');
         return; // could not validate that an article_id was submitted
       }
     }
@@ -254,9 +258,10 @@ class ByArticle extends Find {
     ];
 
     $query = new QueryRetailFindByArticle();
+    $query->select_item_info();
     $this->database_retail->select_sinlge_row($query->get());
-    $query = null;
     // $query->print();
+    $query = null;
 
     // all results are handled and printed on screen here
     if ($this->database_retail->result) {
@@ -276,6 +281,8 @@ class ByArticle extends Find {
 
       $this->template->div_start('40', 'inline-block', 'left');
       $this->template->title($brand . ' - ' . '<i>' . $article . '</i>');
+
+      $this->template->line_break();
 
       $this->template->table_start();
       $this->template->table_row_start();
@@ -309,6 +316,47 @@ class ByArticle extends Find {
       $this->template->table_row_end();
       $this->template->table_end();
 
+      $this->template->line_break();
+      $query = new QueryRetailFindByArticle();
+      $query->select_barcodes_by_article_id($article_id);
+      $this->database_retail->select_multi_row($query->get());
+      // $query->print();
+      $query = null;
+      $this->template->title('Strekkoder');
+      $title = 'Nå:';
+      $i = 1;
+      if ($this->database_retail->result) {
+        $this->template->table_start();
+        foreach ($this->database_retail->result as $row) {
+          if ($i === 1) {
+            $this->template->table_row_start();
+            $this->template->_table_row_value($title, 'left');
+            $this->template->_table_row_value($row['barcode'], 'left');
+            $this->template->table_row_end();
+            $title = 'Tidligere:';
+          }
+          else if ($i === 2) {
+            $this->template->table_row_start();
+            $this->template->_table_row_value('------------', 'left');
+            $this->template->_table_row_value('----------------------', 'left');
+            $this->template->table_row_end();
+            $this->template->table_row_start();
+            $this->template->_table_row_value($title, 'left');
+            $this->template->_table_row_value($row['barcode'], 'left');
+            $this->template->table_row_end();
+            $title = '';
+          }
+          else {
+            $this->template->table_row_start();
+            $this->template->_table_row_value($title, 'left');
+            $this->template->_table_row_value($row['barcode'], 'left');
+            $this->template->table_row_end();
+          }
+          $i++;
+        }
+        $this->template->table_end();
+      }
+
       // if we have a registered location, fetch extra location (if exists) from datawarehouse
       $has_location = false;
       if ( ($retail_location != null) and (strlen($retail_location) > 0) ) {
@@ -337,6 +385,7 @@ class ByArticle extends Find {
         $query = new QueryDatawarehouseFind();
         $query->_select_placements_by_article_id();
         $stmt = $this->database_datawarehouse->cnxn->prepare($query->get());
+        $query = null;
         $stmt->execute([':article_id' => $article_id]);
         $title = 'Tidligere:';
         if ($stmt->rowCount() > 0) {
@@ -353,6 +402,8 @@ class ByArticle extends Find {
         }
         $this->template->table_end();
       }
+
+
       // end div for for left side info
       $this->template->div_end();
 

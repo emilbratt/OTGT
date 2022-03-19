@@ -3,15 +3,19 @@
 class QueryRetail {
 
   protected $query;
+  protected $template = "SET LANGUAGE NORWEGIAN\n"; // always use norwegian
   protected $illegal_reserved_words; // simple way to prevent script kiddie level sql injection
   protected $special_characters; // mainly to swap "æ", "ø" and "å" to  "_"
 
   function __construct () {
-    $this->query = "SET LANGUAGE NORWEGIAN\n"; // always use norwegian
-
     $this->illegal_reserved_words = [
       'DATABASE', 'DELETE', 'MODIFY', 'UPDATE', 'INSERT', 'DROP',
     ];
+    $this->start_new();
+  }
+
+  private function start_new () {
+    $this->query = $this->template;
   }
 
   protected function check_illegal_word ($string) {
@@ -51,9 +55,10 @@ class QueryRetail {
     EOT;
   }
 
-
-  public function select_article_id_by_barcode ($ean) {
-    // query to get only the article id from barcode
+  public function select_article_id_by_barcode ($ean = false) {
+    if ( !(isset($_GET['input_field_barcode'])) or !($ean) ) {
+      return;
+    }
     $this->query .= <<<EOT
     SELECT
       Article.articleId AS articleid
@@ -63,6 +68,26 @@ class QueryRetail {
       ArticleEAN ON Article.articleId = ArticleEAN.articleId
     WHERE
       ArticleEAN.eanCode = '$ean'\n
+    EOT;
+  }
+
+  public function select_barcodes_by_article_id ($article_id = false) {
+    if ( isset($_GET['article_id']) ) {
+      $article_id = $_GET['article_id'];
+    }
+    if ( !($article_id) ) {
+      echo 'No article id where passed'; exit(1);
+    }
+    $this->query .= <<<EOT
+    SELECT
+      ArticleEAN.eanCode AS barcode,
+      ArticleEAN.sysGen AS barcode_is_default
+    FROM
+      ArticleEAN
+    WHERE
+      ArticleEAN.articleId = '$article_id'
+    ORDER BY
+      sysGen desc\n
     EOT;
   }
 
@@ -206,7 +231,9 @@ class QueryRetail {
 
   public function get () {
     $this->query = preg_replace('/(\ø|æ|å|Ø|Æ|Å)/', '_', $this->query);
-    return $this->query;
+    $query = $this->query;
+    $this->query = null;
+    return $query;
   }
 
 }

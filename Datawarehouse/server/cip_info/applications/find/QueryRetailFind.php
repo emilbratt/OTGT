@@ -6,7 +6,9 @@ class QueryRetailFindBySearch extends QueryRetail {
 
   function __construct () {
     parent::__construct();
+  }
 
+  public function select_items_by_search () {
     $this->query = <<<EOT
     SELECT
       Article.articleId AS article_id,
@@ -32,6 +34,9 @@ class QueryRetailFindByArticle extends QueryRetail {
   function __construct () {
     parent::__construct();
 
+  }
+
+  public function select_item_info () {
     $this->query .= <<<EOT
     SELECT
       Article.articleId AS article_id,

@@ -118,12 +118,9 @@ class TemplateFind extends Template {
   public function css_by_barcode () {
     $this->css .= <<<EOT
     /* set fixed length for first table column */
-
     td:nth-child(1) {
       width: 150px;
     }
-
-
     #input_field_article {
       display: inline;
       width: 400px;
@@ -133,48 +130,6 @@ class TemplateFind extends Template {
       width: 170px;
     }
     EOT;
-
-    // $this->css .= <<<EOT
-    // /* set fixed length for each table column */
-    // td:nth-child(1) {
-    //   width: 9%;
-    // }
-    // td:nth-child(2) {
-    //   width: 30%;
-    // }
-    // td:nth-child(3) {
-    //   width: 9%;
-    // }
-    // td:nth-child(4) {
-    //   width: 7%;
-    // }
-    // td:nth-child(5) {
-    //   width: 8%;
-    // }
-    // td:nth-child(6) {
-    //   width: 11%;
-    // }
-    // td:nth-child(7) {
-    //   width: 8%;
-    // }
-    // td:nth-child(8) {
-    //   width: 8%;
-    // }
-    // td:nth-child(9) {
-    //   width: 5%;
-    // }
-    // td:nth-child(10) {
-    //   width: 5%;
-    // }
-    // #input_field_article {
-    //   display: inline;
-    //   width: 400px;
-    // }
-    // #input_field_brand {
-    //   display: inline;
-    //   width: 170px;
-    // }
-    // EOT;
   }
 
   public function form_search () {
@@ -243,7 +198,7 @@ class TemplateFind extends Template {
   public function title ($string = 'title') {
     $this->html .= <<<EOT
     <div class="title">
-      <h3>$string</h3>
+      <h3 style="margin-bottom: 2px;">$string</h3>
     </div>\n
     EOT;
   }
