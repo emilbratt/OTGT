@@ -154,16 +154,16 @@ class BySearch extends Find {
     $hyperlink_toggle = new HyperLink();
     $hyperlink_toggle->add_query('items', $this->toggle_expired);
 
-
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
       'Lager' => 'quantity',
       'Plassering' => 'location',
-      'Lev. ID' => 'supplyid',
+      'Lev. ID & Strekkode' => 'supplyid',
     ];
 
     $this->template->hyperlink_button($this->toggle_expired_message, $hyperlink_toggle->url);
+    $hyperlink_toggle = null;
     $this->template->script_filter_row_button();
 
     $this->template->table_full_width_start();
@@ -189,15 +189,17 @@ class BySearch extends Find {
     $this->database_retail->select_multi_row($query->get());
     $query = null;
     if ($this->database_retail->result) {
+      $hyperlink_toggle = new HyperLink();
       foreach ($this->database_retail->result as $row) {
         $article_id = $row['article_id'];
         $barcode = $row['barcode'];
+        $hyperlink_toggle->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_toggle->url);
         $this->template->table_row_value($row['quantity']);
-        $this->template->table_row_value($row['location']);
-        $this->template->table_row_value($row['supplyid']);
+        $this->template->table_row_value($row['location'], $hyperlink_toggle->url);
+        $this->template->table_row_value($row['supplyid'] . ' // ' . $barcode);
         $this->template->table_row_end();
       }
       $this->template->table_end();

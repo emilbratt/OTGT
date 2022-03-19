@@ -435,11 +435,7 @@ class Template {
       return;
     }
     $this->html .= <<<EOT
-        <td>
-          <a href="$hyperlink">
-            <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
-          </a>
-        </td>\n
+        <td><a href="$hyperlink">$string</a></td>\n
     EOT;
   }
 
