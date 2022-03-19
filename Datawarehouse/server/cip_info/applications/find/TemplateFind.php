@@ -177,7 +177,15 @@ class TemplateFind extends Template {
     // EOT;
   }
 
-  public function form_search ($brand = '', $article = '') {
+  public function form_search () {
+    $article = '';
+    if ( isset($_GET['input_field_article'])) {
+      $article = $_GET['input_field_article'];
+    }
+    $brand = '';
+    if ( isset($_GET['input_field_brand'])) {
+      $brand = $_GET['input_field_brand'];
+    }
     $this->html .= <<<EOT
     <div id="input_field_div" style="width: 700px;">
       <form method="GET">
@@ -206,7 +214,11 @@ class TemplateFind extends Template {
     EOT;
   }
 
-  public function form_barcode ($barcode = '') {
+  public function form_barcode () {
+    $barcode = '';
+    if ( isset($_GET['input_field_barcode']) ) {
+      $barcode = $_GET['input_field_barcode'];
+    }
     $this->html .= <<<EOT
     <div id="input_field_div" style="width: 400px;">
       <form method="GET">

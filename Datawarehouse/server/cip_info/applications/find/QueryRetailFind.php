@@ -52,9 +52,6 @@ class QueryRetailFindByArticle extends QueryRetail {
     FROM
       Article
 
-    INNER JOIN
-      ArticleEAN ON Article.articleId = ArticleEAN.articleId
-
     LEFT JOIN
     (
       SELECT
@@ -106,6 +103,24 @@ class QueryRetailFindByArticle extends QueryRetail {
     c ON
       c.c_article_id = Article.ArticleId\n
     EOT;
+
+    if ( isset($_GET['input_field_barcode']) ) {
+      $ean = $_GET['input_field_barcode'];
+      $this->query .= <<<EOT
+      INNER JOIN
+        ArticleEAN ON Article.articleId = ArticleEAN.articleId
+      WHERE
+        ArticleEAN.eanCode = '$ean'\n
+      EOT;
+    }
+    if ( isset($_GET['article_id'])) {
+      $article_id = $_GET['article_id'];
+      $this->query .= <<<EOT
+      WHERE
+        Article.articleId = '$article_id'\n
+      EOT;
+    }
   }
+
 
 }

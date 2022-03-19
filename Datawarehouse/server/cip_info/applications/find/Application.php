@@ -34,6 +34,7 @@ class Find {
   protected $search_string_brand_len;
   protected $search_string_article_len;
   protected $search_string_barcode;
+  protected $search_string_article_id;
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
@@ -91,6 +92,9 @@ class Find {
     $check_len = (strlen($_GET['input_field_barcode']) == 13 or strlen($_GET['input_field_barcode']) >= 8);
     $this->search_string_barcode = ($check_num == true and $check_len == true);
   }
+  protected function validate_search_string_article_id () {
+    $this->search_string_article_id = is_numeric($_GET['article_id']);
+  }
 }
 
 
@@ -117,12 +121,7 @@ class BySearch extends Find {
     $this->database_datawarehouse = new DatabaseDatawarehouse();
 
     // preserving the previous brand and title search if passed, else empty
-    if(isset($_GET['input_field_brand']) and isset($_GET['input_field_article'])) {
-      $this->template->form_search($_GET['input_field_brand'], $_GET['input_field_article']);
-    }
-    else {
-      $this->template->form_search();
-    }
+    $this->template->form_search();
 
     // if form is passed, handle query and show result table
     if(isset($_GET['input_field_brand']) or isset($_GET['input_field_article'])) {
@@ -214,18 +213,11 @@ class ByArticle extends Find {
 
   public function run () {
     $this->environment = new Environment();
-    $this->database_retail = new DatabaseRetail();
 
-    // preserving the previous brand and title search if passed, else empty
-    if ( isset($_GET['input_field_barcode']) or isset($_GET['input_field_article']) ) {
-      $this->template->form_barcode($_GET['input_field_barcode']);
-    }
-    else {
-      $this->template->form_barcode();
-    }
+    $this->template->form_barcode();
 
-    // if form is passed, handle query
-    if(isset($_GET['input_field_barcode'])) {
+    // if form is passed or get request with article id, handle request
+    if ( isset($_GET['input_field_barcode']) or isset($_GET['article_id']) ) {
       $this->result_set();
     }
 
@@ -233,15 +225,20 @@ class ByArticle extends Find {
   }
 
   private function result_set () {
-    // if search string is to short, the query will become to expensive
-    // and potentially to many rows; we set a lower limit to characters
-    $this->validate_search_string_barcode();
-    if ( !($this->search_string_barcode) ) {
-      return; // could not validate that a barcode as input
-    }
+    $this->database_retail = new DatabaseRetail();
 
-    $query = new QueryRetailFindByArticle();
-    $query->where_barcode($force_where = true);
+    if ( isset($_GET['input_field_barcode']) ) {
+      $this->validate_search_string_barcode();
+      if ( !($this->search_string_barcode) ) {
+        return; // could not validate that a barcode was submitted
+      }
+    }
+    if ( isset($_GET['article_id']) ) {
+      $this->validate_search_string_article_id();
+      if ( !($this->search_string_article_id)) {
+        return; // could not validate that an article_id was submitted
+      }
+    }
 
     $table_headers = [
       'Merke' => 'brand',
@@ -256,9 +253,10 @@ class ByArticle extends Find {
       'Solgt siste 6 måneder' => 'qty_sold_last_6_months',
     ];
 
+    $query = new QueryRetailFindByArticle();
     $this->database_retail->select_sinlge_row($query->get());
-    // $query->print();
     $query = null;
+    // $query->print();
 
     // all results are handled and printed on screen here
     if ($this->database_retail->result) {
