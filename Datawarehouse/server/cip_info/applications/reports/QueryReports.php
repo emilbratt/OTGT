@@ -34,6 +34,7 @@ class QueryReports extends QueryRetail {
   public function sold_out () {
     $this->query .= <<<EOT
     SELECT
+      Article.articleId AS article_id,
       Brands.brandLabel AS brand,
       Article.articleName AS article,
       CAST (stockQty AS INT) AS quantity,
@@ -146,6 +147,7 @@ class QueryReports extends QueryRetail {
     }
     $this->query .= <<<EOT
     SELECT
+      Article.articleId AS article_id,
       Brands.brandLabel AS brand,
       Article.articleName AS article,
       CAST(StockAdjustment.adjustmentQty AS INT) AS import_qty,
@@ -272,6 +274,7 @@ class QueryReports extends QueryRetail {
     }
     $this->query .= <<<EOT
     SELECT
+      Article.articleId AS article_id,
       hipUser.userFirstName AS name,
       Brands.brandLabel AS brand,
       Article.articleName AS article,
@@ -396,6 +399,7 @@ class QueryReports extends QueryRetail {
     $stock_limit = $_GET['input_field_stock_num'];
     $this->query .= <<<EOT
     SELECT
+      Article.articleId AS article_id,
       Brands.brandLabel AS brand,
       Article.articleName AS article,
       CONVERT(VARCHAR(10), articleStock.lastSold, 23) AS lastsold,

@@ -133,17 +133,19 @@ class Soldout extends Reports {
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
     $this->template->table_row_end();
-
+    $hyperlink_header = null;
     $query = new QueryReports();
     $query->sold_out();
-    // $query->print();
+    $hyperlink_row = new HyperLink();
     try {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
+        $article_id = $row['article_id'];
+        $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
         $this->template->table_row_value($row['quantity']);
-        $this->template->table_row_value($row['location']);
+        $this->template->table_row_value($row['location'], $hyperlink_row->url);
         $this->template->table_row_value($row['lastimported']);
         $this->template->table_row_value($row['lastsold']);
         $this->template->table_row_value($row['supplyid']);
@@ -234,14 +236,17 @@ class Imported extends Reports {
     $query = new QueryReports();
     $query->imported();
     // $query->print();
+    $hyperlink_row = new HyperLink();
     try {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
+        $article_id = $row['article_id'];
+        $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
         $this->template->table_row_value($row['quantity']);
-        $this->template->table_row_value($row['location']);
+        $this->template->table_row_value($row['location'], $hyperlink_row->url);
         $this->template->table_row_value($row['lastimported']);
         $this->template->table_row_value($row['supplyid']);
         $this->template->table_row_end();
@@ -257,7 +262,7 @@ class Imported extends Reports {
       exit(1);
     }
     $this->template->table_end();
-
+    $hyperlink_row = null;
     $this->template->print();
   }
 
@@ -329,13 +334,15 @@ class Sales extends Reports {
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->sales();
-    // $query->print();
+    $hyperlink_row = new HyperLink();
     try {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
+        $article_id = $row['article_id'];
+        $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['name']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
         $this->template->table_row_value($row['soldqty']);
         $this->template->table_row_value($row['salesdate']);
         $this->template->table_row_value(round($row['price'], 2));
@@ -352,7 +359,7 @@ class Sales extends Reports {
       exit(1);
     }
     $this->template->table_end();
-
+    $hyperlink_row = null;
     $this->template->print();
   }
 
@@ -416,15 +423,17 @@ class NotSoldLately extends Reports {
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->in_stock_not_sold_lately();
-    // $query->print();
+    $hyperlink_row = new HyperLink();
     try {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
+        $article_id = $row['article_id'];
+        $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
         $this->template->table_row_value($row['lastsold']);
         $this->template->table_row_value($row['quantity']);
-        $this->template->table_row_value($row['location']);
+        $this->template->table_row_value($row['location'], $hyperlink_row->url);
         $this->template->table_row_value($row['lastimported']);
         $this->template->table_row_value($row['supplyid']);
         $this->template->table_row_end();

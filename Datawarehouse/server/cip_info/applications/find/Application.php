@@ -189,16 +189,16 @@ class BySearch extends Find {
     $this->database_retail->select_multi_row($query->get());
     $query = null;
     if ($this->database_retail->result) {
-      $hyperlink_toggle = new HyperLink();
+      $hyperlink_row = new HyperLink();
       foreach ($this->database_retail->result as $row) {
         $article_id = $row['article_id'];
         $barcode = $row['barcode'];
-        $hyperlink_toggle->link_redirect_query('find/byarticle', 'article_id', $article_id);
+        $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_toggle->url);
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
         $this->template->table_row_value($row['quantity']);
-        $this->template->table_row_value($row['location'], $hyperlink_toggle->url);
+        $this->template->table_row_value($row['location'], $hyperlink_row->url);
         $this->template->table_row_value($row['supplyid'] . ' // ' . $barcode);
         $this->template->table_row_end();
       }
