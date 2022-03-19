@@ -124,11 +124,12 @@ class BySearch extends Find {
       $this->template->form_search();
     }
 
-    // if form is passed, handle query
+    // if form is passed, handle query and show result table
     if(isset($_GET['input_field_brand']) or isset($_GET['input_field_article'])) {
       $this->result_set();
     }
 
+    $this->template->css_by_search();
     $this->template->print();
   }
 
@@ -199,7 +200,6 @@ class BySearch extends Find {
         $this->template->table_row_end();
       }
       $this->template->table_end();
-      $this->template->css_by_search();
     }
   }
 
@@ -257,6 +257,7 @@ class ByArticle extends Find {
     ];
 
     $this->database_retail->select_sinlge_row($query->get());
+    // $query->print();
     $query = null;
 
     // all results are handled and printed on screen here

@@ -88,30 +88,32 @@ class QueryRetail {
   }
 
   public function where_article () {
-    $string = $_GET['input_field_article'];
-    if ($string == '') {
+    $article = $_GET['input_field_article'];
+    if ($article == '') {
       return;
     }
     // we split the string by whitespace and add a conditional for each
     // word creating a way to get resaults regardless of where the
     // word originally is positioned by the article we are searching
-    $array = explode(' ', $string);
-    foreach ($array as $string) {
+    $arr_article = explode(' ', $article);
+    foreach ($arr_article as $article) {
       // i dont know how to use prepared statements for a multi word search..
       // while this is a kind of naive way to secure queries against
       // injection, it is better than nothing at this point..
       // you can for example write DELETE- (notice the hyphen) and it
       // willl go unnoticed however, this will never be public facing
 
-      $this->check_illegal_word($string);
+      $this->check_illegal_word($article);
       if ( $this->has_where() ) {
         $this->query .= <<<EOT
-        AND Article.articleName LIKE '%$string%'\n
+        AND
+          Article.articleName LIKE '%$article%'\n
         EOT;
       }
       else {
         $this->query .= <<<EOT
-        WHERE Article.articleName LIKE '%$string%'\n
+        WHERE
+          Article.articleName LIKE '%$article%'\n
         EOT;
       }
     }
@@ -139,18 +141,21 @@ class QueryRetail {
     if ($force_where) {
       // skip checking if WHERE is present in the query (mostly for nested queries that has where in them)
       $this->query .= <<<EOT
-      WHERE ArticleEAN.eanCode = '$ean'\n
+      WHERE
+        ArticleEAN.eanCode = '$ean'\n
       EOT;
       return;
     }
     if ( $this->has_where() ) {
       $this->query .= <<<EOT
-      AND ArticleEAN.eanCode = '$ean'\n
+      AND
+        ArticleEAN.eanCode = '$ean'\n
       EOT;
     }
     else {
       $this->query .= <<<EOT
-      WHERE ArticleEAN.eanCode = '$ean'\n
+      WHERE
+        ArticleEAN.eanCode = '$ean'\n
       EOT;
     }
   }
