@@ -117,8 +117,6 @@ class BySearch extends Find {
 
   public function run () {
     $this->environment = new Environment();
-    $this->database_retail = new DatabaseRetail();
-    $this->database_datawarehouse = new DatabaseDatawarehouse();
 
     // preserving the previous brand and title search if passed, else empty
     $this->template->form_search();
@@ -156,13 +154,7 @@ class BySearch extends Find {
     $hyperlink_toggle = new HyperLink();
     $hyperlink_toggle->add_query('items', $this->toggle_expired);
 
-    $query = new QueryRetailFindBySearch();
-    $query->select_items_by_search();
-    $query->where_brand();
-    $query->where_article();
-    $query->where_article_expired();
-    $query->sort_by();
-    // $query->print();
+
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
@@ -187,8 +179,14 @@ class BySearch extends Find {
     }
     $this->template->table_row_end();
 
+    $query = new QueryRetailFindBySearch();
+    $query->select_items_by_search();
+    $query->where_brand();
+    $query->where_article();
+    $query->where_article_expired();
+    $query->sort_by();
+    $this->database_retail = new DatabaseRetail();
     $this->database_retail->select_multi_row($query->get());
-
     $query = null;
     if ($this->database_retail->result) {
       foreach ($this->database_retail->result as $row) {
@@ -229,7 +227,6 @@ class ByArticle extends Find {
   }
 
   private function result_set () {
-    $this->database_retail = new DatabaseRetail();
 
     if ( isset($_GET['input_field_barcode']) ) {
       $this->validate_search_string_barcode();
@@ -261,6 +258,7 @@ class ByArticle extends Find {
 
     $query = new QueryRetailFindByArticle();
     $query->select_item_info();
+    $this->database_retail = new DatabaseRetail();
     $this->database_retail->select_sinlge_row($query->get());
     // $query->print();
     $query = null;
@@ -404,7 +402,6 @@ class ByArticle extends Find {
         }
         $this->template->table_end();
       }
-
 
       // end div for for left side info
       $this->template->div_end();
