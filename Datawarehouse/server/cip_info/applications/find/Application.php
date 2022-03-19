@@ -106,6 +106,11 @@ class Home extends Find {
 
 class BySearch extends Find {
 
+  /*
+   * this page will list a result table based on kewords for article name and
+   * brand name passed by the user
+   */
+
   public function run () {
     $this->environment = new Environment();
     $this->database_retail = new DatabaseRetail();
@@ -184,13 +189,13 @@ class BySearch extends Find {
     $this->database_retail->select_multi_row($query->get());
     if ($this->database_retail->result) {
       foreach ($this->database_retail->result as $row) {
-        $article = $row['articleid'];
+        $article_id = $row['article_id'];
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['quantity']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['location']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['supplyid']));
+        $this->template->table_row_value($row['quantity']);
+        $this->template->table_row_value($row['location']);
+        $this->template->table_row_value($row['supplyid']);
         $this->template->table_row_end();
       }
       $this->template->table_end();
@@ -201,14 +206,18 @@ class BySearch extends Find {
 }
 
 
-class ByBarcode extends Find {
+class ByArticle extends Find {
+
+  /*
+   * this page will find one item either by barcode or by article_id
+   */
 
   public function run () {
     $this->environment = new Environment();
     $this->database_retail = new DatabaseRetail();
 
     // preserving the previous brand and title search if passed, else empty
-    if(isset($_GET['input_field_barcode'])) {
+    if ( isset($_GET['input_field_barcode']) or isset($_GET['input_field_article']) ) {
       $this->template->form_barcode($_GET['input_field_barcode']);
     }
     else {
@@ -231,7 +240,7 @@ class ByBarcode extends Find {
       return; // could not validate that a barcode as input
     }
 
-    $query = new QueryRetailFindByBarcode();
+    $query = new QueryRetailFindByArticle();
     $query->where_barcode($force_where = true);
 
     $table_headers = [
@@ -322,7 +331,6 @@ class ByBarcode extends Find {
         $this->template->_table_row_value('--------', 'left');
         $this->template->table_row_end();
         $this->template->table_end();
-        // $this->template->line_break();
 
         // add extra registered placement from datawarehouse
         $this->template->table_start();
