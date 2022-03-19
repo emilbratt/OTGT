@@ -16,13 +16,18 @@ class QueryRetailFindBySearch extends QueryRetail {
       Article.articleName AS article,
       CAST (stockQty AS INT) AS quantity,
       articleStock.StorageShelf AS location,
-      Article.suppliers_art_no AS supplyid
+      Article.suppliers_art_no AS supplyid,
+      ArticleEAN.eanCode AS barcode
     FROM
       Article
     INNER JOIN
       articleStock ON Article.articleId = articleStock.articleId
     INNER JOIN
-      Brands ON Article.brandId = Brands.brandId\n
+      Brands ON Article.brandId = Brands.brandId
+    INNER JOIN
+      ArticleEAN ON Article.articleId = ArticleEAN.articleId
+    WHERE
+      ArticleEAN.sysGen = '1'\n
     EOT;
   }
 

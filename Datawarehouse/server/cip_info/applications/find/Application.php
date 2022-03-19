@@ -162,7 +162,7 @@ class BySearch extends Find {
     $query->where_article();
     $query->where_article_expired();
     $query->sort_by();
-
+    // $query->print();
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
@@ -188,10 +188,12 @@ class BySearch extends Find {
     $this->template->table_row_end();
 
     $this->database_retail->select_multi_row($query->get());
+
     $query = null;
     if ($this->database_retail->result) {
       foreach ($this->database_retail->result as $row) {
         $article_id = $row['article_id'];
+        $barcode = $row['barcode'];
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
