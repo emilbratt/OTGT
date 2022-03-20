@@ -14,6 +14,7 @@ class Developing {
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
     require_once '../applications/DatabaseDatawarehouse.php';
+    require_once '../applications/HyperLink.php';
     require_once '../applications/developing/TemplateDeveloping.php';
     require_once '../applications/developing/NavigationDeveloping.php';
 
@@ -102,21 +103,26 @@ class SQLShell extends Developing {
 }
 
 
-class API extends Developing {
-
-  public function run () {
-    $this->template->message('api for testing');
-    $this->template->print();
-  }
-
-}
-
-
 class FetchAPI extends Developing {
 
   public function run () {
+    // fetch json content from api application
+    // api application not ready
     $this->template->title('testing requests using fetch api');
     $this->template->message('about: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API');
+    $link = new Hyperlink();
+    $link->link_redirect('api');
+    $api_home = $link->url;
+    $this->template->message($api_home);
+    $script = <<<EOT
+    <script>
+    console.log('Hello World');
+    console.log(fetch('$api_home'))
+      <!-- then(res => console.log(res)) -->
+    </script>
+    EOT;
+    $link = null;
+    $this->template->custom_script($script);
     $this->template->print();
   }
 

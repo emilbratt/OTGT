@@ -25,10 +25,10 @@ class Navigation {
     $this->top_nav_links['Om'] = $this->uri . '/about';
 
     if ($this->environment->developement('show_nav_links')) {
-
-      // extra menu entries shown if environment set accordingly
+      // nav entries shown if environment [developement] -> show_nav_links == true
       $this->top_nav_links['Utvikling'] = $this->uri . '/developing';
       $this->top_nav_links['Instrukser'] = $this->uri . '/instructions';
+      $this->top_nav_links['API'] = $this->uri . '/api';
     }
   }
 
