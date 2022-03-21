@@ -46,6 +46,7 @@ class Find {
     require_once '../applications/find/QueryRetailFind.php';
     require_once '../applications/find/QueryDatawarehouseFind.php';
 
+    $this->environment = new Environment();
     $this->template = new TemplateFind();
     $this->navigation = new NavigationFind();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
@@ -116,16 +117,11 @@ class BySearch extends Find {
    */
 
   public function run () {
-    $this->environment = new Environment();
-
-    // preserving the previous brand and title search if passed, else empty
     $this->template->form_search();
-
     // if form is passed, handle query and show result table
     if(isset($_GET['input_field_brand']) or isset($_GET['input_field_article'])) {
       $this->result_set();
     }
-
     $this->template->css_by_search();
     $this->template->print();
   }
@@ -216,8 +212,6 @@ class ByArticle extends Find {
    */
 
   public function run () {
-    $this->environment = new Environment();
-
     $this->template->form_barcode();
 
     // if form is passed or get request with article id, handle request
