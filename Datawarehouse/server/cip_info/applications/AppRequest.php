@@ -50,7 +50,7 @@ class Apprequest {
     }
 
     if ($this->show_errors) {
-      echo "Directory: " . $_SERVER['HTTP_HOST'] . "/$this->app_dir not found";
+      echo "Directory: applications/$this->app_dir not found";
     }
     http_response_code(404);
     exit(1);
