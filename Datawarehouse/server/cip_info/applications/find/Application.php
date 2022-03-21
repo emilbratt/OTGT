@@ -255,7 +255,6 @@ class ByArticle extends Find {
       'Lev. ID' => 'supplyid',
       'Sist Importert' => 'lastimported',
       'Sist Solgt' => 'lastsold',
-      'Solgt siste 6 måneder' => 'qty_sold_last_6_months',
     ];
 
     $query = new QueryRetailFindByArticle();
@@ -277,7 +276,6 @@ class ByArticle extends Find {
       $supplyid = $this->database_retail->result['supplyid'];
       $lastimported = $this->database_retail->result['lastimported'];
       $lastsold = $this->database_retail->result['lastsold'];
-      $qty_sold_last_6_months = $this->database_retail->result['qty_sold_last_6_months'];
 
       $this->template->div_start('100', 'block');
 
@@ -311,10 +309,6 @@ class ByArticle extends Find {
       $this->template->table_row_start();
       $this->template->_table_row_value('Sist solgt:', 'left');
       $this->template->_table_row_value($lastsold, 'left');
-      $this->template->table_row_end();
-      $this->template->table_row_start();
-      $this->template->_table_row_value('Solgt siste halvår:', 'left');
-      $this->template->_table_row_value($qty_sold_last_6_months . ' stk.', 'left');
       $this->template->table_row_end();
       $this->template->table_end();
 

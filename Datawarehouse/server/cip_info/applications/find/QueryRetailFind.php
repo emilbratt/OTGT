@@ -53,11 +53,7 @@ class QueryRetailFindByArticle extends QueryRetail {
       location,
       supplyid,
       lastimported,
-      lastsold,
-      CASE
-        WHEN qty_sold_last_6_months IS NULL THEN 0
-        ELSE qty_sold_last_6_months
-      END AS qty_sold_last_6_months
+      lastsold
 
     FROM
       Article
@@ -94,24 +90,7 @@ class QueryRetailFindByArticle extends QueryRetail {
         Brands ON Article.brandId = Brands.brandId
     )
     b ON
-      b.b_article_id = Article.ArticleId
-
-    LEFT JOIN
-    (
-      SELECT
-        Article.ArticleId AS c_article_id,
-        CAST (SUM(adjustmentQty) AS INT) AS qty_sold_last_6_months
-      FROM
-        Article
-      INNER JOIN
-        StockAdjustment ON Article.articleId = StockAdjustment.articleId
-      WHERE
-        adjustmentCode ='9' AND
-        adjustmentDate >= DATEADD(DD, -180, CURRENT_TIMESTAMP)
-      GROUP BY Article.ArticleId
-    )
-    c ON
-      c.c_article_id = Article.ArticleId\n
+      b.b_article_id = Article.ArticleId\n
     EOT;
 
     if ( isset($_GET['input_field_barcode']) ) {
