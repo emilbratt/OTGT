@@ -75,10 +75,13 @@ class Home extends API {
         ['url' => 'api/test/v0/hello', 'method' => 'GET', 'info' => 'request hello to get dummy data'],
          ['url' => 'api/test/v0/foo', 'method' => 'GET', 'info' => 'request foo to get dummy data'],
        ],
+      'Placement' => [
+         ['url' => 'api/placement/v0/placement{article_id},{location}', 'method' => 'PUT', 'info' => 'update placement for item'],
+       ],
       'Brands' => [
          ['url' => 'api/brands/v0/all', 'method' => 'GET', 'info' => 'get list of all brands'],
          ['url' => 'api/brands/v0/brand/{brand_id}', 'method' => 'GET', 'info' => 'get info for specific brand'],
-         ['url' => 'api/placement/v0/placement{article_id},{location}', 'method' => 'PUT', 'info' => 'update placement for item'],
+
        ],
     ];
   }
