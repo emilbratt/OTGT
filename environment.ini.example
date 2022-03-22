@@ -10,6 +10,7 @@
 
 [datawarehouse] ; connect to the datawarehouse server and/or database
   server_ip = "INSERT"
+  dev_port = "INSERT"
   db_server = "INSERT"
   db_port = "INSERT"
   db_name = "INSERT"
