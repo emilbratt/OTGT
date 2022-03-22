@@ -152,7 +152,30 @@ class Home extends Placement {
       $stmt = $database_datawarehouse->cnxn->prepare($query_datawarehouse->get());
 
       $values = ['article_id' => $this->article_id, 'shelf' => $this->shelf, 'timestamp' => $timestamp, 'yyyymmdd' => $yyyymmdd];
-      $stmt->execute($values);
+      // since article_id constraint might not have been updated to datawareouse
+      // we make a try / exception to handle that specific case
+      try {
+        $stmt->execute($values);
+      }
+      catch(PDOException $e)  {
+        if (strpos($e, 'Integrity constraint violation') !== false) {
+          $this->template->message('Info: denne varen finnes kun i HIP databasen foreløpig');
+        }
+        else {
+          $dev_phone = $this->environment->contact_dev('phone');
+          $dev_email = $this->environment->contact_dev('email');
+          $dev = $this->environment->contact_dev('name');
+          $this->template->title('Noe galt skjedde');
+          $this->template->message('Kontakt: ' . $dev);
+          $this->template->message('Epost: ' . $dev_email);
+          $this->template->message('Telefon: ' .$dev_phone);
+          $this->template->message('Og oppgi informasjonen under');
+          $this->template->message($e);
+          $this->template->print();
+          exit(1);
+        }
+      }
+
     }
 
     private function validate_article_id () {
