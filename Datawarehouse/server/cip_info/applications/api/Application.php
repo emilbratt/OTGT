@@ -93,11 +93,6 @@ class Home extends API {
     foreach ( $this->current_api_endpoints as $endpoint => $desc ) {
       $this->template->endpoint_title($endpoint);
       $this->template->table_start();
-      $this->template->table_row_start();
-      $this->template->table_row_header('Method');
-      $this->template->table_row_header('URL');
-      $this->template->table_row_header('Description');
-      $this->template->table_row_end();
       foreach ($desc as $row ) {
         $this->hyperlink->link_redirect($row['url']);
         $this->template->table_row_start();
