@@ -29,8 +29,16 @@ class APIEndpoint {
       $this->http_response_code = 404;
       return;
     }
-    $this->data = $this->dummy_data[$this->request[0]];
-    $this->http_response_code = 200;
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      $this->data = $this->dummy_data[$this->request[0]];
+      $this->http_response_code = 200;
+      return;
+    }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $this->data = $_POST;
+      $this->http_response_code = 200;
+      return;
+    }
 
   }
 

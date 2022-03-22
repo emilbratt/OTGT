@@ -56,7 +56,6 @@ class Home extends API {
   * about the api endpoints that exists
   */
   protected $template;
-  protected $hyperlink;
   protected $navigation;
   protected $current_api_endpoints;
 
@@ -67,12 +66,12 @@ class Home extends API {
 
     $this->template = new TemplateAPI();
     $this->navigation = new NavigationAPI();
-    $this->hyperlink = new HyperLink();
 
     // update this list as new api endponts are added
     $this->current_api_endpoints = [
       'Test' => [
         ['url' => 'api/test/v0/hello', 'method' => 'GET', 'info' => 'request hello to get dummy data'],
+        ['url' => 'api/test/v0/hello', 'method' => 'POST', 'info' => 'request hello and get back the post data you sent'],
          ['url' => 'api/test/v0/foo', 'method' => 'GET', 'info' => 'request foo to get dummy data'],
        ],
       'Placement' => [
@@ -94,10 +93,9 @@ class Home extends API {
       $this->template->endpoint_title($endpoint);
       $this->template->table_start();
       foreach ($desc as $row ) {
-        $this->hyperlink->link_redirect($row['url']);
         $this->template->table_row_start();
         $this->template->table_row_value($row['method']);
-        $this->template->table_row_value($row['url'], $this->hyperlink->url);
+        $this->template->table_row_value($row['url']);
         $this->template->table_row_value($row['info']);
         $this->template->table_row_end();
       }
