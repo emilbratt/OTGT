@@ -56,9 +56,9 @@ if __name__ == '__main__':
     if USE_TLS:
         HTTP = 'https'
 
-    REDIRECT = 'api/test/v0/hello'
 
     if len(sys.argv) == 1:
+        REDIRECT = 'api/test/v0/hello'
         URL = HTTP + '://' + URL + ':' + PORT + '/' + REDIRECT
 
         get(URL)
