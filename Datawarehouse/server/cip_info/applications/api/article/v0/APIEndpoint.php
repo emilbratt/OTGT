@@ -16,18 +16,15 @@ class APIEndpoint {
 
   public function run () {
     switch ($this->request[0]) {
-      case "article_movement":
-        $this->article_movement();
+      case 'movement':
+        $this->movement();
         break;
-      case "article_movement":
+      case 'sales':
         echo 'article sales not implemented'; die;
         break;
-      case "article_imports":
-        echo "article imports not implemented"; die;
+      case 'imports':
+        echo 'article imports not implemented'; die;
         break;
-      default:
-        echo "whoops 404";
-        $this->http_response_code = 404;
     }
   }
 
@@ -39,7 +36,7 @@ class APIEndpoint {
     return $this->http_response_code;
   }
 
-  private function article_movement () {
+  private function movement () {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
       $this->data = '';
       $this->http_response_code = 404;

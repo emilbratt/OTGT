@@ -38,6 +38,14 @@ def post (URL, data):
     print(r.json())
     print()
 
+def put (URL, data):
+    r = requests.put(URL, data)
+    print('POST request: ' + r.url)
+    print('Response: ' + str(r.status_code))
+    print(r.json())
+    # print(r.text())
+    print()
+
 
 if __name__ == '__main__':
     if not os.path.isfile(ENVIRONMENT_FILE):
@@ -58,8 +66,9 @@ if __name__ == '__main__':
 
 
     if len(sys.argv) == 1:
-        REDIRECT = 'api/test/v0/hello'
+        REDIRECT = 'api/placement/v0/update_by_article_id'
         URL = HTTP + '://' + URL + ':' + PORT + '/' + REDIRECT
 
-        get(URL)
-        post(URL, {'foo': 'baaar'})
+        # get(URL)
+        post(URL, {'128288': 'a-a-1'})
+        # get(URL, {'foo': 'baaar'})

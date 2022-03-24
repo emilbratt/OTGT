@@ -46,6 +46,15 @@ class API {
     http_response_code($this->http_response_code);
   }
 
+  public function run () {
+    $this->handle_api_request();
+    $api = new APIEndpoint($this->api_request);
+    $api->run();
+    $this->data = $api->get_data();
+    $this->http_response_code = $api->get_return_code();
+    $this->send_json();
+  }
+
 }
 
 
@@ -72,6 +81,7 @@ class Home extends API {
     $this->navigation = new NavigationAPI();
     $hyperlink->link_redirect();
     $home = $hyperlink->url;
+
     // update this list as new api endponts are added
     $this->current_api_endpoints = [
       'Test' => [
@@ -79,11 +89,12 @@ class Home extends API {
         ['url' => "$home/api/test/v0/hello", 'method' => 'POST', 'info' => 'request hello and get back the post data you sent'],
          ['url' => "$home/api/test/v0/foo", 'method' => 'GET', 'info' => 'request foo to get dummy data'],
        ],
-      'Placement' => [
-         ['url' => "$home/api/placement/v0/placement{article_id},{location}", 'method' => 'PUT', 'info' => 'update placement for item'],
-       ],
       'Article' => [
-         ['url' => "$home/api/article/v0/article_movement", 'method' => 'GET', 'info' => 'get list of all movements for specific item'],
+         ['url' => "$home/api/article/v0/movement/{article_id}", 'method' => 'GET', 'info' => 'get list of all movements for specific item'],
+       ],
+      'Placement' => [
+         ['url' => "$home/api/placement/v0/update_by_article_id [ [article_id, placement], ..]", 'method' => 'POST', 'info' => 'placement for item by article id'],
+         ['url' => "$home/api/placement/v0/update_by_barcode [ [barcode, placement], ..]", 'method' => 'POST', 'info' => 'placement for item by barcode'],
        ],
       'Brands' => [
          ['url' => "$home/api/brands/v0/all", 'method' => 'GET', 'info' => 'get list of all brands'],
@@ -114,42 +125,19 @@ class Home extends API {
 }
 
 
-class Brands extends API {
 
-  public function run () {
-    $this->handle_api_request();
-    $api = new APIEndpoint($this->api_request);
-    $api->run();
-    $this->data = $api->get_data();
-    $this->http_response_code = $api->get_return_code();
-    $this->send_json();
-  }
+class Brands extends API {
 
 }
 
-
 class Article extends API {
 
-  public function run () {
-    $this->handle_api_request();
-    $api = new APIEndpoint($this->api_request);
-    $api->run();
-    $this->data = $api->get_data();
-    $this->http_response_code = $api->get_return_code();
-    $this->send_json();
-  }
+}
+
+class Placement extends API {
 
 }
 
 class Test extends API {
-
-  public function run () {
-    $this->handle_api_request();
-    $api = new APIEndpoint($this->api_request);
-    $api->run();
-    $this->data = $api->get_data();
-    $this->http_response_code = $api->get_return_code();
-    $this->send_json();
-  }
 
 }
