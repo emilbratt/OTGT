@@ -3,18 +3,19 @@
 class API {
 
   protected $page = 'Api';
+  protected $data;
   protected $api_name;
   protected $api_endpoint;
   protected $api_request;
   protected $environment;
   protected $http_method;
   protected $api_verison;
-  protected $data;
   protected $http_response_code;
 
 
   protected function handle_api_request () {
-    $this->http_response_code = 500;
+    $this->http_response_code = 204;
+
     // get the name that comes after api/
     $this->api_name = explode ('/', $_SERVER['REDIRECT_URL'], 4)[2];
     $delimiter = strtolower($this->api_name.'/');
@@ -28,8 +29,10 @@ class API {
      */
      $endpoint = explode ($delimiter, $_SERVER['REDIRECT_URL'], 2)[1];
      $query_string = explode ('/', $endpoint, 2);
+
      // extract version number from query string
      $this->api_verison = $query_string[0];
+
      // extract request form query string as array separated by /
      $this->api_request = explode ('/', $query_string[1]);
      require_once "../applications/api/$this->api_name/$this->api_verison/APIEndpoint.php";
@@ -52,7 +55,7 @@ class Home extends API {
   * only the home page should render a template
   * while the rest of the api app serves json
   *
-  * this page iso nly meant to print out information
+  * this page is only meant to print out information
   * about the api endpoints that exists
   */
   protected $template;
@@ -64,25 +67,27 @@ class Home extends API {
     require_once '../applications/api/NavigationAPI.php';
     require_once '../applications/api/TemplateAPI.php';
 
+    $hyperlink = new HyperLink();
     $this->template = new TemplateAPI();
     $this->navigation = new NavigationAPI();
-
+    $hyperlink->link_redirect();
+    $home = $hyperlink->url;
     // update this list as new api endponts are added
     $this->current_api_endpoints = [
       'Test' => [
-        ['url' => 'api/test/v0/hello', 'method' => 'GET', 'info' => 'request hello to get dummy data'],
-        ['url' => 'api/test/v0/hello', 'method' => 'POST', 'info' => 'request hello and get back the post data you sent'],
-         ['url' => 'api/test/v0/foo', 'method' => 'GET', 'info' => 'request foo to get dummy data'],
+        ['url' => "$home/api/test/v0/hello", 'method' => 'GET', 'info' => 'request hello to get dummy data'],
+        ['url' => "$home/api/test/v0/hello", 'method' => 'POST', 'info' => 'request hello and get back the post data you sent'],
+         ['url' => "$home/api/test/v0/foo", 'method' => 'GET', 'info' => 'request foo to get dummy data'],
        ],
       'Placement' => [
-         ['url' => 'api/placement/v0/placement{article_id},{location}', 'method' => 'PUT', 'info' => 'update placement for item'],
+         ['url' => "$home/api/placement/v0/placement{article_id},{location}", 'method' => 'PUT', 'info' => 'update placement for item'],
        ],
       'Article' => [
-         ['url' => 'api/article/v0/article_movement', 'method' => 'GET', 'info' => 'get list of all movements for specific item'],
+         ['url' => "$home/api/article/v0/article_movement", 'method' => 'GET', 'info' => 'get list of all movements for specific item'],
        ],
       'Brands' => [
-         ['url' => 'api/brands/v0/all', 'method' => 'GET', 'info' => 'get list of all brands'],
-         ['url' => 'api/brands/v0/brand/{brand_id}', 'method' => 'GET', 'info' => 'get info for specific brand'],
+         ['url' => "$home/api/brands/v0/all", 'method' => 'GET', 'info' => 'get list of all brands'],
+         ['url' => "$home/api/brands/v0/brand/{brand_id}", 'method' => 'GET', 'info' => 'get info for specific brand'],
        ],
     ];
   }

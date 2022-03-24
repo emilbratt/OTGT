@@ -53,6 +53,7 @@ class APIEndpoint {
       $this->http_response_code = 500;
       return;
     }
+
     $article_id = $this->request[1];
     $query = new APIQueryRetail();
     $query->article_movement($article_id);

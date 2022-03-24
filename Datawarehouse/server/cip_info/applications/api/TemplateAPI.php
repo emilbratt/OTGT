@@ -61,7 +61,7 @@ class TemplateAPI extends Template {
       width: 80px;
     }
     td:nth-child(2) {
-      width: 600px;
+      width: 750px;
     }
     td:nth-child(3) {
       width: 600px;
