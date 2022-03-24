@@ -77,10 +77,12 @@ class Home extends API {
       'Placement' => [
          ['url' => 'api/placement/v0/placement{article_id},{location}', 'method' => 'PUT', 'info' => 'update placement for item'],
        ],
+      'Article' => [
+         ['url' => 'api/article/v0/article_movement', 'method' => 'GET', 'info' => 'get list of all movements for specific item'],
+       ],
       'Brands' => [
          ['url' => 'api/brands/v0/all', 'method' => 'GET', 'info' => 'get list of all brands'],
          ['url' => 'api/brands/v0/brand/{brand_id}', 'method' => 'GET', 'info' => 'get info for specific brand'],
-
        ],
     ];
   }
@@ -108,6 +110,20 @@ class Home extends API {
 
 
 class Brands extends API {
+
+  public function run () {
+    $this->handle_api_request();
+    $api = new APIEndpoint($this->api_request);
+    $api->run();
+    $this->data = $api->get_data();
+    $this->http_response_code = $api->get_return_code();
+    $this->send_json();
+  }
+
+}
+
+
+class Article extends API {
 
   public function run () {
     $this->handle_api_request();
