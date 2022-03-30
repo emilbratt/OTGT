@@ -92,7 +92,7 @@ DocumentRoot /var/www/html/OTGT/Datawarehouse/server/cip/document_root
 
 Enable override all for this directory for .htaccess to work
 ```
-<Directory "/var/www/html/OTGT/Datawarehouse/server/cip/document_root">
+<Directory "/var/www/html/OTGT/Datawarehouse/server/cip_info/document_root">
         AllowOverride All
 </Directory>
 ```
