@@ -96,10 +96,16 @@ Enable override all for this directory for .htaccess to work
         AllowOverride All
 </Directory>
 ```
+..then save the virtual host config
 
 Enable virtual host
 ```
 sudo a2ensite datawarehouse
+```
+
+Enable mod_rewrite for apache to redirect all calls/urls/queries to webroot/index.php
+```
+sudo a2enmod rewrite
 ```
 
 
