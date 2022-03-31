@@ -1,11 +1,15 @@
 version: "3.9"
-# datawarehouse_mariadb uses a docker volume for persistent database store
-# datawarehouse_php_apache uses a bind mounts for php ini and source-code
+
+# datawarehouse_database uses a docker volume for persistent database store
+# datawarehouse_cip_info uses a bind mounts for php ini and source-code
+
+# TODO:
+#   add correct database credentials and populate database
 
 services:
-  datawarehouse_mariadb:
+  datawarehouse_database:
     image: mariadb
-    container_name: datawarehouse_mariadb
+    container_name: datawarehouse_database
     volumes:
       - datawarehouse_mariadb_data:/var/lib/mysql
     restart: always
@@ -15,14 +19,27 @@ services:
       MYSQL_USER: db_user
       MYSQL_PASSWORD: user_db_password
 
-  datawarehouse_php_apache:
-    depends_on:
-      - datawarehouse_mariadb
-    image: php:8.0-apache
-    container_name: datawarehouse_web
+  datawarehouse_barcode_generator:
+    build: ./barcode_generator
+    container_name: datawarehouse_barcode_generator
     volumes:
-      - ../../Datawarehouse/webroot:/var/www/html
-      - ./php_conf:/usr/local/etc/php
+      - ../../:/code/app
+    ports:
+      - "8081:80"
+    restart: always
+
+  datawarehouse_cip_info:
+    depends_on:
+      - datawarehouse_database
+      - datawarehouse_barcode_generator
+    image: php:8.0-apache
+    container_name: datawarehouse_cip_info
+    volumes:
+      - ../../:/var/www/html
+      - ./cip_info/php_conf/php.ini_developement:/usr/local/etc/php/php.ini
+      - ./cip_info/apache-conf/apache2.conf:/etc/apache2/apache2.conf
+      - ./cip_info/sites-available/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./cip_info/conf-available/docker-php.conf:/etc/apache2/conf-available/docker-php.conf
     ports:
       - "8000:80"
     restart: always
