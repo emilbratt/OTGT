@@ -1,39 +1,41 @@
 version: "3.9"
 
-# datawarehouse_database uses a docker volume for persistent database store
-# datawarehouse_cip_info uses a bind mounts for php ini and source-code
+# db_datawarehouse uses a docker volume for persistent database store
 
 # TODO:
 #   add correct database credentials and populate database
 
 services:
-  datawarehouse_database:
-    image: mariadb
-    container_name: datawarehouse_database
+  db_datawarehouse:
+    # image: mariadb
+    build: ./db_datawarehouse
+    container_name: db_datawarehouse
     volumes:
-      - datawarehouse_mariadb_data:/var/lib/mysql
+      - db_datawarehouse:/var/lib/mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root_db_pwd
-      MYSQL_DATABASE: db_name
-      MYSQL_USER: db_user
-      MYSQL_PASSWORD: user_db_password
+      MARIADB_ROOT_PASSWORD: mypassword
+      MARIADB_DATABASE: CIP
+      MARIADB_USER: user
+      MARIADB_PASSWORD: mypassword
+    ports:
+      - "3306:3306"
 
-  datawarehouse_barcode_generator:
+  web_barcode_generator:
     build: ./barcode_generator
-    container_name: datawarehouse_barcode_generator
+    container_name: web_barcode_generator
     volumes:
       - ../../:/code/app
     ports:
       - "8081:80"
     restart: always
 
-  datawarehouse_cip_info:
+  web_cip_info:
     depends_on:
-      - datawarehouse_database
-      - datawarehouse_barcode_generator
+      - db_datawarehouse
+      - web_barcode_generator
     image: php:8.0-apache
-    container_name: datawarehouse_cip_info
+    container_name: web_cip_info
     volumes:
       - ../../:/var/www/html
       - ./cip_info/php_conf/php.ini_developement:/usr/local/etc/php/php.ini
@@ -41,8 +43,8 @@ services:
       - ./cip_info/sites-available/000-default.conf:/etc/apache2/sites-available/000-default.conf
       - ./cip_info/conf-available/docker-php.conf:/etc/apache2/conf-available/docker-php.conf
     ports:
-      - "8000:80"
+      - "8080:80"
     restart: always
 
 volumes:
-  datawarehouse_mariadb_data: {}
+  db_datawarehouse: {}
