@@ -19,10 +19,10 @@ class DatabaseRetail {
 
   function __construct () {
     $this->environment = new Environment();
-    $db_server = $this->environment->retail('db_server');
+    $db_host = $this->environment->retail('db_host');
     $db_port = $this->environment->retail('db_port');
     $db_name = $this->environment->retail('db_name');
-    $cnxn_str = "odbc:Driver=FreeTDS; Server=$db_server; Port=$db_port; Database=$db_name;";
+    $cnxn_str = "odbc:Driver=FreeTDS; Server=$db_host; Port=$db_port; Database=$db_name;";
     $db_user = $this->environment->retail('db_user');
     $db_password = $this->environment->retail('db_password');
     try {

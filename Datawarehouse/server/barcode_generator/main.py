@@ -32,7 +32,7 @@ def read_root():
 
 @app.get("/url")
 def read_root():
-    return {"cwd": config['datawarehouse']['server_ip'].strip('"')}
+    return {"cwd": config['datawarehouse']['datawarehouse_ip'].strip('"')}
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: Optional[str] = None):

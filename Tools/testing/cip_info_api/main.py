@@ -7,7 +7,7 @@
             and pass arguments:
                 1. api endpint (example: test/v01/hello)
                 2. method
-                3. data (if methid = post or put)
+                3. data (if method = post or put)
 '''
 
 import sys
@@ -55,10 +55,10 @@ if __name__ == '__main__':
     config = configparser.ConfigParser()
     config.sections()
     config.read(ENVIRONMENT_FILE)
-    URL = config['datawarehouse']['server_ip'].strip('"')
-    PORT = config['datawarehouse']['dev_port'].strip('"')
+    URL = config['datawarehouse']['cip_info_host'].strip('"')
+    PORT = config['datawarehouse']['cip_info_port'].strip('"')
     if URL == False:
-        exit('could not load [datawarehouse][server_ip] form environment')
+        exit('could not load [datawarehouse][cip_info_host] form environment')
 
     HTTP = 'http'
     if USE_TLS:

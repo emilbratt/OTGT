@@ -1,25 +1,29 @@
 ; replace INSERT with correct values and change filename to environment.ini
-; NOTE: keep values inside double qoutes to avoid errors on special chars
+; NOTE: keep values (unless bool) inside double qoutes to avoid errors on special chars
 
 [retail] ; retail server and database used in our shop
-  db_server = "INSERT"
+  db_host = "INSERT"
   db_port = "INSERT"
   db_name = "INSERT"
   db_user = "INSERT"
   db_password = "INSERT"
 
 [datawarehouse] ; connect to the datawarehouse server and/or database
-  server_ip = "INSERT"
-  dev_port = "INSERT"
-  db_server = "INSERT"
-  db_port = "INSERT"
-  db_name = "INSERT"
-  db_user_read = "INSERT"
-  db_password_read = "INSERT"
-  db_user_admin = "INSERT"
-  db_password_admin = "INSERT"
-  db_user_post = "INSERT"
-  db_password_post = "INSERT"
+datawarehouse_ip = "INSERT"
+datawarehouse_host = "INSERT"
+cip_info_host = "INSERT"
+cip_info_port = "INSERT"
+db_host = "INSERT"
+db_port = "INSERT"
+db_name = "INSERT"
+db_user_read = "INSERT"
+db_password_read = "INSERT"
+db_user_admin = "INSERT"
+db_password_admin = "INSERT"
+db_user_post = "INSERT"
+db_password_post = "INSERT"
+barcode_generator_host = "INSERT"
+barcode_generator_port = "INSERT"
 
 [nextcloud_otgt] ; self-hosted nextcloud instance used for OTGT
   server = "INSERT"
