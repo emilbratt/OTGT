@@ -5,6 +5,8 @@ class Developing {
   protected $page = 'Utvikling'; // alias for top_navbar
   protected $environment;
   protected $template;
+  protected $database_retail;
+  protected $database_datawarehouse;
   protected $navigation;
   protected $query;
   protected $fields;
@@ -19,7 +21,6 @@ class Developing {
     require_once '../applications/developing/NavigationDeveloping.php';
 
     $this->environment = new Environment();
-    $this->database = new DatabaseRetail();
     $this->navigation = new NavigationDeveloping();
     $this->template = new TemplateDeveloping();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
@@ -38,10 +39,10 @@ class Home extends Developing {
 }
 
 
-class SQLShell extends Developing {
+class SQLShellRetail extends Developing {
 
   public function run () {
-
+    $this->database = new DatabaseRetail();
     $this->query = 'SELECT TOP 3 articleId AS Vareid, articleName AS Varenavn FROM Article';
     if(isset($_POST['sql_shell_query'])) {
       $this->query = $_POST['sql_shell_query'];

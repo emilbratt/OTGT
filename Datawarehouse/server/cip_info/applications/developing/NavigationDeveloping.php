@@ -11,7 +11,7 @@ class NavigationDeveloping extends Navigation {
     parent::__construct();
     $this->app_uri = $this->top_nav_links['Utvikling'];
       $this->sub_nav_links = [
-      'SQL Shell' => $this->app_uri . '/sqlshell',
+      'SQL Shell Retail' => $this->app_uri . '/sqlshellretail',
       'Testing' => $this->app_uri . '/testing',
       'Fetch Api' => $this->app_uri . '/fetchapi',
     ];
