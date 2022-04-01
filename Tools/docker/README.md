@@ -49,7 +49,7 @@ docker/ -> run "docker-compose up" from here to start
   |
   ├── barcode_generator/ -> Dockerfile and requirements for the Python FastAPI service generating barcodes on requests via HTTP API
   |
-  ├── cip_info/ -> main web server configs that handles all requests from outside
+  ├── cip_info/ -> configs for the main web server that users interact with
   |                           
   ├── db_datawarehouse/ -> Dockerfile and init script for datawarehouse database
   |
