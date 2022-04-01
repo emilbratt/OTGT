@@ -42,8 +42,73 @@ class Home extends Developing {
 class SQLShellRetail extends Developing {
 
   public function run () {
-    $this->database = new DatabaseRetail();
+    $this->database_retail = new DatabaseRetail();
     $this->query = 'SELECT TOP 3 articleId AS Vareid, articleName AS Varenavn FROM Article';
+    if(isset($_POST['sql_shell_query'])) {
+      $this->query = $_POST['sql_shell_query'];
+    }
+
+    $this->template->sql_shell_form($this->query);
+    if(isset($_POST['sql_shell_query'])) {
+      $this->run_query();
+    }
+
+    $this->template->print();
+  }
+
+  private function run_query () {
+    $this->result = $this->database_retail->cnxn->query($this->query)->fetch();
+    if ( !($this->result) ) {
+      $this->template->message('no rows');
+      return;
+    }
+
+    $this->fields = array();
+    foreach(array_keys($this->result) as $col) {
+      if ( !(is_numeric($col)) ) {
+        array_push($this->fields, $col);
+      }
+    }
+
+    $stmt = $this->database_retail->cnxn->prepare($this->query);
+    $stmt->execute();
+    $this->col_count = $stmt->columnCount();
+
+    if ($this->col_count <= 0) {
+      return;
+    }
+
+    $this->result = array();
+    while ($row = $stmt->fetch()) {
+      array_push($this->result, $row);
+    }
+    $this->template->table_full_width_start();
+
+    $this->template->table_row_start();
+    foreach($this->fields as $v) {
+      $this->template->table_row_header($v);
+    }
+    $this->template->table_row_end();
+
+    foreach ($this->result as $row) {
+      $this->template->table_row_start();
+        foreach($this->fields as $field) {
+          $v = $row[$field];
+          $this->template->table_row_value(mb_convert_encoding($v, "UTF-8", "ISO-8859-1"));
+        }
+      $this->template->table_row_end();
+    }
+  $this->template->table_end();
+  }
+
+}
+
+
+class SQLShellDatawarehouse extends Developing {
+
+  public function run () {
+    // $this->database_datawarehouse = new DatabaseRetail();
+    // $this->query = 'SELECT TOP 3 articleId AS Vareid, articleName AS Varenavn FROM Article';
     if(isset($_POST['sql_shell_query'])) {
       $this->query = $_POST['sql_shell_query'];
     }
