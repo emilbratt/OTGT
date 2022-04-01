@@ -51,7 +51,5 @@ docker/ -> run "docker-compose up" from here to start
   |
   ├── cip_info/ -> configs for the main web server that users interact with
   |                           
-  ├── db_datawarehouse/ -> Dockerfile and init script for datawarehouse database
-  |
-  └── Tools/ -> developement tools such as docker and docker-compose scripts
+  └── db_datawarehouse/ -> Dockerfile and init script for datawarehouse database
 </pre>
