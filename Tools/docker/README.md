@@ -47,7 +47,7 @@ exit
 <pre>
 docker/ -> run "docker-compose up" from here to start
   |
-  ├── barcode_generator/ -> Dockerfile and requirements for the Python FastAPI service generating barcodes on requests via HTTP API
+  ├── barcode_generator/ -> Dockerfile and requirements for the Python FastAPI backend
   |
   ├── cip_info/ -> configs for the main web server that users interact with
   |                           
