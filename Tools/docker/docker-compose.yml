@@ -2,12 +2,8 @@ version: "3.9"
 
 # db_datawarehouse uses a docker volume for persistent database store
 
-# TODO:
-#   add correct database credentials and populate database
-
 services:
   db_datawarehouse:
-    # image: mariadb
     build: ./db_datawarehouse
     container_name: db_datawarehouse
     volumes:
@@ -16,7 +12,7 @@ services:
     environment:
       MARIADB_ROOT_PASSWORD: mypassword
       MARIADB_DATABASE: CIP
-      MARIADB_USER: user
+      MARIADB_USER: cippost
       MARIADB_PASSWORD: mypassword
     ports:
       - "3306:3306"
@@ -34,7 +30,7 @@ services:
     depends_on:
       - db_datawarehouse
       - web_barcode_generator
-    image: php:8.0-apache
+    build: ./cip_info
     container_name: web_cip_info
     volumes:
       - ../../:/var/www/html
