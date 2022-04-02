@@ -107,8 +107,8 @@ class SQLShellRetail extends Developing {
 class SQLShellDatawarehouse extends Developing {
 
   public function run () {
-    // $this->database_datawarehouse = new DatabaseRetail();
-    // $this->query = 'SELECT TOP 3 articleId AS Vareid, articleName AS Varenavn FROM Article';
+    $this->database_datawarehouse = new DatabaseDatawarehouse();
+    $this->query = 'SELECT article_id AS Vareid, art_name AS Varenavn FROM articles LIMIT 3';
     if(isset($_POST['sql_shell_query'])) {
       $this->query = $_POST['sql_shell_query'];
     }
@@ -122,7 +122,7 @@ class SQLShellDatawarehouse extends Developing {
   }
 
   private function run_query () {
-    $this->result = $this->database->cnxn->query($this->query)->fetch();
+    $this->result = $this->database_datawarehouse->cnxn->query($this->query)->fetch();
     if ( !($this->result) ) {
       $this->template->message('no rows');
       return;
@@ -135,7 +135,7 @@ class SQLShellDatawarehouse extends Developing {
       }
     }
 
-    $stmt = $this->database->cnxn->prepare($this->query);
+    $stmt = $this->database_datawarehouse->cnxn->prepare($this->query);
     $stmt->execute();
     $this->col_count = $stmt->columnCount();
 
