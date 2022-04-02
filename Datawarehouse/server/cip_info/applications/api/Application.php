@@ -87,19 +87,19 @@ class Home extends API {
       'Test' => [
         ['url' => "$home/api/test/v0/hello", 'method' => 'GET', 'info' => 'request hello to get dummy data'],
         ['url' => "$home/api/test/v0/hello", 'method' => 'POST', 'info' => 'request hello and get back the post data you sent'],
-         ['url' => "$home/api/test/v0/foo", 'method' => 'GET', 'info' => 'request foo to get dummy data'],
-       ],
+        ['url' => "$home/api/test/v0/foo", 'method' => 'GET', 'info' => 'request foo to get dummy data'],
+      ],
       'Article' => [
-         ['url' => "$home/api/article/v0/movement/{article_id}", 'method' => 'GET', 'info' => 'get list of all movements for specific item'],
-       ],
+        ['url' => "$home/api/article/v0/movement/{article_id}", 'method' => 'GET', 'info' => 'get list of all movements for specific item'],
+      ],
       'Placement' => [
-         ['url' => "$home/api/placement/v0/update_by_article_id [ [article_id, placement], ..]", 'method' => 'POST', 'info' => 'placement for item by article id'],
-         ['url' => "$home/api/placement/v0/update_by_barcode [ [barcode, placement], ..]", 'method' => 'POST', 'info' => 'placement for item by barcode'],
-       ],
+        ['url' => "$home/api/placement/v0/update_by_article_id [ [article_id, placement], ..]", 'method' => 'POST', 'info' => 'placement for item by article id'],
+        ['url' => "$home/api/placement/v0/update_by_barcode [ [barcode, placement], ..]", 'method' => 'POST', 'info' => 'placement for item by barcode'],
+      ],
       'Brands' => [
-         ['url' => "$home/api/brands/v0/all", 'method' => 'GET', 'info' => 'get list of all brands'],
-         ['url' => "$home/api/brands/v0/brand/{brand_id}", 'method' => 'GET', 'info' => 'get info for specific brand'],
-       ],
+        ['url' => "$home/api/brands/v0/all", 'method' => 'GET', 'info' => 'get list of all brands'],
+        ['url' => "$home/api/brands/v0/brand/{brand_id}", 'method' => 'GET', 'info' => 'get info for specific brand'],
+      ],
     ];
   }
 
@@ -124,13 +124,11 @@ class Home extends API {
 
 }
 
-
-
- /*
-  *
-  * classes / pages that must be declared for the api endpoints to be reachable
-  *
-  */
+/**
+ *
+ * classes / pages that must be declared for the api endpoints to be reachable
+ *
+ */
 
 class Brands extends API {
 
