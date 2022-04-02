@@ -2,7 +2,7 @@
 
 class About {
 
-  protected $page = 'Om'; // REMEMBER TO ADD THIS PAGE NAME SO THE CORRECT TOP MENU BAR IS HIGHLIGHET
+  protected $page = 'Om';
   protected $environment;
   protected $template;
   protected $navigation;

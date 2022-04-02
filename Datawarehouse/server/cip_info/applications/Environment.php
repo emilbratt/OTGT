@@ -1,10 +1,8 @@
 <?php
 
 /**
- * NOTE:
- *  this file grabs the environment.ini and serves configurations
- *  to this server application
  *
+ * NOTE:
  *  remember to add new methods for any new corresponding section
  *  that is added in environment.ini
  *

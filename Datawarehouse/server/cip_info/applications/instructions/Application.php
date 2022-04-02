@@ -9,7 +9,7 @@
 
 class Instructions {
 
-  protected $page = 'Instrukser'; // alias for top_navbar
+  protected $page = 'Instrukser';
   protected $environment;
   protected $template;
   protected $navigation;

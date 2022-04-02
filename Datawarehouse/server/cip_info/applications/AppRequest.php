@@ -21,10 +21,12 @@ class Apprequest {
     // this is where the application is loaded and instantiated based on URI
     $this->load_app_dir();
     require_once "../applications/$this->app_dir/Application.php";
+    // this is where we load the correct page specified as a class
     $this->load_app_class();
+    // this is where the application is started
     $app = new $this->app_class;
     $app->run();
-    // atthis point the app has terminated and the script is done
+    // this is where the application is terminated
   }
 
   private function load_app_dir () {

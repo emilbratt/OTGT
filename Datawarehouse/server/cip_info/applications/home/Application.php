@@ -11,7 +11,7 @@
 
 class Home {
 
-  protected $page = 'Hjem'; // alias for top_navbar
+  protected $page = 'Hjem';
   protected $environment;
   protected $navigation;
   protected $title_left;

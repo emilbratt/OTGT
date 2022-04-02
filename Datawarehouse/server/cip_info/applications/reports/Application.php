@@ -1,10 +1,9 @@
 <?php
 
 /**
- * TODO:
- *  add turnover reports, maybe include graphs using some graphing tool for web view
- *  add: filter rows on reports
- *  example request: http://host:port/reports/soldout?type=thismonth&include=none-defaults&filter=default&sort=brand&order=accendings
+ *
+ *  TODO:
+ *    add turnover reports, maybe include graphs using some graphing tool for web view
  *
  */
 

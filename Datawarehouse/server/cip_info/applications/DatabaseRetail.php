@@ -1,13 +1,5 @@
 <?php
 
-/**
- *
- * NOTE:
- *  this file establish connection to database
- *  it expects a config file "$environment" as parsed from the
- *  environment.ini file that is used globally throughout the repo
- */
-
 class DatabaseRetail {
 
   private $environment;

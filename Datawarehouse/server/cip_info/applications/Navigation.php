@@ -3,7 +3,6 @@
 /*
  *
  * TODO;
- *  add: method for adding extra top nav links for developer tools (sql shell etc.)
  *
  */
 

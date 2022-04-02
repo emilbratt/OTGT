@@ -5,21 +5,11 @@
  * for finding items in a convenient fashion
  * searching by brand, article, barcode, category etc,
  *
- * TODO:
- *  add: all queries that have user-input should be logged
- *
- *    BySearch
- *      add: app "BySearch" click on result row to open detailed info about article
- *
- *    ByBarcode:
- *      fix: layout for table
- *      add: show shelf history
- *      add: show extended info from scanbybarcode
  */
 
 class Find {
 
-  protected $page = 'Finn Vare'; // alias for top_navbar
+  protected $page = 'Finn Vare';
   protected $template;
   protected $environment;
   protected $database_retail;
@@ -425,7 +415,7 @@ class ByArticleExtended extends ByArticle {
     $hyperlink = new HyperLink();
     $hyperlink->link_redirect('');
     $home = $hyperlink->url;
-    
+
 
     // if form is passed or get request with article id, handle request
     if ( isset($_GET['input_field_barcode']) or isset($_GET['article_id']) ) {

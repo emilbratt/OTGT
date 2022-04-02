@@ -3,20 +3,15 @@
 /**
  *
  * TODO:
- *  add: validate item and shelf value scan input in ScanItemScanShelf
  *  add: validate successfull placement update and maybe show history using session_start()
- *  add: show latest registered placement for articles
- *  add: string to uppercase when storing shelf value
- *
- *  change: datawarehous database_retail to use primary key autoincrement
- *          to keep track of latest placement instead of timestamp
+ *  add: when item is scanned, if it already has placement; show it
  *
  */
 
 
 class Placement {
-  // shows reports of soldout items for today, this week or this month
-  protected $page = 'Plasser Vare'; // alias for top_navbar
+  // register placement for items
+  protected $page = 'Plasser Vare';
   protected $environment;
   protected $template;
   protected $database_retail;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * colours
  * text, border: BBBBFF
@@ -10,7 +11,6 @@
  * table row (odd) 333333
  * location circle 9FDF9F
  */
-
 
 class Template {
 
@@ -28,14 +28,13 @@ class Template {
   protected $colour_default_hover = '#444444';
   protected $colour_default_active = '#444444';
   protected $form_default_height = '26px';
-  protected $declaration;
   protected $location_index;
   protected $html;
   protected $css;
   protected $script;
   protected $assets_path = '../assets';
   protected $image_path = '../assets/image';
-  private $wrapper; // wraps all individual parts (css, html and scripts)
+  private $wrapper; // will contain the final mash of html, css and javascript
 
   function __construct () {
     $this->environment = new Environment();
@@ -69,11 +68,8 @@ class Template {
       'O' => 'U1',
     ];
 
-    $this->declaration = <<<EOT
-    <!DOCTYPE html>
-    EOT;
-
     $this->css = <<<EOT
+    /* GLOBAL */
     html {
       min-height: 100%;
     }
@@ -91,6 +87,7 @@ class Template {
       background-color: $this->colour_default_hover;
     }
 
+    /* INFO / FEEDBACK */
     .message {
       width: 100%;
       color: $this->colour_default_text;
@@ -548,38 +545,11 @@ class Template {
     }
   }
 
-  public function print () {
-    $this->wrapper = "$this->declaration\n";
-    $this->wrapper .= <<<EOT
-    <html>
-    <style>
-    $this->css
-    </style>
-
-    <body>\n
-    EOT;
-
-    if ($this->environment->developement('show_debug')) {
-      $this->add_debug();
-    }
-
-    $this->wrapper .= <<<EOT
-    $this->html
-    $this->script
-    </body>
-    </html>
-    EOT;
-
-    echo $this->wrapper;
-  }
-
   private function add_debug () {
     // custom debug material can be added here
     $this->html .= <<<EOT
-    <br><br>
-    <p>------------------------------------------</p>
-    <p>-------- Debug Enabled --------</p>
-    <p>------------------------------------------</p>\n
+    <br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <p>-------- Debug Enabled --------</p>\n
     EOT;
     $this->html .= <<<EOT
     <p>\$_SERVER</p>
@@ -603,6 +573,30 @@ class Template {
     $this->html .= <<<EOT
     </pre>\n
     EOT;
+  }
+
+  public function print () {
+    // add stuff for debug in the bottom of html if enabled
+    if ($this->environment->developement('show_debug')) {
+      $this->add_debug();
+    }
+    // wrap everthing together
+    $this->wrapper .= <<<EOT
+    <!DOCTYPE html>
+    <html>
+    <style>
+    $this->css
+    </style>
+    <body>\n
+    EOT;
+    $this->wrapper .= <<<EOT
+    $this->html
+    $this->script
+    </body>
+    </html>
+    EOT;
+    // and display in browser
+    echo $this->wrapper;
   }
 
   function __destruct () {

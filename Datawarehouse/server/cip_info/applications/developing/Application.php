@@ -2,7 +2,7 @@
 
 class Developing {
 
-  protected $page = 'Utvikling'; // alias for top_navbar
+  protected $page = 'Utvikling';
   protected $environment;
   protected $template;
   protected $database;
@@ -10,7 +10,6 @@ class Developing {
   protected $query;
   protected $fields;
   protected $result;
-
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
@@ -43,7 +42,6 @@ class Developing {
     $stmt = $this->database->cnxn->prepare($this->query);
     $stmt->execute();
     $this->col_count = $stmt->columnCount();
-
     if ($this->col_count <= 0) {
       return;
     }

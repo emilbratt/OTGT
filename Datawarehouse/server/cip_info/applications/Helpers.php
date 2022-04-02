@@ -1,9 +1,11 @@
 <?php
 
-/*
+/**
  *
- * deprecate date stuff and move to Date.php
- * create own file for UserAgent and CharacterConvert
+ * NOTE:
+ *  deprecate date stuff and move to Date.php
+ *  create own file for UserAgent and CharacterConvert
+ *
  */
 
 class Dates {

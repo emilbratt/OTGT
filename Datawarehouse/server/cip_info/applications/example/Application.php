@@ -16,7 +16,7 @@ class Example {
    * NOTICE HOW THE CLASSES INHERIT FROM THIS MAIN APPLICATION CLASS
    *
    */
-  protected $page = 'Eksempel'; // REMEMBER TO ADD THIS PAGE NAME SO THE CORRECT TOP MENU BAR IS HIGHLIGHET
+  protected $page = 'Eksempel'; // HIGHLIGHTING THE CURRENT PAGE IN TOP NAV BAR
   protected $environment;
   protected $template;
   protected $navigation;
