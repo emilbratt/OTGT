@@ -8,7 +8,6 @@ class TemplatePlacement extends Template {
     parent::__construct();
   }
 
-
   public function _form_scan_item () {
     $this->html .= <<<EOT
     <td>

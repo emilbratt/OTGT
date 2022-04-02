@@ -8,7 +8,6 @@
  *
  */
 
-
 class Placement {
   // register placement for items
   protected $page = 'Plasser Vare';
@@ -24,7 +23,6 @@ class Placement {
   protected $ean_ok;
   protected $shelf;
   protected $shelf_ok;
-
 
   function __construct () {
     require_once '../applications/Date.php';
@@ -49,7 +47,6 @@ class Placement {
 class Home extends Placement {
 
     public function run () {
-
       // step 1: scan item (this form sets placement_scan_item)
       if ( !(isset($_POST['barcode'])) ) {
         $this->placement_scan_item();
@@ -119,12 +116,10 @@ class Home extends Placement {
         $this->template->message($this->message);
         return;
       }
-
       // at this point, we can update the new shelf value to retial db and datawarehouse db
       $this->update_placement_to_retail();
       $this->insert_placement_to_datawarehouse();
-
-      // re-load the scan item form for continuation
+      // re-load the scan item form
       $this->placement_scan_item();
     }
 

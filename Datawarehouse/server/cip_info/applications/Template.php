@@ -42,7 +42,11 @@ class Template {
     // any additional css will have to be added after the
     // constructor for each inherited class by calling this as a parent
     // in the inherited objects constructor
+
+    // specifically for the map, we need to know the what floor
+    // the inventory location/room maps to for certain logic to work
     $this->location_index = [
+    // inventory location => floor
       '1' => '1',
       'A' => '1',
       'B' => '1',
@@ -517,10 +521,10 @@ class Template {
 
       $this->css .= <<<EOT
       #image_map {
-          display: block;
-          / *margin-left: auto;
-          margin-right: auto; */
-          width: 50%;
+        display: block;
+        / *margin-left: auto;
+        margin-right: auto; */
+        width: 50%;
       }
       #image_base {
         position: absolute;

@@ -28,6 +28,7 @@ class Navigation {
       $this->top_nav_links['Utvikling'] = $this->uri . '/developing';
       $this->top_nav_links['Instrukser'] = $this->uri . '/instructions';
       $this->top_nav_links['API'] = $this->uri . '/api';
+      $this->top_nav_links['Eksempel'] = $this->uri . '/example';
     }
   }
 

@@ -29,7 +29,6 @@ class Home {
     $this->title_left = 'C.I.Pedersen';
     $this->title_right = Dates::get_this_weekday() . ' ' . date("d/m-Y");
 
-
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }
 

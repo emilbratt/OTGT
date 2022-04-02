@@ -31,9 +31,9 @@ class NavigationExample extends Navigation {
      *
      */
       $this->sub_nav_links = [
-      'Sub directory 1' => $this->app_uri . '/subdirone',
-      'Sub directory 2' => $this->app_uri . '/subdirtwo',
-      'Sub directory 3' => $this->app_uri . '/subdirthree',
+      'Page 1' => $this->app_uri . '/pageone',
+      'Page 2' => $this->app_uri . '/pagetwo',
+      'Page 3' => $this->app_uri . '/pagethree',
     ];
     /*
      *

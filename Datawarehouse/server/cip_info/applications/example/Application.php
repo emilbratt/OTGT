@@ -59,31 +59,37 @@ class Home extends Example {
    */
   public function run () {
     $this->template->sub_navbar($this->navigation->sub_nav_links);
+    $dev_email = $this->environment->contact_dev('email');
+    $dev_name = $this->environment->contact_dev('name');
+    $this->template->message('This is an example app for developer guidance');
+    $this->template->message('Current maintainer of web server: ' . $dev_name);
+
     $this->template->print();
   }
 
 }
 
 
-class SubDirOne extends Example {
+class PageOne extends Example {
   /**
    *
    * THIS IS THE SUBDIRONE DIRECTORY FOR THIS APPLICATION AND WILL BE
    * LOADED BY DEFAULT UNLESS A SUB STRING IS ADDED TO THE QUERYSTRING
    *
-   * THE ADDRESS TO THIS CLASS IS: http://host:port/example/subdirone
+   * THE ADDRESS TO THIS CLASS IS: http://host:port/example/pageone
    *
    */
   public function run () {
+    // using method from TemplateExample.php
     $this->template->some_text_for_subdirone();
     $this->template->print();
   }
 }
 
 
-class SubDirTwo extends Example {
+class PageTwo extends Example {
   /**
-   * THE ADDRESS TO THIS CLASS IS: http://host:port/example/subdirtwo
+   * THE ADDRESS TO THIS CLASS IS: http://host:port/example/pagetwo
    */
   public function run () {
     $this->template->message('this text is added using the method "message" in the parent class');
@@ -91,9 +97,9 @@ class SubDirTwo extends Example {
   }
 }
 
-class SubDirThree extends Example {
+class PageThree extends Example {
   /**
-   * THE ADDRESS TO THIS CLASS IS: http://host:port/example/subdirthree
+   * THE ADDRESS TO THIS CLASS IS: http://host:port/example/pagethree
    */
   public function run () {
     $this->template->title_left_and_right('using the parent method for showing left', 'and right title');

@@ -13,7 +13,7 @@ class TemplateExample extends Template {
 
   public function some_text_for_subdirone () {
     $this->html .= <<<EOT
-    <p>this is some text for app one</p>\n
+    <p>this is some text for page one</p>\n
     EOT;
   }
 
