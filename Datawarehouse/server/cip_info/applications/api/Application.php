@@ -2,7 +2,7 @@
 
 class API {
 
-  protected $page = 'Api';
+  protected $page = 'API';
   protected $data;
   protected $api_name;
   protected $api_endpoint;
@@ -11,7 +11,6 @@ class API {
   protected $http_method;
   protected $api_verison;
   protected $http_response_code;
-
 
   protected function handle_api_request () {
     $this->http_response_code = 204;
@@ -67,6 +66,7 @@ class Home extends API {
   * this page is only meant to print out information
   * about the api endpoints that exists
   */
+
   protected $template;
   protected $navigation;
   protected $current_api_endpoints;
@@ -125,6 +125,12 @@ class Home extends API {
 }
 
 
+
+ /*
+  *
+  * classes / pages that must be declared for the api endpoints to be reachable
+  *
+  */
 
 class Brands extends API {
 
