@@ -69,6 +69,7 @@ class Home extends API {
 
   protected $template;
   protected $navigation;
+  protected $hyperlink;
   protected $current_api_endpoints;
 
   function __construct () {
@@ -76,44 +77,43 @@ class Home extends API {
     require_once '../applications/api/NavigationAPI.php';
     require_once '../applications/api/TemplateAPI.php';
 
-    $hyperlink = new HyperLink();
+    $this->hyperlink = new HyperLink();
     $this->template = new TemplateAPI();
     $this->navigation = new NavigationAPI();
-    $hyperlink->link_redirect();
-    $home = $hyperlink->url;
 
     // update this list as new api endponts are added
     $this->current_api_endpoints = [
       'Test' => [
-        ['url' => "$home/api/test/v0/hello", 'method' => 'GET', 'info' => 'request hello to get dummy data'],
-        ['url' => "$home/api/test/v0/hello", 'method' => 'POST', 'info' => 'request hello and get back the post data you sent'],
-        ['url' => "$home/api/test/v0/foo", 'method' => 'GET', 'info' => 'request foo to get dummy data'],
+        ['url' => 'api/test/v0/hello', 'method' => 'GET', 'info' => 'request hello to get dummy data'],
+        ['url' => 'api/test/v0/hello', 'method' => 'POST', 'info' => 'request hello and get back the post data you sent'],
+        ['url' => 'api/test/v0/foo', 'method' => 'GET', 'info' => 'request foo to get dummy data'],
       ],
       'Article' => [
-        ['url' => "$home/api/article/v0/movement/{article_id}", 'method' => 'GET', 'info' => 'get list of all movements for specific item'],
+        ['url' => 'api/article/v0/movement/{article_id}', 'method' => 'GET', 'info' => 'get list of all movements for specific item'],
       ],
       'Placement' => [
-        ['url' => "$home/api/placement/v0/update_by_article_id [ [article_id, placement], ..]", 'method' => 'POST', 'info' => 'placement for item by article id'],
-        ['url' => "$home/api/placement/v0/update_by_barcode [ [barcode, placement], ..]", 'method' => 'POST', 'info' => 'placement for item by barcode'],
+        ['url' => 'api/placement/v0/update_by_article_id [ [article_id, placement], ..]', 'method' => 'POST', 'info' => 'placement for item by article id'],
+        ['url' => 'api/placement/v0/update_by_barcode [ [barcode, placement], ..]', 'method' => 'POST', 'info' => 'placement for item by barcode'],
       ],
       'Brands' => [
-        ['url' => "$home/api/brands/v0/all", 'method' => 'GET', 'info' => 'get list of all brands'],
-        ['url' => "$home/api/brands/v0/brand/{brand_id}", 'method' => 'GET', 'info' => 'get info for specific brand'],
+        ['url' => 'api/brands/v0/all', 'method' => 'GET', 'info' => 'get list of all brands'],
+        ['url' => 'api/brands/v0/brand/{brand_id}', 'method' => 'GET', 'info' => 'get info for specific brand'],
       ],
     ];
   }
 
   public function run () {
+    $this->hyperlink->link_redirect();
+    $home = $this->hyperlink->url;
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
     $this->template->title('Api Endpoints');
-
     foreach ( $this->current_api_endpoints as $endpoint => $desc ) {
       $this->template->endpoint_title($endpoint);
       $this->template->table_start();
       foreach ($desc as $row ) {
         $this->template->table_row_start();
         $this->template->table_row_value($row['method']);
-        $this->template->table_row_value($row['url']);
+        $this->template->table_row_value($home . $row['url']);
         $this->template->table_row_value($row['info']);
         $this->template->table_row_end();
       }
