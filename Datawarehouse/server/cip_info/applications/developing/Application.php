@@ -131,18 +131,33 @@ class FetchAPI extends Developing {
     $link->link_redirect('api');
     $api_home = $link->url;
     $this->template->message($api_home);
-    $host = $this->environment->datawarehouse('barcode_generator_host');
-    $port = $this->environment->datawarehouse('barcode_generator_internal_port');
-    $query = 'shelf/';
+    // since api is called from our browser -> use main host and external port
+    $host = $this->environment->datawarehouse('datawarehouse_ip');
+    $port = $this->environment->datawarehouse('barcode_generator_external_port');
+    // dummy query
+    $query = 'shelf/A-A-1';
     $url = 'http://'.$host.':'.$port.'/'.$query;
+    $this->template->message($url);
     $script = <<<EOT
     <script>
-    console.log('Hello World');
-    console.log(fetch('$url'))
-      then(res => console.log(res))
+    const image_url = "$url";
+
+    (async () => {
+      const response = await fetch(image_url)
+      const image_byte_array = await response.blob()
+      const reader = new FileReader();
+      reader.readAsDataURL(image_byte_array);
+      reader.onloadend = () => {
+        const base64data = reader.result;
+        console.log(base64data);
+      }
+    })()
+
+    window.open(image_url,'Image');
     </script>
     EOT;
     $link = null;
+
     $this->template->custom_script($script);
     $this->template->print();
   }
