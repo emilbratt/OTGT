@@ -125,19 +125,21 @@ class SQLShellDatawarehouse extends Developing {
 class FetchAPI extends Developing {
 
   public function run () {
-    // fetch json content from api application
-    // api application not ready
     $this->template->title('testing requests using fetch api');
     $this->template->message('about: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API');
     $link = new Hyperlink();
     $link->link_redirect('api');
     $api_home = $link->url;
     $this->template->message($api_home);
+    $host = $this->environment->datawarehouse('barcode_generator_host');
+    $port = $this->environment->datawarehouse('barcode_generator_internal_port');
+    $query = 'shelf/';
+    $url = 'http://'.$host.':'.$port.'/'.$query;
     $script = <<<EOT
     <script>
     console.log('Hello World');
-    console.log(fetch('$api_home'))
-      <!-- then(res => console.log(res)) -->
+    console.log(fetch('$url'))
+      then(res => console.log(res))
     </script>
     EOT;
     $link = null;
@@ -151,8 +153,16 @@ class FetchAPI extends Developing {
 class Testing extends Developing {
 
   public function run () {
-    $this->template->message('testing stuff');
-    $this->template->print();
+    $host = $this->environment->datawarehouse('barcode_generator_host');
+    $port = $this->environment->datawarehouse('barcode_generator_internal_port');
+    $query = 'shelf/A-A-1';
+    $url = 'http://'.$host.':'.$port.'/'.$query;
+    header("Content-Type: image/png");
+    $curl = curl_init();
+    curl_setopt( $curl, CURLOPT_URL, $url );
+    $body = curl_exec( $curl );
+    curl_close( $curl );
+    echo $body;
   }
 
 }

@@ -25,6 +25,7 @@ class Navigation {
 
     if ($this->environment->developement('show_nav_links')) {
       // nav entries shown if environment [developement] -> show_nav_links == true
+      $this->top_nav_links['Strekkoder'] = $this->uri . '/barcodes';
       $this->top_nav_links['Utvikling'] = $this->uri . '/developing';
       $this->top_nav_links['Instrukser'] = $this->uri . '/instructions';
       $this->top_nav_links['API'] = $this->uri . '/api';

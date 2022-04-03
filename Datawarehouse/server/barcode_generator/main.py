@@ -142,6 +142,19 @@ async def shelf_single(barcode: str):
 @app.post("/shelf/")
 async def shelf_multiple(item: BarcodeModel):
     b = BarcodeGenerateShelfSingleSheet(item.barcodes)
+    byte_array = b.sheet_to_byte_array()
+    b.close_sheet()
+    if b.success:
+        return Response(status_code=status.HTTP_201_CREATED,
+                        content=byte_array, media_type="image/png")
+    else:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            content={'response': b.msg})
+
+# using POST we can send an array with barcodes (max N that can fit on A4 sheet)
+@app.post("/shelf/store/")
+async def shelf_multiple(item: BarcodeModel):
+    b = BarcodeGenerateShelfSingleSheet(item.barcodes)
     b.save_sheet()
     b.close_sheet()
     if b.success:
