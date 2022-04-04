@@ -66,11 +66,13 @@ class BarcodeGenerate:
     def save_barcode(self):
         self.barcode_obj.save(self.barcode_path)
 
-    def generate_shelf_label(self):
-        # pixels from left where we paste
-        self.sheet_obj = Image.new('RGB',(1240,1754), (255, 255, 255)).convert('L')
+    def generate_shelf_label_sheet(self):
+        # pixels from left where we paste into sheet
         pixels_from_left = 65
+        self.sheet_obj = Image.new('RGB',(1240,1754), (255, 255, 255))
+        self.sheet_obj.convert('L')
         for i,barcode in enumerate(self.barcodes):
+            # half-way through we start pasting labels on right side of sheet
             if 1 + i > SHEET_BARCODE_MAX_LIMIT // 2:
                 pixels_from_left = 645
             pixels_from_top = self.barcode_pixel_height * (i % (SHEET_BARCODE_MAX_LIMIT // 2)) + 75
@@ -115,7 +117,7 @@ class BarcodeGenerateShelfSingleSheet(BarcodeGenerate):
         if barcode_count > SHEET_BARCODE_MAX_LIMIT:
             self.success = False
             self.msg = 'max allowed barcodes: ' + str(SHEET_BARCODE_MAX_LIMIT) + ', barcodes sent: ' + str(barcode_count)
-        self.generate_shelf_label()
+        self.generate_shelf_label_sheet()
 
 
 app = FastAPI()
