@@ -2,7 +2,7 @@
 
 class Developing {
 
-  protected $page = 'Utvikling';
+  protected $page = 'Devtools';
   protected $environment;
   protected $template;
   protected $database;
@@ -143,9 +143,9 @@ class FetchAPI extends Developing {
   public function run () {
     $this->template->title('testing requests using fetch api');
     $this->template->message('about: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API');
-    $link = new Hyperlink();
-    $link->link_redirect('api');
-    $api_home = $link->url;
+    $hyperlink = new Hyperlink();
+    $hyperlink->link_redirect('api');
+    $api_home = $hyperlink->url;
     $this->template->message($api_home);
     // since api is called from our browser -> use main host and external port
     $host = $this->environment->datawarehouse('datawarehouse_ip');
@@ -154,7 +154,7 @@ class FetchAPI extends Developing {
     $query = 'A-A-1';
     $url = 'http://' . $host . ':' . $port . '/' . $endpoint . $query;
     $this->template->message($url);
-    $this->template->custom_html('<button id="get_barcode" class="default_button">'.$query.'</button>');
+    $this->template->hyperlink_button("Barcode $query", $url);
     $script = <<<EOT
     <script>
     const image_url = "$url";
@@ -169,10 +169,6 @@ class FetchAPI extends Developing {
         console.log(base64data);
       }
     })()
-
-    document.getElementById("get_barcode").onclick = function () {
-      window.open(image_url,'Image');
-    };
     </script>
     EOT;
 
@@ -185,7 +181,7 @@ class FetchAPI extends Developing {
 }
 
 
-class Testing extends Developing {
+class Test extends Developing {
 
   public function run () {
     $host = $this->environment->datawarehouse('barcode_generator_host');
@@ -200,4 +196,107 @@ class Testing extends Developing {
     echo $body;
   }
 
+}
+
+
+class Performance extends Developing {
+
+  private $remainder;
+  private $iterations;
+  private $start_time;
+  private $dummy_var;
+  protected $time_total;
+
+  public function run () {
+    $hyperlink = new HyperLink();
+    $this->iterations = 100000000;
+
+    $this->template->title('If vs Swtich');
+    $this->template->message("Number of Iterations: $this->iterations");
+    $this->template->message('Expect to wait several seconds for results');
+    $hyperlink->add_query('run', 'true');
+    $this->template->hyperlink_button('Run test', $hyperlink->url);
+    if ( isset($_GET['run']) ) {
+      if ($_GET['run'] == 'true') {
+        $this->test_if();
+        $this->test_switch();
+      }
+    }
+    $this->template->print();
+  }
+
+  private function test_if () {
+    $this->start_time = time();
+    for ($i = 0; $i < $this->iterations; ++$i) {
+      $this->remainder = $i%10;
+      if ($this->remainder == 1) {
+        $this->dummy_function();
+      } elseif ($this->remainder == 2) {
+        $this->dummy_function();
+      } elseif ($this->remainder == 3) {
+        $this->dummy_function();
+      } elseif ($this->remainder == 4) {
+        $this->dummy_function();
+      } elseif ($this->remainder == 5) {
+        $this->dummy_function();
+      } elseif ($this->remainder == 6) {
+        $this->dummy_function();
+      } elseif ($this->remainder == 7) {
+        $this->dummy_function();
+      } elseif ($this->remainder == 8) {
+        $this->dummy_function();
+      } elseif ($this->remainder == 9) {
+        $this->dummy_function();
+      } else {
+        $this->dummy_function();
+      }
+    }
+    $this->time_total = ( round(time()) - round($this->start_time));
+    $this->template->message("if statement time in seconds: $this->time_total");
+  }
+
+  private function test_switch () {
+    $this->start_time = time();
+    for ($i = 0; $i < $this->iterations; ++$i) {
+      $this->remainder = $i%10;
+      switch ($this->remainder) {
+      case 1:
+        $this->dummy_function();
+        break;
+      case 2:
+        $this->dummy_function();
+        break;
+      case 3:
+        $this->dummy_function();
+        break;
+      case 4:
+        $this->dummy_function();
+        break;
+      case 5:
+        $this->dummy_function();
+        break;
+      case 6:
+        $this->dummy_function();
+        break;
+      case 7:
+        $this->dummy_function();
+        break;
+      case 8:
+        $this->dummy_function();
+        break;
+      case 9:
+        $this->dummy_function();
+        break;
+      default:
+        $this->dummy_function();
+      }
+    }
+    $this->time_total = (time() - $this->start_time);
+    $this->template->message("switch statement time in seconds: $this->time_total");
+  }
+
+  private function dummy_function () {
+    $dummy_var = 'some value';
+    return;
+  }
 }

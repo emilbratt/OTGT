@@ -13,8 +13,9 @@ class NavigationDeveloping extends Navigation {
       $this->sub_nav_links = [
       'SQL Shell Retail' => $this->app_uri . '/sqlshellretail',
       'SQL Shell Datawarehouse' => $this->app_uri . '/sqlshelldatawarehouse',
-      'Testing' => $this->app_uri . '/testing',
+      'Test' => $this->app_uri . '/test',
       'Fetch Api' => $this->app_uri . '/fetchapi',
+      'Performance' => $this->app_uri . '/Performance',
     ];
   }
 
