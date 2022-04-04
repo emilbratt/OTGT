@@ -15,7 +15,8 @@ class NavigationDeveloping extends Navigation {
       'SQL Shell Datawarehouse' => $this->app_uri . '/sqlshelldatawarehouse',
       'Test' => $this->app_uri . '/test',
       'Fetch Api' => $this->app_uri . '/fetchapi',
-      'Performance' => $this->app_uri . '/Performance',
+      'Performance' => $this->app_uri . '/performance',
+      'Get Shelf Label Dummy Sheet' => $this->app_uri . '/generatelabeldummysheet',
     ];
   }
 
