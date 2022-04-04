@@ -9,6 +9,8 @@ class Barcodes {
   protected $api_url;
 
   function __construct () {
+    require_once '../applications/Helpers.php';
+    require_once '../applications/HyperLink.php';
     require_once '../applications/barcodes/TemplateBarcodes.php';
     require_once '../applications/barcodes/NavigationBarcodes.php';
 
@@ -38,51 +40,88 @@ class Home extends Barcodes {
 }
 
 
-class GenerateShelfLabels extends Barcodes {
+class GenerateLabels extends Barcodes {
+
+  private $url_api;
+  private $valid_barcodes;
+  private $data_send;
 
   public function run () {
-
     $host = $this->environment->datawarehouse('barcode_generator_host');
     $port = $this->environment->datawarehouse('barcode_generator_port');
-    $url_root = 'http://'.$host.':'.$port.'/';
+    $this->url_api = 'http://'.$host.':'.$port.'/';
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      $this->load_label_form();
+      $this->template->print();
+    }
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $api_endpoint = $this->url_api . 'shelf/';
 
-    $query = 'shelf/sheet/limit';
-    $url_sheet_limit = $url_root . $query;
-    $this->template->message($url);
-    $this->template->hyperlink_button("Barcode $query", $url);
-    $this->template->generate_shelf_barcodes_form();
+      $this->validate_labels();
+      if ($this->valid_barcodes) {
+        $this->send_labels_to_api();
+        return;
+      }
+      $this->load_label_form();
+      $this->template->print();
+    }
+  }
 
-
-    // just a working proof of concept for now, will change this
-    $host = $this->environment->datawarehouse('barcode_generator_host');
-    $port = $this->environment->datawarehouse('barcode_generator_port');
-    $query = 'shelf/';
-    $url = 'http://'.$host.':'.$port.'/'.$query;
-    $data = [
-      'barcodes' => [
-        "A-A-1", "A-A-2", "A-A-3", "A-A-4", "A-A-5", "A-A-6",
-        "A-A-7", "A-A-8", "A-A-9", "A-A-10", "A-A-11", "A-A-12",
-        "A-A-13", "A-A-14", "A-A-15", "A-A-16", "A-A-17", "A-A-18",
-        "A-A-19", "A-A-20", "A-A-21", "A-A-22", "A-A-23", "A-A-24",
-        "A-A-25", "A-A-26", "A-A-27", "A-A-28", "A-A-29", "A-A-30",
-        "A-A-31", "A-A-32", "A-A-33", "A-A-34", "A-A-35", "A-A-36",
-      ],
-      'caller' => $this->environment->datawarehouse('cip_info_host'),
-    ];
+  private function load_label_form () {
+    // we fetch the N max amount of sheets and generate N form inputs
+    $api_endpoint = $this->url_api . 'shelf/sheet/limit';
     $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_URL, $api_endpoint);
     curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-    curl_setopt($curl, CURLOPT_POST, true);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $body = curl_exec($curl);
     $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    if ($http_status_code === 200) {
+      $response = json_decode($body, $associative = true);
+      $sheet_limit = intval($response['limit']);
+      $this->template->_label_form($sheet_limit);
+      $hyperlink = new HyperLink();
+      $this->template->hyperlink_button('Slett', $hyperlink->url);
+    } else {
+      $this->template->message('Ingen kontakt med: ' . $this->url_api);
+    }
+  }
+
+  private function validate_labels () {
+    $this->valid_barcodes = false;
+    $this->data_send = [
+      'barcodes' => array(),
+      'caller' => $this->environment->datawarehouse('cip_info_host'),
+    ];
+    foreach ($_POST as $key => $val) {
+      if (preg_match('/(\ø|æ|å|Ø|Æ|Å)/', $val) ) {
+        $this->template->message($val . ' inneholder ugyldig tegn');
+        $this->valid_barcodes = false;
+        return;
+      }
+      if ($val != '') {
+        array_push ($this->data_send['barcodes'], $val);
+        $this->valid_barcodes = true;
+      }
+    }
+  }
+
+  private function send_labels_to_api () {
+    $api_endpoint = $this->url_api . 'shelf/';
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $api_endpoint);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->data_send));
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $body = curl_exec($curl);
     if (curl_errno($curl)) {
       if ( $this->environment->developement('show_debug') ) {
         echo 'http status code: ' . $http_status_code;
         die('Error on curl request: ' . curl_error($curl));
       }
     }
+    $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     curl_close ($curl);
     if ($http_status_code == 201) {
       header('Content-Type: image/png');
@@ -92,4 +131,5 @@ class GenerateShelfLabels extends Barcodes {
       echo $body;
     }
   }
+
 }
