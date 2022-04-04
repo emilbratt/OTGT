@@ -6,6 +6,12 @@ class Developing {
   protected $environment;
   protected $template;
   protected $database;
+  protected $db_host;
+  protected $db_name;
+  protected $stmt;
+  protected $col_count;
+  protected $row_count;
+  protected $utf_convert = false;
   protected $navigation;
   protected $query;
   protected $fields;
@@ -14,6 +20,7 @@ class Developing {
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
     require_once '../applications/DatabaseDatawarehouse.php';
+    require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
     require_once '../applications/developing/TemplateDeveloping.php';
     require_once '../applications/developing/NavigationDeveloping.php';
@@ -24,49 +31,68 @@ class Developing {
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }
 
+  protected function load_sql_shell () {
+    if(isset($_POST['sql_shell_query'])) {
+      $this->query = $_POST['sql_shell_query'];
+    } else {
+      // if no query is passed, we assume first visit and therefore show db info
+      $this->template->title('Host: ' . $this->db_host,'Database: ' . $this->db_name);
+      $this->template->title('Database: ' . $this->db_name);
+    }
+
+    $this->template->sql_shell_form($this->query);
+    if(isset($_POST['sql_shell_query'])) {
+      $this->run_sql_shell_query();
+    }
+  }
+
   protected function run_sql_shell_query () {
     // for the SQL shells
-    $this->result = $this->database->cnxn->query($this->query)->fetch();
-    if ( !($this->result) ) {
-      $this->template->message('no rows');
-      return;
-    }
-
-    $this->fields = array();
-    foreach(array_keys($this->result) as $col) {
-      if ( !(is_numeric($col)) ) {
-        array_push($this->fields, $col);
-      }
-    }
-
-    $stmt = $this->database->cnxn->prepare($this->query);
-    $stmt->execute();
-    $this->col_count = $stmt->columnCount();
+    $this->stmt = $this->database->cnxn->prepare($this->query);
+    $this->stmt->execute();
+    $this->col_count = $this->stmt->columnCount();
     if ($this->col_count <= 0) {
       return;
     }
+    $this->result = $this->stmt->fetchAll();
+    // unlike PDOStatement::columnCount, PDOStatement::rowCount(); is not stable
+    // across all drivers, so we simply pass the array to php's count() instead
+    $this->row_count = count($this->result);
+    // if our database has no unicode, we need to handle language specific
+    // symbols like Æ,Ø and Å correctly by converting UTF-8 to ISO-XXXX
 
-    $this->result = array();
-    while ($row = $stmt->fetch()) {
-      array_push($this->result, $row);
-    }
     $this->template->table_full_width_start();
-
     $this->template->table_row_start();
-    foreach($this->fields as $v) {
-      $this->template->table_row_header($v);
+    for ($i = 0; $i <= $this->col_count; $i++) {
+      $col = $this->stmt->getColumnMeta($i);
+      if(isset($col['name'])) {
+        switch ($this->utf_convert) {
+          case true;
+            $this->template->table_row_header(CharacterConvert::utf_to_norwegian($col['name']));
+            break;
+          case false;
+            $this->template->table_row_header($col['name']);
+            break;
+        }
+      }
     }
     $this->template->table_row_end();
-
-    foreach ($this->result as $row) {
+    for ($i = 0; $i < $this->row_count; $i++) {
+      $row = $this->result[$i];
       $this->template->table_row_start();
-        foreach($this->fields as $field) {
-          $v = $row[$field];
-          $this->template->table_row_value(mb_convert_encoding($v, "UTF-8", "ISO-8859-1"));
+      for ($j = 0; $j < $this->col_count; $j++) {
+        switch ($this->utf_convert) {
+          case true;
+            $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row[$j]));
+            break;
+          case false;
+            $this->template->table_row_value($row[$j]);
+            break;
         }
+      }
       $this->template->table_row_end();
     }
-  $this->template->table_end();
+    $this->template->table_end();
   }
 
 }
@@ -85,17 +111,12 @@ class Home extends Developing {
 class SQLShellRetail extends Developing {
 
   public function run () {
+    $this->db_host = $this->environment->retail('db_host');
+    $this->db_name = $this->environment->retail('db_name');
+    $this->utf_convert = true;
     $this->database = new DatabaseRetail();
-    $this->query = 'SELECT TOP 3 articleId AS Vareid, articleName AS Varenavn FROM Article';
-    if(isset($_POST['sql_shell_query'])) {
-      $this->query = $_POST['sql_shell_query'];
-    }
-
-    $this->template->sql_shell_form($this->query);
-    if(isset($_POST['sql_shell_query'])) {
-      $this->run_sql_shell_query();
-    }
-
+    $this->query = 'SELECT TOP 3 articleId, articleName FROM Article';
+    $this->load_sql_shell();
     $this->template->print();
   }
 
@@ -105,17 +126,12 @@ class SQLShellRetail extends Developing {
 class SQLShellDatawarehouse extends Developing {
 
   public function run () {
+    $this->db_host = $this->environment->datawarehouse('db_host');
+    $this->db_name = $this->environment->datawarehouse('db_name');
+    $this->utf_convert = false;
     $this->database = new DatabaseDatawarehouse();
-    $this->query = 'SELECT article_id AS Vareid, art_name AS Varenavn FROM articles LIMIT 3';
-    if(isset($_POST['sql_shell_query'])) {
-      $this->query = $_POST['sql_shell_query'];
-    }
-
-    $this->template->sql_shell_form($this->query);
-    if(isset($_POST['sql_shell_query'])) {
-      $this->run_sql_shell_query();
-    }
-
+    $this->query = 'SELECT article_id, art_name FROM articles LIMIT 3';
+    $this->load_sql_shell();
     $this->template->print();
   }
 
@@ -134,10 +150,11 @@ class FetchAPI extends Developing {
     // since api is called from our browser -> use main host and external port
     $host = $this->environment->datawarehouse('datawarehouse_ip');
     $port = $this->environment->datawarehouse('barcode_generator_external_port');
-    // dummy query
-    $query = 'shelf/A-A-1';
-    $url = 'http://'.$host.':'.$port.'/'.$query;
+    $endpoint = 'shelf/';
+    $query = 'A-A-1';
+    $url = 'http://' . $host . ':' . $port . '/' . $endpoint . $query;
     $this->template->message($url);
+    $this->template->custom_html('<button id="get_barcode" class="default_button">'.$query.'</button>');
     $script = <<<EOT
     <script>
     const image_url = "$url";
@@ -153,9 +170,12 @@ class FetchAPI extends Developing {
       }
     })()
 
-    window.open(image_url,'Image');
+    document.getElementById("get_barcode").onclick = function () {
+      window.open(image_url,'Image');
+    };
     </script>
     EOT;
+
     $link = null;
 
     $this->template->custom_script($script);
@@ -170,8 +190,8 @@ class Testing extends Developing {
   public function run () {
     $host = $this->environment->datawarehouse('barcode_generator_host');
     $port = $this->environment->datawarehouse('barcode_generator_internal_port');
-    $query = 'shelf/A-A-1';
-    $url = 'http://'.$host.':'.$port.'/'.$query;
+    $endpoint = 'shelf/A-A-1';
+    $url = 'http://' . $host . ':' . $port . '/' . $endpoint;
     header("Content-Type: image/png");
     $curl = curl_init();
     curl_setopt( $curl, CURLOPT_URL, $url );

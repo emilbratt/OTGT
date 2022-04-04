@@ -310,7 +310,7 @@ class Template {
   public function hyperlink_button ($string, $hyperlink) {
     $this->html .= <<<EOT
     <a href="$hyperlink">
-      <button >$string</button>
+      <button>$string</button>
     </a>\n
     EOT;
   }

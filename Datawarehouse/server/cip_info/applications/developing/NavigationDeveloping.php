@@ -9,7 +9,7 @@ class NavigationDeveloping extends Navigation {
 
   function __construct () {
     parent::__construct();
-    $this->app_uri = $this->top_nav_links['Utvikling'];
+    $this->app_uri = $this->top_nav_links['Devtools'];
       $this->sub_nav_links = [
       'SQL Shell Retail' => $this->app_uri . '/sqlshellretail',
       'SQL Shell Datawarehouse' => $this->app_uri . '/sqlshelldatawarehouse',

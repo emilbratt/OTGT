@@ -23,7 +23,7 @@ class NavigationExample extends Navigation {
      * TO PRESERVE THE CORRECT APPLICATION URI
      *
      */
-    $this->app_uri = $this->top_nav_links['Eksempel'];
+    $this->app_uri = $this->top_nav_links['Example'];
     /**
      *
      * ADD A SUB NAVIGATION MENU THAT APPEARS UNDER THE
