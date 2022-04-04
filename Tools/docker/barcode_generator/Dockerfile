@@ -9,8 +9,8 @@ WORKDIR /code/app/Datawarehouse/server
 
 # un-comment accordingly based on dev or prod env.
 # for developement we want reload on file changes
-CMD ["uvicorn", "barcode_generator.main:app", "--reload", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "barcode_generator.main:app", "--reload", "--host", "0.0.0.0", "--port", "8081"]
 # for production we do not want reload on file change
-#CMD ["uvicorn", "barcode_generator.main:app", "--host", "0.0.0.0", "--port", "80"]
+#CMD ["uvicorn", "barcode_generator.main:app", "--host", "0.0.0.0", "--port", "8081"]
 # or if running behind a proxy like Traefik then we add --proxy-headers
-# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8081", "--proxy-headers"]

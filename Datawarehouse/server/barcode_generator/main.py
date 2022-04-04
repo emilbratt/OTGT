@@ -125,9 +125,12 @@ def read_root():
     return {"Hello": "World"}
 
 @app.get("/cwd")
-def read_root():
+def read_cwd():
     return {"cwd": APP_DIR}
 
+@app.get("/shelf/sheet/limit")
+def sheet_limit():
+    return {"limit": SHEET_BARCODE_MAX_LIMIT}
 
 # using GET we can create one single barcode
 @app.get("/shelf/{barcode}")

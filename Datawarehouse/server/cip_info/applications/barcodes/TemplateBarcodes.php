@@ -8,4 +8,8 @@ class TemplateBarcodes extends Template {
     parent::__construct();
   }
 
+  public function generate_shelf_barcodes_form () {
+
+  }
+
 }

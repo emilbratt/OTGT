@@ -6,6 +6,7 @@ class Barcodes {
   protected $environment;
   protected $template;
   protected $navigation;
+  protected $api_url;
 
   function __construct () {
     require_once '../applications/barcodes/TemplateBarcodes.php';
@@ -16,6 +17,12 @@ class Barcodes {
     $this->template = new TemplateBarcodes();
 
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
+  }
+
+  protected function get_api_url () {
+    $host = $this->environment->datawarehouse('barcode_generator_host');
+    $port = $this->environment->datawarehouse('barcode_generator_port');
+    $api_url = 'http://'.$host.':'.$port.'/';
   }
 
 }
@@ -34,9 +41,21 @@ class Home extends Barcodes {
 class GenerateShelfLabels extends Barcodes {
 
   public function run () {
+
+    $host = $this->environment->datawarehouse('barcode_generator_host');
+    $port = $this->environment->datawarehouse('barcode_generator_port');
+    $url_root = 'http://'.$host.':'.$port.'/';
+
+    $query = 'shelf/sheet/limit';
+    $url_sheet_limit = $url_root . $query;
+    $this->template->message($url);
+    $this->template->hyperlink_button("Barcode $query", $url);
+    $this->template->generate_shelf_barcodes_form();
+
+
     // just a working proof of concept for now, will change this
     $host = $this->environment->datawarehouse('barcode_generator_host');
-    $port = $this->environment->datawarehouse('barcode_generator_internal_port');
+    $port = $this->environment->datawarehouse('barcode_generator_port');
     $query = 'shelf/';
     $url = 'http://'.$host.':'.$port.'/'.$query;
     $data = [

@@ -152,7 +152,7 @@ class FetchAPI extends Developing {
     $this->template->message($api_home);
     // since api is called from our browser -> use main host and external port
     $host = $this->environment->datawarehouse('datawarehouse_ip');
-    $port = $this->environment->datawarehouse('barcode_generator_external_port');
+    $port = $this->environment->datawarehouse('barcode_generator_port');
     $endpoint = 'shelf/';
     $query = 'A-A-1';
     $url = 'http://' . $host . ':' . $port . '/' . $endpoint . $query;
@@ -188,7 +188,7 @@ class Test extends Developing {
 
   public function run () {
     $host = $this->environment->datawarehouse('barcode_generator_host');
-    $port = $this->environment->datawarehouse('barcode_generator_internal_port');
+    $port = $this->environment->datawarehouse('barcode_generator_port');
     $endpoint = 'shelf/A-A-1';
     $url = 'http://' . $host . ':' . $port . '/' . $endpoint;
     header("Content-Type: image/png");

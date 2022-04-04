@@ -28,7 +28,7 @@ if __name__ == '__main__':
     config.sections()
     config.read(ENVIRONMENT_FILE)
     URL = config['datawarehouse']['datawarehouse_ip'].strip('"')
-    PORT = config['datawarehouse']['barcode_generator_external_port'].strip('"')
+    PORT = config['datawarehouse']['barcode_generator_port'].strip('"')
     HTTP = 'http'
     if USE_TLS:
         HTTP = 'https'
