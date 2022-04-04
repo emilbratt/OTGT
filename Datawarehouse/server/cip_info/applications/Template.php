@@ -577,6 +577,18 @@ class Template {
     $this->html .= <<<EOT
     </pre>\n
     EOT;
+    $this->html .= <<<EOT
+    <p>\$_POST</p>
+    <pre>\n
+    EOT;
+    if (isset($_POST)) {
+      foreach ($_POST as $key => $val) {
+        $this->html .= "$key --> $val\n";
+      }
+    }
+    $this->html .= <<<EOT
+    </pre>\n
+    EOT;
   }
 
   public function print () {
