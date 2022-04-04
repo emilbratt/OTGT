@@ -11,7 +11,7 @@ class Developing {
   protected $stmt;
   protected $col_count;
   protected $row_count;
-  protected $utf_convert = false;
+  protected $utf_convert;
   protected $navigation;
   protected $query;
   protected $fields;
@@ -24,6 +24,12 @@ class Developing {
     require_once '../applications/HyperLink.php';
     require_once '../applications/developing/TemplateDeveloping.php';
     require_once '../applications/developing/NavigationDeveloping.php';
+
+    // if our database has language specific strings are stored in ASCII,
+    // we might need to handle the query results if we want to present these
+    // characters correctly by converting the query result to UTF-8 ISO-XXXX
+    // ..we set false as default
+    $this->utf_convert = false;
 
     $this->environment = new Environment();
     $this->navigation = new NavigationDeveloping();
@@ -58,9 +64,6 @@ class Developing {
     // unlike PDOStatement::columnCount, PDOStatement::rowCount(); is not stable
     // across all drivers, so we simply pass the array to php's count() instead
     $this->row_count = count($this->result);
-    // if our database has no unicode, we need to handle language specific
-    // symbols like Æ,Ø and Å correctly by converting UTF-8 to ISO-XXXX
-
     $this->template->table_full_width_start();
     $this->template->table_row_start();
     for ($i = 0; $i <= $this->col_count; $i++) {
