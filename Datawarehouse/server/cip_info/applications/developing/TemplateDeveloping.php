@@ -8,6 +8,36 @@ class TemplateDeveloping extends Template {
     parent::__construct();
     $this->image_path_floor = $this->image_path . '/location/floor';
     $this->css .= <<<EOT
+    .sql_shell_form {
+      background-color: #202020;
+      color: #BBBBFF;
+    }
+    /* TABLE */
+    table {
+      font-family: arial;
+      border-collapse: collapse;
+    }
+    .full_width_table {
+      width: 100%;
+    }
+    td {
+      border: 1px solid #202020;
+      text-align: left;
+      padding-left: 2px;
+    }
+    th {
+      background-color: $this->colour_header_background;
+      height: 32px;
+    }
+    #th_no_hyperlink {
+      border: 1px solid $this->colour_default_text;
+    }
+    tr:nth-child(even) {
+      background-color: $this->colour_row_background_2;
+    }
+    tr:nth-child(odd) {
+      background-color: $this->colour_row_background_1;
+    }
     button {
       border: 1px solid $this->colour_default_text;
       display: inline;
@@ -21,12 +51,7 @@ class TemplateDeveloping extends Template {
   }
 
   public function sql_shell_form ($query) {
-    $this->css .= <<<EOT
-    .sql_shell_form {
-      background-color: #202020;
-      color: #BBBBFF;
-    }
-    EOT;
+
     $this->html .= <<<EOT
     <div class="">
     <form action="" method="post">

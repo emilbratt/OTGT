@@ -4,17 +4,16 @@ class Developing {
 
   protected $page = 'Devtools';
   protected $environment;
+  protected $navigation;
   protected $template;
-  protected $database;
   protected $db_host;
   protected $db_name;
+  protected $database;
   protected $stmt;
-  protected $col_count;
+  protected $field_count;
   protected $row_count;
-  protected $utf_convert;
-  protected $navigation;
   protected $query;
-  protected $fields;
+  protected $utf_convert;
   protected $result;
 
   function __construct () {
@@ -56,17 +55,21 @@ class Developing {
     // for the SQL shells
     $this->stmt = $this->database->cnxn->prepare($this->query);
     $this->stmt->execute();
-    $this->col_count = $this->stmt->columnCount();
-    if ($this->col_count <= 0) {
-      return;
-    }
+    $this->field_count = $this->stmt->columnCount();
     $this->result = $this->stmt->fetchAll();
     // unlike PDOStatement::columnCount, PDOStatement::rowCount(); is not stable
     // across all drivers, so we simply pass the array to php's count() instead
     $this->row_count = count($this->result);
+    $this->template->message("Rows: $this->row_count");
+    if ($this->result) {
+      $this->print_result();
+    }
+  }
+
+  protected function print_result () {
     $this->template->table_full_width_start();
     $this->template->table_row_start();
-    for ($i = 0; $i <= $this->col_count; $i++) {
+    for ($i = 0; $i <= $this->field_count; $i++) {
       $col = $this->stmt->getColumnMeta($i);
       if(isset($col['name'])) {
         switch ($this->utf_convert) {
@@ -83,7 +86,7 @@ class Developing {
     for ($i = 0; $i < $this->row_count; $i++) {
       $row = $this->result[$i];
       $this->template->table_row_start();
-      for ($j = 0; $j < $this->col_count; $j++) {
+      for ($j = 0; $j < $this->field_count; $j++) {
         switch ($this->utf_convert) {
           case true;
             $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row[$j]));
