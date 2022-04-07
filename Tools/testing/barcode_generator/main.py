@@ -5,6 +5,7 @@ import requests
 import configparser
 import os
 
+# declare global variables
 ENVIRONMENT_FILE = '../../../environment.ini'
 URL = False # base url to api which is loaded from environment.ini
 PORT = False # for testing against developement environment
@@ -12,18 +13,9 @@ QUERY = False # value after url, for example: api/test/v01/hello
 HTTP = False # contains either http or https
 USE_TLS = False # will swap http with https
 
-def post (URL, data):
-    r = requests.post(URL, json=data)
-    print('POST request: ' + r.url)
-    print('Response: ' + str(r.status_code))
-    print(r.json())
-    print()
-
-
-if __name__ == '__main__':
+def get_url (query):
     if not os.path.isfile(ENVIRONMENT_FILE):
         exit('could not locate environment.ini stored in var ENVIRONMENT_FILE')
-
     config = configparser.ConfigParser()
     config.sections()
     config.read(ENVIRONMENT_FILE)
@@ -32,10 +24,35 @@ if __name__ == '__main__':
     HTTP = 'http'
     if USE_TLS:
         HTTP = 'https'
+    return HTTP + '://' + URL + ':' + PORT + '/' + query
 
-    # test generating multiple shelf barcodes
-    QUERY = 'shelf/'
-    URL = HTTP + '://' + URL + ':' + PORT + '/' + QUERY
+def post (URL, data):
+    r = requests.post(URL, json=data)
+    print('POST request: ' + r.url)
+    print('Response: ' + str(r.status_code))
+    print(r.headers['content-type'])
+    if r.headers['content-type'] ==  'application/json':
+        print(r.json())
+    print()
+
+def get (URL):
+    r = requests.get(URL)
+    print('GET request: ' + r.url)
+    print('Response: ' + str(r.status_code))
+    if r.headers['content-type'] ==  'application/json':
+        print(r.json())
+    print()
+
+
+if __name__ == '__main__':
+
+    URL = get_url('test/post')
+    post(URL, {"caller": "python test script"})
+
+    URL = get_url('test/get')
+    get(URL)
+
+    URL = get_url('shelf/')
     data = {
         "barcodes":
             [

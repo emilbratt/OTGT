@@ -15,6 +15,7 @@ from barcode import Code128
 from PIL import Image, ImageDraw, ImageFont
 
 ENVIRONMENT_FILE = '../../environment.ini'
+POST_TEST_RESPONSE = 'test OK'
 APP_DIR = os.path.dirname(os.path.realpath(__file__))
 FONT = ImageFont.truetype(os.path.join(APP_DIR, 'font', 'FreeSans.ttf'), 72)
 BARCODE_DIR = os.path.join('/', 'barcodes')
@@ -26,6 +27,11 @@ if not os.path.isfile(ENVIRONMENT_FILE):
 config = configparser.ConfigParser()
 config.sections()
 config.read(ENVIRONMENT_FILE)
+
+
+class TestModel(BaseModel):
+    # identify caller (android device, browser, hostname etc.)
+    caller: str
 
 
 class BarcodeModel(BaseModel):
@@ -133,6 +139,14 @@ def read_cwd():
 @app.get("/shelf/sheet/limit")
 def sheet_limit():
     return {"limit": SHEET_BARCODE_MAX_LIMIT}
+
+@app.get("/test/get")
+def test_get():
+    return {'hello': 'world', 'test': 'OK'}
+
+@app.post("/test/post")
+def test_post(item: TestModel):
+    return {item.caller: POST_TEST_RESPONSE}
 
 # using GET we can create one single barcode
 @app.get("/shelf/{barcode}")
