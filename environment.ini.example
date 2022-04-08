@@ -26,9 +26,9 @@
   barcode_generator_port = "INSERT"
 
 [nextcloud_otgt] ; self-hosted nextcloud instance used for OTGT
-  server = "INSERT"
-  user_autoreport = "INSERT"
-  password_autoreport = "INSERT"
+  nc_host = "INSERT"
+  nc_user_autoreport = "INSERT"
+  nc_password_autoreport = "INSERT"
 
 [developement] ; enables the server to behave differently production and dev env.
   show_errors = false
