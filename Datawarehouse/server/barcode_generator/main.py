@@ -16,10 +16,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 ENVIRONMENT_FILE = '../../environment.ini'
 POST_TEST_RESPONSE = 'test OK'
+SHEET_BARCODE_MAX_LIMIT = 36 # max barcodes that fit on a paper sheet
 APP_DIR = os.path.dirname(os.path.realpath(__file__))
 FONT = ImageFont.truetype(os.path.join(APP_DIR, 'font', 'FreeSans.ttf'), 72)
-BARCODE_DIR = os.path.join('/', 'barcodes')
-SHEET_BARCODE_MAX_LIMIT = 36 # max barcodes that fit on a paper sheet
+BARCODE_DIR = os.path.join(os.path.expanduser('~'), 'barcodes')
 if not os.path.isdir(BARCODE_DIR):
     os.mkdir(BARCODE_DIR)
 if not os.path.isfile(ENVIRONMENT_FILE):
