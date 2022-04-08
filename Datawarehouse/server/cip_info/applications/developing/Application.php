@@ -11,6 +11,7 @@ class Developing {
   protected $database;
   protected $stmt;
   protected $field_count;
+  protected $fields;
   protected $row_count;
   protected $query;
   protected $utf_convert;
@@ -56,7 +57,7 @@ class Developing {
     $this->stmt = $this->database->cnxn->prepare($this->query);
     $this->stmt->execute();
     $this->field_count = $this->stmt->columnCount();
-    $this->result = $this->stmt->fetchAll();
+    $this->result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
     // unlike PDOStatement::columnCount, PDOStatement::rowCount(); is not stable
     // across all drivers, so we simply pass the array to php's count() instead
     $this->row_count = count($this->result);
@@ -67,32 +68,33 @@ class Developing {
   }
 
   protected function print_result () {
+    $this->fields = array();
     $this->template->table_full_width_start();
     $this->template->table_row_start();
-    for ($i = 0; $i <= $this->field_count; $i++) {
-      $col = $this->stmt->getColumnMeta($i);
-      if(isset($col['name'])) {
-        switch ($this->utf_convert) {
-          case true;
-            $this->template->table_row_header(CharacterConvert::utf_to_norwegian($col['name']));
-            break;
-          case false;
-            $this->template->table_row_header($col['name']);
-            break;
-        }
+    // gather field names and print the field names into header row
+    foreach ($this->result[0] as $field => $val) {
+      array_push($this->fields, $field);
+      switch ($this->utf_convert) {
+        case true;
+          $this->template->table_row_header(CharacterConvert::utf_to_norwegian($field));
+          break;
+        case false;
+          $this->template->table_row_header($field);
+          break;
       }
     }
     $this->template->table_row_end();
+    // print out the query result rows
     for ($i = 0; $i < $this->row_count; $i++) {
       $row = $this->result[$i];
       $this->template->table_row_start();
       for ($j = 0; $j < $this->field_count; $j++) {
         switch ($this->utf_convert) {
           case true;
-            $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row[$j]));
+            $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row[$this->fields[$j]]));
             break;
           case false;
-            $this->template->table_row_value($row[$j]);
+            $this->template->table_row_value($row[$this->fields[$j]]);
             break;
         }
       }
