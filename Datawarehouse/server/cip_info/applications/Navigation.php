@@ -20,12 +20,12 @@ class Navigation {
     $this->top_nav_links['Finn Vare'] = $this->uri . '/find';
     $this->top_nav_links['Rapporter'] = $this->uri . '/reports';
     $this->top_nav_links['Plasser Vare'] = $this->uri . '/placement';
+    $this->top_nav_links['Strekkoder'] = $this->uri . '/barcodes';
     $this->top_nav_links['Kart'] = $this->uri . '/map';
     $this->top_nav_links['Om'] = $this->uri . '/about';
 
     if ($this->environment->developement('show_nav_links')) {
       // nav entries shown if environment [developement] -> show_nav_links == true
-      $this->top_nav_links['Strekkoder'] = $this->uri . '/barcodes';
       $this->top_nav_links['Devtools'] = $this->uri . '/developing';
       $this->top_nav_links['Instrukser'] = $this->uri . '/instructions';
       $this->top_nav_links['API'] = $this->uri . '/api';
