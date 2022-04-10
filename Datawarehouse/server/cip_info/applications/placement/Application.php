@@ -95,11 +95,16 @@ class Home extends Placement {
       $this->article_id = $this->database_retail->result['articleid'];
       $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
       $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
+      $location = $this->database_retail->result['location'];
       $this->template->title('Skann Hylle');
       $this->template->form_start('POST');
       $this->template->_form_scan_shelf($this->article_id, $article, $brand);
       $this->template->_form_end();
       $this->template->title($brand . ' ' . $article);
+      if ( ($location != null) and (strlen($location) > 0) ) {
+        $this->template->image_location($location);
+        $this->template->title($location);
+      }
     }
 
     private function placement_update () {

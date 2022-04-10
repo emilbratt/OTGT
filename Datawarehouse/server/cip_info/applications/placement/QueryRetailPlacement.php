@@ -19,9 +19,12 @@ class QueryRetailPlacement extends QueryRetail {
     SELECT
       Article.articleId AS articleid,
       Article.articleName AS article,
+      articleStock.StorageShelf AS location,
       Brands.brandLabel AS brand
     FROM
       Article
+    INNER JOIN
+      articleStock ON Article.articleId = articleStock.articleId
     INNER JOIN
       ArticleEAN ON Article.articleId = ArticleEAN.articleId
     INNER JOIN
