@@ -43,7 +43,7 @@ class Home extends Barcodes {
 class GenerateLabels extends Barcodes {
 
   private $url_api;
-  private $valid_barcodes;
+  private $valid_labels;
   private $data_send;
 
   public function run () {
@@ -58,7 +58,7 @@ class GenerateLabels extends Barcodes {
       $api_endpoint = $this->url_api . 'shelf/';
 
       $this->validate_labels();
-      if ($this->valid_barcodes) {
+      if ($this->valid_labels) {
         $this->send_labels_to_api();
         return;
       }
@@ -81,14 +81,14 @@ class GenerateLabels extends Barcodes {
       $sheet_limit = intval($response['limit']);
       $this->template->_label_form($sheet_limit);
       $hyperlink = new HyperLink();
-      $this->template->hyperlink_button('Slett', $hyperlink->url);
+      $this->template->hyperlink_button('Tøm', $hyperlink->url);
     } else {
       $this->template->message('Ingen kontakt med: ' . $this->url_api);
     }
   }
 
   private function validate_labels () {
-    $this->valid_barcodes = false;
+    $this->valid_labels = false;
     $this->data_send = [
       'barcodes' => array(),
       'caller' => $this->environment->datawarehouse('cip_info_host'),
@@ -96,12 +96,12 @@ class GenerateLabels extends Barcodes {
     foreach ($_POST as $key => $val) {
       if (preg_match('/(\ø|æ|å|Ø|Æ|Å)/', $val) ) {
         $this->template->message($val . ' inneholder ugyldig tegn');
-        $this->valid_barcodes = false;
+        $this->valid_labels = false;
         return;
       }
       if ($val != '') {
         array_push ($this->data_send['barcodes'], $val);
-        $this->valid_barcodes = true;
+        $this->valid_labels = true;
       }
     }
   }

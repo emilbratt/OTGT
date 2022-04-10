@@ -190,16 +190,36 @@ class FetchAPI extends Developing {
 
 class Test extends Developing {
 
+  private $endpoint;
+  private $url;
+  private $curl;
+  private $u;
+
   public function run () {
     $host = $this->environment->datawarehouse('barcode_generator_host');
     $port = $this->environment->datawarehouse('barcode_generator_port');
-    $endpoint = 'shelf/A-A-1';
-    $url = 'http://' . $host . ':' . $port . '/' . $endpoint;
+    $this->endpoint = 'shelf/A-A-1';
+    $this->url = 'http://' . $host . ':' . $port . '/' . $this->endpoint;
+    $this->u = 'http://' . $host . ':' . $port;
+    $this->curl = curl_init();
+    curl_setopt( $this->curl, CURLOPT_URL, $this->url );
+
+    $this->show_everything();
+    // $this->only_show_image();
+  }
+
+  private function show_everything () {
+    curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+    $body = curl_exec( $this->curl );
+    $this->template->image_show($body);
+    curl_close( $this->curl );
+    $this->template->print();
+  }
+
+  private function only_show_image () {
     header("Content-Type: image/png");
-    $curl = curl_init();
-    curl_setopt( $curl, CURLOPT_URL, $url );
-    $body = curl_exec( $curl );
-    curl_close( $curl );
+    $body = curl_exec( $this->curl );
+    curl_close( $this->curl );
     echo $body;
   }
 
