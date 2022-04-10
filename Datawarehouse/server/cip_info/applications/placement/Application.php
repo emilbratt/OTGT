@@ -193,7 +193,7 @@ class Home extends Placement {
     private function validate_barcode () {
       $this->ean_ok = false;
       if ( $this->ean == '') {
-        $this->message('Tom strekkode');
+        $this->message = 'Tom strekkode';
         return;
       }
       else if (!(is_numeric($this->ean)) ) {
