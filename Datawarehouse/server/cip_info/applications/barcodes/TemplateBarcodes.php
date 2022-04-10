@@ -8,6 +8,12 @@ class TemplateBarcodes extends Template {
     parent::__construct();
 
     $this->css .= <<<EOT
+    #short_input_length {
+      width: 80px;
+    }
+    #medium_input_length {
+      width: 150px
+    }
     button {
       border: 1px solid $this->colour_default_text;
       display: inline;
@@ -20,11 +26,11 @@ class TemplateBarcodes extends Template {
     EOT;
   }
 
-  public function _label_form ($sheet_limit) {
+  public function _label_form ($sheet_limit, $char_limit) {
     // the sheet_limit must be passed because we need to know the maximum
-    // number of shelf labels that can fit on a paper sheet
+    // number of input fields -> shelf labels that can fit on a paper sheet
     $this->html .= <<<EOT
-    <div>
+    <div class="center_div">
     <form enctype="multipart/form-data" method="POST">\n
     EOT;
     for ($i = 1; $i <= $sheet_limit; $i+=2) {
@@ -32,13 +38,13 @@ class TemplateBarcodes extends Template {
       $even = strval($i + 1);
       $this->html .= <<<EOT
       <div>
-        <input type="text" name="$odd">
-        <input type="text" name="$even">
+        <input id="short_input_length" type="text" name="$odd" maxlength="$char_limit">
+        <input id="short_input_length" type="text" name="$even" maxlength="$char_limit">
       </div>\n
       EOT;
     }
     $this->html .= <<<EOT
-    <input type="submit" value="Generer">
+    <input id="medium_input_length" type="submit" value="Generer">
     </form>
     </div>\n
     EOT;

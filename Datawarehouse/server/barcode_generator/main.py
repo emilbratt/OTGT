@@ -17,6 +17,7 @@ from PIL import Image, ImageDraw, ImageFont
 ENVIRONMENT_FILE = '../../environment.ini'
 POST_TEST_RESPONSE = 'test OK'
 SHEET_BARCODE_MAX_LIMIT = 36 # max barcodes that fit on a paper sheet
+SHELF_LABEL_MAX_CHAR = 6 # max characters that fit on a shelf label
 APP_DIR = os.path.dirname(os.path.realpath(__file__))
 FONT = ImageFont.truetype(os.path.join(APP_DIR, 'font', 'FreeSans.ttf'), 72)
 BARCODE_DIR = os.path.join(os.path.expanduser('~'), 'barcodes')
@@ -135,6 +136,10 @@ def read_root():
 @app.get("/cwd")
 def read_cwd():
     return {"cwd": APP_DIR}
+
+@app.get("/shelf/char/limit")
+def shelf_char_limit():
+    return {"limit": SHELF_LABEL_MAX_CHAR}
 
 @app.get("/shelf/sheet/limit")
 def sheet_limit():
