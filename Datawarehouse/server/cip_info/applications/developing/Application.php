@@ -53,7 +53,6 @@ class Developing {
   }
 
   protected function run_sql_shell_query () {
-    // for the SQL shells
     $this->stmt = $this->database->cnxn->prepare($this->query);
     $this->stmt->execute();
     $this->field_count = $this->stmt->columnCount();
@@ -71,7 +70,7 @@ class Developing {
     $this->fields = array();
     $this->template->table_full_width_start();
     $this->template->table_row_start();
-    // gather field names and print the field names into header row
+    // gather and print field names by iterating through first result row
     foreach ($this->result[0] as $field => $val) {
       array_push($this->fields, $field);
       switch ($this->utf_convert) {
