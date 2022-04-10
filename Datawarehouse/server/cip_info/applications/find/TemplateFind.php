@@ -169,14 +169,15 @@ class TemplateFind extends Template {
     EOT;
   }
 
-  public function form_barcode () {
+  public function form_barcode ($action = "byarticle") {
+    // $action will send to specified app
     $barcode = '';
     if ( isset($_GET['input_field_barcode']) ) {
       $barcode = $_GET['input_field_barcode'];
     }
     $this->html .= <<<EOT
     <div id="input_field_div" style="width: 400px;">
-      <form method="GET">
+      <form method="GET" action="$action">
         <table>
         <tr>
           <td style="width: 30%;">

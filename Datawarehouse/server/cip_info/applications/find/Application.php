@@ -93,6 +93,7 @@ class Home extends Find {
 
     public function run () {
       $this->template->sub_navbar($this->navigation->sub_nav_links);
+      $this->template->form_barcode($action = 'find/byarticle');
       $this->template->print();
     }
 
