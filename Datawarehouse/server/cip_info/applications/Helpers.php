@@ -11,7 +11,7 @@
 class Dates {
 
   public static function get_this_weekday () {
-    $days = array('Søndag', 'Madnag', 'Tirsdag', 'Onsdag','Torsdag','Fredag', 'Lørdag');
+    $days = array('Søndag', 'Mandag', 'Tirsdag', 'Onsdag','Torsdag','Fredag', 'Lørdag');
     return $days[date('w')];
   }
 
