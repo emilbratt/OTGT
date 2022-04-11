@@ -95,8 +95,7 @@ class Soldout extends Reports {
         $this->title_left .= ' Utsolgte varer ' . $date->display;
     }
 
-
-    $this->table_headers = [
+    $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
       'Lager' => 'quantity',
@@ -123,7 +122,7 @@ class Soldout extends Reports {
     $this->template->table_full_width_start();
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
-    foreach ($this->table_headers as $alias => $name) {
+    foreach ($table_headers as $alias => $name) {
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
       if ($name == $this->sort_by) {
@@ -191,9 +190,9 @@ class Imported extends Reports {
         $date->format_from_string($type);
         $this->title_left .= ' Mottatte varer ' . $date->display;
     }
-    $_key = 'Dato';
-    if ($type == 'thisday') {
-      $_key = 'Tid';
+    $_key = 'Tid';
+    if ($type == 'thisweek' or $type == 'thismonth') {
+      $_key = 'Dato';
     }
     $table_headers = [
       'Merke' => 'brand',
@@ -292,9 +291,9 @@ class Sales extends Reports {
         $this->title_left .= ' Alle salg ' . $date->display;
     }
 
-    $_key = 'Dato';
-    if ($type == 'thisday') {
-      $_key = 'Tid';
+    $_key = 'Tid';
+    if ($type == 'thisweek' or $type == 'thismonth') {
+      $_key = 'Dato';
     }
     $table_headers = [
       'Selger' => 'name',

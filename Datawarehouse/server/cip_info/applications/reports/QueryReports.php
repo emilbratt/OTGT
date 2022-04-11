@@ -32,6 +32,10 @@ class QueryReports extends QueryRetail {
   }
 
   public function sold_out () {
+    $_date = 'CONVERT(VARCHAR(5), articleStock.lastSold, 8)';
+    if ($this->time_span == 'thisweek' or $this->time_span == 'thismonth') {
+      $_date = 'CONVERT(VARCHAR(10), articleStock.lastSold, 105)';
+    }
     $this->query .= <<<EOT
     SELECT
       Article.articleId AS article_id,
@@ -40,7 +44,7 @@ class QueryReports extends QueryRetail {
       CAST (stockQty AS INT) AS quantity,
       articleStock.StorageShelf AS location,
       CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS lastimported,
-      CONVERT(VARCHAR(10), articleStock.lastSold, 105) AS lastsold,
+      $_date AS lastsold,
       Article.suppliers_art_no AS supplyid
     FROM
       Article
@@ -74,13 +78,11 @@ class QueryReports extends QueryRetail {
         break;
       default:
         if (strtotime($this->time_span)) {
-          $_year = date('Y', strtotime($this->time_span));
-          $_month = date('m', strtotime($this->time_span));
-          $_day = date('d', strtotime($this->time_span));
+          $y = date('Y', strtotime($this->time_span));
+          $m = date('m', strtotime($this->time_span));
+          $d = date('d', strtotime($this->time_span));
           $this->query .= <<<EOT
-            AND DATEPART(YEAR, articleStock.lastSold) = $_year
-            AND DATEPART(MONTH, articleStock.lastSold) = $_month
-            AND DATEPART(DAY, articleStock.lastSold) = $_day\n
+            AND CONVERT(VARCHAR(10), articleStock.lastSold, 102) = "$y.$m.$d"\n
           EOT;
         }
     }
@@ -141,9 +143,9 @@ class QueryReports extends QueryRetail {
   }
 
   public function imported () {
-    $_date = 'CONVERT(VARCHAR(5), articleStock.lastReceivedFromSupplier, 8) AS lastimported';
-    if ($this->time_span != 'thisday') {
-      $_date = 'CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105) AS lastimported';
+    $_date = 'CONVERT(VARCHAR(5), articleStock.lastReceivedFromSupplier, 8)';
+    if ($this->time_span == 'thisweek' or $this->time_span == 'thismonth') {
+      $_date = 'CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 105)';
     }
     $this->query .= <<<EOT
     SELECT
@@ -154,7 +156,7 @@ class QueryReports extends QueryRetail {
       CAST (stockQty AS INT) AS quantity,
       articleStock.StorageShelf AS location,
       Article.suppliers_art_no AS supplyid,
-      $_date
+      $_date AS lastimported
     FROM
       Article
     INNER JOIN
@@ -214,13 +216,11 @@ class QueryReports extends QueryRetail {
         break;
       default:
         if (strtotime($this->time_span)) {
-          $_year = date('Y', strtotime($this->time_span));
-          $_month = date('m', strtotime($this->time_span));
-          $_day = date('d', strtotime($this->time_span));
+          $y = date('Y', strtotime($this->time_span));
+          $m = date('m', strtotime($this->time_span));
+          $d = date('d', strtotime($this->time_span));
           $this->query .= <<<EOT
-            AND DATEPART(YEAR, [adjustmentDate]) = $_year
-            AND DATEPART(MONTH, [adjustmentDate]) = $_month
-            AND DATEPART(DAY, [adjustmentDate]) = $_day\n
+            AND CONVERT(VARCHAR(10), [adjustmentDate], 102) = "$y.$m.$d"\n
           EOT;
         }
     }
@@ -268,9 +268,9 @@ class QueryReports extends QueryRetail {
   }
 
   public function sales () {
-    $_date = 'CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 8) AS salesdate';
-    if ($this->time_span != 'thisday') {
-      $_date = 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105) AS salesdate';
+    $_date = 'CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 8)';
+    if ($this->time_span == 'thisweek' or $this->time_span == 'thismonth' ) {
+      $_date = 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105)';
     }
     $this->query .= <<<EOT
     SELECT
@@ -279,7 +279,7 @@ class QueryReports extends QueryRetail {
       Brands.brandLabel AS brand,
       Article.articleName AS article,
       CAST(CustomerSales.noOfArticles AS INT) AS soldqty,
-      $_date,
+      $_date AS salesdate,
       CustomerSales.usedPricePerUnit AS price,
       CustomerSales.disCount AS discount,
       CustomerSaleHeader.additionalInfo AS paymentmethod,
@@ -319,13 +319,11 @@ class QueryReports extends QueryRetail {
         break;
       default:
         if (strtotime($this->time_span)) {
-          $_year = date('Y', strtotime($this->time_span));
-          $_month = date('m', strtotime($this->time_span));
-          $_day = date('d', strtotime($this->time_span));
+          $y = date('Y', strtotime($this->time_span));
+          $m = date('m', strtotime($this->time_span));
+          $d = date('d', strtotime($this->time_span));
           $this->query .= <<<EOT
-            AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = $_year
-            AND DATEPART(MONTH, CustomerSaleHeader.salesDate) = $_month
-            AND DATEPART(DAY, CustomerSaleHeader.salesDate) = $_day\n
+            AND CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 102) = "$y.$m.$d"\n
           EOT;
         }
     }
