@@ -115,6 +115,105 @@ class QueryRetailHome extends QueryRetail {
     EOT;
   }
 
+  public function turnover () {
+    $this->query .= <<<EOT
+    /*
+     *
+     * @Author: Emil Bratt Børsting
+     * @Status: Not tested yet
+     * @Usecase: get todays turnover (should run after retail is closed)
+
+     *
+     */
+    SET LANGUAGE NORWEGIAN
+
+    SELECT
+      CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102) AS date_turnover,
+      CASE
+        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
+        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
+      END AS sum_turnover
+    FROM
+        view_HIP_salesInfo_10
+    WHERE
+      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)
+      AND isGiftCard ='0'
+
+    UNION
+
+    SELECT
+      CONVERT(VARCHAR(10), DATEADD(WEEK, -1, CURRENT_TIMESTAMP), 102) AS date_turnover,
+      CASE
+        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
+        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
+      END AS sum_turnover
+    FROM
+        view_HIP_salesInfo_10
+    WHERE
+      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -1, CURRENT_TIMESTAMP), 102)
+      AND isGiftCard ='0'
+
+    UNION
+
+    SELECT
+      CONVERT(VARCHAR(10), DATEADD(WEEK, -2, CURRENT_TIMESTAMP), 102) AS date_turnover,
+      CASE
+        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
+        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
+      END AS sum_turnover
+    FROM
+        view_HIP_salesInfo_10
+    WHERE
+      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -2, CURRENT_TIMESTAMP), 102)
+      AND isGiftCard ='0'
+
+    UNION
+
+    SELECT
+      CONVERT(VARCHAR(10), DATEADD(WEEK, -3, CURRENT_TIMESTAMP), 102) AS date_turnover,
+      CASE
+        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
+        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
+      END AS sum_turnover
+    FROM
+        view_HIP_salesInfo_10
+    WHERE
+      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -3, CURRENT_TIMESTAMP), 102)
+      AND isGiftCard ='0'
+
+    UNION
+
+    SELECT
+      CONVERT(VARCHAR(10), DATEADD(WEEK, -4, CURRENT_TIMESTAMP), 102) AS date_turnover,
+      CASE
+        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
+        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
+      END AS sum_turnover
+    FROM
+        view_HIP_salesInfo_10
+    WHERE
+      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -4, CURRENT_TIMESTAMP), 102)
+      AND isGiftCard ='0'
+
+    UNION
+
+    SELECT
+      CONVERT(VARCHAR(10), DATEADD(WEEK, -52, CURRENT_TIMESTAMP), 102) AS date_turnover,
+      CASE
+        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
+        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
+      END AS sum_turnover
+    FROM
+        view_HIP_salesInfo_10
+    WHERE
+      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -52, CURRENT_TIMESTAMP), 102)
+      AND isGiftCard ='0'
+
+    ORDER BY
+      date_turnover ASC\n
+    EOT;
+  }
+
   public function user_who_sold_most_today () {
     $this->query .= <<<EOT
     SELECT TOP 1

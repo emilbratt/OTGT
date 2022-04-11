@@ -48,11 +48,47 @@ class Home {
 
   public function run () {
     $this->template->title_left_and_right($this->title_left, $this->title_right);
+    $this->turnover();
     // $this->user_who_sold_most_today();
     $this->most_expensive_item_sold_today();
     $this->last_ten_sold_items();
     $this->brands_imported_today();
     $this->template->print();
+  }
+
+  private function turnover () {
+    $this->query->turnover();
+    $this->database->select_multi_row($this->query->get());
+    if ($this->database->result) {
+      $weekday = Dates::get_this_weekday();
+      $headers = [
+        'i fjor',
+        '4 uker siden',
+        '3 uker siden',
+        '2 uker siden',
+        '1 uke siden',
+        'i dag',
+      ];
+      $this->template->second_title('Omsetning i dag sammenliknet med tidligere');
+      $this->template->table_start();
+      $this->template->table_row_start();
+      foreach ($headers as $header) {
+        $this->template->table_row_value('|');
+        $this->template->_table_row_value("$weekday $header", 'center');
+        $this->template->table_row_value('|');
+      }
+      $this->template->table_row_end();
+      $this->template->table_row_start();
+      $i = 0;
+      foreach ($headers as $header) {
+        $this->template->table_row_value('|');
+        $this->template->_table_row_value('kr. <strong>' . $this->database->result[$i]['sum_turnover'] . '</strong>', 'center');
+        $this->template->table_row_value('|');
+        $i++;
+      }
+      $this->template->table_row_end();
+      $this->template->table_end();
+    }
   }
 
   private function most_expensive_item_sold_today () {
@@ -95,7 +131,7 @@ class Home {
       $this->template->table_full_width_start();
       $this->template->table_row_start();
       $this->template->table_row_value('<strong>Selger</strong>');
-      $this->template->table_row_value('<strong>Klokke</strong>');
+      $this->template->table_row_value('<strong>Tid</strong>');
       $this->template->table_row_value('<strong>Artikkel</strong>');
       $this->template->table_row_end();
       foreach ($this->database->result as $row) {
@@ -120,14 +156,14 @@ class Home {
       $this->template->second_title('Varer fra disse merkene har kommet inn idag');
       $this->template->table_start();
       $this->template->table_row_start();
-      $this->template->table_row_value('<strong>Merke</strong>');
-      $this->template->table_row_value('<strong>Antall</strong>');
+      $this->template->_table_row_value('<strong>Merke</strong>', 'center');
+      $this->template->_table_row_value('<strong>Antall</strong>', 'right');
       $this->template->table_row_end();
       foreach ($this->database->result as $row) {
 
         $this->template->table_row_start();
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value($row['articles_imported']);
+        $this->template->_table_row_value(CharacterConvert::utf_to_norwegian($row['brand']), 'center');
+        $this->template->_table_row_value($row['articles_imported'], 'right');
         $this->template->table_row_end();
       }
       $this->template->table_end();
