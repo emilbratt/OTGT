@@ -62,24 +62,23 @@ class Home {
     if ($this->database->result) {
       $weekday = Dates::get_this_weekday();
       $headers = [
-        'i fjor',
-        '4 uker siden',
-        '3 uker siden',
-        '2 uker siden',
         '1 uke siden',
-        'i dag',
+        '2 uker siden',
+        '3 uker siden',
+        '4 uker siden',
+        'i fjor',
       ];
-      $this->template->second_title('Omsetning i dag sammenliknet med tidligere');
+      $this->template->second_title('Omsetning i dag kr. ' . $this->database->result[0]['sum_turnover'] . ' og omsetning samme dag');
       $this->template->table_start();
       $this->template->table_row_start();
       foreach ($headers as $header) {
         $this->template->table_row_value('|');
-        $this->template->_table_row_value("$weekday $header", 'center');
+        $this->template->_table_row_value($header, 'center');
         $this->template->table_row_value('|');
       }
       $this->template->table_row_end();
       $this->template->table_row_start();
-      $i = 0;
+      $i = 1;
       foreach ($headers as $header) {
         $this->template->table_row_value('|');
         $this->template->_table_row_value('kr. <strong>' . $this->database->result[$i]['sum_turnover'] . '</strong>', 'center');
@@ -96,13 +95,13 @@ class Home {
     $this->database->select_sinlge_row($this->query->get());
     if ($this->database->result) {
       $res = $this->database->result;
-      $this->template->second_title('Dyreste artikkel solgt idag');
+      $this->template->second_title('Dyreste artikkel solgt i dag til kr. ' . $res['price']);
       $this->template->table_start();
       $this->template->table_row_start();
       $this->template->table_row_value($res['brand'] . ' - ' . $res['article']);
       $this->template->table_row_end();
       $this->template->table_row_start();
-      $this->template->table_row_value('Solgt av ' . $res['salesperson'] . ' klokken ' . $res['time'] . ' til kr.' . $res['price']);
+      $this->template->table_row_value('Solgt av ' . $res['salesperson'] . ' klokken ' . $res['time']);
       $this->template->table_row_end();
       $this->template->table_end();
     }
@@ -116,7 +115,7 @@ class Home {
       $this->template->second_title('Selger med flest salg idag');
       $this->template->table_start();
       $this->template->table_row_start();
-      $this->template->table_row_value($res['salesperson'] . ' med ' . $res['article_count'] . ' salg');
+      $this->template->table_row_value($res['salesperson'] . ' med hele ' . $res['article_count'] . ' salg');
       $this->template->table_row_end();
       $this->template->table_end();
     }

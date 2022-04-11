@@ -210,7 +210,7 @@ class QueryRetailHome extends QueryRetail {
       AND isGiftCard ='0'
 
     ORDER BY
-      date_turnover ASC\n
+      date_turnover DESC\n
     EOT;
   }
 
