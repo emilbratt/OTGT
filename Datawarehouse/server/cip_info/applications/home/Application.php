@@ -48,7 +48,7 @@ class Home {
 
   public function run () {
     $this->template->title_left_and_right($this->title_left, $this->title_right);
-    $this->user_who_sold_most_today();
+    // $this->user_who_sold_most_today();
     $this->most_expensive_item_sold_today();
     $this->last_ten_sold_items();
     $this->brands_imported_today();
