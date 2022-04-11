@@ -60,8 +60,7 @@ class QueryReports extends QueryRetail {
     switch ($this->time_span) {
       case 'thisday':
         $this->query .= <<<EOT
-          AND DATEPART(YEAR, articleStock.lastSold) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-          AND DATEPART(DAYOFYEAR, articleStock.lastSold) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP)\n
+          AND CONVERT(VARCHAR(10), articleStock.lastSold, 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)\n
         EOT;
         break;
       case 'thisweek':
@@ -198,8 +197,7 @@ class QueryReports extends QueryRetail {
     switch ($this->time_span) {
       case 'thisday':
         $this->query .= <<<EOT
-          AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-          AND DATEPART(DAYOFYEAR, [adjustmentDate]) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP)\n
+          AND CONVERT(VARCHAR(10), [adjustmentDate], 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)\n
         EOT;
         break;
       case 'thisweek':
@@ -301,8 +299,7 @@ class QueryReports extends QueryRetail {
     switch ($this->time_span) {
       case 'thisday':
         $this->query .= <<<EOT
-          AND DATEPART(YEAR, CustomerSaleHeader.salesDate) = DATEPART(YEAR, CURRENT_TIMESTAMP)
-          AND DATEPART(DAYOFYEAR, CustomerSaleHeader.salesDate) = DATEPART(DAYOFYEAR, CURRENT_TIMESTAMP)\n
+          AND CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)\n
         EOT;
         break;
       case 'thisweek':
