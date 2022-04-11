@@ -232,7 +232,7 @@ class QueryRetail {
   public function get () {
     $this->query = preg_replace('/(\ø|æ|å|Ø|Æ|Å)/', '_', $this->query);
     $query = $this->query;
-    $this->query = null;
+    $this->start_new();
     return $query;
   }
 
