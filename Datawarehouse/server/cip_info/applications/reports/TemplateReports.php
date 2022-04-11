@@ -22,9 +22,6 @@ class TemplateReports extends Template {
       font-family: arial;
       border-collapse: collapse;
     }
-    .full_width_table {
-      width: 100%;
-    }
     td {
       border: 1px solid #202020;
       text-align: left;

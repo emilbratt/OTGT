@@ -161,6 +161,12 @@ class Template {
       background-color: $this->colour_default_active;
     }
 
+    /* TABLE */
+    .full_width_table {
+      width: 100%;
+    }
+
+    /* TITLE */
     .title {
       display: block;
     }
