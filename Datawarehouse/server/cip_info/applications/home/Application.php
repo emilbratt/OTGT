@@ -94,14 +94,22 @@ class Home {
     $this->query->most_expensive_item_sold_today();
     $this->database->select_sinlge_row($this->query->get());
     if ($this->database->result) {
-      $res = $this->database->result;
-      $this->template->second_title('Dyreste artikkel solgt i dag til kr. ' . $res['price']);
+      $price = $this->database->result['price'];
+      $brand = CharacterConvert::utf_to_norwegian($this->database->result['brand']);
+      $article = CharacterConvert::utf_to_norwegian($this->database->result['article']);
+      $_l = $brand . ' - ' . $article;
+      if (strlen($brand) < 2 or $brand == null) {
+        $_l = $article;
+      }
+      $salesperson = CharacterConvert::utf_to_norwegian($this->database->result['salesperson']);
+      $time = $this->database->result['time'];
+      $this->template->second_title('Dyreste artikkel solgt i dag til kr. ' . $price);
       $this->template->table_start();
       $this->template->table_row_start();
-      $this->template->table_row_value($res['brand'] . ' - ' . $res['article']);
+      $this->template->table_row_value($_l);
       $this->template->table_row_end();
       $this->template->table_row_start();
-      $this->template->table_row_value('Solgt av ' . $res['salesperson'] . ' klokken ' . $res['time']);
+      $this->template->table_row_value('Solgt av ' . $salesperson . ' klokken ' . $time);
       $this->template->table_row_end();
       $this->template->table_end();
     }
@@ -111,11 +119,12 @@ class Home {
     $this->query->user_who_sold_most_today();
     $this->database->select_sinlge_row($this->query->get());
     if ($this->database->result) {
-      $res = $this->database->result;
+      $article_count = $this->database->result['article_count'];
+      $salesperson = CharacterConvert::utf_to_norwegian($this->database->result['salesperson']);
       $this->template->second_title('Selger med flest salg idag');
       $this->template->table_start();
       $this->template->table_row_start();
-      $this->template->table_row_value($res['salesperson'] . ' med hele ' . $res['article_count'] . ' salg');
+      $this->template->table_row_value($salesperson . ' med ' . $article_count . ' salg');
       $this->template->table_row_end();
       $this->template->table_end();
     }
