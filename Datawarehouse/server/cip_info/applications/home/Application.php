@@ -25,7 +25,7 @@ class Home {
   protected $hyperlink;
   protected $database_retail;
   protected $database_dw;
-  protected $query;
+  protected $query_retail;
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
@@ -44,7 +44,7 @@ class Home {
 
     $this->database_retail = new DatabaseRetail();
     $this->database_dw = new DatabaseDatawarehouse();
-    $this->query = new QueryRetailHome();
+    $this->query_retail = new QueryRetailHome();
 
     $this->title_left = 'C.I.Pedersen';
     $this->title_right = Dates::get_this_weekday() . ' ' . date("d/m-Y");
@@ -63,8 +63,8 @@ class Home {
   }
 
   private function turnover () {
-    $this->query->turnover();
-    $this->database_retail->select_multi_row($this->query->get());
+    $this->query_retail->turnover();
+    $this->database_retail->select_multi_row($this->query_retail->get());
     if ($this->database_retail->result) {
       $weekday = Dates::get_this_weekday();
       $headers = [
@@ -97,8 +97,8 @@ class Home {
   }
 
   private function most_expensive_item_sold_today () {
-    $this->query->most_expensive_item_sold_today();
-    $this->database_retail->select_sinlge_row($this->query->get());
+    $this->query_retail->most_expensive_item_sold_today();
+    $this->database_retail->select_sinlge_row($this->query_retail->get());
     if ($this->database_retail->result) {
 
       $price = $this->database_retail->result['price'];
@@ -124,8 +124,8 @@ class Home {
   }
 
   private function user_who_sold_most_today () {
-    $this->query->user_who_sold_most_today();
-    $this->database_retail->select_sinlge_row($this->query->get());
+    $this->query_retail->user_who_sold_most_today();
+    $this->database_retail->select_sinlge_row($this->query_retail->get());
     if ($this->database_retail->result) {
       $article_count = $this->database_retail->result['article_count'];
       $salesperson = CharacterConvert::utf_to_norwegian($this->database_retail->result['salesperson']);
@@ -139,8 +139,8 @@ class Home {
   }
 
   private function last_ten_sold_items () {
-    $this->query->last_ten_sold_items();
-    $this->database_retail->select_multi_row($this->query->get());
+    $this->query_retail->last_ten_sold_items();
+    $this->database_retail->select_multi_row($this->query_retail->get());
     if ($this->database_retail->result) {
       $this->template->second_title('Nylige salg');
       $this->template->table_full_width_start();
@@ -167,8 +167,8 @@ class Home {
   }
 
   private function brands_imported_today () {
-    $this->query->brands_imported_today();
-    $this->database_retail->select_multi_row($this->query->get());
+    $this->query_retail->brands_imported_today();
+    $this->database_retail->select_multi_row($this->query_retail->get());
     if ($this->database_retail->result) {
       $this->template->second_title('Varer fra disse merkene har kommet inn idag');
       $this->template->table_start();
