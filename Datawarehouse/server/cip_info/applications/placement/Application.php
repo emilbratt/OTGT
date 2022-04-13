@@ -152,7 +152,7 @@ class Home extends Placement {
       try {
         $stmt->execute($values);
       }
-      catch(PDOException $e)  {
+      catch(PDOException $e) {
         if (strpos($e, 'Integrity constraint violation') !== false) {
           $this->template->message('Info: denne varen finnes kun i HIP databasen foreløpig');
         }
