@@ -17,6 +17,7 @@ class NavigationDeveloping extends Navigation {
       'Fetch Api' => $this->app_uri . '/fetchapi',
       'Performance' => $this->app_uri . '/performance',
       'Get Shelf Label Dummy Sheet' => $this->app_uri . '/generatelabeldummysheet',
+      'Memory Database' => $this->app_uri . '/memorydatabase',
     ];
   }
 

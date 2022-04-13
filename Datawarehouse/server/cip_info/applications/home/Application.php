@@ -31,6 +31,7 @@ class Home {
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
     require_once '../applications/DatabaseDatawarehouse.php';
+    require_once '../applications/Date.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
     require_once '../applications/Navigation.php';
@@ -65,44 +66,67 @@ class Home {
   }
 
   private function turnover () {
-    $this->query_retail->turnover();
-    $this->database_retail->select_multi_row($this->query_retail->get());
-    if ($this->database_retail->result) {
-      $weekday = Dates::get_this_weekday();
-      $headers = [
-        '1 uke siden',
-        '2 uker siden',
-        '3 uker siden',
-        '4 uker siden',
-        'i fjor',
-      ];
-      $this->template->second_title('Omsetning i dag kr. ' . $this->database_retail->result[0]['sum_turnover'] . ' og omsetning samme dag');
-      $this->template->table_start();
-      $this->template->table_row_start();
-      foreach ($headers as $header) {
-        $this->template->table_row_value('|');
-        $this->template->_table_row_value($header, 'center');
-        $this->template->table_row_value('|');
-      }
-      $this->template->table_row_end();
-      $this->template->table_row_start();
-      $i = 1;
-      foreach ($headers as $header) {
-        $this->template->table_row_value('|');
-        $this->template->_table_row_value('kr. <strong>' . $this->database_retail->result[$i]['sum_turnover'] . '</strong>', 'center');
-        $this->template->table_row_value('|');
-        $i++;
-      }
-      $this->template->table_row_end();
-      $this->template->table_end();
+    $this->query_retail->turnover_today();
+    $this->database_retail->select_single_row($this->query_retail->get());
+    if ( !($this->database_retail->result) ) {
+      return;
     }
+    $turnover_today = $this->database_retail->result;
+    $this->template->second_title('Omsetning i dag kr. ' . $turnover_today['sum_turnover'] . ' og omsetning samme dag');
+    $weeks_behind = [
+      1 => null,
+      2 => null,
+      3 => null,
+      4 => null,
+      52 => null,
+    ];
+    $date_obj = new Date();
+    $date_today = $date_obj->sql_compatible_date();
+    foreach ($weeks_behind as $i => $val) {
+      $s_i = strval($i);
+      $turnover = null;
+      $mem = $this->database_dw->mem_get('turnover_week_behind_' . $s_i);
+      if ( !(empty($mem)) ) {
+        $cache_date = $date_obj->date_from_time_stamp($mem['mem_time']);
+        if ( $cache_date == $date_today ) {
+          $weeks_behind[$i] = $mem['mem_val'];
+        }
+      }
+      if ( $weeks_behind[$i] === null ) {
+        // if null, no cache was grabbed and we need to fetch from retail
+        $this->query_retail->turnover_week_behind($i);
+        $this->database_retail->select_single_row($this->query_retail->get());
+        if ($this->database_retail->result) {
+          $turnover = $this->database_retail->result['sum_turnover'];
+          $this->database_dw->mem_insert('turnover_week_behind_' . $s_i, $turnover);
+          $weeks_behind[$i] = $turnover;
+        }
+      }
+    }
+    $this->template->table_start();
+    $this->template->table_row_start();
+    foreach ($weeks_behind as $i => $val) {
+      $s = strval($i);
+      $m = 'uke' . str_repeat('r', ($i != 1) * 1);
+      $this->template->table_row_value('|');
+      $this->template->_table_row_value("$s $m siden", 'center');
+      $this->template->table_row_value('|');
+    }
+    $this->template->table_row_end();
+    $this->template->table_row_start();
+    foreach ($weeks_behind as $i => $val) {
+      $this->template->table_row_value('|');
+      $this->template->_table_row_value('kr. <strong>' . $val . '</strong>', 'center');
+      $this->template->table_row_value('|');
+    }
+    $this->template->table_row_end();
+    $this->template->table_end();
   }
 
   private function most_expensive_item_sold_today () {
     $this->query_retail->most_expensive_item_sold_today();
     $this->database_retail->select_single_row($this->query_retail->get());
     if ($this->database_retail->result) {
-
       $price = $this->database_retail->result['price'];
       $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
       $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);

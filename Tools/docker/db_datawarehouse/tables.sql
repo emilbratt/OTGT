@@ -1,8 +1,8 @@
--- MariaDB dump 10.19  Distrib 10.7.3-MariaDB, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.19  Distrib 10.3.34-MariaDB, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: CIP
 -- ------------------------------------------------------
--- Server version	10.7.3-MariaDB-1:10.7.3+maria~focal
+-- Server version	10.3.34-MariaDB-0+deb10u1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -26,7 +26,7 @@ CREATE TABLE `articles` (
   `article_id` int(10) unsigned NOT NULL,
   `brand_id` int(10) unsigned DEFAULT NULL,
   `art_name` varchar(255) NOT NULL,
-  INDEX (`article_id`)
+  KEY `article_id` (`article_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -53,8 +53,22 @@ DROP TABLE IF EXISTS `brands`;
 CREATE TABLE `brands` (
   `brand_id` int(10) unsigned NOT NULL,
   `brand_name` varchar(255) NOT NULL,
-  INDEX (`brand_id`)
+  KEY `brand_id` (`brand_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `cip_cache`
+--
+
+DROP TABLE IF EXISTS `cip_cache`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cip_cache` (
+  `mem_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  `mem_key` varchar(255) NOT NULL,
+  `mem_val` varchar(4096) NOT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -311,4 +325,4 @@ CREATE TABLE `turnover_hourly` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-01 13:08:40
+-- Dump completed on 2022-04-13 19:45:23

@@ -73,7 +73,101 @@ class DatabaseDatawarehouse {
       }
       exit(1);
     }
+  }
 
+  public function mem_insert ($key, $val) {
+    // inserts if not exist, updates (including new timestamp) if exists
+    $query = <<<EOT
+    SELECT mem_val
+    FROM cip_cache
+    WHERE mem_key = '$key';
+    EOT;
+    try {
+      $stmt = $this->cnxn->prepare($query);
+      $stmt->execute();
+      $res = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    catch(Exception $e)  {
+      if($this->environment->developement('show_errors')) {
+        echo '<pre>';
+        print_r($e->getMessage());
+        echo $query;
+        echo '</pre>';
+      }
+      exit(1);
+    }
+    if ( $res ) {
+      $time = time();
+      $query = <<<EOT
+      UPDATE cip_cache
+      SET mem_val = '$val', mem_time = CURRENT_TIMESTAMP()
+      WHERE mem_key = '$key';
+      EOT;
+    }
+    else {
+      $query = <<<EOT
+      INSERT INTO `cip_cache` (mem_key, mem_val)
+      VALUES ('$key', '$val');
+      EOT;
+    }
+    try {
+      $stmt = $this->cnxn->prepare($query);
+      $stmt->execute();
+      return $stmt;
+    }
+    catch(Exception $e)  {
+      if($this->environment->developement('show_errors')) {
+        echo '<pre>';
+        print_r($e->getMessage());
+        echo $query;
+        echo '</pre>';
+      }
+      exit(1);
+    }
+  }
+
+  public function mem_delete ($key) {
+    // should rarely be needed, but I made this anyway
+    $query = <<<EOT
+    DELETE FROM cip_cache
+    WHERE mem_key = '$key';
+    EOT;
+    try {
+      $stmt = $this->cnxn->prepare($query);
+      $stmt->execute();
+      return $stmt;
+    }
+    catch(Exception $e)  {
+      if($this->environment->developement('show_errors')) {
+        echo '<pre>';
+        print_r($e->getMessage());
+        echo $query;
+        echo '</pre>';
+      }
+      exit(1);
+    }
+  }
+
+  public function mem_get ($key) {
+    $query = <<<EOT
+    SELECT mem_time, mem_val
+    FROM cip_cache
+    WHERE mem_key = '$key';
+    EOT;
+    try {
+      $stmt = $this->cnxn->prepare($query);
+      $stmt->execute();
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    catch(Exception $e)  {
+      if($this->environment->developement('show_errors')) {
+        echo '<pre>';
+        print_r($e->getMessage());
+        echo $query;
+        echo '</pre>';
+      }
+      exit(1);
+    }
   }
 
   function __destruct () {

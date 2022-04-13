@@ -56,11 +56,18 @@ class Developing {
     $this->stmt = $this->database->cnxn->prepare($this->query);
     $this->stmt->execute();
     $this->field_count = $this->stmt->columnCount();
-    $this->result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
-    // unlike PDOStatement::columnCount, PDOStatement::rowCount(); is not stable
-    // across all drivers, so we simply pass the array to php's count() instead
-    $this->row_count = count($this->result);
-    $this->template->message("Rows: $this->row_count");
+    try {
+      $this->result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+      // unlike PDOStatement::columnCount, PDOStatement::rowCount(); is not stable
+      // across all drivers, so we simply pass the array to php's count() instead
+      $this->row_count = count($this->result);
+      $this->template->message("Rows: $this->row_count");
+    }
+    catch(Exception $e)  {
+      $this->template->message($e->getMessage());
+      $this->template->message('Might be because you did not use SELECT');
+      $this->template->message('If so, ignore this error');
+    }
     if ($this->result) {
       $this->print_result();
     }
@@ -369,5 +376,29 @@ class GenerateLabelDummySheet extends Developing {
       header('Content-Disposition: attachment; filename=shelfdummysheet.png');
       echo $body;
     }
+  }
+}
+
+
+class MemoryDatabase extends Developing {
+  public function run () {
+    $this->database = new DatabaseDatawarehouse();
+    $key = 'hello';
+    $val = 'world';
+    $this->template->message('INSERTING ' . $val . ' using key: ' . $key);
+    $this->database->mem_insert($key, $val);
+    $this->template->message('value after insert: ' . $this->database->mem_get($key)['mem_val']);
+    $this->template->message('timestamp after insert: ' . $this->database->mem_get($key)['mem_time']);
+    $val = 'new ' . $val;
+    sleep(1);
+    $this->template->message('INSERTING AGAIN ' . $val . ' using key: ' . $key);
+    $this->database->mem_insert($key, $val);
+    $this->template->message('value after update: ' . $this->database->mem_get($key)['mem_val']);
+    $this->template->message('timestamp update: ' . $this->database->mem_get($key)['mem_time']);
+    $this->template->message('DELETING ' . $val . ' using key: ' . $key);
+    $this->database->mem_delete($key);
+    $this->template->message('value after delete: ' . $this->database->mem_get($key)['mem_val']);
+    $this->template->message('timestamp delete: ' . $this->database->mem_get($key)['mem_time']);
+    $this->template->print();
   }
 }

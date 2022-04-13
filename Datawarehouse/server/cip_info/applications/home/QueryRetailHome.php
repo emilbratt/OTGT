@@ -115,10 +115,10 @@ class QueryRetailHome extends QueryRetail {
     EOT;
   }
 
-  public function turnover () {
+  public function turnover_today () {
     $this->query .= <<<EOT
     SELECT
-      CONVERT(VARCHAR(10), DATEADD(WEEK, -0, CURRENT_TIMESTAMP), 102) AS date_turnover,
+      CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102) AS date_turnover,
       CASE
         WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
         ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
@@ -128,9 +128,12 @@ class QueryRetailHome extends QueryRetail {
     WHERE
       CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)
       AND isGiftCard ='0'
+    EOT;
+  }
 
-    UNION SELECT
-      CONVERT(VARCHAR(10), DATEADD(WEEK, -1, CURRENT_TIMESTAMP), 102) AS date_turnover,
+  public function turnover_week_behind ($i = 0) {
+    $this->query .= <<<EOT
+    SELECT
       CASE
         WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
         ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
@@ -138,59 +141,8 @@ class QueryRetailHome extends QueryRetail {
     FROM
       view_HIP_salesInfo_10
     WHERE
-      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -1, CURRENT_TIMESTAMP), 102)
-      AND isGiftCard ='0'
-
-    UNION SELECT
-      CONVERT(VARCHAR(10), DATEADD(WEEK, -2, CURRENT_TIMESTAMP), 102) AS date_turnover,
-      CASE
-        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
-        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
-      END AS sum_turnover
-    FROM
-      view_HIP_salesInfo_10
-    WHERE
-      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -2, CURRENT_TIMESTAMP), 102)
-      AND isGiftCard ='0'
-
-    UNION SELECT
-      CONVERT(VARCHAR(10), DATEADD(WEEK, -3, CURRENT_TIMESTAMP), 102) AS date_turnover,
-      CASE
-        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
-        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
-      END AS sum_turnover
-    FROM
-      view_HIP_salesInfo_10
-    WHERE
-      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -3, CURRENT_TIMESTAMP), 102)
-      AND isGiftCard ='0'
-
-    UNION SELECT
-      CONVERT(VARCHAR(10), DATEADD(WEEK, -4, CURRENT_TIMESTAMP), 102) AS date_turnover,
-      CASE
-        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
-        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
-      END AS sum_turnover
-    FROM
-      view_HIP_salesInfo_10
-    WHERE
-      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -4, CURRENT_TIMESTAMP), 102)
-      AND isGiftCard ='0'
-
-    UNION SELECT
-      CONVERT(VARCHAR(10), DATEADD(WEEK, -52, CURRENT_TIMESTAMP), 102) AS date_turnover,
-      CASE
-        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
-        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
-      END AS sum_turnover
-    FROM
-      view_HIP_salesInfo_10
-    WHERE
-      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -52, CURRENT_TIMESTAMP), 102)
-      AND isGiftCard ='0'
-
-    ORDER BY
-      date_turnover DESC\n
+      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), DATEADD(WEEK, -$i, CURRENT_TIMESTAMP), 102)
+      AND isGiftCard ='0'\n
     EOT;
   }
 
