@@ -22,22 +22,26 @@ class Home {
   protected $title;
   protected $title_left;
   protected $title_right;
-  protected $database;
+  protected $database_retail;
+  protected $database_dw;
   protected $query;
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
+    require_once '../applications/DatabaseDatawarehouse.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
     require_once '../applications/Navigation.php';
     require_once '../applications/home/TemplateHome.php';
     require_once '../applications/home/QueryRetailHome.php';
+    require_once '../applications/home/QueryDatawarehouseHome.php';
 
     $this->environment = new Environment();
     $this->template = new TemplateHome();
     $this->navigation = new Navigation();
 
-    $this->database = new DatabaseRetail();
+    $this->database_retail = new DatabaseRetail();
+    $this->database_dw = new DatabaseDatawarehouse();
     $this->query = new QueryRetailHome();
 
     $this->title_left = 'C.I.Pedersen';
@@ -58,8 +62,8 @@ class Home {
 
   private function turnover () {
     $this->query->turnover();
-    $this->database->select_multi_row($this->query->get());
-    if ($this->database->result) {
+    $this->database_retail->select_multi_row($this->query->get());
+    if ($this->database_retail->result) {
       $weekday = Dates::get_this_weekday();
       $headers = [
         '1 uke siden',
@@ -68,7 +72,7 @@ class Home {
         '4 uker siden',
         'i fjor',
       ];
-      $this->template->second_title('Omsetning i dag kr. ' . $this->database->result[0]['sum_turnover'] . ' og omsetning samme dag');
+      $this->template->second_title('Omsetning i dag kr. ' . $this->database_retail->result[0]['sum_turnover'] . ' og omsetning samme dag');
       $this->template->table_start();
       $this->template->table_row_start();
       foreach ($headers as $header) {
@@ -81,7 +85,7 @@ class Home {
       $i = 1;
       foreach ($headers as $header) {
         $this->template->table_row_value('|');
-        $this->template->_table_row_value('kr. <strong>' . $this->database->result[$i]['sum_turnover'] . '</strong>', 'center');
+        $this->template->_table_row_value('kr. <strong>' . $this->database_retail->result[$i]['sum_turnover'] . '</strong>', 'center');
         $this->template->table_row_value('|');
         $i++;
       }
@@ -92,19 +96,19 @@ class Home {
 
   private function most_expensive_item_sold_today () {
     $this->query->most_expensive_item_sold_today();
-    $this->database->select_sinlge_row($this->query->get());
-    if ($this->database->result) {
+    $this->database_retail->select_sinlge_row($this->query->get());
+    if ($this->database_retail->result) {
       $hyperlink = new HyperLink();
-      $price = $this->database->result['price'];
-      $brand = CharacterConvert::utf_to_norwegian($this->database->result['brand']);
-      $article = CharacterConvert::utf_to_norwegian($this->database->result['article']);
-      $hyperlink->link_redirect_query('find/byarticle', 'article_id', $this->database->result['article_id']);
+      $price = $this->database_retail->result['price'];
+      $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
+      $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
+      $hyperlink->link_redirect_query('find/byarticle', 'article_id', $this->database_retail->result['article_id']);
       $_l = $brand . ' - ' . $article;
       if (strlen($brand) < 2 or $brand == null) {
         $_l = $article;
       }
-      $salesperson = CharacterConvert::utf_to_norwegian($this->database->result['salesperson']);
-      $time = $this->database->result['time'];
+      $salesperson = CharacterConvert::utf_to_norwegian($this->database_retail->result['salesperson']);
+      $time = $this->database_retail->result['time'];
       $this->template->second_title('Dyreste artikkel solgt i dag til kr. ' . $price);
       $this->template->table_start();
       $this->template->table_row_start();
@@ -119,10 +123,10 @@ class Home {
 
   private function user_who_sold_most_today () {
     $this->query->user_who_sold_most_today();
-    $this->database->select_sinlge_row($this->query->get());
-    if ($this->database->result) {
-      $article_count = $this->database->result['article_count'];
-      $salesperson = CharacterConvert::utf_to_norwegian($this->database->result['salesperson']);
+    $this->database_retail->select_sinlge_row($this->query->get());
+    if ($this->database_retail->result) {
+      $article_count = $this->database_retail->result['article_count'];
+      $salesperson = CharacterConvert::utf_to_norwegian($this->database_retail->result['salesperson']);
       $this->template->second_title('Selger med flest salg idag');
       $this->template->table_start();
       $this->template->table_row_start();
@@ -134,8 +138,8 @@ class Home {
 
   private function last_ten_sold_items () {
     $this->query->last_ten_sold_items();
-    $this->database->select_multi_row($this->query->get());
-    if ($this->database->result) {
+    $this->database_retail->select_multi_row($this->query->get());
+    if ($this->database_retail->result) {
       $this->template->second_title('Nylige salg');
       $hyperlink = new HyperLink();
       $this->template->table_full_width_start();
@@ -144,7 +148,7 @@ class Home {
       $this->template->table_row_value('<strong>Tid</strong>');
       $this->template->table_row_value('<strong>Artikkel</strong>');
       $this->template->table_row_end();
-      foreach ($this->database->result as $row) {
+      foreach ($this->database_retail->result as $row) {
         $article_id = $row['article_id'];
         $hyperlink->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $brand = CharacterConvert::utf_to_norwegian($row['brand']);
@@ -161,15 +165,15 @@ class Home {
 
   private function brands_imported_today () {
     $this->query->brands_imported_today();
-    $this->database->select_multi_row($this->query->get());
-    if ($this->database->result) {
+    $this->database_retail->select_multi_row($this->query->get());
+    if ($this->database_retail->result) {
       $this->template->second_title('Varer fra disse merkene har kommet inn idag');
       $this->template->table_start();
       $this->template->table_row_start();
       $this->template->_table_row_value('<strong>Merke</strong>', 'center');
       $this->template->_table_row_value('<strong>Antall</strong>', 'right');
       $this->template->table_row_end();
-      foreach ($this->database->result as $row) {
+      foreach ($this->database_retail->result as $row) {
 
         $this->template->table_row_start();
         $this->template->_table_row_value(CharacterConvert::utf_to_norwegian($row['brand']), 'center');

@@ -11,6 +11,10 @@ class QueryDatawarehouse {
       ];
     }
 
+    private function start_new () {
+      $this->query = '';
+    }
+
     public function insert_placement () {
       $this->query = <<<EOT
       INSERT INTO `placement`
@@ -21,6 +25,8 @@ class QueryDatawarehouse {
     }
 
     public function get () {
-      return $this->query;
+      $query = $this->query;
+      $this->start_new();
+      return $query;
     }
 }
