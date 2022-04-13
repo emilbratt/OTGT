@@ -85,7 +85,7 @@ class Home extends Placement {
 
       $query_retail = new QueryRetailPlacement();
       $query_retail->basic_article_info_by_ean();
-      $this->database_retail->select_sinlge_row($query_retail->get());
+      $this->database_retail->select_single_row($query_retail->get());
       if ( !($this->database_retail->result) ) {
         $this->placement_scan_item();
         $this->template->title('Ingen vare med strekkode: ' . $_POST['barcode']);

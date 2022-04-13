@@ -245,7 +245,7 @@ class ByArticle extends Find {
     $query = new QueryRetailFindByArticle();
     $query->select_item_info();
     $this->database_retail = new DatabaseRetail();
-    $this->database_retail->select_sinlge_row($query->get());
+    $this->database_retail->select_single_row($query->get());
     // $query->print();
     $query = null;
 
