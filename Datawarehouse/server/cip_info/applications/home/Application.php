@@ -22,6 +22,7 @@ class Home {
   protected $title;
   protected $title_left;
   protected $title_right;
+  protected $hyperlink;
   protected $database_retail;
   protected $database_dw;
   protected $query;
@@ -39,6 +40,7 @@ class Home {
     $this->environment = new Environment();
     $this->template = new TemplateHome();
     $this->navigation = new Navigation();
+    $this->hyperlink = new HyperLink();
 
     $this->database_retail = new DatabaseRetail();
     $this->database_dw = new DatabaseDatawarehouse();
@@ -98,11 +100,11 @@ class Home {
     $this->query->most_expensive_item_sold_today();
     $this->database_retail->select_sinlge_row($this->query->get());
     if ($this->database_retail->result) {
-      $hyperlink = new HyperLink();
+
       $price = $this->database_retail->result['price'];
       $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
       $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
-      $hyperlink->link_redirect_query('find/byarticle', 'article_id', $this->database_retail->result['article_id']);
+      $this->hyperlink->link_redirect_query('find/byarticle', 'article_id', $this->database_retail->result['article_id']);
       $_l = $brand . ' - ' . $article;
       if (strlen($brand) < 2 or $brand == null) {
         $_l = $article;
@@ -112,7 +114,7 @@ class Home {
       $this->template->second_title('Dyreste artikkel solgt i dag til kr. ' . $price);
       $this->template->table_start();
       $this->template->table_row_start();
-      $this->template->table_row_value($_l, $hyperlink->url);
+      $this->template->table_row_value($_l, $this->hyperlink->url);
       $this->template->table_row_end();
       $this->template->table_row_start();
       $this->template->table_row_value('Solgt av ' . $salesperson . ' klokken ' . $time);
@@ -141,7 +143,6 @@ class Home {
     $this->database_retail->select_multi_row($this->query->get());
     if ($this->database_retail->result) {
       $this->template->second_title('Nylige salg');
-      $hyperlink = new HyperLink();
       $this->template->table_full_width_start();
       $this->template->table_row_start();
       $this->template->table_row_value('<strong>Selger</strong>');
@@ -150,16 +151,18 @@ class Home {
       $this->template->table_row_end();
       foreach ($this->database_retail->result as $row) {
         $article_id = $row['article_id'];
-        $hyperlink->link_redirect_query('find/byarticle', 'article_id', $article_id);
+        $this->hyperlink->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $brand = CharacterConvert::utf_to_norwegian($row['brand']);
         $article = CharacterConvert::utf_to_norwegian($row['article']);
         $this->template->table_row_start();
         $this->template->table_row_value($row['seller']);
         $this->template->table_row_value($row['time']);
-        $this->template->table_row_value($brand . ' - ' . $article, $hyperlink->url);
+        $this->template->table_row_value($brand . ' - ' . $article, $this->hyperlink->url);
         $this->template->table_row_end();
       }
       $this->template->table_end();
+      $this->hyperlink->link_redirect('reports/sales');
+      $this->template->hyperlink_button('Se alle', $this->hyperlink->url);
     }
   }
 
@@ -181,6 +184,8 @@ class Home {
         $this->template->table_row_end();
       }
       $this->template->table_end();
+      $this->hyperlink->link_redirect('reports/imported');
+      $this->template->hyperlink_button('Se alle', $this->hyperlink->url);
     }
   }
 
