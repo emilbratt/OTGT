@@ -94,9 +94,11 @@ class Home {
     $this->query->most_expensive_item_sold_today();
     $this->database->select_sinlge_row($this->query->get());
     if ($this->database->result) {
+      $hyperlink = new HyperLink();
       $price = $this->database->result['price'];
       $brand = CharacterConvert::utf_to_norwegian($this->database->result['brand']);
       $article = CharacterConvert::utf_to_norwegian($this->database->result['article']);
+      $hyperlink->link_redirect_query('find/byarticle', 'article_id', $this->database->result['article_id']);
       $_l = $brand . ' - ' . $article;
       if (strlen($brand) < 2 or $brand == null) {
         $_l = $article;
@@ -106,7 +108,7 @@ class Home {
       $this->template->second_title('Dyreste artikkel solgt i dag til kr. ' . $price);
       $this->template->table_start();
       $this->template->table_row_start();
-      $this->template->table_row_value($_l);
+      $this->template->table_row_value($_l, $hyperlink->url);
       $this->template->table_row_end();
       $this->template->table_row_start();
       $this->template->table_row_value('Solgt av ' . $salesperson . ' klokken ' . $time);
@@ -135,7 +137,7 @@ class Home {
     $this->database->select_multi_row($this->query->get());
     if ($this->database->result) {
       $this->template->second_title('Nylige salg');
-      $hyperlink_row = new HyperLink();
+      $hyperlink = new HyperLink();
       $this->template->table_full_width_start();
       $this->template->table_row_start();
       $this->template->table_row_value('<strong>Selger</strong>');
@@ -144,13 +146,13 @@ class Home {
       $this->template->table_row_end();
       foreach ($this->database->result as $row) {
         $article_id = $row['article_id'];
-        $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
+        $hyperlink->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $brand = CharacterConvert::utf_to_norwegian($row['brand']);
         $article = CharacterConvert::utf_to_norwegian($row['article']);
         $this->template->table_row_start();
-        $this->template->table_row_value($row['seller'], $hyperlink_row->url);
+        $this->template->table_row_value($row['seller']);
         $this->template->table_row_value($row['time']);
-        $this->template->table_row_value($brand . ' - ' . $article, $hyperlink_row->url);
+        $this->template->table_row_value($brand . ' - ' . $article, $hyperlink->url);
         $this->template->table_row_end();
       }
       $this->template->table_end();
