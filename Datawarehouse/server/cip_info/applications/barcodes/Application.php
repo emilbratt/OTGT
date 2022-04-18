@@ -62,7 +62,7 @@ class GenerateLabels extends Barcodes {
       $api_endpoint = $this->url_api . 'shelf/';
       $this->validate_labels();
       if ($this->valid_labels) {
-        // no html printing because we epect an image as octet stream (byte array)
+        // no html printing because we expect an octet stream (byte array)
         $this->send_labels_to_api();
         return;
       }
@@ -86,14 +86,19 @@ class GenerateLabels extends Barcodes {
     } else {
       if ( $this->environment->developement('show_debug') ) {
         echo 'Could not establish contact with barcode_generator api';
-        echo 'On URL' . $this->url_api;
-        die('Error on curl request: ' . curl_error($curl));
+        echo 'On URL ' . $this->url_api;
       }
       $this->template->message('Ingen kontakt med strekkode generator: ' . $this->url_api);
     }
   }
 
   private function get_limits () {
+    /**
+     * the limits we need to know:
+     *  1. how many labels can fit on an A4 sheet for printing
+     *  2. how wide can the label be in regards of how many characters
+     */
+
     // we fetch the N max amount of sheets and label chars generate N form inputs
     $api_sheet_limit = $this->url_api . 'shelf/sheet/limit';
     $api_char_limit = $this->url_api . 'shelf/char/limit';
