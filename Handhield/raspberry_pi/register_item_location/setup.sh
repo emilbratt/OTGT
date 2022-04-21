@@ -17,15 +17,15 @@ declare PYTHON_CODE
 declare PYTHON_MODULES
 
 DEPENDENCIES=(
-  shelf-daemon.service
-  keyboard
+  # shelf-daemon.service
   wifisignal
-  python_modules
+  application/main.py
 )
 
 PYTHON_MODULES=(
   requests
 )
+
 
 # python code checking if a module passed as arg is installed and exits accordingly with 0 or 1
 read -r -d '' PYTHON_CODE <<- EOT
@@ -40,8 +40,11 @@ EOT
 
 
 function check_dependencies () {
+  path=$(pwd)
   for file in "${DEPENDENCIES[@]}"
   do
+    path="$path/$file"
+    echo "Checking existens of $path"
     if [[ ! -f ./$file ]]; then
       echo "cannot find $file (should be in the same directory as this script"
       exit 1
@@ -82,12 +85,14 @@ function setup_software () {
 function install_python_modules () {
   for module in "${PYTHON_MODULES[@]}"
   do
+    echo "Checking if Python $module is installed"
     python3 -c "$PYTHON_CODE" $module
     if [[ $? -ne 0 ]]; then
-      echo "$module does not exist"
+      pip3 install --user $module
     fi
   done
 }
+
 
 function set_locale () {
   cat /etc/locale.gen | grep -wq 'nb_NO.UTF-8 UTF-8'
@@ -107,9 +112,9 @@ function install_dependencies () {
 }
 
 
-# check_dependencies
-system_update
-setup_software
+check_dependencies
+# system_update
+# setup_software
 install_python_modules
 # check_internet_connection
 # setup_hostname
