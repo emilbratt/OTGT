@@ -4,7 +4,8 @@
 #   Emil Bratt Børsting
 #────────────────────────────────────────────#
 # Description:
-#   automatically setup kiosk running chromium
+#   automatically setup handhield running script
+#   for registering item shelf value
 #────────────────────────────────────────────#
 # Customization of this script
 #   add dependencies (files) and make sure they
@@ -14,7 +15,7 @@
 declare DEPENDENCIES
 
 DEPENDENCIES=(
-  autostart
+  shelf-daemon.service
   keyboard
   wifisignal
 )
@@ -40,12 +41,6 @@ function check_internet_connection () {
 }
 
 
-function set_password () {
-  echo 'Set new password'
-  passwd
-}
-
-
 function setup_hostname () {
   NEW_HOSTNAME=$(cat /etc/hostname)
   read -e -i "$NEW_HOSTNAME" -p "Hostname (use backspace to erase and set new): " input
@@ -60,19 +55,7 @@ function system_update () {
 
 
 function setup_software () {
-  # install chromium and x-server
-  sudo apt-get install --no-install-recommends xserver-xorg x11-xserver-utils xinit openbox -y
-  sudo apt-get install --no-install-recommends chromium-browser -y
-  sudo apt-get install xbase-clients -y
-}
-
-
-function setup_start_command () {
-  # set startup command for profile
-  cat $HOME/.bash_profile | grep -q 'startx'
-  if [[ $? -eq 1 ]]; then
-    echo 'if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then startx; fi' >> $HOME/.bash_profile
-  fi
+  return 0
 }
 
 
@@ -89,23 +72,16 @@ function set_locale () {
 }
 
 
-function transfer_dependencies () {
-  # copy over the autostart config for cor starting chromium correctly on x
-  sudo cp -f ./autostart /etc/xdg/openbox/
-  # copy over the keyboard config for noewegian keyboard
-  sudo cp -f ./keyboard /etc/default/keyboard
-  # copy over the convenience script for checking signal strength
-  sudo cp -f ./wifisignal /usr/local/bin/
+function install_dependencies () {
+  return 0
 }
 
 
 check_dependencies
 check_internet_connection
-set_password
 setup_hostname
 system_update
 setup_software
-setup_start_command
 set_locale
-transfer_dependencies
+install_dependencies
 sudo reboot
