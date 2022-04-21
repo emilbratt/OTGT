@@ -146,9 +146,9 @@ class QueryRetailHome extends QueryRetail {
     EOT;
   }
 
-  public function user_who_sold_most_today () {
+  public function users_sales_count_today () {
     $this->query .= <<<EOT
-    SELECT TOP 1
+    SELECT
       salesperson,
       article_count
     FROM

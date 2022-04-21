@@ -50,6 +50,14 @@ class Environment {
     return $this->env_config['contact_sysadmin'][$key];
   }
 
+  public function confidential ($key) {
+    return $this->env_config['confidential'][$key];
+  }
+
+  public function competitive ($key) {
+    return $this->env_config['competitive'][$key];
+  }
+
   function __destruct () {
 
   }

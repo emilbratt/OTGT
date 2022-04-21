@@ -49,3 +49,10 @@
   name = "INSERT"
   email = "INSERT"
   phone = "INSERT"
+
+[confidential]; extra options for data that might be considered sensitive
+  show = false
+  passphrase = "INSERT"
+
+[competitive]; only if employees opts in, we can show competitive data
+  show = false

@@ -58,7 +58,9 @@ class Home {
   public function run () {
     $this->template->title_left_and_right($this->title_left, $this->title_right);
     $this->turnover();
-    // $this->user_who_sold_most_today();
+    if ($this->environment->competitive('show')) {
+      $this->users_sales_count_today();
+    }
     $this->most_expensive_item_sold_today();
     $this->last_ten_sold_items();
     $this->brands_imported_today();
@@ -149,21 +151,6 @@ class Home {
     }
   }
 
-  private function user_who_sold_most_today () {
-    $this->query_retail->user_who_sold_most_today();
-    $this->database_retail->select_single_row($this->query_retail->get());
-    if ($this->database_retail->result) {
-      $article_count = $this->database_retail->result['article_count'];
-      $salesperson = CharacterConvert::utf_to_norwegian($this->database_retail->result['salesperson']);
-      $this->template->second_title('Selger med flest salg idag');
-      $this->template->table_start();
-      $this->template->table_row_start();
-      $this->template->table_row_value($salesperson . ' med ' . $article_count . ' salg');
-      $this->template->table_row_end();
-      $this->template->table_end();
-    }
-  }
-
   private function last_ten_sold_items () {
     $this->query_retail->last_ten_sold_items();
     $this->database_retail->select_multi_row($this->query_retail->get());
@@ -181,9 +168,9 @@ class Home {
         $brand = CharacterConvert::utf_to_norwegian($row['brand']);
         $article = CharacterConvert::utf_to_norwegian($row['article']);
         $this->template->table_row_start();
-        $this->template->table_row_value($row['seller']);
-        $this->template->table_row_value($row['time']);
-        $this->template->table_row_value($brand . ' - ' . $article, $this->hyperlink->url);
+        $this->template->table_row_value('| ' . $row['seller']);
+        $this->template->table_row_value('| ' . $row['time']);
+        $this->template->table_row_value('| ' . $brand . ' - ' . $article, $this->hyperlink->url);
         $this->template->table_row_end();
       }
       $this->template->table_end();
@@ -199,19 +186,38 @@ class Home {
       $this->template->second_title('Varer fra disse merkene har kommet inn idag');
       $this->template->table_start();
       $this->template->table_row_start();
-      $this->template->_table_row_value('<strong>Merke</strong>', 'center');
-      $this->template->_table_row_value('<strong>Antall</strong>', 'right');
+      $this->template->_table_row_value('<strong>Merke</strong>', 'left');
+      $this->template->_table_row_value('<strong>Antall</strong>', 'left');
       $this->template->table_row_end();
       foreach ($this->database_retail->result as $row) {
-
         $this->template->table_row_start();
-        $this->template->_table_row_value(CharacterConvert::utf_to_norwegian($row['brand']), 'center');
-        $this->template->_table_row_value($row['articles_imported'], 'right');
+        $this->template->_table_row_value('| ' . CharacterConvert::utf_to_norwegian($row['brand']), 'left');
+        $this->template->_table_row_value('| ' . $row['articles_imported'], 'left');
         $this->template->table_row_end();
       }
       $this->template->table_end();
       $this->hyperlink->link_redirect('reports/imported');
       $this->template->hyperlink_button('Se alle', $this->hyperlink->url);
+    }
+  }
+
+  private function users_sales_count_today () {
+    $this->query_retail->users_sales_count_today();
+    $this->database_retail->select_multi_row($this->query_retail->get());
+    if ($this->database_retail->result) {
+      $this->template->second_title('Flest salg i dag');
+      $this->template->table_start();
+      $this->template->table_row_start();
+      $this->template->_table_row_value('<strong>Selger</strong>', 'left');
+      $this->template->_table_row_value('<strong>Salg</strong>', 'left');
+      $this->template->table_row_end();
+      foreach ($this->database_retail->result as $row) {
+        $this->template->table_row_start();
+        $this->template->_table_row_value('| ' . CharacterConvert::utf_to_norwegian($row['salesperson']), 'left');
+        $this->template->_table_row_value('| ' . $row['article_count'], 'left');
+        $this->template->table_row_end();
+      }
+      $this->template->table_end();
     }
   }
 
