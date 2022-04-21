@@ -13,12 +13,30 @@
 #────────────────────────────────────────────#
 
 declare DEPENDENCIES
+declare PYTHON_CODE
+declare PYTHON_MODULES
 
 DEPENDENCIES=(
   shelf-daemon.service
   keyboard
   wifisignal
+  python_modules
 )
+
+PYTHON_MODULES=(
+  requests
+)
+
+read -r -d '' PYTHON_CODE <<- EOT
+import sys
+import importlib
+try:
+  importlib.import_module(sys.argv[1], package=None)
+  sys.exit(0)
+except ModuleNotFoundError:
+  sys.exit(1)
+EOT
+
 
 function check_dependencies () {
   for file in "${DEPENDENCIES[@]}"
@@ -29,6 +47,7 @@ function check_dependencies () {
     fi
   done
 }
+
 
 
 function check_internet_connection () {
@@ -55,9 +74,19 @@ function system_update () {
 
 
 function setup_software () {
-  return 0
+  sudo apt-get install python3-pip -y
 }
 
+
+function install_python_modules () {
+  for module in "${PYTHON_MODULES[@]}"
+  do
+    python3 -c "$PYTHON_CODE" $module
+    if [[ $? -ne 0 ]]; then
+      echo "$module does not exist"
+    fi
+  done
+}
 
 function set_locale () {
   cat /etc/locale.gen | grep -wq 'nb_NO.UTF-8 UTF-8'
@@ -77,11 +106,12 @@ function install_dependencies () {
 }
 
 
-check_dependencies
-check_internet_connection
-setup_hostname
+# check_dependencies
 system_update
 setup_software
-set_locale
-install_dependencies
-sudo reboot
+install_python_modules
+# check_internet_connection
+# setup_hostname
+# set_locale
+# install_dependencies
+# sudo reboot
