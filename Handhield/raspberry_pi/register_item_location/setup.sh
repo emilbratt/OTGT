@@ -27,6 +27,7 @@ PYTHON_MODULES=(
   requests
 )
 
+# python code checking if a module passed as arg is installed and exits accordingly with 0 or 1
 read -r -d '' PYTHON_CODE <<- EOT
 import sys
 import importlib
