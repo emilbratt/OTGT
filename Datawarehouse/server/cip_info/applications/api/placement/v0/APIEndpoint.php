@@ -105,7 +105,7 @@ class APIEndpoint {
     $query_datawarehouse = new QueryDatawarehousePlacement();
     $database_datawarehouse = new DatabaseDatawarehouse();
 
-    $timestamp = $date_obj->timestamp_datawarehouse;
+    $timestamp = $date_obj->date_time;
     $yyyymmdd = $date_obj->yyyymmdd;
 
     $query_datawarehouse->insert_placement();
