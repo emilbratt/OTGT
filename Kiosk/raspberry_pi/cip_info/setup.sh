@@ -74,9 +74,9 @@ function setup_software () {
 
 function setup_start_command () {
   # set startup command for profile
-  cat /home/pi/.bash_profile | grep -q 'startx'
+  cat $HOME/.bash_profile | grep -q 'startx'
   if [[ $? -eq 1 ]]; then
-    echo 'if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then startx; fi' >> /home/pi/.bash_profile
+    echo 'if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then startx; fi' >> $HOME/.bash_profile
   fi
 }
 
