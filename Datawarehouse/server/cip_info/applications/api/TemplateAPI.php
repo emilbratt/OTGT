@@ -20,7 +20,7 @@ class TemplateAPI extends Template {
     $method_colour_put = '#775577';
     $this->css .= <<<EOT
     #endpoint_title {
-      font-size: 26px;
+      font-size: 22px;
       margin-bottom: 2px;
     }
     #GET {
@@ -54,7 +54,7 @@ class TemplateAPI extends Template {
       background-color: $this->colour_header_background;
       text-align: left;
       padding: 1px 10px;
-      font-size: 20px;
+      font-size: 18px;
     }
     /* set fixed length for each table column */
     td:nth-child(1) {

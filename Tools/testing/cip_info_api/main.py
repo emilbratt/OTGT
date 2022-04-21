@@ -16,7 +16,6 @@ def get (URL):
     r = requests.get(URL)
     print('GET request: ' + r.url)
     print('Response: ' + str(r.status_code))
-    r.status_code
     print(r.json())
     print()
 
@@ -53,5 +52,5 @@ if __name__ == '__main__':
     QUERY = 'api/placement/v0/update_by_article_id'
     URL = HTTP + '://' + URL + ':' + PORT + '/' + QUERY
 
-    get(URL)
-    post(URL, {'128288': 'a-a-1'})
+    # get(URL)
+    post(URL, {'article_id': '10', 'shelf': 'a-a-3'})

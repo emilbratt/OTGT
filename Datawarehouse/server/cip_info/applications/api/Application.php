@@ -12,7 +12,13 @@ class API {
   protected $api_verison;
   protected $http_response_code;
 
-  protected function handle_api_request () {
+  function __construct () {
+    require_once '../applications/Date.php';
+    require_once '../applications/DatabaseRetail.php';
+    require_once '../applications/DatabaseDatawarehouse.php';
+  }
+
+  protected function parse_request_for_api () {
     $this->http_response_code = 204;
 
     // get the name that comes after api/
@@ -37,20 +43,27 @@ class API {
      require_once "../applications/api/$this->api_name/$this->api_verison/APIEndpoint.php";
   }
 
-  protected function send_json () {
-    if ($this->http_response_code === 200) {
+  protected function log_request () {
+    if ($this->http_response_code >= 200 and $this->http_response_code <= 299) {
       header('Content-Type: application/json; charset=utf-8');
       echo json_encode($this->data);
     }
+  }
+
+  protected function send_json () {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($this->data);
     http_response_code($this->http_response_code);
   }
 
+
   public function run () {
-    $this->handle_api_request();
+    // every api request is ran from here by inherited objects
+    $this->parse_request_for_api();
     $api = new APIEndpoint($this->api_request);
     $api->run();
-    $this->data = $api->get_data();
-    $this->http_response_code = $api->get_return_code();
+    $this->data = $api->data;
+    $this->http_response_code = $api->http_response_code;
     $this->send_json();
   }
 
@@ -84,20 +97,20 @@ class Home extends API {
     // update this list as new api endponts are added
     $this->current_api_endpoints = [
       'Test' => [
-        ['url' => 'api/test/v0/hello', 'method' => 'GET', 'info' => 'request hello to get dummy data'],
-        ['url' => 'api/test/v0/hello', 'method' => 'POST', 'info' => 'request hello and get back the post data you sent'],
-        ['url' => 'api/test/v0/foo', 'method' => 'GET', 'info' => 'request foo to get dummy data'],
+        ['url' => 'api/test/v0/hello', 'method' => 'GET', 'info' => 'request hello to get dummy data', 'active' => true],
+        ['url' => 'api/test/v0/hello', 'method' => 'POST', 'info' => 'request hello and get back the post data you sent', 'active' => true],
+        ['url' => 'api/test/v0/foo', 'method' => 'GET', 'info' => 'request foo to get dummy data', 'active' => true],
       ],
       'Article' => [
-        ['url' => 'api/article/v0/movement/{article_id}', 'method' => 'GET', 'info' => 'get list of all movements for specific item'],
+        ['url' => 'api/article/v0/movement/{article_id}', 'method' => 'GET', 'info' => 'get list of all movements for specific item', 'active' => false],
       ],
       'Placement' => [
-        ['url' => 'api/placement/v0/update_by_article_id [ [article_id, placement], ..]', 'method' => 'POST', 'info' => 'placement for item by article id'],
-        ['url' => 'api/placement/v0/update_by_barcode [ [barcode, placement], ..]', 'method' => 'POST', 'info' => 'placement for item by barcode'],
+        ['url' => 'api/placement/v0/update_by_article_id {"article_id": "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by article id', 'active' => true],
+        ['url' => 'api/placement/v0/updatebybarcode {"barcode: "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by barcode', 'active' => false],
       ],
       'Brands' => [
-        ['url' => 'api/brands/v0/all', 'method' => 'GET', 'info' => 'get list of all brands'],
-        ['url' => 'api/brands/v0/brand/{brand_id}', 'method' => 'GET', 'info' => 'get info for specific brand'],
+        ['url' => 'api/brands/v0/all', 'method' => 'GET', 'info' => 'get list of all brands', 'active' => false],
+        ['url' => 'api/brands/v0/brand/{brand_id}', 'method' => 'GET', 'info' => 'get info for specific brand', 'active' => false],
       ],
     ];
   }
@@ -111,11 +124,13 @@ class Home extends API {
       $this->template->endpoint_title($endpoint);
       $this->template->table_start();
       foreach ($desc as $row ) {
-        $this->template->table_row_start();
-        $this->template->table_row_value($row['method']);
-        $this->template->table_row_value($home . $row['url']);
-        $this->template->table_row_value($row['info']);
-        $this->template->table_row_end();
+        if ($row['active']) {
+          $this->template->table_row_start();
+          $this->template->table_row_value($row['method']);
+          $this->template->table_row_value($row['url']);
+          $this->template->table_row_value($row['info']);
+          $this->template->table_row_end();
+        }
       }
       $this->template->table_end();
     }

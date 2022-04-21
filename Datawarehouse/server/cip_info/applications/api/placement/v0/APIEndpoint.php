@@ -2,19 +2,23 @@
 
 class APIEndpoint {
 
-  protected $data;
+  public $data;
+  public $http_response_code;
   protected $article_id;
   protected $shelf;
+  protected $database_retail;
+  protected $database_datawarehouse;
   protected $request;
-  protected $http_response_code;
 
   function __construct ($request) {
-    require_once '../applications/Date.php';
-    require_once '../applications/DatabaseRetail.php';
-    require_once '../applications/api/article/v0/APIQueryRetail.php';
-    $this->http_response_code = 404;
-    $this->data = '';
+    require_once '../applications/api/placement/v0/APIQueryRetail.php';
+    require_once '../applications/api/placement/v0/APIQueryDatawarehouse.php';
     $this->request = $request;
+    $this->data = array();
+
+    // return variables for response to caller to know if request was OK (true)
+    $this->data['database_retail'] = false;
+    $this->data['database_datawarehouse'] = false;
   }
 
   public function run () {
@@ -22,74 +26,62 @@ class APIEndpoint {
       case "update_by_article_id":
         $this->update_by_article_id();
         break;
-      case "update_by_barcode":
-        $this->update_by_barcode();
+      case "updatebybarcode":
+        $this->updatebybarcode();
         break;
     }
   }
 
-  public function get_data () {
-    return $this->data;
-  }
-
-  public function get_return_code () {
-    return $this->http_response_code;
-  }
-
   private function update_by_article_id () {
     $this->http_response_code = 500;
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+      $this->data['response'] = 'invalid method: ' . $_SERVER['REQUEST_METHOD'];
+      $this->http_response_code = 404;
+      return;
+    }
+    if ( !(isset($_POST['article_id'])) ) {
+      $this->data['response'] = 'missing key: article_id';
+      return;
+    }
+    $this->article_id = $_POST['article_id'];
+    if ( !(isset($_POST['shelf'])) ) {
+      $this->data['response'] = 'missing key: shelf';
+      return;
+    }
+    $this->shelf = $_POST['shelf'];
 
+    // make sure article id is numeric
+    if ( !(is_numeric($this->article_id)) ) {
+      $this->data['response'] = 'article id should be numeric';
+      return;
+    }
 
-    // if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    //   $this->data = '';
-    //   $this->http_response_code = 404;
-    //   return;
-    // }
-    //
-    // if ( !(isset($this->request[1])) ) {
-    //   return;
-    // }
-    // if ( !(isset($this->request[2])) ) {
-    //   return;
-    // }
-    //
-    // $this->article_id = $this->request[1];
-    // $this->shelf = $this->request[2];
-    //
-    // // make sure article id is numeric
-    // if ( !(is_numeric($this->request[1])) ) {
-    //   return;
-    // }
-    //
-    // // make sure shelf has value
-    // if (strlen($this->shelf) < 1) {
-    //   $this->shelf = false;
-    //   return;
-    // }
-    // // format the shelf value by swapping + to -
-    // $this->shelf = str_replace('+', '-', $this->shelf);
-    // $this->shelf = strtoupper($this->shelf);
-    // // avoid whitespace values
-    // if ( (strlen($this->shelf) == 1) and ($this->shelf == ' ') ) {
-    //   $this->shelf = false;
-    //   return;
-    // }
-    //
-    // // expect "-" after first letter
-    // if (strlen($this->shelf) > 1) {
-    //   if ( !(strpos($this->shelf, '-'))) {
-    //     $this->shelf = false;
-    //     return;
-    //   }
-    // }
+    // make sure shelf has value
+    if (strlen($this->shelf) < 1) {
+      $this->data['response'] = 'shelf value is empty';
+      return;
+    }
 
-    $this->http_response_code = 200;
-    $this->data = ['HALT HERE'];
-    return;
+    // format the shelf value by swapping + to -
+    $this->shelf = str_replace('+', '-', $this->shelf);
+    $this->shelf = strtoupper($this->shelf);
+    // avoid whitespace values
+    if ( (strlen($this->shelf) == 1) and ($this->shelf == ' ') ) {
+      $this->data['response'] = 'shelf value invalid';
+      return;
+    }
+
+    // only allow if "-" after first letter
+    if (strlen($this->shelf) > 1) {
+      if ( !(strpos($this->shelf, '-'))) {
+        $this->data['response'] = 'shelf value ' .$this->shelf . ' invalid';
+        return;
+      }
+    }
 
     $this->update_placement_to_retail();
     $this->insert_placement_to_datawarehouse();
-    $this->http_response_code = 204;
+    $this->http_response_code = 201;
   }
 
   private function update_placement_to_retail () {
@@ -97,13 +89,19 @@ class APIEndpoint {
     $database_retail = new DatabaseRetail();
     $query_retail->update_placement_by_article_id($this->article_id, $this->shelf);
     $stmt = $database_retail->cnxn->prepare($query_retail->get());
-    $stmt->execute();
+    try {
+      $stmt->execute();
+      $this->data['database_retail'] = true;
+    }
+    catch(PDOException $e) {
+      $this->data['database_retail'] = false;
+    }
   }
 
   private function insert_placement_to_datawarehouse () {
     $date_obj = new Date;
-    $query_datawarehouse = new QueryDatawarehousePlacement();
     $database_datawarehouse = new DatabaseDatawarehouse();
+    $query_datawarehouse = new APIQueryDatawarehouse();
 
     $timestamp = $date_obj->date_time;
     $yyyymmdd = $date_obj->yyyymmdd;
@@ -121,8 +119,10 @@ class APIEndpoint {
     // we make a try / exception to handle that specific case
     try {
       $stmt->execute($values);
+      $this->data['database_datawarehouse'] = true;
     }
     catch(PDOException $e)  {
+      $this->data['database_datawarehouse'] = false;
       if (strpos($e, 'Integrity constraint violation') !== false) {
         $this->http_response_code = 502;
       }
