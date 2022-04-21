@@ -45,35 +45,39 @@ class BarcodeModel(BaseModel):
 class BarcodeGenerate:
     def __init__(self, barcodes = ['barcode']):
         self.barcodes = barcodes
-        self.sheet_filename = os.path.join(BARCODE_DIR, 'final')
+        self.barcode_filename = os.path.join(BARCODE_DIR, 'final_barcode')
+        self.sheet_filename = os.path.join(BARCODE_DIR, 'final_sheet')
         self.barcode_pixel_height = 90 # barcode height in pixels for sheet
         self.success = True
         self.label = 'nolabel'
         self.generated = {}
         self.msg = 'OK'
 
-    def barcode_to_byte_array(self):
-        byte_array = io.BytesIO()
-        self.barcode_obj.save(byte_array, format='png')
-        byte_array = byte_array.getvalue()
-        return byte_array
 
-    def sheet_to_byte_array(self):
+
+    def get_barcode_byte_array(self):
+        rendered_barcode = self.barcode_obj.render()
+        byte_array = io.BytesIO()
+        rendered_barcode.save(byte_array, format='png')
+        rendered_barcode.close()
+        return byte_array.getvalue()
+
+    def get_sheet_byte_array(self):
         byte_array = io.BytesIO()
         self.sheet_obj.save(byte_array, format='png')
-        byte_array = byte_array.getvalue()
-        return byte_array
+        return byte_array.getvalue()
 
-    def generate_barcode(self):
+
+    def generate_single_barcode(self):
+        self.label = self.barcodes[0]
         self.barcode_obj = Code128(self.label, writer=ImageWriter())
 
-    def render_barcode(self):
-        self.rendered_barcode = self.barcode_obj.render()
-
-    def save_barcode(self):
-        self.barcode_obj.save(self.barcode_path)
 
     def generate_shelf_label_sheet(self):
+        # this is where we generate shelf labels for the inventory
+        # which can be printed directly on paper sheet
+        # with for example a vanilla hp printer
+
         # pixels from left where we paste into sheet
         pixels_from_left = 65
         self.sheet_obj = Image.new('RGB',(1240,1754), (255, 255, 255))
@@ -88,7 +92,7 @@ class BarcodeGenerate:
 
             # generate stock barcode
             self.barcode_obj = Code128(self.label, writer=ImageWriter())
-            self.render_barcode()
+            rendered_barcode = self.barcode_obj.render()
 
             # open a new blank for cropped barcode
             cropped_version = Image.new('RGB', (560,80), (255, 255, 255))
@@ -98,22 +102,32 @@ class BarcodeGenerate:
             human_label.text((0,0), self.label, font=FONT, fill=(0, 0, 0))
 
             # crop out and paste barcode into cropped blank
-            crop_dimension = (0, 80, self.rendered_barcode.size[0], 160)
-            cropped_barcode = self.rendered_barcode.crop(crop_dimension)
+            crop_dimension = (0, 80, rendered_barcode.size[0], 160)
+            cropped_barcode = rendered_barcode.crop(crop_dimension)
             cropped_version.paste(cropped_barcode, (250,0))
 
             # paste cropped version into sheet
             self.sheet_obj.paste(cropped_version, (pixels_from_left,pixels_from_top))
 
             self.generated[self.label] = 'OK'
-            self.rendered_barcode.close()
+            rendered_barcode.close()
             cropped_version.close()
+
+
+    def save_barcode(self):
+        self.barcode_obj.save('%s.png' % self.barcode_filename)
 
     def save_sheet(self):
         self.sheet_obj.save('%s.png' % self.sheet_filename)
 
     def close_sheet(self):
         self.sheet_obj.close()
+
+
+class BarcodeGenerateSingle(BarcodeGenerate):
+    def __init__(self, barcode = 'barcode'):
+        BarcodeGenerate.__init__(self, [barcode])
+        self.generate_single_barcode()
 
 
 class BarcodeGenerateShelfSingleSheet(BarcodeGenerate):
@@ -127,23 +141,9 @@ class BarcodeGenerateShelfSingleSheet(BarcodeGenerate):
         self.generate_shelf_label_sheet()
 
 
+
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-@app.get("/cwd")
-def read_cwd():
-    return {"cwd": APP_DIR}
-
-@app.get("/shelf/char/limit")
-def shelf_char_limit():
-    return {"limit": SHELF_LABEL_MAX_CHAR}
-
-@app.get("/shelf/sheet/limit")
-def sheet_limit():
-    return {"limit": SHEET_BARCODE_MAX_LIMIT}
 
 @app.get("/test/get")
 def test_get():
@@ -153,11 +153,41 @@ def test_get():
 def test_post(item: TestModel):
     return {item.caller: POST_TEST_RESPONSE}
 
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
+@app.get("/cwd")
+def read_cwd():
+    return {"cwd": APP_DIR}
+
+@app.get("/barcode/{barcode}")
+async def barcode_single(barcode: str):
+    b = BarcodeGenerateSingle(barcode)
+    byte_array = b.get_barcode_byte_array()
+    return Response(status_code=status.HTTP_201_CREATED,
+                    content=byte_array, media_type="image/png")
+
+@app.post("/barcode/single/")
+async def barcode_single(item: BarcodeModel):
+    b = BarcodeGenerateSingle(item.barcodes[0])
+    byte_array = b.get_barcode_byte_array()
+    return Response(status_code=status.HTTP_201_CREATED,
+                    content=byte_array, media_type="image/png")
+
+@app.get("/shelf/char/limit")
+def shelf_char_limit():
+    return {"limit": SHELF_LABEL_MAX_CHAR}
+
+@app.get("/shelf/sheet/limit")
+def sheet_limit():
+    return {"limit": SHEET_BARCODE_MAX_LIMIT}
+
 # using GET we can create one single barcode
 @app.get("/shelf/{barcode}")
 async def shelf_single(barcode: str):
     b = BarcodeGenerateShelfSingleSheet([barcode])
-    byte_array = b.sheet_to_byte_array()
+    byte_array = b.get_sheet_byte_array()
     b.close_sheet()
     return Response(status_code=status.HTTP_201_CREATED,
                     content=byte_array, media_type="image/png")
@@ -166,7 +196,7 @@ async def shelf_single(barcode: str):
 @app.post("/shelf/")
 async def shelf_multiple(item: BarcodeModel):
     b = BarcodeGenerateShelfSingleSheet(item.barcodes)
-    byte_array = b.sheet_to_byte_array()
+    byte_array = b.get_sheet_byte_array()
     b.close_sheet()
     if b.success:
         return Response(status_code=status.HTTP_201_CREATED,

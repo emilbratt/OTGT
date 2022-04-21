@@ -43,6 +43,14 @@ class TemplateDeveloping extends Template {
       background-color: $this->colour_default_background;
       width: 150px;
       height: 30px;
+    }
+
+    /* show image from bytestream */
+    .image_show {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 40%;
     }\n
     EOT;
   }
@@ -61,24 +69,6 @@ class TemplateDeveloping extends Template {
     <input type="submit" value="Execute" style="width:100px">
     </form>
     </div>
-    EOT;
-  }
-
-  public function image_show ($image) {
-    $this->css .= <<<EOT
-    .image_show {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      width: 40%;
-    }\n
-    EOT;
-
-    $b64image = base64_encode($image);
-    $this->html .= <<<EOT
-    <div>
-      <img class="image_show" src="data:image/png;base64,$b64image">
-    </div>\n
     EOT;
   }
 

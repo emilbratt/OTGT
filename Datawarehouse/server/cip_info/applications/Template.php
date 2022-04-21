@@ -350,11 +350,18 @@ class Template {
     EOT;
   }
 
-  public function form_input_search ($ref = 'form_input_search') {
+  public function form_input_search ($ref = 'form_input_search', $focus = false) {
     // $ref = what key to reference in GET / POST array
     $this->html .= <<<EOT
     <td>
-      <input
+      <input\n
+    EOT;
+    if ($focus === true) {
+      $this->html .= <<<EOT
+          autofocus="autofocus" onfocus="this.select()"\n
+      EOT;
+    }
+    $this->html .= <<<EOT
         type="search"
         id="form_input_search"
         name="$ref">
@@ -362,14 +369,40 @@ class Template {
     EOT;
   }
 
-  public function form_input_text ($ref = 'form_input_text') {
+  public function form_input_text ($ref = 'form_input_text', $focus = false) {
     // $ref = what key to reference in GET / POST array
     $this->html .= <<<EOT
     <td>
-      <input
-         type="text"
-         id="form_input_text"
-         name="$ref">
+      <input\n
+    EOT;
+    if ($focus === true) {
+      $this->html .= <<<EOT
+          autofocus="autofocus" onfocus="this.select()"\n
+      EOT;
+    }
+    $this->html .= <<<EOT
+        type="text"
+        id="form_input_text"
+        name="$ref">
+    </td>\n
+    EOT;
+  }
+
+  public function form_input_label ($ref = 'form_input_label', $focus = false) {
+    // $ref = what key to reference in GET / POST array
+    $this->html .= <<<EOT
+    <td>
+      <input\n
+    EOT;
+    if ($focus === true) {
+      $this->html .= <<<EOT
+          autofocus="autofocus" onfocus="this.select()"\n
+      EOT;
+    }
+    $this->html .= <<<EOT
+        type="text"
+        id="form_input_label"
+        name="$ref">
     </td>\n
     EOT;
   }
@@ -556,6 +589,15 @@ class Template {
       </div>\n
       EOT;
     }
+  }
+
+  public function image_show ($image) {
+    $b64image = base64_encode($image);
+    $this->html .= <<<EOT
+    <div>
+      <img class="image_show" src="data:image/png;base64,$b64image">
+    </div>\n
+    EOT;
   }
 
   private function add_debug () {

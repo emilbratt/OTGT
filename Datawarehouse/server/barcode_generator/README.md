@@ -64,3 +64,9 @@ check status with
 ```
 systemctl status barcode-generator
 ```
+
+starting manually can be done navigating to OTGT/Datawarehouse/server and running
+```
+uvicorn barcode_generator.main:app --reload --host 0.0.0.0 --port 8081
+```
+make sure uvicorn is in PATH

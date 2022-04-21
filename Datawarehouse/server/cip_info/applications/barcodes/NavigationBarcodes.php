@@ -11,7 +11,8 @@ class NavigationBarcodes extends Navigation {
     parent::__construct();
     $this->app_uri = $this->top_nav_links['Strekkoder'];
     $this->sub_nav_links = [
-      'Lag Hyllemerking' => $this->app_uri . '/generatelabels',
+      'Lag strekkode' => $this->app_uri . '/generatebarcode',
+      'Lag Hyllemerking' => $this->app_uri . '/generateshelflabels',
     ];
   }
 
