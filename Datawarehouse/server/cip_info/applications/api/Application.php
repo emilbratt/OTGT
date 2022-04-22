@@ -16,6 +16,7 @@ class API {
     require_once '../applications/Date.php';
     require_once '../applications/DatabaseRetail.php';
     require_once '../applications/DatabaseDatawarehouse.php';
+    require_once '../applications/api/APILog.php';
   }
 
   protected function parse_request_for_api () {
@@ -43,18 +44,7 @@ class API {
      require_once "../applications/api/$this->api_name/$this->api_verison/APIEndpoint.php";
   }
 
-  protected function log_request () {
-    if ($this->http_response_code >= 200 and $this->http_response_code <= 299) {
-      header('Content-Type: application/json; charset=utf-8');
-      echo json_encode($this->data);
-    }
-  }
 
-  protected function send_json () {
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode($this->data);
-    http_response_code($this->http_response_code);
-  }
 
 
   public function run () {
@@ -62,9 +52,11 @@ class API {
     $this->parse_request_for_api();
     $api = new APIEndpoint($this->api_request);
     $api->run();
-    $this->data = $api->data;
-    $this->http_response_code = $api->http_response_code;
-    $this->send_json();
+    $api_log = new APILog();
+    $api_log->run();
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($api->data);
+    http_response_code($api->http_response_code);
   }
 
 }
