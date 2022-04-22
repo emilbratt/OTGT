@@ -30,6 +30,9 @@ class APIEndpoint {
         $this->data = ['response' => 'article imports not implemented yet'];
         $this->http_response_code = 404;
         break;
+      default:
+        $this->data = ['response' => 'invalid endpoint'];
+        $this->http_response_code = 500;
     }
   }
 

@@ -29,6 +29,9 @@ class APIEndpoint {
       case "updatebybarcode":
         $this->updatebybarcode();
         break;
+      default:
+        $this->data = ['response' => 'invalid endpoint'];
+        $this->http_response_code = 500;
     }
   }
 
