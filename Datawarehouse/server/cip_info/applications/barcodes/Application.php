@@ -108,8 +108,8 @@ class GenerateBarcode extends Barcodes {
     if (curl_errno($curl)) {
       if ( $this->environment->developement('show_debug') ) {
         $this->template->message('Error on curl request: ' . curl_error($curl));
-        $this->template->print();
       }
+      $this->template->message('Ingen kontakt med strekkode generator: ' . $this->url_api);
     }
     $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     curl_close ($curl);
@@ -157,8 +157,8 @@ class GenerateShelfLabels extends Barcodes {
       $this->template->custom_html('</div>');
     } else {
       if ( $this->environment->developement('show_debug') ) {
-        echo 'Could not establish contact with barcode_generator api';
-        echo 'On URL ' . $this->url_api;
+        $this->template->message('Could not establish contact with barcode_generator api');
+        $this->template->message('On URL ' . $this->url_api);
       }
       $this->template->message('Ingen kontakt med strekkode generator: ' . $this->url_api);
     }
