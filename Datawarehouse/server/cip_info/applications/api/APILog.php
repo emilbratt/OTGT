@@ -10,11 +10,11 @@ class APILog {
     /**
      * here will logic for logging come
      * what to log:
-     *  sender ip
+     *  client ip
      *  request method
      *  http response code
      *  api endpoint
-     *  any value for client logit (for example if db insert was successfull)
+     *  any value for client logig (for example if db insert was successfull)
      *  timestamp
      */
   }
