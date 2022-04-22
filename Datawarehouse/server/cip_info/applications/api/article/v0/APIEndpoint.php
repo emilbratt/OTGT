@@ -23,10 +23,12 @@ class APIEndpoint {
         $this->movement();
         break;
       case 'sales':
-        echo 'article sales not implemented'; die;
+        $this->data = ['response' => 'article sales not implemented yet'];
+        $this->http_response_code = 404;
         break;
       case 'imports':
-        echo 'article imports not implemented'; die;
+        $this->data = ['response' => 'article imports not implemented yet'];
+        $this->http_response_code = 404;
         break;
     }
   }
