@@ -102,7 +102,7 @@ class Home extends API {
         ['url' => 'api/test/v0/foo', 'method' => 'GET', 'info' => 'request foo to get dummy data', 'active' => true],
       ],
       'Article' => [
-        ['url' => 'api/article/v0/movement/{article_id}', 'method' => 'GET', 'info' => 'get list of all movements for specific item', 'active' => false],
+        ['url' => 'api/article/v0/movement/{article_id}', 'method' => 'GET', 'info' => 'get list of all movements for specific item', 'active' => true],
       ],
       'Placement' => [
         ['url' => 'api/placement/v0/update_by_article_id {"article_id": "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by article id', 'active' => true],

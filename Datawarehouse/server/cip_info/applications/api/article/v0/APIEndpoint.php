@@ -2,9 +2,9 @@
 
 class APIEndpoint {
 
-  protected $data;
+  public $data;
+  public $http_response_code;
   protected $request;
-  protected $http_response_code;
 
   function __construct ($request) {
     require_once '../applications/DatabaseRetail.php';
@@ -28,14 +28,6 @@ class APIEndpoint {
     }
   }
 
-  public function get_data () {
-    return $this->data;
-  }
-
-  public function get_return_code () {
-    return $this->http_response_code;
-  }
-
   private function movement () {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
       $this->data = '';
@@ -53,7 +45,7 @@ class APIEndpoint {
 
     $article_id = $this->request[1];
     $query = new APIQueryRetail();
-    $query->article_movement($article_id);
+    $query->movement($article_id);
     $database_retail = new DatabaseRetail();
     $database_retail->select_multi_row($query->get());
     $query = null;

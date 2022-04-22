@@ -9,7 +9,7 @@ class APIQueryRetail extends QueryRetail {
   }
 
 
-  public function article_movement ($article_id) {
+  public function movement ($article_id) {
     $this->query .= <<<EOT
     SELECT stockAdjustmenId, movement, qty, date FROM
     (
