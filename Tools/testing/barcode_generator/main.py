@@ -4,6 +4,7 @@ import sys
 import requests
 import configparser
 import os
+import json
 
 # declare global variables
 ENVIRONMENT_FILE = '../../../environment.ini'
@@ -31,17 +32,20 @@ def post (URL, data):
     print('POST request: ' + r.url)
     print('Response: ' + str(r.status_code))
     print(r.headers['content-type'])
+    print('Response Headers')
+    print(json.dumps(dict(r.request.headers), indent = 4))
     if r.headers['content-type'] ==  'application/json':
-        print(r.json())
-    print()
+        print(json.dumps(r.json(), indent=4, sort_keys=True))
 
 def get (URL):
     r = requests.get(URL)
     print('GET request: ' + r.url)
     print('Response: ' + str(r.status_code))
+    print(r.headers['content-type'])
+    print('Response Headers')
+    print(json.dumps(dict(r.request.headers), indent = 4))
     if r.headers['content-type'] ==  'application/json':
-        print(r.json())
-    print()
+        print(json.dumps(r.json(), indent=4, sort_keys=True))
 
 
 if __name__ == '__main__':
