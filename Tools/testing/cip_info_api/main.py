@@ -43,4 +43,5 @@ def put (QUERY, DATA):
 
 
 if __name__ == '__main__':
+    get('api/article/v0/get_article_id/5712396000612')
     post('api/placement/v0/update_by_article_id', {'article_id': '10', 'shelf': 'a-a-3'})

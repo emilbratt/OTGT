@@ -8,6 +8,18 @@ class APIQueryRetail extends QueryRetail {
     parent::__construct();
   }
 
+  public function get_article_id ($barcode) {
+    $this->query .= <<<EOT
+    SELECT
+      Article.articleId AS articleid
+    FROM
+      Article
+    INNER JOIN
+      ArticleEAN ON Article.articleId = ArticleEAN.articleId
+    WHERE
+      ArticleEAN.eanCode = '$barcode'\n
+    EOT;
+  }
 
   public function movement ($article_id) {
     $this->query .= <<<EOT
@@ -37,5 +49,6 @@ class APIQueryRetail extends QueryRetail {
      date DESC\n
     EOT;
   }
+
 
 }

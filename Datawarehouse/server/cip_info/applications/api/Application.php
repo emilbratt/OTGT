@@ -103,6 +103,7 @@ class Home extends API {
       ],
       'Article' => [
         ['url' => 'api/article/v0/movement/{article_id}', 'method' => 'GET', 'info' => 'get list of all movements for specific item', 'active' => true],
+        ['url' => 'api/article/v0/get_article_id/{barcode}', 'method' => 'GET', 'info' => 'get article id from barcode', 'active' => true],
       ],
       'Placement' => [
         ['url' => 'api/placement/v0/update_by_article_id {"article_id": "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by article id', 'active' => true],
@@ -145,12 +146,16 @@ class Home extends API {
  *
  */
 
+class Barcode extends API {
+  // get article data from barcode
+}
+
 class Brands extends API {
 
 }
 
 class Article extends API {
-
+  // get article data from article id
 }
 
 class Placement extends API {
