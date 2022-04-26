@@ -1,6 +1,7 @@
 This app is the interface where we scan barcodes and shelf-values
+and runs in the foreground
 
-It verifies the integrity of the data so that only valid
-barcodes and shelf-values gets stored.
+It´s main purpose is to validate and store the scanned barcodes
 
-The daemon that runs in the background will handle the upload to api
+The daemon that runs in the background will handle the upload of
+the scanned barcodes
