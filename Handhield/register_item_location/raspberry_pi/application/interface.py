@@ -19,6 +19,8 @@ def mainloop():
         sleep(4)
         LEDReporter.ScanShelf(ledreport)
         sleep(4)
+        LEDReporter.ScanMultipleItems(ledreport)
+        sleep(4)
         exit()
 
 
