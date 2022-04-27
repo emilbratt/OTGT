@@ -1,19 +1,29 @@
 import sqlite3
 import os.path as path
 
-# if database file does not exist, this script will create it and its tables
 
-class CreateTables:
+# if database file does not exist, this script will create it and its tables
+class StartDatabase:
 
     def __init__(self):
-        print('this is CreateTables')
+        print('this is StartDatabase')
         self.dir = path.dirname(path.realpath(__file__))
         self.db = path.join(self.dir, 'data.sqlite')
-        if not path.isfile(path.join(self.dir, 'data.sqlite')):
-            self.create_tables()
+        self.con = sqlite3.connect(self.db)
+        self.cur = self.con.cursor()
+        self.create_table_jobs()
+        self.con.commit()
+        self.con.close()
 
-        # self.con = sqlite3.connect('example.db')
-        # self.cur = self.con.cursor()
 
-    def create_tables(self):
-        print('create table..')
+    def create_table_jobs(self):
+        self.cur.execute('''
+            CREATE TABLE IF NOT EXISTS jobs
+            (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                reg_time DATE DEFAULT (DATETIME('now','localtime')),
+                barcode INTEGER,
+                shelf TEXT,
+                status TEXT
+            )
+        ''')

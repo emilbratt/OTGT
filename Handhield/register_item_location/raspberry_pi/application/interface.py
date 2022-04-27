@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
-import subprocess
-import sys
-# import requests
-import configparser
-import os
-import json
 
-from LEDReporter.LEDR import LEDR
 import Database
+import LEDReporter
 
 
 def mainloop():
     while True:
-        ledr = LEDR()
-        # print(dir(Database))
-        print(ledr.led)
         exit()
 
-def main():
-    Database.CreateTables()
-    mainloop()
+def init():
+    Database.StartDatabase()
+    data = {
+        'barcode': '3847261526364',
+        'shelf': 'A-A-1',
+        'status': '0',
+    }
+
+    Database.InsertJob(data)
+    LEDReporter.ScanItem(17)
+
 
 if __name__ == '__main__':
-    main()
+    init()
+    mainloop()
