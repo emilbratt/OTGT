@@ -2,11 +2,25 @@
 
 import Database
 import LEDReporter
+from time import sleep
+
+ledreport = False
+try:
+    from gpiozero import LED,PWMLED
+    ledreport = LED(17)
+except ModuleNotFoundError:
+    print('gpiozero not found, disabling LED')
 
 
 def mainloop():
+
     while True:
+        LEDReporter.ScanItem(ledreport)
+        sleep(4)
+        LEDReporter.ScanShelf(ledreport)
+        sleep(4)
         exit()
+
 
 def init():
     Database.StartDatabase()
@@ -17,7 +31,7 @@ def init():
     }
 
     Database.InsertJob(data)
-    LEDReporter.ScanItem(17)
+
 
 
 if __name__ == '__main__':
