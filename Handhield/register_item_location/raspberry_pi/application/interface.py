@@ -17,12 +17,12 @@ import UserInput
 def mainloop():
     userinput = UserInput.UserInput()
     while True:
-        LEDReporter.ScanItem(ledreport)
-        sleep(2)
-        LEDReporter.ScanShelf(ledreport)
-        sleep(2)
-        LEDReporter.ScanMultipleItems(ledreport)
-        sleep(2)
+        # LEDReporter.ScanItem(ledreport)
+        # sleep(2)
+        # LEDReporter.ScanShelf(ledreport)
+        # sleep(2)
+        # LEDReporter.ScanMultipleItems(ledreport)
+        # sleep(2)
         userinput.item()
         print(userinput.value)
         print(userinput.type)

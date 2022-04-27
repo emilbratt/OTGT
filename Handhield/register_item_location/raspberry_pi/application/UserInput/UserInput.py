@@ -1,13 +1,14 @@
 import re
 
-REGEX_SHELF = '^[A-Z0-9]{1}[-][A-Z]{1}[-][0-9]+$'
-# first symbol must be character or number
-# second and fourth symbol must be '-'
-# third symbol must be character or number
-# fifth + any trailing symbol must be number
+REGEX_SHELF = '^[A-Z0-9]{1,2}[-][A-Z]{1}[-][0-9]+$'
+# first part must be character or numeric (max 2)
+# second part must be '-'
+# third part must be character (max 1)
+# fourth part must be '-'
+# fifth and final part must be numeric (unlimited)
 
 REGEX_ITEM = '^[0-9]*$'
-# any symbol must be number and between 8 and 14
+# any symbol must be numeric
 
 
 class UserInput:
@@ -21,7 +22,7 @@ class UserInput:
     def item(self):
         self.type = None
         self.is_item = False
-        self.value = input('scan item')
+        self.value = input('scan item\n')
         self.validate_item()
 
     def validate_item(self):
