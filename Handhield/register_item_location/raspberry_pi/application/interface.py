@@ -1,26 +1,34 @@
 #!/usr/bin/env python3
 
-import Database
-import LEDReporter
 from time import sleep
 
-ledreport = False
 try:
     from gpiozero import LED,PWMLED
     ledreport = LED(17)
 except ModuleNotFoundError:
+    ledreport = False
     print('gpiozero not found, disabling LED')
+
+import Database
+import LEDReporter
+import UserInput
 
 
 def mainloop():
-
+    userinput = UserInput.UserInput()
     while True:
         LEDReporter.ScanItem(ledreport)
-        sleep(4)
+        sleep(2)
         LEDReporter.ScanShelf(ledreport)
-        sleep(4)
+        sleep(2)
         LEDReporter.ScanMultipleItems(ledreport)
-        sleep(4)
+        sleep(2)
+        userinput.item()
+        print(userinput.value)
+        print(userinput.type)
+        userinput.shelf()
+        print(userinput.value)
+        print(userinput.type)
         exit()
 
 
