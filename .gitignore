@@ -1,2 +1,3 @@
 environment.ini
 __pycache__/
+data.sqlite
