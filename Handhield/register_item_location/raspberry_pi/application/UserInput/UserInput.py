@@ -1,5 +1,4 @@
 import re
-import LEDReporter
 
 
 REGEX_SHELF = '^[A-Z0-9]{1,2}[-][A-Z]{1}[-][0-9]+$'
@@ -18,12 +17,6 @@ class UserInput:
         and create {}
     '''
     def __init__(self):
-        try:
-            from gpiozero import LED,PWMLED
-            self.ledreport = LED(17)
-        except ModuleNotFoundError:
-            self.ledreport = False
-            print('gpiozero not found, disabling LED')
         self.reset()
 
     def reset(self):
@@ -33,15 +26,9 @@ class UserInput:
         self.jobs = []
 
     def get(self):
-        if self.type == None: # on first round, indicate item scan ready
-            LEDReporter.ScanItem(self.ledreport)
         self.value = input('scan\n')
         self.validate_item()
         if self.type == 'item':
-            if self.items == []: # on first valid item scan, indicate shelf scan ready
-                LEDReporter.ScanShelf(self.ledreport)
-            if self.items != []: # on 2nd++ item scan, indicate multiple item scan ready
-                LEDReporter.ScanMultipleItems(self.ledreport)
             self.items.append(self.value)
             self.type = None
             return
