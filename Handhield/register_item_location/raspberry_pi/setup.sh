@@ -5,22 +5,14 @@
 #────────────────────────────────────────────#
 # Description:
 #   automatically setup handhield running script
-#   for registering item shelf value
-#────────────────────────────────────────────#
-# Customization of this script
-#   add dependencies (files) and make sure they
-#   are listed in the DEPENDENCIES variable
+#   for the item locatin register 'interface
 #────────────────────────────────────────────#
 
-declare DEPENDENCIES
 declare PYTHON_CODE
 declare PYTHON_MODULES
+declare INTERFACE_EXECUTABLE
 
-DEPENDENCIES=(
-  # shelf-daemon.service
-  wifisignal
-  application/main.py
-)
+INTERFACE_EXECUTABLE="OTGT/Handhield/register_item_location/raspberry_pi/application/interface.py"
 
 PYTHON_MODULES=(
   requests
@@ -37,20 +29,6 @@ try:
 except ModuleNotFoundError:
   sys.exit(1)
 EOT
-
-
-function check_dependencies () {
-  path=$(pwd)
-  for file in "${DEPENDENCIES[@]}"
-  do
-    path="$path/$file"
-    echo "Checking existens of $path"
-    if [[ ! -f ./$file ]]; then
-      echo "cannot find $file (should be in the same directory as this script"
-      exit 1
-    fi
-  done
-}
 
 
 
@@ -77,7 +55,7 @@ function system_update () {
 }
 
 
-function setup_software () {
+function get_python_pip () {
   sudo apt-get install python3-pip -y
 }
 
@@ -94,30 +72,30 @@ function install_python_modules () {
 }
 
 
-function set_locale () {
-  cat /etc/locale.gen | grep -wq 'nb_NO.UTF-8 UTF-8'
+function install_application () {
+  sudo cp register-item-location-d.service /etc/systemd/system/
+  sudo systemctl enable register-item-location-d
+  cat $HOME/.bashrc | grep -q "$HOME/$INTERFACE_EXECUTABLE"
   if [[ $? -eq 1 ]]; then
-    echo 'nb_NO.UTF-8 UTF-8' | sudo tee -a /etc/locale.gen
+    echo "$HOME/$INTERFACE_EXECUTABLE" >> $HOME/.bashrc
   fi
-  sudo locale-gen nb_NO.UTF-8 UTF-8
-  sudo update-locale nb_NO.UTF-8 UTF-8
-  # export LANGUAGE=en_GB.UTF-8
-  # export LC_ALL=nb_NO.UTF-8
-  # sudo dpkg-reconfigure locales
+
+  if [[ ! -f $HOME/OTGT/environment.ini ]]; then
+    echo "API Host:"
+    read host
+    echo "API Port"
+    read port
+    echo "[datawarehouse]" > $HOME/OTGT/environment.ini
+    echo "datawarehouse_ip = $host" >> $HOME/OTGT/environment.ini
+    echo "cip_info_port = $port" >> $HOME/OTGT/environment.ini
+  fi
 }
 
 
-function install_dependencies () {
-  return 0
-}
-
-
-check_dependencies
-# system_update
-# setup_software
+check_internet_connection
+setup_hostname
+system_update
+get_python_pip
 install_python_modules
-# check_internet_connection
-# setup_hostname
-# set_locale
-# install_dependencies
-# sudo reboot
+install_application
+sudo reboot
