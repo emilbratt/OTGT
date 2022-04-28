@@ -17,11 +17,11 @@ class InsertJob:
         self.cur.execute('''
             INSERT INTO jobs
             (
-                barcode, shelf, status
+                item, shelf, status
             )
             VALUES
             (
-                :barcode, :shelf, :status
+                :item, :shelf, :status
             )
         ''', self.data)
         self.con.commit()

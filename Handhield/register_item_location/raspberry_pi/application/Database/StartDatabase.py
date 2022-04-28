@@ -22,7 +22,7 @@ class StartDatabase:
             (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 reg_time DATE DEFAULT (DATETIME('now','localtime')),
-                barcode INTEGER,
+                item INTEGER,
                 shelf TEXT,
                 status TEXT
             )

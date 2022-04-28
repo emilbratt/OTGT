@@ -1,4 +1,6 @@
 import re
+import LEDReporter
+
 
 REGEX_SHELF = '^[A-Z0-9]{1,2}[-][A-Z]{1}[-][0-9]+$'
 # first part must be character or numeric (max 2)
@@ -6,24 +8,47 @@ REGEX_SHELF = '^[A-Z0-9]{1,2}[-][A-Z]{1}[-][0-9]+$'
 # third part must be character (max 1)
 # fourth part must be '-'
 # fifth and final part must be numeric (unlimited)
-
 REGEX_ITEM = '^[0-9]*$'
 # any symbol must be numeric
 
 
 class UserInput:
+    '''
+        scan barcodes for items and shelf labels
+        and create {}
+    '''
     def __init__(self):
+        try:
+            from gpiozero import LED,PWMLED
+            self.ledreport = LED(17)
+        except ModuleNotFoundError:
+            self.ledreport = False
+            print('gpiozero not found, disabling LED')
+        self.reset()
+
+    def reset(self):
         self.type = None
         self.value = None
-        self.valid = None
-        self.is_item = None
-        self.is_shelf = None
+        self.items = []
+        self.jobs = []
 
-    def item(self):
-        self.type = None
-        self.is_item = False
-        self.value = input('scan item\n')
+    def get(self):
+        if self.type == None: # on first round, indicate item scan ready
+            LEDReporter.ScanItem(self.ledreport)
+        self.value = input('scan\n')
         self.validate_item()
+        if self.type == 'item':
+            if self.items == []: # on first valid item scan, indicate shelf scan ready
+                LEDReporter.ScanShelf(self.ledreport)
+            if self.items != []: # on 2nd++ item scan, indicate multiple item scan ready
+                LEDReporter.ScanMultipleItems(self.ledreport)
+            self.items.append(self.value)
+            self.type = None
+            return
+
+        self.validate_shelf()
+        if self.type == 'shelf':
+            self.prepare_jobs()
 
     def validate_item(self):
         # we do a simple check for lenght before checking if numeric with regex
@@ -32,18 +57,21 @@ class UserInput:
             return
         # if at this point, we check with regex
         if re.search(REGEX_ITEM, self.value):
-            self.is_item = True
             self.type = 'item'
 
-    def shelf(self):
-        self.type = None
-        self.is_shelf = False
-        value = input('scan shelf\n').upper()
-        # code128 barcodes reads - as +, we revert this here if that is the case
-        self.value = value.replace('+', '-')
-        self.validate_shelf()
-
     def validate_shelf(self):
+        # force all caps
+        self.value = self.value.upper()
+        # code128 barcodes reads - as +, we revert this here if that is the case
+        self.value = self.value.replace('+', '-')
         if re.search(REGEX_SHELF, self.value):
-            self.is_shelf = True
             self.type = 'shelf'
+
+    def prepare_jobs(self):
+        for item in self.items:
+            job = {
+                'item': item,
+                'shelf': self.value,
+                'status': '0',
+            }
+            self.jobs.append(job)
