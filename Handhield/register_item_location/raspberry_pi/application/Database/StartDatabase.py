@@ -6,7 +6,6 @@ import os.path as path
 class StartDatabase:
 
     def __init__(self):
-        print('this is StartDatabase')
         self.dir = path.dirname(path.realpath(__file__))
         self.db = path.join(self.dir, 'data.sqlite')
         self.con = sqlite3.connect(self.db)
