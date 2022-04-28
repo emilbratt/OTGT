@@ -2,7 +2,7 @@ import sqlite3
 import os.path as path
 
 
-def SelectJobsToday():
+def SelectFailedJobs():
     res = False
     dir = path.dirname(path.realpath(__file__))
     db = path.join(dir, 'data.sqlite')
@@ -10,9 +10,8 @@ def SelectJobsToday():
     cur = con.cursor()
     query = '''
         SELECT id, reg_time, item, shelf, status FROM jobs
-        WHERE reg_time
-        BETWEEN DATETIME("now", "start of day")
-        AND DATETIME("now", "localtime")
+        WHERE status = '2'
+        AND reg_time < datetime('now', '-7 days')
     '''
     cur.execute(query)
     res = cur.fetchall()

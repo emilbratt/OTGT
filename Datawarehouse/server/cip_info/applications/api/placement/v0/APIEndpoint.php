@@ -82,9 +82,10 @@ class APIEndpoint {
       }
     }
 
+    $this->http_response_code = 201;
     $this->update_placement_to_retail();
     $this->insert_placement_to_datawarehouse();
-    $this->http_response_code = 201;
+
   }
 
   private function update_placement_to_retail () {
@@ -97,6 +98,7 @@ class APIEndpoint {
       $this->data['database_retail'] = true;
     }
     catch(PDOException $e) {
+      $this->http_response_code = 502;
       $this->data['database_retail'] = false;
     }
   }
