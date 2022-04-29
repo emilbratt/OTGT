@@ -81,9 +81,9 @@ function install_application () {
   fi
 
   if [[ ! -f $HOME/OTGT/environment.ini ]]; then
-    echo "API Host:"
+    echo "Type in your API Host and press Enter"
     read host
-    echo "API Port"
+    echo "Type in your API Port and press Enter"
     read port
     echo "[datawarehouse]" > $HOME/OTGT/environment.ini
     echo "cip_info_host = $host" >> $HOME/OTGT/environment.ini
