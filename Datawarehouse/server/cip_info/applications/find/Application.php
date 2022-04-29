@@ -402,3 +402,22 @@ class ByArticle extends Find {
   }
 
 }
+
+class ByShelf extends Find {
+
+  /*
+   * Not implemented yet..
+   *
+   * displays items on that shelf, or if shelf is omitted, in that room
+   * example:
+   *  A = all items in A
+   *  A-B = all items in A-B
+   *  A-B-10 = all items on shelf A-B-10
+   *
+   */
+
+    public function run () {
+      $this->template->_form_shelf(); # NOTE: this method is not implemented yet
+    }
+
+}
