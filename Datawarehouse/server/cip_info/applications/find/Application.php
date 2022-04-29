@@ -105,6 +105,7 @@ class BySearch extends Find {
   /*
    * list a result table based on kewords for article name and
    * brand name passed by the user
+   * clicking on one article from result loads the "ByArticle" class
    */
 
   public function run () {
@@ -199,7 +200,7 @@ class BySearch extends Find {
 class ByArticle extends Find {
 
   /*
-   * finds one item either by barcode or by article_id
+   * displays data for one article
    */
 
   public function run () {
@@ -398,51 +399,6 @@ class ByArticle extends Find {
 
       $this->template->css_by_barcode();
     }
-  }
-
-}
-
-
-class ByArticleExtended extends ByArticle {
-
-  /*
-   * finds extended info for one item either by barcode or by article_id
-   *
-   */
-
-  public function run () {
-    $this->template->form_barcode();
-
-    $hyperlink = new HyperLink();
-    $hyperlink->link_redirect('');
-    $home = $hyperlink->url;
-
-
-    // if form is passed or get request with article id, handle request
-    if ( isset($_GET['input_field_barcode']) or isset($_GET['article_id']) ) {
-      $this->result_set();
-    }
-
-    $this->template->print();
-  }
-
-  private function result_set () {
-
-    if ( isset($_GET['input_field_barcode']) ) {
-      $this->validate_search_string_barcode();
-      if ( !($this->search_string_barcode) ) {
-        $this->template->message('Ugyldig strekkode');
-        return; // could not validate that a barcode was submitted
-      }
-    }
-    if ( isset($_GET['article_id']) ) {
-      $this->validate_search_string_article_id();
-      if ( !($this->search_string_article_id)) {
-        $this->template->message('Ugyldig artikkel id');
-        return; // could not validate that an article_id was submitted
-      }
-    }
-
   }
 
 }
