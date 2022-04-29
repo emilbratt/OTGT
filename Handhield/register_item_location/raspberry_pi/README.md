@@ -1,6 +1,6 @@
 ### Raspberry Pi for registering shelf value for item
 
-
+### Installation
 * install raspberry pi os lite
 * install git
 ```
@@ -21,3 +21,33 @@ cd OTGT/Handhield/register_item_location/raspberry_pi
 ```
 ./setup.sh
 ```
+
+
+### How to use
+Connect LED to pin 17 and Ground.
+
+Connect barcode scanner to USB.
+
+Connect power to device and wait for the LED to.
+
+The device invokes application/interface.py in the foreground.
+
+This is the "interface" for the user.
+
+When you see the LED turn on and blink, you are ready.
+
+Start by scanning item first then shelf.
+
+The LED will blink faster when it expects a shelf.
+
+You can also scan multiple items sequencally.
+If you scan an item when the device expects a shelf, it turns on the "sequence mode"
+The LED will turn ON (no blinking) reporting that you are scanning a sequence
+All items will be assigned to the first shelf that is registered (that you scann)
+and the LED goes back to normal blinking expecting another item.
+
+
+Everything else happens in the background by the application/daemon.py.
+that is invoked as a background task by systemd.
+
+Turn off / disconnect power when done
