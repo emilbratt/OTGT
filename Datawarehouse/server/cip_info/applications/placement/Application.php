@@ -29,6 +29,7 @@ class Placement {
     require_once '../applications/DatabaseRetail.php';
     require_once '../applications/DatabaseDatawarehouse.php';
     require_once '../applications/Helpers.php';
+    require_once '../applications/HyperLink.php';
     require_once '../applications/placement/TemplatePlacement.php';
     require_once '../applications/placement/QueryRetailPlacement.php';
     require_once '../applications/placement/QueryDatawarehousePlacement.php';
@@ -55,6 +56,7 @@ class Home extends Placement {
       $this->template->message('Skann en vare først');
       $this->template->message('Deretter skanner du hyllen');
       $this->template->message('Du trenger ikke å bruke mus og tastatur for å gjør dette');
+      $this->show_latest_placements();
     }
     // step 2: validate item scan and then scan shelf (this form sets both placement_scan_item and placement_scan_shelf)
     else if ( isset($_POST['barcode']) and (!(isset($_POST['shelf']))) ) {
@@ -63,9 +65,30 @@ class Home extends Placement {
     // step 3: upload new shelf value for item using placement_scan_item and placement_scan_shelf
     else if ( isset($_POST['article_id']) and isset($_POST['shelf']) ) {
       $this->placement_update();
+      $this->show_latest_placements();
     }
 
     $this->template->print();
+  }
+
+  private function show_latest_placements () {
+    $query = new QueryDatawarehousePlacement();
+    $query->latest_registered_placements();
+    $this->database_datawarehouse->select_multi_row($query->get());
+    if ($this->database_datawarehouse->result) {
+
+      $this->template->title('Nyeste plasseringer');
+      $this->template->table_start();
+      $hyperlink = new HyperLink();
+      foreach ($this->database_datawarehouse->result as $row) {
+          $hyperlink->link_redirect_query('find/byarticle', 'article_id', $row['article_id']);
+          $string = $row['stock_location'] . ' - ' . $row['format_timestamp'];
+          $this->template->table_row_start();
+          $this->template->table_row_value($string, $hyperlink->url);
+          $this->template->table_row_end();
+      }
+      $this->template->table_end();
+    }
   }
 
   private function placement_scan_item () {
@@ -170,7 +193,6 @@ class Home extends Placement {
         exit(1);
       }
     }
-
   }
 
   private function validate_article_id () {

@@ -6,6 +6,26 @@ class TemplatePlacement extends Template {
 
   function __construct () {
     parent::__construct();
+    $this->css .= <<<EOT
+    /* TABLE */
+    table {
+      font-family: arial;
+      border-collapse: collapse;
+    }
+    td {
+      border: 1px solid #202020;
+      text-align: center;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    th {
+      background-color: $this->colour_header_background;
+      height: 32px;
+    }
+    #th_no_hyperlink {
+      border: 1px solid $this->colour_default_text;
+    }\n
+    EOT;
   }
 
   public function _form_scan_item () {
