@@ -9,7 +9,7 @@ if not path.isfile(ENVIRONMENT_FILE):
 config = configparser.ConfigParser()
 config.sections()
 config.read(ENVIRONMENT_FILE)
-HOST = config['datawarehouse']['datawarehouse_ip'].strip('"')
+HOST = config['datawarehouse']['cip_info_host'].strip('"')
 PORT = config['datawarehouse']['cip_info_port'].strip('"')
 URL = 'http' + '://' + HOST + ':' + PORT + '/'
 API_ENDPOINT_GET_ARTICLE_ID = 'api/article/v0/get_article_id/'
