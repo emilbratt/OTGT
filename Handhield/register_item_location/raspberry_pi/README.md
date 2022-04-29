@@ -25,19 +25,15 @@ cd OTGT/Handhield/register_item_location/raspberry_pi
 
 ### How to use
 Connect LED to pin 17 and Ground.
-
-Connect barcode scanner to USB.
-
-Connect power to device and wait for the LED to.
+and connect barcode scanner to USB.
+Then connect power to device and wait for the LED to start blinking.
 
 The device invokes application/interface.py in the foreground.
-
 This is the "interface" for the user.
 
 When you see the LED turn on and blink, you are ready.
 
 Start by scanning item first then shelf.
-
 The LED will blink faster when it expects a shelf.
 
 You can also scan multiple items sequencally.
