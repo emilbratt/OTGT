@@ -6,11 +6,9 @@
 ```
 sudo apt update && sudo apt install git -y
 ```
-* if neeeded, run sudo raspi-config to:
+* setup autologin to console
 ```
-setup ssh for connecting
-set autologin
-setup wifi if needed
+sudo raspi-config
  ```
 
 * setup application
