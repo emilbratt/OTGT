@@ -38,7 +38,6 @@ def handle_failed_jobs():
             print('NO CONTACT WITH API, SKIP DELETING JOB ' + str(item))
 
 
-
 def handle_new_jobs():
     '''
         all jobs where status = 0 will be included
@@ -55,8 +54,9 @@ def handle_new_jobs():
             article_id = api.body['articleid']
             data = {'article_id': article_id, 'shelf': shelf}
             api.post_placement(data)
-            if api.status_code == 201: # placement was updated
+            if api.status_code == 201: # placement was updated, we can delete job
                 print(reg_time + ' UPDATE PLACEMENT ' + str(item) + ' and shelf ' + shelf +  ' HTTP 201 OK')
+                print('DELETE job for item ' + str(item))
                 Database.DeleteJob(job_id)
             elif api.status_code == 502: # valid barcode but error on update placement
                 print(reg_time + ' UPDATE PLACEMENT ' + str(item) + ' and shelf ' + shelf + ' HTTP 502 FAIL')
@@ -72,7 +72,6 @@ def handle_new_jobs():
         else: # article id not found = invalid barcode or connection error (this job should be re-tried)
             print(reg_time + ' GET ARTICLE ID ' + str(item) + ' and shelf ' + shelf + ' HTTP ERROR')
             Database.UpdateJobFail(job_id)
-
 
 
 def mainloop():
