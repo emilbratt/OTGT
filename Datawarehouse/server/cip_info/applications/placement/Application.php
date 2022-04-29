@@ -121,10 +121,10 @@ class Home extends Placement {
       $this->template->message($this->message);
       return;
     }
-    // at this point, we can update the new shelf value to retial db and datawarehouse db
+    // at this point, we can update the new shelf value to retail and datawarehouse
     $this->update_placement_to_retail();
     $this->insert_placement_to_datawarehouse();
-    // re-load the scan item form
+    // reload the scan item form
     $this->placement_scan_item();
   }
 
