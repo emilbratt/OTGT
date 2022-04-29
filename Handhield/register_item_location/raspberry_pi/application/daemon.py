@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+import sys
 from time import sleep
 
 import Database
@@ -78,6 +80,7 @@ def mainloop():
     handle_failed_jobs()
     while True:
         handle_new_jobs()
+        sys.stdout.flush()
         sleep(1)
 
 
