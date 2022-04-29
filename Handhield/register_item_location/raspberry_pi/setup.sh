@@ -86,7 +86,7 @@ function install_application () {
     echo "API Port"
     read port
     echo "[datawarehouse]" > $HOME/OTGT/environment.ini
-    echo "datawarehouse_ip = $host" >> $HOME/OTGT/environment.ini
+    echo "cip_info_host = $host" >> $HOME/OTGT/environment.ini
     echo "cip_info_port = $port" >> $HOME/OTGT/environment.ini
   fi
 }
@@ -98,4 +98,7 @@ system_update
 get_python_pip
 install_python_modules
 install_application
+
+echo 'Press Enter to reboot'
+read
 sudo reboot

@@ -7,10 +7,10 @@ Type=simple
 User=pi
 Group=pi
 
-WorkingDirectory=/home/pi/OTGT/Handhield/register_item_location/raspberry_pi
+WorkingDirectory=/home/pi/OTGT/Handhield/register_item_location/raspberry_pi/application
 EnvironmentFile=/home/pi/OTGT/environment.ini
 
-ExecStart=./daemon.py
+ExecStart=/home/pi/OTGT/Handhield/register_item_location/raspberry_pi/application/daemon.py
 
 ExecReload=/bin/kill -HUP ${MAINPID}
 RestartSec=1
