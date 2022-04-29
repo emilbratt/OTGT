@@ -37,6 +37,7 @@ class Placement {
     $this->environment = new Environment();
     $this->navigation = new NavigationPlacement();
     $this->database_retail = new DatabaseRetail();
+    $this->database_datawarehouse = new DatabaseDatawarehouse();
     $this->template = new TemplatePlacement();
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
   }
@@ -138,13 +139,12 @@ class Home extends Placement {
   private function insert_placement_to_datawarehouse () {
     $date_obj = new Date;
     $query_datawarehouse = new QueryDatawarehousePlacement();
-    $database_datawarehouse = new DatabaseDatawarehouse();
 
     $timestamp = $date_obj->date_time;
     $yyyymmdd = $date_obj->yyyymmdd;
 
     $query_datawarehouse->insert_placement();
-    $stmt = $database_datawarehouse->cnxn->prepare($query_datawarehouse->get());
+    $stmt = $this->database_datawarehouse->cnxn->prepare($query_datawarehouse->get());
 
     $values = ['article_id' => $this->article_id, 'shelf' => $this->shelf, 'timestamp' => $timestamp, 'yyyymmdd' => $yyyymmdd];
     // since article_id constraint might not have been updated to datawareouse
