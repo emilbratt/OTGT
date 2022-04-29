@@ -45,5 +45,6 @@ LED goes back to normal blinking expecting another item.
 
 Everything else happens in the background by the application/daemon.py.
 that is invoked as a background task by systemd.
+You do not need to do anything in addition to scanning items and shelves.
 
-Turn off / disconnect power when done
+Disconnect power when done (no need for gracefull power off here)
