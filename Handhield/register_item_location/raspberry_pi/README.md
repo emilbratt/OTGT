@@ -12,5 +12,14 @@ setup ssh for connecting
 set autologin
 setup wifi if needed
  ```
-* git clone this repo and navigate to this directory)
-* run setup.sh as normal user (no sudo or root)
+
+* setup application
+```
+cd && git clone https://github.com/emilbratt/OTGT.git
+```
+```
+cd OTGT/Handhield/register_item_location/raspberry_pi
+```
+```
+./setup.sh
+```
