@@ -402,3 +402,11 @@ class MemoryDatabase extends Developing {
     $this->template->print();
   }
 }
+
+
+class TestFetchAPI extends Developing {
+  public function run () {
+    $this->template->fetch_api_test();
+    $this->template->print();
+  }
+}

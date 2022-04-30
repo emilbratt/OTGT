@@ -56,7 +56,6 @@ class TemplateDeveloping extends Template {
   }
 
   public function sql_shell_form ($query) {
-
     $this->html .= <<<EOT
     <div class="">
     <form action="" method="post">
@@ -69,6 +68,22 @@ class TemplateDeveloping extends Template {
     <input type="submit" value="Execute" style="width:100px">
     </form>
     </div>
+    EOT;
+  }
+
+  public function fetch_api_test () {
+    $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
+    $this->script .= <<<EOT
+    <script>
+    async function my_function () {
+      fetch('$host/api/test/v0/hello')
+      .then(response => response.json())
+      .then(data => console.log(data));
+    }
+    </script>
+    EOT;
+    $this->html .= <<<EOT
+    <input id="clickMe" type="button" value="clickme" onclick="my_function();" />
     EOT;
   }
 
