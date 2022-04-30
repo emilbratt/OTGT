@@ -37,8 +37,7 @@ class Home extends About {
     $m = <<<EOT
     <p>
     Denne siden brukes av ansatte hos C.I.Pedersen til å<br>
-    finne informasjon om varer, lese instrukser, hente kontaktopplysninger<br>
-    om ansatte og lese rapporter etc.<br>
+    finne informasjon om varer og lesing av rapporter
     </p>
     EOT;
     $this->template->custom_html($m);
@@ -60,8 +59,12 @@ class Home extends About {
     epost: $dev_email<br>
     telefon: $dev_phone</i><br><br>
 
-    Siden er fremdeles under utvikling
+    Siden er under aktiv utvikling
     </p>
+
+    <p>Rapporter problemer eller still spørsmål<br>
+    ved å klikke på knappen under</p>
+    <a href="mailto:$dev_email"><button>Send epost</button></a>
     EOT;
     $this->template->custom_html($m);
     $this->template->print();

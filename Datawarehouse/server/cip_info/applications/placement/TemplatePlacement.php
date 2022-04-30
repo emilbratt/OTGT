@@ -16,7 +16,9 @@ class TemplatePlacement extends Template {
       width: 150px;
       height: 30px;
     }
-
+    a button:hover {
+      background-color: $this->colour_default_hover;
+    }
     /* TABLE */
     table {
       font-family: arial;

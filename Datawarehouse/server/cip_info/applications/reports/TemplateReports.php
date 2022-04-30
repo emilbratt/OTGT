@@ -64,7 +64,9 @@ class TemplateReports extends Template {
       width: 150px;
       height: 30px;
     }
-
+    a button:hover {
+      background-color: $this->colour_default_hover;
+    }
     #table_td_label {
       border: 1px solid $this->colour_default_text;
       display: inline;

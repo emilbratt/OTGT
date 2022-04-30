@@ -89,9 +89,6 @@ class Template {
       font-family: arial;
       color: #CCCCFF;
     }
-    a button:hover {
-      background-color: $this->colour_default_hover;
-    }
     .center_div {
        margin: auto;
        width: 50%;
