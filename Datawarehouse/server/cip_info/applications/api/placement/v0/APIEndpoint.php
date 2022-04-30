@@ -43,11 +43,13 @@ class APIEndpoint {
       return;
     }
     if ( !(isset($_POST['article_id'])) ) {
+      $this->http_response_code = 501;
       $this->data['response'] = 'missing key: article_id';
       return;
     }
     $this->article_id = $_POST['article_id'];
     if ( !(isset($_POST['shelf'])) ) {
+      $this->http_response_code = 501;
       $this->data['response'] = 'missing key: shelf';
       return;
     }

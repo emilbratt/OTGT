@@ -2,9 +2,9 @@
 
 class APIEndpoint {
 
-  protected $data;
+  public $data;
+  public $http_response_code;
   protected $request;
-  protected $http_response_code;
   protected $valid_requests;
   protected $dummy_data;
 
@@ -20,7 +20,7 @@ class APIEndpoint {
 
     $this->dummy_data = [
       'foo' => 'bar',
-      'hello' => 'wrold',
+      'hello' => 'world',
     ];
   }
 
@@ -30,6 +30,8 @@ class APIEndpoint {
       return;
     }
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      // return they value that corresponds to the request query
+      // e.g. test/v0/hello -> world, test/v0/foo -> bar
       $this->data = $this->dummy_data[$this->request[0]];
       $this->http_response_code = 200;
       return;
