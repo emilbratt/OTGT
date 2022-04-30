@@ -407,6 +407,7 @@ class MemoryDatabase extends Developing {
 class TestFetchAPI extends Developing {
   public function run () {
     $this->template->fetch_api_test();
+    $this->template->button_fetch_api_post_update_placement('update location for article 10', '10', $shelf = 'a-a-1');
     $this->template->print();
   }
 }

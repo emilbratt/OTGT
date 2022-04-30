@@ -83,7 +83,8 @@ class TemplateDeveloping extends Template {
     </script>
     EOT;
     $this->html .= <<<EOT
-    <input id="clickMe" type="button" value="clickme" onclick="my_function();" />
+    <input id="fetch_api_test" type="button" value="test fetch api" onclick="my_function();" />
+    <br>\n
     EOT;
   }
 

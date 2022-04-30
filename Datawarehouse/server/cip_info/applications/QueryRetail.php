@@ -192,6 +192,7 @@ class QueryRetail {
 
   public function where_shelf ($force_where = false) {
     $shelf = $_GET['input_field_shelf'];
+    $this->check_illegal_word($shelf);
     if ($force_where) {
       // skip checking if WHERE is present in the query (mostly for nested queries with where clause inside)
       $this->query .= <<<EOT

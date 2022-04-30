@@ -209,6 +209,9 @@ class Template {
       display: block;
       color: $this->colour_default_text;
       background: $this->colour_input_background;
+    }
+    input[type="submit"]:hover {
+      background-color: $this->colour_default_hover;
     }\n
     EOT;
   }
@@ -484,6 +487,19 @@ class Template {
     EOT;
   }
 
+  public function table_row_value_update_location_input ($string, $hyperlink = null) {
+    // passing a url as second arg will make it a clickabel button
+    if ($hyperlink == null) {
+      $this->html .= <<<EOT
+          <td>$string</td>\n
+      EOT;
+      return;
+    }
+    $this->html .= <<<EOT
+        <td><a href="$hyperlink">$string</a></td>\n
+    EOT;
+  }
+
   public function table_row_end () {
     $this->html .= <<<EOT
       </tr>\n
@@ -598,6 +614,53 @@ class Template {
     <div>
       <img class="image_show" src="data:image/png;base64,$b64image">
     </div>\n
+    EOT;
+  }
+
+  public function button_fetch_api_post_update_placement ($article_id = '', $shelf = '') {
+    $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
+    $this->html .= <<<EOT
+    <input
+      style="display: inline-block; width: 50px; height: 22px;"
+      type="text"
+      id="input_id_$article_id"
+      name="input_id_$article_id"
+      placeholder="$shelf"
+      >
+
+    <input
+      id="clickMe"
+      style="display: inline-block; width: 40px;"
+      type="submit"
+      value="OK"
+      onclick="update_placement_$article_id();"
+      >
+    \n
+    EOT;
+    $this->script .= <<<EOT
+
+    <script>
+    function update_placement_$article_id () {
+      var shelf = document.getElementById('input_id_$article_id').value;
+      const form_data = new FormData();
+      const fileField = document.querySelector('input[type="file"]');
+
+      form_data.append('article_id', '$article_id');
+      form_data.append('shelf', shelf);
+
+      fetch('$host/api/placement/v0/update_by_article_id', {
+        method: 'POST',
+        body: form_data
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log('Success:', result);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+    </script>\n
     EOT;
   }
 
