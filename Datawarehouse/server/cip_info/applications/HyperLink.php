@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  *
  * this is ment to handle dynamic links based on interaction by
  * the visitor and what content is presented
@@ -26,12 +26,14 @@ class HyperLink {
   }
 
   public function add_query ($key, $val) {
-    // add query string: http://hostname:8080?foo=bar -> http://hostname:8080?foo=bar&this=that
-    // or
-    // change query string if key exists: http://hostname:8080?foo=bar -> http://hostname:8080?foo=that
-
-    // first, remove or replace with empty string if key exist
-    // regex: starts with either ? or & followed by $key followed by = and any value until & or end of string
+   /**
+    * add query string: http://hostname:8080?foo=bar -> http://hostname:8080?foo=bar&this=that
+    * or
+    * change query string if key exists: http://hostname:8080?foo=bar -> http://hostname:8080?foo=that
+    *
+    * first, remove or replace with empty string if key exist
+    * regex: starts with either ? or & followed by $key followed by = and any value until & or end of string
+    */
     $this->query_string = preg_replace('/(\?|&)'.$key.'=[^&]*/', '', $this->query_string);
 
     // then add key=val to the end of the query string
@@ -48,7 +50,7 @@ class HyperLink {
 
   public function link_redirect ($redirect = '') {
     // redirect example: /reports/imported
-    // if parameter is omitted, it will redirect to home (hence the = '')
+    // if parameter is omitted, it will redirect to home -> hence the = ''
     $this->url = $this->home_address . $redirect;
   }
 

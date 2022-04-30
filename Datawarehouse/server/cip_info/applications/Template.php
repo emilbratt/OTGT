@@ -38,13 +38,15 @@ class Template {
 
   function __construct () {
     $this->environment = new Environment();
-    // this will add global html, css and scripts to our html template
-    // any additional css will have to be added after the
-    // constructor for each inherited class by calling this as a parent
-    // in the inherited objects constructor
-
-    // specifically for the map, we need to know the what floor
-    // the inventory location/room maps to for certain logic to work
+   /**
+    * this will add global html, css and scripts to our html template
+    * any additional css will have to be added after the
+    * constructor for each inherited class by calling this as a parent
+    * in the inherited objects constructor
+    *
+    * specifically for the map, we need to know the what floor
+    * the inventory location/room maps to for certain logic to work
+    */
     $this->location_index = [
     // inventory location => floor
       '1' => '1',
@@ -211,7 +213,6 @@ class Template {
     EOT;
   }
 
-
   public function custom_html ($str) {
     $this->html .= <<<EOT
     $str\n
@@ -248,14 +249,14 @@ class Template {
     </div>\n
     EOT;
     $this->script .= <<<EOT
-    <script id="jsbin-javascript">
+    <script>
     function go_back() {
       window.history.back();
-      console.log('We are in previous page');
+      console.log('jump backward');
     }
     function go_forward() {
       window.history.forward();
-      console.log('We are in next page');
+      console.log('jump forward');
     }
     </script>\n
     EOT;
@@ -654,9 +655,7 @@ class Template {
     <style>
     $this->css
     </style>
-    <body>\n
-    EOT;
-    $this->wrapper .= <<<EOT
+    <body>
     $this->html
     $this->script
     </body>

@@ -202,7 +202,7 @@ class TemplateFind extends Template {
   }
 
   public function _table_row_value ($string, $text_align = 'center', $font_size = '18', $hyperlink = null) {
-    // passing a url as second arg will make it a clickabel button
+    // passing a url as second arg will make the cell clickable
     $font_size = $font_size . 'px';
     if ($hyperlink == null) {
       $this->html .= <<<EOT

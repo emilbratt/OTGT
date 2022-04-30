@@ -235,7 +235,7 @@ class Home extends Placement {
 
   private function validate_shelf () {
     $this->shelf_ok = false;
-    // format the shelf value first in case
+    // sometimes - truns to + for some reason when we scan shelves, fix here
     $this->shelf = str_replace('+', '-', $this->shelf);
     $this->shelf = strtoupper($this->shelf);
     // then check integrity of the format

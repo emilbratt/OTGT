@@ -20,19 +20,18 @@ class API {
   }
 
   protected function parse_request_for_api () {
-    $this->http_response_code = 204;
-
-    // get the name that comes after api/
-    $this->api_name = explode ('/', $_SERVER['REDIRECT_URL'], 4)[2];
-    $delimiter = strtolower($this->api_name.'/');
-    /*
+    /**
      * turns:
-     *    REDIRECT URL: api/brands/v0/foo,bar/this/that
+     *    query string: api/brands/v0/foo,bar/this/that
      * into:
      *   api_version: v0
      *   api_name: brands
      *   api_request: ['foo,bar', 'this', 'that']
      */
+    $this->http_response_code = 204;
+    // get the name that comes after api/
+    $this->api_name = explode ('/', $_SERVER['REDIRECT_URL'], 4)[2];
+    $delimiter = strtolower($this->api_name.'/');
      $endpoint = explode ($delimiter, $_SERVER['REDIRECT_URL'], 2)[1];
      $query_string = explode ('/', $endpoint, 2);
 
@@ -43,8 +42,6 @@ class API {
      $this->api_request = explode ('/', $query_string[1]);
      require_once "../applications/api/$this->api_name/$this->api_verison/APIEndpoint.php";
   }
-
-
 
 
   public function run () {
@@ -65,11 +62,11 @@ class API {
 class Home extends API {
 
  /**
-  * only the home page should render a template
-  * while the rest of the api app serves json
+  * only the home page should render a template while the
+  * rest of the api application returns json objects
   *
   * this page is only meant to print out information
-  * about the api endpoints that exists
+  * about the api endpoints that is available
   */
 
   protected $template;
@@ -134,7 +131,8 @@ class Home extends API {
 
 /**
  *
- * classes / pages that must be declared for the api endpoints to be reachable
+ * classes / pages that must be declared for the api endpoints
+ * for that page to be in an activated state
  *
  */
 
@@ -143,7 +141,7 @@ class Barcode extends API {
 }
 
 class Brands extends API {
-
+  // get details about brands
 }
 
 class Article extends API {
@@ -151,9 +149,9 @@ class Article extends API {
 }
 
 class Placement extends API {
-
+  // update item location
 }
 
 class Test extends API {
-
+  // simple test for checking your own connection/implementation
 }

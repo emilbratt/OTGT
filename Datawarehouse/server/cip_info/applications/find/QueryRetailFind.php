@@ -111,5 +111,4 @@ class QueryRetailFindByArticle extends QueryRetail {
     }
   }
 
-
 }
