@@ -113,8 +113,8 @@ class BySearch extends Find {
     // if form is passed, handle query and show result table
     if(isset($_GET['input_field_brand']) or isset($_GET['input_field_article'])) {
       $this->result_set();
+      $this->template->css_result_set();
     }
-    $this->template->css_by_search();
     $this->template->print();
   }
 
@@ -417,7 +417,8 @@ class ByShelf extends Find {
    */
 
     public function run () {
-      $this->template->_form_shelf(); # NOTE: this method is not implemented yet
+      $this->template->form_shelf(); # NOTE: this method is not implemented yet
+      $this->template->print();
     }
 
 }

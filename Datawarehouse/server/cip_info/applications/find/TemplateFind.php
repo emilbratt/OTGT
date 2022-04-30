@@ -19,7 +19,7 @@ class TemplateFind extends Template {
 
   }
 
-  public function css_by_search () {
+  public function css_result_set () {
     $this->css .= <<<EOT
     /* TABLE */
     table {
@@ -90,13 +90,13 @@ class TemplateFind extends Template {
       width: 10%;
     }
     td:nth-child(2) {
-      width: 60%;
+      width: 57%;
     }
     td:nth-child(3) {
-      width: 5%;
+      width: 7%;
     }
     td:nth-child(4) {
-      width: 7%;
+      width: 8%;
     }
     td:nth-child(5) {
       width: 18%;
@@ -185,6 +185,34 @@ class TemplateFind extends Template {
           </td>
           <td style="width: 10%;">
             <input style="width: 100%;" type="submit" value="Skann" >
+          </td>
+        </tr>
+        </table>
+      </form>
+    </div><br>\n
+    EOT;
+  }
+
+
+  public function form_shelf () {
+    $shelf = '';
+    if ( isset($_GET['input_field_shelf'])) {
+      $shelf = $_GET['input_field_shelf'];
+    }
+    $this->html .= <<<EOT
+    <div id="input_field_div" style="width: 700px;">
+      <form method="GET">
+        <table>
+        <tr>
+          <td style="width: 60%;">
+            <input style="width: 100%;"
+            type="search"  autofocus="autofocus" onfocus="this.select()"
+            id="input_field_article" name="input_field_article"
+            placeholder="Plassering X-X-Y" value="$shelf">
+          </td>
+
+          <td style="width: 10%;">
+            <input style="width: 100%;" type="submit" value="Søk" >
           </td>
         </tr>
         </table>

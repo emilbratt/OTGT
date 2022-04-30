@@ -12,6 +12,7 @@ class NavigationFind extends Navigation {
     $this->app_uri = $this->top_nav_links['Finn Vare'];
       $this->sub_nav_links = [
       'Søk Etter Vare' => $this->app_uri . '/bysearch',
+      'Søk Etter Plassering' => $this->app_uri . '/byshelf',
       'Skann Vare' => $this->app_uri . '/byarticle',
     ];
   }
