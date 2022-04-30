@@ -164,7 +164,7 @@ class QueryRetail {
   public function where_barcode ($force_where = false) {
     $ean = $_GET['input_field_barcode'];
     if ($force_where) {
-      // skip checking if WHERE is present in the query (mostly for nested queries that has where in them)
+      // skip checking if WHERE is present in the query (mostly for nested queries with where clause inside)
       $this->query .= <<<EOT
       WHERE
         ArticleEAN.eanCode = '$ean'\n
@@ -181,6 +181,30 @@ class QueryRetail {
       $this->query .= <<<EOT
       WHERE
         ArticleEAN.eanCode = '$ean'\n
+      EOT;
+    }
+  }
+
+  public function where_shelf ($force_where = false) {
+    $shelf = $_GET['input_field_shelf'];
+    if ($force_where) {
+      // skip checking if WHERE is present in the query (mostly for nested queries with where clause inside)
+      $this->query .= <<<EOT
+      WHERE
+        articleStock.StorageShelf LIKE '$shelf%'\n
+      EOT;
+      return;
+    }
+    if ( $this->has_where() ) {
+      $this->query .= <<<EOT
+      AND
+        articleStock.StorageShelf LIKE '$shelf%'\n
+      EOT;
+    }
+    else {
+      $this->query .= <<<EOT
+      WHERE
+        articleStock.StorageShelf LIKE '$shelf%'\n
       EOT;
     }
   }

@@ -20,9 +20,8 @@ class Find {
   protected $order; // keeping track of what order should be passed when clicking header col of result table
   protected $arrow_symbol; // show arrow pointing at the way the table is ordered
   protected $toggle_expired;
+  protected $user_input_ok;
   protected $toggle_expired_message;
-  protected $search_string_brand_len;
-  protected $search_string_article_len;
   protected $search_string_barcode;
   protected $search_string_article_id;
 
@@ -70,13 +69,6 @@ class Find {
     }
   }
 
-  protected function get_search_string_brand_len () {
-    $this->search_string_brand_len = strlen($_GET['input_field_brand']);
-  }
-
-  protected function get_search_string_article_len () {
-    $this->search_string_article_len = strlen($_GET['input_field_article']);
-  }
 
   protected function validate_search_string_barcode () {
     $check_num = is_numeric($_GET['input_field_barcode']);
@@ -86,6 +78,7 @@ class Find {
   protected function validate_search_string_article_id () {
     $this->search_string_article_id = is_numeric($_GET['article_id']);
   }
+
 }
 
 
@@ -109,36 +102,48 @@ class BySearch extends Find {
    */
 
   public function run () {
-    $this->template->form_search();
     // if form is passed, handle query and show result table
     if(isset($_GET['input_field_brand']) or isset($_GET['input_field_article'])) {
-      $this->result_set();
-      $this->template->css_result_set();
+      $this->template->form_search();
+      $this->validate_user_input();
+      if ($this->user_input_ok) {
+        $this->result_set();
+        $this->template->css_result_set();
+      }
     }
+    else {
+      $this->template->message('Søk på vare');
+      $this->template->form_search();
+    }
+
     $this->template->print();
   }
 
-  private function result_set () {
+  private function validate_user_input () {
     // if search string is to short, the query will become to expensive
     // and potentially to many rows; we set a lower limit to characters
-    $this->get_search_string_brand_len();
-    $this->get_search_string_article_len();
-    if ($this->search_string_brand_len < 1 and $this->search_string_article_len < 1) {
+    $this->user_input_ok = false;
+    $search_string_brand_len = strlen($_GET['input_field_brand']);
+    $search_string_article_len = strlen($_GET['input_field_article']);
+    if ($search_string_brand_len < 1 and $search_string_article_len < 1) {
       return; // clicking search with both search boxes empty, just return (it might be a miss-click)
     }
-    else if ($this->search_string_brand_len < 1 and $this->search_string_article_len < 5) {
+    else if ($search_string_brand_len < 1 and $search_string_article_len < 5) {
       $this->template->message('Hvis du utelater Merke, bruk minst 5 tegn for å søke på artikkel');
       return;
     }
-    else if ($this->search_string_article_len < 1 and $this->search_string_brand_len < 4) {
+    else if ($search_string_article_len < 1 and $search_string_brand_len < 4) {
       $this->template->message('Hvis du utelater Artikkel, bruk minst 4 tegn for å søke på Merke');
       return;
     }
-    else if (($this->search_string_brand_len + $this->search_string_article_len) < 4) {
+    else if (($search_string_brand_len + $search_string_article_len) < 4) {
       $this->template->message('Minst 5 tegn (fordelt på Merke og Artikkel) totalt for å søke');
       return;
     }
+    $this->user_input_ok = true;
+  }
 
+  private function result_set () {
     $hyperlink_toggle = new HyperLink();
     $hyperlink_toggle->add_query('items', $this->toggle_expired);
 
@@ -168,9 +173,109 @@ class BySearch extends Find {
     $this->template->table_row_end();
 
     $query = new QueryRetailFindBySearch();
-    $query->select_items_by_search();
+    $query->select_fields();
     $query->where_brand();
     $query->where_article();
+    $query->where_article_expired();
+    $query->sort_by();
+    $this->database_retail = new DatabaseRetail();
+    $this->database_retail->select_multi_row($query->get());
+    $query = null;
+    if ($this->database_retail->result) {
+      $hyperlink_row = new HyperLink();
+      foreach ($this->database_retail->result as $row) {
+        $article_id = $row['article_id'];
+        $barcode = $row['barcode'];
+        $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
+        $this->template->table_row_start();
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
+        $this->template->table_row_value($row['quantity']);
+        $this->template->table_row_value($row['location'], $hyperlink_row->url);
+        $this->template->table_row_value($row['supplyid'] . ' // ' . $barcode);
+        $this->template->table_row_end();
+      }
+      $this->template->table_end();
+    }
+  }
+
+}
+
+
+class ByShelf extends Find {
+
+  /*
+   * Not implemented yet..
+   *
+   * displays items on that shelf, or if shelf is omitted, in that room
+   * example:
+   *  A = all items in A
+   *  A-B = all items in A-B
+   *  A-B-10 = all items on shelf A-B-10
+   *
+   */
+
+    public function run () {
+
+      if( isset($_GET['input_field_shelf']) ) {
+        $this->template->form_shelf();
+          $this->validate_user_input();
+        if ($this->user_input_ok) {
+          $this->result_set();
+          $this->template->css_result_set();
+        }
+      }
+      else {
+        $this->template->message('Søk på plassering');
+        $this->template->form_shelf();
+      }
+      $this->template->print();
+    }
+
+    private function validate_user_input () {
+      // if search string is to short, the query will become to expensive
+      // and potentially to many rows; we set a lower limit to characters
+      $this->user_input_ok = false;
+      $search_string_shelf_len = strlen($_GET['input_field_shelf']);
+
+      if ($search_string_shelf_len < 1) {
+        return;
+      }
+      $this->user_input_ok = true;
+    }
+
+  private function result_set () {
+    $hyperlink_toggle = new HyperLink();
+    $hyperlink_toggle->add_query('items', $this->toggle_expired);
+
+    $table_headers = [
+      'Merke' => 'brand',
+      'Navn' => 'article',
+      'Lager' => 'quantity',
+      'Plassering' => 'location',
+      'Lev. ID & Strekkode' => 'supplyid',
+    ];
+
+    $this->template->hyperlink_button($this->toggle_expired_message, $hyperlink_toggle->url);
+    $hyperlink_toggle = null;
+    $this->template->script_filter_row_button();
+
+    $this->template->table_full_width_start();
+    $this->template->table_row_start();
+    $hyperlink_header = new HyperLink();
+    foreach ($table_headers as $alias => $name) {
+      $hyperlink_header->add_query('sort', $name);
+      $hyperlink_header->add_query('order', $this->order);
+      if ($name == $this->sort_by) {
+        $alias .= $this->arrow_symbol;
+      }
+      $this->template->table_row_header($alias, $hyperlink_header->url);
+    }
+    $this->template->table_row_end();
+
+    $query = new QueryRetailFindBySearch();
+    $query->select_fields();
+    $query->where_shelf();
     $query->where_article_expired();
     $query->sort_by();
     $this->database_retail = new DatabaseRetail();
@@ -208,14 +313,13 @@ class ByArticle extends Find {
 
     // if form is passed or get request with article id, handle request
     if ( isset($_GET['input_field_barcode']) or isset($_GET['article_id']) ) {
-      $this->result_set();
+      $this->get_article_result();
     }
 
     $this->template->print();
   }
 
-  private function result_set () {
-
+  private function get_article_result () {
     if ( isset($_GET['input_field_barcode']) ) {
       $this->validate_search_string_barcode();
       if ( !($this->search_string_barcode) ) {
@@ -400,25 +504,5 @@ class ByArticle extends Find {
       $this->template->css_by_barcode();
     }
   }
-
-}
-
-class ByShelf extends Find {
-
-  /*
-   * Not implemented yet..
-   *
-   * displays items on that shelf, or if shelf is omitted, in that room
-   * example:
-   *  A = all items in A
-   *  A-B = all items in A-B
-   *  A-B-10 = all items on shelf A-B-10
-   *
-   */
-
-    public function run () {
-      $this->template->form_shelf(); # NOTE: this method is not implemented yet
-      $this->template->print();
-    }
 
 }

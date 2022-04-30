@@ -166,6 +166,35 @@ class TemplateFind extends Template {
     EOT;
   }
 
+
+  public function form_shelf () {
+    $shelf = '';
+    if ( isset($_GET['input_field_shelf'])) {
+      $shelf = $_GET['input_field_shelf'];
+    }
+    $this->html .= <<<EOT
+    <div id="input_field_div" style="width: 700px;">
+      <form method="GET">
+        <table>
+        <tr>
+          <td style="width: 60%;">
+            <input style="width: 100%;"
+            type="search"  autofocus="autofocus" onfocus="this.select()"
+            id="input_field_shelf" name="input_field_shelf"
+            placeholder="Plassering X-X-Y" value="$shelf">
+          </td>
+
+          <td style="width: 10%;">
+            <input style="width: 100%;" type="submit" value="Søk" >
+          </td>
+        </tr>
+        </table>
+      </form>
+    </div><br>\n
+    EOT;
+  }
+
+
   public function form_barcode ($action = "byarticle") {
     // $action will send to specified app
     $barcode = '';
@@ -193,33 +222,6 @@ class TemplateFind extends Template {
     EOT;
   }
 
-
-  public function form_shelf () {
-    $shelf = '';
-    if ( isset($_GET['input_field_shelf'])) {
-      $shelf = $_GET['input_field_shelf'];
-    }
-    $this->html .= <<<EOT
-    <div id="input_field_div" style="width: 700px;">
-      <form method="GET">
-        <table>
-        <tr>
-          <td style="width: 60%;">
-            <input style="width: 100%;"
-            type="search"  autofocus="autofocus" onfocus="this.select()"
-            id="input_field_article" name="input_field_article"
-            placeholder="Plassering X-X-Y" value="$shelf">
-          </td>
-
-          <td style="width: 10%;">
-            <input style="width: 100%;" type="submit" value="Søk" >
-          </td>
-        </tr>
-        </table>
-      </form>
-    </div><br>\n
-    EOT;
-  }
 
   public function title ($string = 'title') {
     $this->html .= <<<EOT
