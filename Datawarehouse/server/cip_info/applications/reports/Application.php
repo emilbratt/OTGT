@@ -244,7 +244,7 @@ class Imported extends Reports {
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
         $this->template->table_row_value($row['quantity']);
-        $this->template->table_row_value($row['location'], $hyperlink_row->url);
+        $this->template->table_row_value_update_location_input($row['location'], $article_id);
         $this->template->table_row_value($row['lastimported']);
         $this->template->table_row_value($row['supplyid']);
         $this->template->table_row_end();
