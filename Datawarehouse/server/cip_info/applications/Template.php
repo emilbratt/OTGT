@@ -461,16 +461,16 @@ class Template {
     // passing a url as second arg will make it a clickabel button
     if ($hyperlink == null) {
       $this->html .= <<<EOT
-          <th id="th_no_hyperlink">$string</th>\n
+        <th id="th_no_hyperlink">$string</th>\n
       EOT;
       return;
     }
     $this->html .= <<<EOT
-        <th>
-          <a href="$hyperlink">
-            <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
-          </a>
-        </th>\n
+      <th>
+        <a href="$hyperlink">
+          <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
+        </a>
+      </th>\n
     EOT;
   }
 
@@ -478,7 +478,7 @@ class Template {
     // passing a url as second arg will make it a clickabel button
     if ($hyperlink == null) {
       $this->html .= <<<EOT
-          <td>$string</td>\n
+        <td>$string</td>\n
       EOT;
       return;
     }
@@ -487,17 +487,57 @@ class Template {
     EOT;
   }
 
-  public function table_row_value_update_location_input ($string, $hyperlink = null) {
-    // passing a url as second arg will make it a clickabel button
-    if ($hyperlink == null) {
-      $this->html .= <<<EOT
-          <td>$string</td>\n
-      EOT;
-      return;
-    }
+  public function table_row_value_update_location_input ($shelf, $article_id) {
+    $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
     $this->html .= <<<EOT
-        <td><a href="$hyperlink">$string</a></td>\n
+    <td style="text-align: center; width: 125px;">
+    <div style="width: 65%; display: inline-block; margin-left: 0px; text-align: left;">
+      <input
+        style="height: 22px; width: 90%;"
+        type="text"
+        id="input_id_$article_id"
+        name="input_id_$article_id"
+        value="$shelf"
+        >
+    </div>
+    <div style="width: 30%; display: inline-block; margin-right: 0px;">
+      <input
+        style="width: 90%; text-align: center;"
+        id="clickMe"
+        style="display: inline-block;"
+        type="submit"
+        value="OK"
+        onclick="update_placement_$article_id();"
+        >
+    </div>
+    </td>\n
     EOT;
+    $this->script .= <<<EOT
+
+    <script>
+    function update_placement_$article_id () {
+      var shelf = document.getElementById('input_id_$article_id').value;
+      const form_data = new FormData();
+      const fileField = document.querySelector('input[type="file"]');
+
+      form_data.append('article_id', '$article_id');
+      form_data.append('shelf', shelf);
+
+      fetch('$host/api/placement/v0/update_by_article_id', {
+        method: 'POST',
+        body: form_data
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log('Success:', result);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    }
+    </script>\n
+    EOT;
+
   }
 
   public function table_row_end () {

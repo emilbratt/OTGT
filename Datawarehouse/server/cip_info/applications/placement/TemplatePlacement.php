@@ -7,6 +7,16 @@ class TemplatePlacement extends Template {
   function __construct () {
     parent::__construct();
     $this->css .= <<<EOT
+    button {
+      border: 1px solid $this->colour_default_text;
+      display: inline;
+      font-size: 15px;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
+      width: 150px;
+      height: 30px;
+    }
+
     /* TABLE */
     table {
       font-family: arial;

@@ -52,10 +52,11 @@ class Home extends Placement {
     // step 1: scan item (this form sets placement_scan_item)
     if ( !(isset($_POST['barcode'])) ) {
       $this->placement_scan_item();
-      $this->template->message('Det er enkelt å legge inn plassering');
-      $this->template->message('Skann en vare først');
-      $this->template->message('Deretter skanner du hyllen');
-      $this->template->message('Du trenger ikke å bruke mus og tastatur for å gjør dette');
+      $this->template->message('Registrer plassering ved å skanne vare -> så hylle -> vare -> hylle osv.');
+      $this->template->message('..eller trykk knapp under for å legge inn for mottak');
+      $hyperlink = new HyperLink();
+      $hyperlink->link_redirect('reports/imported');
+      $this->template->hyperlink_button('Manuelt fra mottak', $hyperlink->url);
       $this->show_latest_placements();
     }
     // step 2: validate item scan and then scan shelf (this form sets both placement_scan_item and placement_scan_shelf)
