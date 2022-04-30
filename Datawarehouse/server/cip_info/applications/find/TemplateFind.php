@@ -231,6 +231,14 @@ class TemplateFind extends Template {
     EOT;
   }
 
+  public function _title ($string = 'title') {
+    $this->html .= <<<EOT
+    <div class="title" style="display: inline-block; padding-right: 20px;">
+      <h3 style="margin-bottom: 2px;">$string</h3>
+    </div>\n
+    EOT;
+  }
+
   public function _table_row_value ($string, $text_align = 'center', $font_size = '18', $hyperlink = null) {
     // passing a url as second arg will make the cell clickable
     $font_size = $font_size . 'px';

@@ -448,12 +448,11 @@ class ByArticle extends Find {
       if ( ($retail_location != null) and (strlen($retail_location) > 0) ) {
         $has_location = true;
       }
-
-      // print out all placement registered for item
+      $this->template->line_break();
+      $this->template->_title('Plassering');
+      $this->template->button_fetch_api_post_update_placement($article_id, $retail_location);
       if ($has_location) {
-        $this->template->line_break();
-
-        $this->template->title('Plassering');
+      // print out all placement registered for item
         $this->template->table_start();
         $this->template->table_row_start();
         $this->template->_table_row_value('Nå:', 'left');
