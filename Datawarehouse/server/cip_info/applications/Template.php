@@ -493,14 +493,12 @@ class Template {
         style="height: 22px; width: 90%;"
         type="text"
         id="input_id_$article_id"
-        name="input_id_$article_id"
         value="$shelf"
         >
     </div>
     <div style="width: 30%; display: inline-block; margin-right: 0px;">
       <input
         style="width: 90%; text-align: center;"
-        id="clickMe"
         style="display: inline-block;"
         type="submit"
         value="OK"
@@ -515,7 +513,6 @@ class Template {
     function update_placement_$article_id () {
       var shelf = document.getElementById('input_id_$article_id').value;
       const form_data = new FormData();
-      const fileField = document.querySelector('input[type="file"]');
 
       form_data.append('article_id', '$article_id');
       form_data.append('shelf', shelf);
