@@ -216,13 +216,12 @@ class ByShelf extends Find {
    */
 
     public function run () {
-
+      $this->template->css_result_set();
       if( isset($_GET['input_field_shelf']) ) {
         $this->template->form_shelf();
           $this->validate_user_input();
         if ($this->user_input_ok) {
           $this->result_set();
-          $this->template->css_result_set();
         }
       }
       else {
@@ -256,23 +255,6 @@ class ByShelf extends Find {
       'Lev. ID & Strekkode' => 'supplyid',
     ];
 
-    $this->template->hyperlink_button($this->toggle_expired_message, $hyperlink_toggle->url);
-    $hyperlink_toggle = null;
-    $this->template->script_filter_row_button();
-
-    $this->template->table_full_width_start();
-    $this->template->table_row_start();
-    $hyperlink_header = new HyperLink();
-    foreach ($table_headers as $alias => $name) {
-      $hyperlink_header->add_query('sort', $name);
-      $hyperlink_header->add_query('order', $this->order);
-      if ($name == $this->sort_by) {
-        $alias .= $this->arrow_symbol;
-      }
-      $this->template->table_row_header($alias, $hyperlink_header->url);
-    }
-    $this->template->table_row_end();
-
     $query = new QueryRetailFindBySearch();
     $query->select_fields();
     $query->where_shelf();
@@ -282,6 +264,22 @@ class ByShelf extends Find {
     $this->database_retail->select_multi_row($query->get());
     $query = null;
     if ($this->database_retail->result) {
+      $this->template->hyperlink_button($this->toggle_expired_message, $hyperlink_toggle->url);
+      $hyperlink_toggle = null;
+      $this->template->script_filter_row_button();
+
+      $this->template->table_full_width_start();
+      $this->template->table_row_start();
+      $hyperlink_header = new HyperLink();
+      foreach ($table_headers as $alias => $name) {
+        $hyperlink_header->add_query('sort', $name);
+        $hyperlink_header->add_query('order', $this->order);
+        if ($name == $this->sort_by) {
+          $alias .= $this->arrow_symbol;
+        }
+        $this->template->table_row_header($alias, $hyperlink_header->url);
+      }
+      $this->template->table_row_end();
       $hyperlink_row = new HyperLink();
       foreach ($this->database_retail->result as $row) {
         $article_id = $row['article_id'];
@@ -296,6 +294,14 @@ class ByShelf extends Find {
         $this->template->table_row_end();
       }
       $this->template->table_end();
+    }
+    else {
+      // to avoid no results if search for item, we show button to find/bysearch
+      // ..maybe user thought he/she was searching for items and not location
+      $hyperlink = new HyperLink();
+      $hyperlink->link_redirect('find/bysearch');
+      $this->template->message('Du søker på plassering nå');
+      $this->template->hyperlink_button('Søk på varer her', $hyperlink->url);
     }
   }
 
