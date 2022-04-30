@@ -117,16 +117,21 @@ class QueryRetail {
     if ($article == '') {
       return;
     }
-    // we split the string by whitespace and add a conditional for each
-    // word creating a way to get resaults regardless of where the
-    // word originally is positioned by the article we are searching
+   /**
+    * we split the string by whitespace and add a conditional for each
+    * word creating a way to get resaults regardless of where the
+    * word originally is positioned by the article we are searching
+    */
+
     $arr_article = explode(' ', $article);
     foreach ($arr_article as $article) {
-      // i dont know how to use prepared statements for a multi word search..
-      // while this is a kind of naive way to secure queries against
-      // injection, it is better than nothing at this point..
-      // you can for example write DELETE- (notice the hyphen) and it
-      // willl go unnoticed however, this will never be public facing
+     /**
+      * I dont know how to use prepared statements for a multi word search..
+      * while this is a kind of naive way to secure queries against
+      * injection, it is better than nothing at this point..
+      * you can for example write DELETE- (notice the hyphen) and it
+      * willl go unnoticed however, this will never be public facing
+      */
 
       $this->check_illegal_word($article);
       if ( $this->has_where() ) {
