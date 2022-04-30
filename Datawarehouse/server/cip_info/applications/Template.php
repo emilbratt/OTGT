@@ -485,7 +485,6 @@ class Template {
   }
 
   public function table_row_value_update_location_input ($shelf, $article_id) {
-    $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
     $this->html .= <<<EOT
     <td style="text-align: center; width: 125px;">
     <div style="width: 65%; display: inline-block; margin-left: 0px; text-align: left;">
@@ -502,19 +501,23 @@ class Template {
         style="display: inline-block;"
         type="submit"
         value="OK"
-        onclick="update_placement_$article_id();"
+        onclick="table_row_value_update_location_input('$article_id');"
         >
     </div>
     </td>\n
     EOT;
-    $this->script .= <<<EOT
+  }
 
+  public function script_table_row_value_update_location_input () {
+    // this needs to be added after the table is completed
+    $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
+    $this->script .= <<<EOT
     <script>
-    function update_placement_$article_id () {
-      var shelf = document.getElementById('input_id_$article_id').value;
+    function table_row_value_update_location_input (article_id) {
+      var shelf = document.getElementById('input_id_' + article_id).value;
       const form_data = new FormData();
 
-      form_data.append('article_id', '$article_id');
+      form_data.append('article_id', article_id);
       form_data.append('shelf', shelf);
 
       fetch('$host/api/placement/v0/update_by_article_id', {
@@ -531,7 +534,6 @@ class Template {
     }
     </script>\n
     EOT;
-
   }
 
   public function table_row_end () {
