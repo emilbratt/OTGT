@@ -111,12 +111,15 @@ class TemplateReports extends Template {
   }
 
   public function reports_form_brand_year_num_stock_limit () {
-    // this form fetches:
-    // brand name
-    // datepart: years/months/weeks
-    // datepart num: N years/months/weeks back in time
-    // stock operator < or >
-    // N stock limit
+   /**
+    * this form fetches:
+    *   brand name
+    *   datepart: years/months/weeks
+    *   datepart num: N years/months/weeks back in time
+    *   stock operator < or >
+    *   N stock limit
+    */
+
     $brand = '';
     if (isset($_GET['input_field_brand'])) {
       $brand = $_GET['input_field_brand'];
