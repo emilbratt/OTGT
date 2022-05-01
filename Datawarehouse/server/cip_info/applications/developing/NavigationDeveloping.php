@@ -13,12 +13,10 @@ class NavigationDeveloping extends Navigation {
       $this->sub_nav_links = [
       'SQL Shell Retail' => $this->app_uri . '/sqlshellretail',
       'SQL Shell Datawarehouse' => $this->app_uri . '/sqlshelldatawarehouse',
-      'Test' => $this->app_uri . '/test',
-      'Fetch Api' => $this->app_uri . '/fetchapi',
       'Performance' => $this->app_uri . '/performance',
       'Get Shelf Label Dummy Sheet' => $this->app_uri . '/generatelabeldummysheet',
       'Memory Database' => $this->app_uri . '/memorydatabase',
-      'Test Fetch API' => $this->app_uri . '/testfetchapi',
+
     ];
   }
 

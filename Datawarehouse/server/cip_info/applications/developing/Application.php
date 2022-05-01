@@ -152,87 +152,6 @@ class SQLShellDatawarehouse extends Developing {
 }
 
 
-class FetchAPI extends Developing {
-
-  public function run () {
-    $this->template->title('testing requests using fetch api');
-    $this->template->message('about: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API');
-    $hyperlink = new Hyperlink();
-    $hyperlink->link_redirect('api');
-    $api_home = $hyperlink->url;
-    $this->template->message($api_home);
-    // since api is called from our browser -> use main host and external port
-    $host = $this->environment->datawarehouse('datawarehouse_ip');
-    $port = $this->environment->datawarehouse('barcode_generator_port');
-    $endpoint = 'shelf/';
-    $query = 'A-A-1';
-    $url = 'http://' . $host . ':' . $port . '/' . $endpoint . $query;
-    $this->template->message($url);
-    $this->template->hyperlink_button("Barcode $query", $url);
-    $script = <<<EOT
-    <script>
-    const image_url = "$url";
-
-    (async () => {
-      const response = await fetch(image_url)
-      const image_byte_array = await response.blob()
-      const reader = new FileReader();
-      reader.readAsDataURL(image_byte_array);
-      reader.onloadend = () => {
-        const base64data = reader.result;
-        console.log(base64data);
-      }
-    })()
-    </script>
-    EOT;
-
-    $link = null;
-
-    $this->template->custom_script($script);
-    $this->template->print($this->page);
-  }
-
-}
-
-
-class Test extends Developing {
-
-  private $endpoint;
-  private $url;
-  private $curl;
-  private $u;
-
-  public function run () {
-    $host = $this->environment->datawarehouse('barcode_generator_host');
-    $port = $this->environment->datawarehouse('barcode_generator_port');
-    $this->endpoint = 'shelf/A-A-1';
-    $this->url = 'http://' . $host . ':' . $port . '/' . $this->endpoint;
-    $this->u = 'http://' . $host . ':' . $port;
-    $this->curl = curl_init();
-    curl_setopt( $this->curl, CURLOPT_URL, $this->url );
-
-    $this->show_everything();
-    // $this->only_show_image();
-  }
-
-  private function show_everything () {
-    curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
-    $body = curl_exec( $this->curl );
-    $this->template->image_show($body);
-    curl_close( $this->curl );
-    $this->template->print($this->page);
-  }
-
-  private function only_show_image () {
-    header("Content-Type: image/png");
-    $body = curl_exec( $this->curl );
-    curl_close( $this->curl );
-    echo $body;
-  }
-
-}
-
-
 class Performance extends Developing {
 
   private $remainder;
@@ -370,13 +289,31 @@ class GenerateLabelDummySheet extends Developing {
     }
     curl_close ($curl);
     if ($http_status_code == 201) {
-      header('Content-Type: image/png');
-      header('Content-Type: application/octet-stream');
-      header('Content-Transfer-Encoding: binary');
-      header('Content-Disposition: attachment; filename=shelfdummysheet.png');
-      echo $body;
+
+      /*
+      * only run one of these functions
+      */
+
+      // show image as part of web-page
+      $this->show_everything($body);
+
+      // only show/download image
+      // $this->show_image($body);
     }
   }
+
+  private function show_everything($body) {
+    $this->template->image_show($body);
+    $this->template->print();
+  }
+  private function show_image($body) {
+    header('Content-Type: image/png');
+    header('Content-Type: application/octet-stream');
+    header('Content-Transfer-Encoding: binary');
+    header('Content-Disposition: attachment; filename=shelfdummysheet.png');
+    echo $body;
+  }
+
 }
 
 
@@ -399,15 +336,6 @@ class MemoryDatabase extends Developing {
     $this->database->mem_delete($key);
     $this->template->message('value after delete: ' . $this->database->mem_get($key)['mem_val']);
     $this->template->message('timestamp delete: ' . $this->database->mem_get($key)['mem_time']);
-    $this->template->print($this->page);
-  }
-}
-
-
-class TestFetchAPI extends Developing {
-  public function run () {
-    $this->template->fetch_api_test();
-    $this->template->button_fetch_api_post_update_placement('update location for article 10', '10', $shelf = 'a-a-1');
     $this->template->print($this->page);
   }
 }

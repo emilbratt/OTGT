@@ -44,7 +44,9 @@ class TemplateDeveloping extends Template {
       width: 150px;
       height: 30px;
     }
-
+    a button:hover {
+      background-color: $this->colour_default_hover;
+    }
     /* show image from bytestream */
     .image_show {
       display: block;
