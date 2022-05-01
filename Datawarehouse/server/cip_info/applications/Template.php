@@ -489,22 +489,15 @@ class Template {
   public function table_row_value_update_location_input ($shelf, $article_id) {
     $this->html .= <<<EOT
     <td style="text-align: center; width: 125px;">
-    <div style="width: 65%; display: inline-block; margin-left: 0px; text-align: left;">
-      <input
-        style="height: 22px; width: 90%;"
-        type="text"
-        id="input_id_$article_id"
-        value="$shelf"
-        >
-    </div>
-    <div style="width: 30%; display: inline-block; margin-right: 0px;">
-      <input
-        style="width: 90%; text-align: center;"
-        style="display: inline-block;"
-        type="submit"
-        value="OK"
-        onclick="table_row_value_update_location_input('$article_id');"
-        >
+    <div style="display: inline-block; ">
+    <form action="javascript:table_row_value_update_location_input('$article_id')">
+    <input
+      style="display: inline-block; height: 22px; text-align: center; width: 60px;"
+      type="text"
+      id="input_id_$article_id"
+      value="$shelf"
+      >
+    </form>
     </div>
     </td>\n
     EOT;
@@ -525,13 +518,12 @@ class Template {
       fetch('$host/api/placement/v0/update_by_article_id', {
         method: 'POST',
         body: form_data
-      })
-      .then(response => response.json())
-      .then(result => {
-        console.log('Success:', result);
-      })
-      .catch(error => {
-        console.error('Error:', error);
+      }).then(response => {
+        if (response.ok) {
+          document.getElementById('input_id_' + article_id).style.backgroundColor = '$this->colour_update_value_ok';
+        } else {
+          document.getElementById('input_id_' + article_id).style.backgroundColor = '$this->colour_update_value_error';
+        }
       });
     }
     </script>\n

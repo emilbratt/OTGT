@@ -17,7 +17,7 @@ class QueryDatawarehousePlacement extends QueryDatawarehouse {
     END AS format_timestamp
     FROM placement
     ORDER BY timestamp DESC
-    LIMIT 10\n
+    LIMIT 20\n
     EOT;
   }
 

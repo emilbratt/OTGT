@@ -25,14 +25,18 @@ class TemplatePlacement extends Template {
       border-collapse: collapse;
     }
     td {
-      border: 1px solid #202020;
-      text-align: center;
-      padding-left: 12px;
-      padding-right: 12px;
+      text-align: left;
+      padding-right: 10px;
+    }
+    tr:nth-child(even) {
+      background-color: $this->colour_row_background_2;
+    }
+    tr:nth-child(odd) {
+      background-color: $this->colour_row_background_1;
     }
     th {
       background-color: $this->colour_header_background;
-      height: 32px;
+      height: 22px;
     }
     #th_no_hyperlink {
       border: 1px solid $this->colour_default_text;

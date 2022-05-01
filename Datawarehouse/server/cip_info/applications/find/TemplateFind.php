@@ -48,7 +48,6 @@ class TemplateFind extends Template {
     tr:nth-child(odd) {
       background-color: $this->colour_row_background_1;
     }
-
     #hidden_submit {
       display: none;
     }
@@ -68,7 +67,9 @@ class TemplateFind extends Template {
       width: 150px;
       height: 30px;
     }
-
+    a button:hover {
+      background-color: $this->colour_default_hover;
+    }
     #table_td_label {
       border: 1px solid $this->colour_default_text;
       display: inline;
@@ -265,8 +266,7 @@ class TemplateFind extends Template {
       type="text"
       id="input_id_$article_id"
       >
-    </form>
-    \n
+    </form>\n
     EOT;
     $this->script .= <<<EOT
     <script>

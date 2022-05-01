@@ -51,13 +51,12 @@ class Home extends Placement {
   public function run () {
     // step 1: scan item (this form sets placement_scan_item)
     if ( !(isset($_POST['barcode'])) ) {
-      $this->placement_scan_item();
-      $this->template->message('Registrer plassering ved å skanne vare -> så hylle -> vare -> hylle osv.');
-      $this->template->message('..eller trykk knapp under for å legge inn for mottak');
       $hyperlink = new HyperLink();
-      $hyperlink->link_redirect('reports/imported');
+      $hyperlink->link_redirect('placement/fromimported');
       $this->template->hyperlink_button('Manuelt fra mottak', $hyperlink->url);
-      $this->show_latest_placements();
+      $hyperlink->link_redirect('placement/newestplacements');
+      $this->template->hyperlink_button('Nyeste plasseringer', $hyperlink->url);
+      $this->placement_scan_item();
     }
     // step 2: validate item scan and then scan shelf (this form sets both placement_scan_item and placement_scan_shelf)
     else if ( isset($_POST['barcode']) and (!(isset($_POST['shelf']))) ) {
@@ -66,30 +65,9 @@ class Home extends Placement {
     // step 3: upload new shelf value for item using placement_scan_item and placement_scan_shelf
     else if ( isset($_POST['article_id']) and isset($_POST['shelf']) ) {
       $this->placement_update();
-      $this->show_latest_placements();
     }
 
     $this->template->print();
-  }
-
-  private function show_latest_placements () {
-    $query = new QueryDatawarehousePlacement();
-    $query->latest_registered_placements();
-    $this->database_datawarehouse->select_multi_row($query->get());
-    if ($this->database_datawarehouse->result) {
-
-      $this->template->title('Nyeste plasseringer');
-      $this->template->table_start();
-      $hyperlink = new HyperLink();
-      foreach ($this->database_datawarehouse->result as $row) {
-          $hyperlink->link_redirect_query('find/byarticle', 'article_id', $row['article_id']);
-          $string = $row['stock_location'] . ' - ' . $row['format_timestamp'];
-          $this->template->table_row_start();
-          $this->template->table_row_value($string, $hyperlink->url);
-          $this->template->table_row_end();
-      }
-      $this->template->table_end();
-    }
   }
 
   private function placement_scan_item () {
@@ -117,7 +95,7 @@ class Home extends Placement {
       return;
     }
 
-    $this->article_id = $this->database_retail->result['articleid'];
+    $this->article_id = $this->database_retail->result['article_id'];
     $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
     $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
     $location = $this->database_retail->result['location'];
@@ -260,4 +238,95 @@ class Home extends Placement {
   $this->shelf_ok = true;
   }
 
+}
+
+
+class FromImported extends Placement {
+
+  public function run () {
+    $hyperlink = new HyperLink();
+    $hyperlink->link_redirect('placement');
+    $this->template->hyperlink_button('Tilbake', $hyperlink->url);
+    $this->list_newest_imported_items();
+    $this->template->print();
+  }
+
+  private function list_newest_imported_items () {
+    // this will also allow for changing/updating item plcaement
+    $query_retail = new QueryRetailPlacement();
+    $query_retail->last_imported_items();
+    $this->database_retail->select_multi_row($query_retail->get());
+    if ($this->database_retail->result) {
+      $hyperlink_row = new HyperLink();
+      $this->template->title('Nylige mottatte varer');
+      $this->template->table_start();
+      $this->template->table_row_start();
+      $this->template->table_row_header('Merke');
+      $this->template->table_row_header('Artikkel');
+      $this->template->table_row_header('Plassering');
+      $this->template->table_row_end();
+      foreach ($this->database_retail->result as $row) {
+        $article_id = $row['article_id'];
+        $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
+        $this->template->table_row_start();
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value_update_location_input($row['location'], $article_id);
+        $this->template->table_row_end();
+      }
+      $this->template->table_end();
+      $this->template->script_table_row_value_update_location_input();
+    }
+  }
+}
+
+
+class NewestPlacements extends Placement {
+
+  public function run () {
+    $hyperlink = new HyperLink();
+    $hyperlink->link_redirect('placement');
+    $this->template->hyperlink_button('Tilbake', $hyperlink->url);
+    $this->show_latest_placements();
+    $this->template->print();
+  }
+
+  private function show_latest_placements () {
+    $query_datawarehouse = new QueryDatawarehousePlacement();
+    $query_datawarehouse->latest_registered_placements();
+    $this->database_datawarehouse->select_multi_row($query_datawarehouse->get());
+    if ($this->database_datawarehouse->result) {
+      $hyperlink = new HyperLink();
+      $this->template->title('Nyeste plasseringer');
+      $this->template->table_start();
+      $this->template->table_row_start();
+      $this->template->table_row_header('Merke');
+      $this->template->table_row_header('Artikkel');
+      $this->template->table_row_header('Plassering');
+      $this->template->table_row_header('Tid');
+      $this->template->table_row_end();
+      foreach ($this->database_datawarehouse->result as $row) {
+        $article = '';
+        $brand = '';
+        $query_retail = new QueryRetailPlacement();
+        $query_retail->article_brand_and_name_by_article_id($row['article_id']);
+        $this->database_retail = new DatabaseRetail();
+        $this->database_retail->select_single_row($query_retail->get());
+        if ($this->database_retail->result) {
+          $article = $this->database_retail->result['article'];
+          $brand = $this->database_retail->result['brand'];
+        }
+        $this->database_retail = null;
+        $query_retail = null;
+        $hyperlink->link_redirect_query('find/byarticle', 'article_id', $row['article_id']);
+        $this->template->table_row_start();
+        $this->template->table_row_value($brand, $hyperlink->url);
+        $this->template->table_row_value($article, $hyperlink->url);
+        $this->template->table_row_value($row['stock_location'], $hyperlink->url);
+        $this->template->table_row_value($row['format_timestamp'], $hyperlink->url);
+        $this->template->table_row_end();
+      }
+      $this->template->table_end();
+    }
+  }
 }
