@@ -25,10 +25,12 @@ class Developing {
     require_once '../applications/developing/TemplateDeveloping.php';
     require_once '../applications/developing/NavigationDeveloping.php';
 
-    // if our database has language specific strings stored in ASCII,
-    // we might need to handle the query results if we want to present these
-    // characters correctly by converting the query result to UTF-8 ISO-XXXX
-    // ..however; we set false as default
+   /**
+    * if our database has language specific strings stored in ASCII,
+    * we might need to handle the query results if we want to present these
+    * characters correctly by converting the query result to UTF-8 ISO-XXXX
+    * ..however; we set false as default
+    */
     $this->utf_convert = false;
 
     $this->environment = new Environment();
