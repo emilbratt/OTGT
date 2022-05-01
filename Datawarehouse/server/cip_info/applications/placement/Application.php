@@ -10,7 +10,7 @@
 
 class Placement {
   // register placement for items
-  protected $page = 'Plasser Vare';
+  protected $page = 'Plassering';
   protected $environment;
   protected $template;
   protected $database_retail;
@@ -53,9 +53,9 @@ class Home extends Placement {
     if ( !(isset($_POST['barcode'])) ) {
       $hyperlink = new HyperLink();
       $hyperlink->link_redirect('placement/fromimported');
-      $this->template->hyperlink_button('Manuelt fra mottak', $hyperlink->url);
+      $this->template->hyperlink_button('Legg inn fra Mottak', $hyperlink->url);
       $hyperlink->link_redirect('placement/newestplacements');
-      $this->template->hyperlink_button('Nyeste plasseringer', $hyperlink->url);
+      $this->template->hyperlink_button('Se Nye plasseringer', $hyperlink->url);
       $this->placement_scan_item();
     }
     // step 2: validate item scan and then scan shelf (this form sets both placement_scan_item and placement_scan_shelf)
@@ -247,6 +247,8 @@ class FromImported extends Placement {
     $hyperlink = new HyperLink();
     $hyperlink->link_redirect('placement');
     $this->template->hyperlink_button('Tilbake', $hyperlink->url);
+    $hyperlink->link_redirect('placement/fromimported');
+    $this->template->hyperlink_button('Last inn på nytt', $hyperlink->url);
     $this->list_newest_imported_items();
     $this->template->print();
   }
@@ -287,17 +289,20 @@ class NewestPlacements extends Placement {
     $hyperlink = new HyperLink();
     $hyperlink->link_redirect('placement');
     $this->template->hyperlink_button('Tilbake', $hyperlink->url);
+    $hyperlink->link_redirect('placement/newestplacements');
+    $this->template->hyperlink_button('Last inn på nytt', $hyperlink->url);
     $this->show_latest_placements();
     $this->template->print();
   }
 
   private function show_latest_placements () {
     $query_datawarehouse = new QueryDatawarehousePlacement();
-    $query_datawarehouse->latest_registered_placements();
+    $limit = '50';
+    $query_datawarehouse->latest_registered_placements($limit);
     $this->database_datawarehouse->select_multi_row($query_datawarehouse->get());
     if ($this->database_datawarehouse->result) {
       $hyperlink = new HyperLink();
-      $this->template->title('Nyeste plasseringer');
+      $this->template->title('Nyeste registrerte plasseringer');
       $this->template->table_start();
       $this->template->table_row_start();
       $this->template->table_row_header('Merke');

@@ -9,6 +9,20 @@ class TemplateMap extends Template {
   function __construct () {
     parent::__construct();
     $this->image_path_floor = $this->image_path . '/location/floor';
+    $this->css .= <<<EOT
+    button {
+      border: 1px solid $this->colour_default_text;
+      display: inline;
+      font-size: 15px;
+      color: $this->colour_default_text;
+      background-color: $this->colour_default_background;
+      width: 150px;
+      height: 25px;
+    }
+    a button:hover {
+      background-color: $this->colour_default_hover;
+    }
+    EOT;
   }
 
   public function map_form_location () {

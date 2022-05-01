@@ -70,6 +70,10 @@ class Home extends Barcodes {
 class GenerateBarcode extends Barcodes {
 
   public function run () {
+    $hyperlink = new HyperLink();
+    $hyperlink->link_redirect('barcodes');
+    $this->template->hyperlink_button('Tilbake', $hyperlink->url);
+
     $this->char_limit = 100;
     $host = $this->environment->datawarehouse('barcode_generator_host');
     $port = $this->environment->datawarehouse('barcode_generator_port');
@@ -127,6 +131,10 @@ class GenerateShelfLabels extends Barcodes {
   private $limit_fetch_ok;
 
   public function run () {
+    $hyperlink = new HyperLink();
+    $hyperlink->link_redirect('barcodes');
+    $this->template->hyperlink_button('Tilbake', $hyperlink->url);
+
     $this->valid_label = false;
     $this->get_api_url();
     $this->get_limits();

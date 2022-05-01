@@ -8,7 +8,7 @@ class QueryDatawarehousePlacement extends QueryDatawarehouse {
     parent::__construct();
   }
 
-  public function latest_registered_placements () {
+  public function latest_registered_placements ($n = '35') {
     $this->query .= <<<EOT
     SELECT article_id, stock_location, timestamp,
     CASE
@@ -17,7 +17,7 @@ class QueryDatawarehousePlacement extends QueryDatawarehouse {
     END AS format_timestamp
     FROM placement
     ORDER BY timestamp DESC
-    LIMIT 20\n
+    LIMIT $n\n
     EOT;
   }
 

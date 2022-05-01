@@ -23,7 +23,9 @@ class TemplateBarcodes extends Template {
       width: 150px;
       height: 25px;
     }
-
+    a button:hover {
+      background-color: $this->colour_default_hover;
+    }
     /* show image from bytestream */
     .image_show {
       display: block;
