@@ -87,7 +87,7 @@ class APIEndpoint {
     $this->http_response_code = 201;
     $this->update_placement_to_retail();
     $this->insert_placement_to_datawarehouse();
-
+    $this->data['response'] = true;
   }
 
   private function update_placement_to_retail () {

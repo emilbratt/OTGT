@@ -27,6 +27,8 @@ class Template {
   protected $colour_search_background = '#202020';
   protected $colour_default_hover = '#444444';
   protected $colour_default_active = '#444444';
+  protected $colour_update_value_ok = '#557755';
+  protected $colour_update_value_error = '#663333';
   protected $form_default_height = '26px';
   protected $location_index;
   protected $html;
@@ -650,53 +652,6 @@ class Template {
     <div>
       <img class="image_show" src="data:image/png;base64,$b64image">
     </div>\n
-    EOT;
-  }
-
-  public function button_fetch_api_post_update_placement ($article_id = '', $shelf = '') {
-    $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
-    $this->html .= <<<EOT
-    <input
-      style="display: inline-block; width: 50px; height: 22px;"
-      type="text"
-      id="input_id_$article_id"
-      name="input_id_$article_id"
-      placeholder="$shelf"
-      >
-
-    <input
-      id="clickMe"
-      style="display: inline-block; width: 40px;"
-      type="submit"
-      value="OK"
-      onclick="update_placement_$article_id();"
-      >
-    \n
-    EOT;
-    $this->script .= <<<EOT
-
-    <script>
-    function update_placement_$article_id () {
-      var shelf = document.getElementById('input_id_$article_id').value;
-      const form_data = new FormData();
-      const fileField = document.querySelector('input[type="file"]');
-
-      form_data.append('article_id', '$article_id');
-      form_data.append('shelf', shelf);
-
-      fetch('$host/api/placement/v0/update_by_article_id', {
-        method: 'POST',
-        body: form_data
-      })
-      .then(response => response.json())
-      .then(result => {
-        console.log('Success:', result);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    }
-    </script>\n
     EOT;
   }
 

@@ -248,8 +248,8 @@ class Imported extends Reports {
         $this->template->table_row_value($row['lastimported']);
         $this->template->table_row_value($row['supplyid']);
         $this->template->table_row_end();
-        $this->template->script_table_row_value_update_location_input();
       }
+      $this->template->script_table_row_value_update_location_input();
     }
     catch(Exception $e)  {
       if($this->environment->developement('show_errors')) {

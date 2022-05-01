@@ -222,7 +222,6 @@ class TemplateFind extends Template {
     EOT;
   }
 
-
   public function title ($string = 'title') {
     $this->html .= <<<EOT
     <div class="title">
@@ -257,4 +256,41 @@ class TemplateFind extends Template {
     EOT;
   }
 
+  public function button_fetch_api_post_update_placement ($article_id = '', $shelf = '') {
+    $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
+    $this->html .= <<<EOT
+    <form style="margin-left: 35px;" action="javascript:button_fetch_api_post_update_placement('$article_id')">
+    <input
+      style="display: inline-block; width: 55px; height: 22px;"
+      type="text"
+      id="input_id_$article_id"
+      >
+    </form>
+    \n
+    EOT;
+    $this->script .= <<<EOT
+    <script>
+    function button_fetch_api_post_update_placement(article_id) {
+      var shelf = document.getElementById('input_id_' + article_id).value;
+
+      const form_data = new FormData();
+      form_data.append('article_id', article_id);
+      form_data.append('shelf', shelf);
+
+      fetch('$host/api/placement/v0/update_by_article_id', {
+        method: 'POST',
+        body: form_data
+      }).then(response => {
+        if (response.ok) {
+          document.getElementById('input_id_' + article_id).style.backgroundColor = '$this->colour_update_value_ok';
+        } else {
+          document.getElementById('input_id_' + article_id).style.backgroundColor = '$this->colour_update_value_error';
+        }
+      });
+
+    }
+    </script>\n
+    EOT;
+
+  }
 }
