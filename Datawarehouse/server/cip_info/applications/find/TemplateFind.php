@@ -112,7 +112,7 @@ class TemplateFind extends Template {
     EOT;
   }
 
-  public function css_by_barcode () {
+  public function css_article_info () {
     $this->css .= <<<EOT
     /* set fixed length for first table column */
     td:nth-child(1) {

@@ -362,6 +362,7 @@ class ByArticle extends Find {
 
     // all results are handled and printed on screen here
     if ($this->database_retail->result) {
+      $this->template->css_article_info();
       $article_id = $this->database_retail->result['article_id'];
       $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
       $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
@@ -493,7 +494,6 @@ class ByArticle extends Find {
         }
         $this->template->table_end();
       }
-
       // end div for for left side info
       $this->template->div_end();
 
@@ -503,10 +503,8 @@ class ByArticle extends Find {
         $this->template->image_location($retail_location);
         $this->template->div_end();
       }
-      // end div that contains item info and placement map
+      // end div for right side info
       $this->template->div_end();
-
-      $this->template->css_by_barcode();
     }
   }
 
