@@ -33,7 +33,7 @@ class Home extends Instructions {
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
     $this->template->title('Instrukser');
     $this->template->_form_upload_instruction();
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }

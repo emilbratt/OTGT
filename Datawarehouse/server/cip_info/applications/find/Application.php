@@ -87,7 +87,7 @@ class Home extends Find {
   public function run () {
     $this->template->sub_navbar($this->navigation->sub_nav_links);
     $this->template->form_barcode($action = 'find/byarticle');
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -116,7 +116,7 @@ class BySearch extends Find {
       $this->template->form_search();
     }
 
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
   private function validate_user_input () {
@@ -228,7 +228,7 @@ class ByShelf extends Find {
         $this->template->message('Søk på plassering');
         $this->template->form_shelf();
       }
-      $this->template->print();
+      $this->template->print($this->page);
     }
 
     private function validate_user_input () {
@@ -322,7 +322,7 @@ class ByArticle extends Find {
       $this->get_article_result();
     }
 
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
   private function get_article_result () {

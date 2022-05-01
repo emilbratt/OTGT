@@ -689,7 +689,7 @@ class Template {
     EOT;
   }
 
-  public function print () {
+  public function print ($page = 'Vare-Info') {
     // add stuff for debug in the bottom of html if enabled
     if ($this->environment->developement('show_debug')) {
       $this->add_debug();
@@ -698,9 +698,12 @@ class Template {
     $this->wrapper .= <<<EOT
     <!DOCTYPE html>
     <html>
+    <head>
+    <title>$page</title>
     <style>
     $this->css
     </style>
+    </head>
     <body>
     $this->html
     $this->script

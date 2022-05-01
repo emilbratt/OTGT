@@ -64,7 +64,7 @@ class Home extends Example {
     $this->template->message('This is an example app for developer guidance');
     $this->template->message('Current maintainer of web server: ' . $dev_name);
 
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -82,7 +82,7 @@ class PageOne extends Example {
   public function run () {
     // using method from TemplateExample.php
     $this->template->some_text_for_subdirone();
-    $this->template->print();
+    $this->template->print($this->page);
   }
 }
 
@@ -93,7 +93,7 @@ class PageTwo extends Example {
    */
   public function run () {
     $this->template->message('this text is added using the method "message" in the parent class');
-    $this->template->print();
+    $this->template->print($this->page);
   }
 }
 
@@ -104,6 +104,6 @@ class PageThree extends Example {
    */
   public function run () {
     $this->template->title_left_and_right('using the parent method for showing left', 'and right title');
-    $this->template->print();
+    $this->template->print($this->page);
   }
 }

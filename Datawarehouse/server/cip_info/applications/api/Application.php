@@ -124,7 +124,7 @@ class Home extends API {
       }
       $this->template->table_end();
     }
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }

@@ -65,7 +65,7 @@ class Home extends Reports {
   public function run () {
 
     $this->template->sub_navbar($this->navigation->sub_nav_links);
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -161,7 +161,7 @@ class Soldout extends Reports {
     }
     $this->template->table_end();
 
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -261,7 +261,7 @@ class Imported extends Reports {
     }
     $this->template->table_end();
     $hyperlink_row = null;
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -358,7 +358,7 @@ class Sales extends Reports {
     }
     $this->template->table_end();
     $hyperlink_row = null;
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -373,7 +373,7 @@ class NotSoldLately extends Reports {
     if ( isset($_GET['input_field_brand']) and  isset($_GET['input_field_location']) and isset($_GET['input_field_date_part_type']) and isset($_GET['input_field_date_part_num']) and isset($_GET['input_field_stock_num']) and isset($_GET['input_field_stock_operator']) ) {
         $this->show_report();
     }
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
   private function show_report () {

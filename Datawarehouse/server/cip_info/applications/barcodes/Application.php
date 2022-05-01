@@ -61,7 +61,7 @@ class Home extends Barcodes {
 
   public function run () {
     $this->template->sub_navbar($this->navigation->sub_nav_links);
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -86,7 +86,7 @@ class GenerateBarcode extends Barcodes {
         $this->send_label_to_api();
       }
     }
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
   private function load_form () {
@@ -140,7 +140,7 @@ class GenerateShelfLabels extends Barcodes {
     $this->get_limits();
     $this->load_shelf_label_form();
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-      $this->template->print();
+      $this->template->print($this->page);
     }
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $this->validate_labels();
@@ -149,7 +149,7 @@ class GenerateShelfLabels extends Barcodes {
         $this->send_labels_to_api();
         return;
       }
-      $this->template->print();
+      $this->template->print($this->page);
     }
   }
 
@@ -262,7 +262,7 @@ class GenerateShelfLabels extends Barcodes {
     if (curl_errno($curl)) {
       if ( $this->environment->developement('show_debug') ) {
         $this->template->message('Error on curl request: ' . curl_error($curl));
-        $this->template->print();
+        $this->template->print($this->page);
       }
     }
     $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);

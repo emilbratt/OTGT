@@ -64,7 +64,7 @@ class Home {
     $this->most_expensive_item_sold_today();
     $this->last_ten_sold_items();
     $this->brands_imported_today();
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
   private function turnover () {

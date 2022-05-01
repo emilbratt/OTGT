@@ -116,7 +116,7 @@ class Home extends Developing {
 
   public function run () {
     $this->template->sub_navbar($this->navigation->sub_nav_links);
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -131,7 +131,7 @@ class SQLShellRetail extends Developing {
     $this->database = new DatabaseRetail();
     $this->query = 'SELECT TOP 3 articleId, articleName FROM Article';
     $this->load_sql_shell();
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -146,7 +146,7 @@ class SQLShellDatawarehouse extends Developing {
     $this->database = new DatabaseDatawarehouse();
     $this->query = 'SELECT article_id, art_name FROM articles LIMIT 3';
     $this->load_sql_shell();
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -189,7 +189,7 @@ class FetchAPI extends Developing {
     $link = null;
 
     $this->template->custom_script($script);
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
@@ -220,7 +220,7 @@ class Test extends Developing {
     $body = curl_exec( $this->curl );
     $this->template->image_show($body);
     curl_close( $this->curl );
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
   private function only_show_image () {
@@ -256,7 +256,7 @@ class Performance extends Developing {
         $this->test_switch();
       }
     }
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
   private function test_if () {
@@ -399,7 +399,7 @@ class MemoryDatabase extends Developing {
     $this->database->mem_delete($key);
     $this->template->message('value after delete: ' . $this->database->mem_get($key)['mem_val']);
     $this->template->message('timestamp delete: ' . $this->database->mem_get($key)['mem_time']);
-    $this->template->print();
+    $this->template->print($this->page);
   }
 }
 
@@ -408,6 +408,6 @@ class TestFetchAPI extends Developing {
   public function run () {
     $this->template->fetch_api_test();
     $this->template->button_fetch_api_post_update_placement('update location for article 10', '10', $shelf = 'a-a-1');
-    $this->template->print();
+    $this->template->print($this->page);
   }
 }

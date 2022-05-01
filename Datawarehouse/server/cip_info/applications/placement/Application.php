@@ -67,7 +67,7 @@ class Home extends Placement {
       $this->placement_update();
     }
 
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
   private function placement_scan_item () {
@@ -168,7 +168,7 @@ class Home extends Placement {
         $this->template->message('Telefon: ' .$dev_phone);
         $this->template->message('Og oppgi informasjonen under');
         $this->template->message($e);
-        $this->template->print();
+        $this->template->print($this->page);
         exit(1);
       }
     }
@@ -250,7 +250,7 @@ class FromImported extends Placement {
     $hyperlink->link_redirect('placement/fromimported');
     $this->template->hyperlink_button('Last inn på nytt', $hyperlink->url);
     $this->list_newest_imported_items();
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
   private function list_newest_imported_items () {
@@ -292,7 +292,7 @@ class NewestPlacements extends Placement {
     $hyperlink->link_redirect('placement/newestplacements');
     $this->template->hyperlink_button('Last inn på nytt', $hyperlink->url);
     $this->show_latest_placements();
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
   private function show_latest_placements () {

@@ -67,7 +67,7 @@ class Home extends About {
     <a href="mailto:$dev_email"><button>Send epost</button></a>
     EOT;
     $this->template->custom_html($m);
-    $this->template->print();
+    $this->template->print($this->page);
   }
 
 }
