@@ -255,7 +255,7 @@ class FromImported extends Placement {
     $this->database_retail->select_multi_row($query_retail->get());
     if ($this->database_retail->result) {
       $hyperlink_row = new HyperLink();
-      $this->template->title('Nyeste varer fra mottak');
+      $this->template->title('Varermottak i dag');
       $this->template->table_start();
       $this->template->table_row_start();
       $this->template->table_row_header('Merke');

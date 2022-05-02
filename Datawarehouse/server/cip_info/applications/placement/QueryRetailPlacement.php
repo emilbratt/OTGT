@@ -63,10 +63,10 @@ class QueryRetailPlacement extends QueryRetail {
       articleStock ON Article.articleId = articleStock.articleId
     WHERE Article.articleId IN
     (
-      SELECT TOP 50 articleId
+      SELECT articleId
       FROM StockAdjustment
       WHERE adjustmentCode = '41'
-      ORDER BY stockAdjustmenId DESC
+      AND CONVERT(VARCHAR(10), [adjustmentDate], 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)
     )
 
     ORDER BY
