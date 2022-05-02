@@ -26,9 +26,6 @@ class APIEndpoint {
       case "update_by_article_id":
         $this->update_by_article_id();
         break;
-      case "updatebybarcode":
-        $this->updatebybarcode();
-        break;
       default:
         $this->data = ['response' => 'invalid endpoint'];
         $this->http_response_code = 500;

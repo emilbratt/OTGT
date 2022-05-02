@@ -251,6 +251,7 @@ class TemplateFind extends Template {
   }
 
   public function button_fetch_api_post_update_placement ($article_id = '', $shelf = '') {
+    // this button sends request to api and the api handles validation etc.
     $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
     $this->html .= <<<EOT
     <form style="margin-left: 35px;" action="javascript:button_fetch_api_post_update_placement('$article_id')">
