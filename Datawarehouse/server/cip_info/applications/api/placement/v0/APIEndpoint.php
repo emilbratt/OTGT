@@ -27,8 +27,8 @@ class APIEndpoint {
         $this->update_by_article_id();
         break;
       default:
-        $this->data = ['response' => 'invalid endpoint'];
-        $this->http_response_code = 500;
+        $this->data = ['response' => 'could not find endpoint'];
+        $this->http_response_code = 404;
     }
   }
 
@@ -54,19 +54,29 @@ class APIEndpoint {
 
     // make sure article id is numeric
     if ( !(is_numeric($this->article_id)) ) {
+      $this->http_response_code = 501;
       $this->data['response'] = 'article id should be numeric';
       return;
     }
 
     // make sure shelf has value
     if (strlen($this->shelf) < 1) {
+      $this->http_response_code = 501;
       $this->data['response'] = 'shelf value is empty';
+      return;
+    }
+
+    // make sure shelf value is not to long
+    if (strlen($this->shelf) > 9) {
+      $this->http_response_code = 501;
+      $this->data['response'] = 'shelf value to long';
       return;
     }
 
     // avoid an empty whitespace value
     if ( (strlen($this->shelf) == 1) and ($this->shelf == ' ') ) {
-      $this->data['response'] = 'shelf value invalid';
+      $this->http_response_code = 501;
+      $this->data['response'] = 'shelf value is an empty whitespace';
       return;
     }
 
@@ -77,10 +87,11 @@ class APIEndpoint {
     $this->shelf = str_replace(',', '-', $this->shelf);
     $this->shelf = strtoupper($this->shelf);
 
-    // only allow if "-" after first letter
+    // only allow if "-" in string longer than 1 character
     if (strlen($this->shelf) > 1) {
       if ( !(strpos($this->shelf, '-'))) {
-        $this->data['response'] = 'shelf value ' .$this->shelf . ' invalid';
+        $this->http_response_code = 501;
+        $this->data['response'] = 'shelf value ' . $this->shelf . ' has no delimitter';
         return;
       }
     }
