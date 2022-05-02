@@ -4,12 +4,13 @@
 <pre>
 OTGT/ -> This is the root directory for this repository
   |
-  ├── Datawarehouse/ -> Sales reports and inventory resources
-  |                     Every app inside here should run on a dedicated server
+  ├── Datawarehouse/ -> For serving the main applications that the rest of the repository depends on
   |
-  ├──  Inventory_Location/ -> applications for generating barcode shelf labels
-  |                           and stand alone app for updating locations for
-  |                           items in the inventory to the shops POS database
+  ├── Floor_Plan/ -> assets regarding floor plan developed with Ink Scape
+  |
+  ├──  Handhield -> applications for hand hield devices like a battery equipped Raspberry Pi
+  |
+  ├──  Kiosk -> web-interface that runs on a special purpose-locked-down device
   |
   ├── Scripts/ -> mainly used by me for developement convenience
   |

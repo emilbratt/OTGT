@@ -1,4 +1,4 @@
-### Raspberry Pi kiosk mode for datawarehouse cip_info server
+### Raspberry Pi kiosk mode for using the datawarehouse cip_info web-ui
 
 
 * install raspberry pi os lite
