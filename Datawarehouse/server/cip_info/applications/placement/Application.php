@@ -189,7 +189,7 @@ class Home extends Placement {
       $this->message = 'Tom strekkode';
       return;
     }
-    else if (!(is_numeric($this->ean)) ) {
+    else if ( !(is_numeric($this->ean)) ) {
       $this->message = 'Strekkoder kan kun inneholde tall';
       return;
     }
@@ -206,8 +206,11 @@ class Home extends Placement {
 
   private function validate_shelf () {
     $this->shelf_ok = false;
-    // sometimes - truns to + for some reason when we scan shelves, fix here
+    // swap out de-limitters to "-" (currently allow "+", " ", and ".")
     $this->shelf = str_replace('+', '-', $this->shelf);
+    $this->shelf = str_replace(' ', '-', $this->shelf);
+    $this->shelf = str_replace('.', '-', $this->shelf);
+    $this->shelf = str_replace(',', '-', $this->shelf);
     $this->shelf = strtoupper($this->shelf);
     // then check integrity of the format
     if (strlen($this->shelf) < 1) {

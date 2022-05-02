@@ -67,14 +67,18 @@ class APIEndpoint {
       return;
     }
 
-    // format the shelf value by swapping + to -
-    $this->shelf = str_replace('+', '-', $this->shelf);
-    $this->shelf = strtoupper($this->shelf);
-    // avoid whitespace values
+    // avoid an empty whitespace value
     if ( (strlen($this->shelf) == 1) and ($this->shelf == ' ') ) {
       $this->data['response'] = 'shelf value invalid';
       return;
     }
+
+    // swap out de-limitters to "-" (currently allow "+", " ", and ".")
+    $this->shelf = str_replace('+', '-', $this->shelf);
+    $this->shelf = str_replace(' ', '-', $this->shelf);
+    $this->shelf = str_replace('.', '-', $this->shelf);
+    $this->shelf = str_replace(',', '-', $this->shelf);
+    $this->shelf = strtoupper($this->shelf);
 
     // only allow if "-" after first letter
     if (strlen($this->shelf) > 1) {
