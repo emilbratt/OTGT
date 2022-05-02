@@ -320,8 +320,8 @@ class NewestPlacements extends Placement {
         $query_retail = null;
         $hyperlink->link_redirect_query('find/byarticle', 'article_id', $row['article_id']);
         $this->template->table_row_start();
-        $this->template->table_row_value($brand, $hyperlink->url);
-        $this->template->table_row_value($article, $hyperlink->url);
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($brand), $hyperlink->url);
+        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($article), $hyperlink->url);
         $this->template->table_row_value($row['stock_location'], $hyperlink->url);
         $this->template->table_row_value($row['format_timestamp'], $hyperlink->url);
         $this->template->table_row_end();
