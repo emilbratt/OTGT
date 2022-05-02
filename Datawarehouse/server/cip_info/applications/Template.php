@@ -1,17 +1,5 @@
 <?php
 
-/**
- * colours
- * text, border: BBBBFF
- * top nav bar active, hover, table row
- * a href CCCCFF
- * search field background 202020
- * table header 2A2A2A (unless clickable hyperlink)
- * table row (even) 222222
- * table row (odd) 333333
- * location circle 9FDF9F
- */
-
 class Template {
 
   protected $environment;
@@ -40,17 +28,10 @@ class Template {
 
   function __construct () {
     $this->environment = new Environment();
-   /**
-    * this will add global html, css and scripts to our html template
-    * any additional css will have to be added after the
-    * constructor for each inherited class by calling this as a parent
-    * in the inherited objects constructor
-    *
-    * specifically for the map, we need to know the what floor
-    * the inventory location/room maps to for certain logic to work
-    */
+
+    // this is used for resolving correct X and Y position for circle
+    // add or remove entries as you see fit
     $this->location_index = [
-    // inventory location => floor
       '1' => '1',
       'A' => '1',
       'B' => '1',
@@ -76,6 +57,7 @@ class Template {
       'O' => 'U1',
     ];
 
+    // this CSS is added globally
     $this->css = <<<EOT
     /* GLOBAL */
     html {
@@ -213,6 +195,8 @@ class Template {
       background-color: $this->colour_default_hover;
     }\n
     EOT;
+
+    // end of __construct
   }
 
   public function custom_html ($str) {

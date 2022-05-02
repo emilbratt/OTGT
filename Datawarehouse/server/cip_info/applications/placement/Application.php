@@ -1,15 +1,7 @@
 <?php
 
-/**
- *
- * TODO:
- *  add: validate successfull placement update and maybe show history using session_start()
- *  add: when item is scanned, if it already has placement; show it
- *
- */
-
 class Placement {
-  // register placement for items
+
   protected $page = 'Plassering';
   protected $environment;
   protected $template;
@@ -260,7 +252,7 @@ class FromImported extends Placement {
     $this->database_retail->select_multi_row($query_retail->get());
     if ($this->database_retail->result) {
       $hyperlink_row = new HyperLink();
-      $this->template->title('Nylige mottatte varer');
+      $this->template->title('Nyeste varer fra mottak');
       $this->template->table_start();
       $this->template->table_row_start();
       $this->template->table_row_header('Merke');

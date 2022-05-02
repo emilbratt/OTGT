@@ -1,12 +1,5 @@
 <?php
 
-/**
- *
- * TODO:
- *  nothing at the moment
- *
- */
-
 require_once '../applications/Template.php';
 
 class TemplateAPI extends Template {

@@ -6,8 +6,8 @@
  *  remember to add new methods for any new corresponding section
  *  that is added in environment.ini
  *
- *  keep in mind that the environment.ini file is globally used as
- *  across the repository and such is also used by applications
+ *  keep in mind that the environment.ini file is globally
+ *  used as across the repository including applications
  *  not related to this web-server
  *
  */

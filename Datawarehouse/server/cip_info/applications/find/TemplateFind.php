@@ -1,12 +1,5 @@
 <?php
 
-/**
- *
- * TODO:
- *  nothing at the moment
- *
- */
-
 require_once '../applications/Template.php';
 
 class TemplateFind extends Template {
@@ -15,8 +8,8 @@ class TemplateFind extends Template {
 
   function __construct () {
     parent::__construct();
-    $this->image_path_location = $this->image_path . '/location';
 
+    $this->image_path_location = $this->image_path . '/location';
   }
 
   public function css_result_set () {

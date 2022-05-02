@@ -2,7 +2,7 @@
 
 class Map {
 
-  protected $page = 'Kart'; // alias for top_navbar
+  protected $page = 'Kart';
   protected $environment;
   protected $template;
   protected $navigation;

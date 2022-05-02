@@ -3,14 +3,11 @@
 /**
  *
  * TODO:
- *  add: quick input box for barcode scanning
  *  add: overview over todays turnover with diagram
  *  add: read from "vaktliste.xls" or some other source and display whos on shift today
  *  add: show orders (need a working implementation of registering orders first)
  *  add fun stuff:
  *    pick our todays seller based in random choice (not based on most sales etc.)
- *    show most expensive item sold today
- *    show last 10 items sold today with user
  *    show what brands arrived today
  */
 

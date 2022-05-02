@@ -6,6 +6,7 @@ class TemplateDeveloping extends Template {
 
   function __construct () {
     parent::__construct();
+
     $this->image_path_floor = $this->image_path . '/location/floor';
     $this->css .= <<<EOT
     .sql_shell_form {
