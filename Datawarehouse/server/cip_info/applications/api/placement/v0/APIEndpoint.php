@@ -16,7 +16,7 @@ class APIEndpoint {
     $this->request = $request;
     $this->data = array();
 
-    // return variables for response to caller to know if request was OK (true)
+    // default value for response and changes only on success
     $this->data['database_retail'] = false;
     $this->data['database_datawarehouse'] = false;
   }

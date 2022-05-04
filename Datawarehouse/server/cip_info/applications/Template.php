@@ -199,6 +199,51 @@ class Template {
     // end of __construct
   }
 
+  private function add_debug_info () {
+    // custom debug material can be added here
+    $this->html .= <<<EOT
+    <br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <p>-------- Debug Enabled --------</p>\n
+    EOT;
+    // show _SERVER array
+    $this->html .= <<<EOT
+    <p>\$_SERVER</p>
+    <pre>\n
+    EOT;
+    foreach ($_SERVER as $key => $val) {
+      $this->html .= "$key --> $val\n";
+    }
+    $this->html .= <<<EOT
+    </pre>\n
+    EOT;
+    // show _GET array if set
+    $this->html .= <<<EOT
+    <p>\$_GET</p>
+    <pre>\n
+    EOT;
+    if (isset($_GET)) {
+      foreach ($_GET as $key => $val) {
+        $this->html .= "$key --> $val\n";
+      }
+    }
+    $this->html .= <<<EOT
+    </pre>\n
+    EOT;
+    // show _POST array if set
+    $this->html .= <<<EOT
+    <p>\$_POST</p>
+    <pre>\n
+    EOT;
+    if (isset($_POST)) {
+      foreach ($_POST as $key => $val) {
+        $this->html .= "$key --> $val\n";
+      }
+    }
+    $this->html .= <<<EOT
+    </pre>\n
+    EOT;
+  }
+
   public function custom_html ($str) {
     $this->html .= <<<EOT
     $str\n
@@ -631,52 +676,10 @@ class Template {
     EOT;
   }
 
-  private function add_debug () {
-    // custom debug material can be added here
-    $this->html .= <<<EOT
-    <br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <p>-------- Debug Enabled --------</p>\n
-    EOT;
-    $this->html .= <<<EOT
-    <p>\$_SERVER</p>
-    <pre>\n
-    EOT;
-    foreach ($_SERVER as $key => $val) {
-      $this->html .= "$key --> $val\n";
-    }
-    $this->html .= <<<EOT
-    </pre>\n
-    EOT;
-    $this->html .= <<<EOT
-    <p>\$_GET</p>
-    <pre>\n
-    EOT;
-    if (isset($_GET)) {
-      foreach ($_GET as $key => $val) {
-        $this->html .= "$key --> $val\n";
-      }
-    }
-    $this->html .= <<<EOT
-    </pre>\n
-    EOT;
-    $this->html .= <<<EOT
-    <p>\$_POST</p>
-    <pre>\n
-    EOT;
-    if (isset($_POST)) {
-      foreach ($_POST as $key => $val) {
-        $this->html .= "$key --> $val\n";
-      }
-    }
-    $this->html .= <<<EOT
-    </pre>\n
-    EOT;
-  }
-
   public function print ($page = 'Vare-Info') {
     // add stuff for debug in the bottom of html if enabled
     if ($this->environment->developement('show_debug')) {
-      $this->add_debug();
+      $this->add_debug_info();
     }
     // wrap everthing together
     $this->wrapper .= <<<EOT

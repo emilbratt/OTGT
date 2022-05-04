@@ -27,6 +27,11 @@ class QueryRetail {
     }
   }
 
+  protected function has_where () {
+    // check if our query has the reserved word WHERE in it
+    return strpos($this->query, 'WHERE') !== false;
+  }
+
   public function update_placement_by_article_id ($article_id, $shelf) {
     $this->query .= <<<EOT
     UPDATE
@@ -89,11 +94,6 @@ class QueryRetail {
     ORDER BY
       sysGen desc\n
     EOT;
-  }
-
-  protected function has_where () {
-    // check if our query has the reserved word WHERE in it
-    return strpos($this->query, 'WHERE') !== false;
   }
 
   public function where_brand () {
