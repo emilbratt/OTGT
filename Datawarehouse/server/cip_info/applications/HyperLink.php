@@ -2,19 +2,20 @@
 
 /**
  *
- * this is ment to handle dynamic links based on interaction by
- * the visitor and what content is presented
+ * this  handles dynamic links based on interactions by the user
+ * and the content is presented on the web-page
+ *
  * unlike Naviagtion.php, these links are dynamic in the way that they
- * preserves the visitors current url, that is it adds whatever query
- * string is passed to the visitors current url
+ * preserves the visitors current url e.g. it adds whatever query
+ * string is passed by the button to the visitors current url (see constructor)
  *
  */
 
 class HyperLink {
 
-  public $url; // example: http://hostname:8080/some/where?foo=bar&this=that
   protected $home_address; // example: http://hostname:8080
   protected $query_string; // example: foo=bar&this=that
+  public $url; // example: http://hostname:8080/some/where?foo=bar&this=that
 
   function __construct () {
     $this->url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -49,7 +50,6 @@ class HyperLink {
   }
 
   public function link_redirect ($redirect = '') {
-    // redirect example: /reports/imported
     // if parameter is omitted, it will redirect to home -> hence the = ''
     $this->url = $this->home_address . $redirect;
   }

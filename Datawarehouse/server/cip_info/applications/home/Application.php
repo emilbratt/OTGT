@@ -180,7 +180,7 @@ class Home {
     $this->query_retail->brands_imported_today();
     $this->database_retail->select_multi_row($this->query_retail->get());
     if ($this->database_retail->result) {
-      $this->template->second_title('Varer fra disse merkene har kommet inn idag');
+      $this->template->second_title('Varer fra disse leverandørene har kommet inn idag');
       $this->template->table_start();
       $this->template->table_row_start();
       $this->template->_table_row_value('<strong>Merke</strong>', 'left');

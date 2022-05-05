@@ -232,8 +232,6 @@ class ByShelf extends Find {
     }
 
     private function validate_user_input () {
-      // if search string is to short, the query will become to expensive
-      // and potentially to many rows; we set a lower limit to characters
       $this->user_input_ok = false;
       $search_string_shelf_len = strlen($_GET['input_field_shelf']);
 
