@@ -7,11 +7,11 @@
    viewBox="0 0 210 210"
    version="1.1"
    id="svg5"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
    sodipodi:docname="ink_scape_project.svg"
-   inkscape:export-filename="/run/user/1000/gvfs/sftp:host=salesreport,user=borst/var/www/html/cip_dev/OTGT/Floor_Plan/Project/item_in_store_U.png"
-   inkscape:export-xdpi="96"
-   inkscape:export-ydpi="96"
+   inkscape:export-filename="/home/borst/item_in_store_U.png"
+   inkscape:export-xdpi="96.036186"
+   inkscape:export-ydpi="96.036186"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -28,18 +28,24 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.70710678"
-     inkscape:cx="639.93164"
-     inkscape:cy="370.52395"
+     inkscape:cx="299.10617"
+     inkscape:cy="373.35238"
      inkscape:window-width="1920"
      inkscape:window-height="1131"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g17626"
+     inkscape:current-layer="layer4"
      inkscape:object-paths="true"
      inkscape:snap-intersection-paths="true"
      inkscape:snap-smooth-nodes="true"
-     inkscape:snap-page="false" />
+     inkscape:snap-page="false"
+     inkscape:snap-bbox="true"
+     inkscape:bbox-nodes="true"
+     inkscape:snap-nodes="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:snap-bbox-midpoints="true" />
   <defs
      id="defs2" />
   <g
@@ -119,7 +125,7 @@
            id="tspan14051"
            style="stroke-width:0.264583"
            x="65.554115"
-           y="70.748749"></tspan></text>
+           y="70.748749" /></text>
     </g>
     <g
        inkscape:groupmode="layer"
@@ -153,12 +159,12 @@
      inkscape:groupmode="layer"
      id="layer7"
      inkscape:label="floor_U1"
-     style="display:none">
+     style="display:inline">
     <g
        inkscape:groupmode="layer"
        id="g2543"
        inkscape:label="floor_U1_circle"
-       style="display:inline">
+       style="display:none">
       <circle
          style="fill:#e30000;fill-opacity:0;stroke:#9fdf9f;stroke-width:0.429882;stroke-linecap:square"
          id="circle2541"
@@ -257,10 +263,17 @@
          style="fill:none;stroke:#bbbbff;stroke-width:0.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m 182.0205,69.621508 h 23.08748"
          id="path16666" />
-      <path
-         style="fill:none;stroke:#bbbbff;stroke-width:0.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         d="M 204.92479,85.696688 H 168.17996"
-         id="path16734" />
+      <a
+         id="a3285">
+        <path
+           style="fill:none;stroke:#bbbbff;stroke-width:0.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           d="m 204.92479,85.696688 h -26.63555 m -6.64201,0 -3.46727,0"
+           id="path16734"
+           sodipodi:nodetypes="cccc"
+           inkscape:export-filename="/run/user/1000/gvfs/sftp:host=192.168.1.26,user=borst/var/www/html/cip_dev/OTGT/Floor_Plan/Project/path16734.png"
+           inkscape:export-xdpi="96"
+           inkscape:export-ydpi="96" />
+      </a>
       <path
          style="fill:none;stroke:#bbbbff;stroke-width:0.5;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m 168.08711,73.099358 v 2.927526 0 m 0,4.415493 V 101.86925 H 72.172956"
@@ -745,7 +758,7 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="floor_U"
-     style="display:inline">
+     style="display:none">
     <g
        inkscape:groupmode="layer"
        id="g17626"
@@ -777,7 +790,7 @@
            id="tspan17622"
            style="stroke-width:0.264583"
            x="65.554115"
-           y="70.748749"></tspan></text>
+           y="70.748749" /></text>
     </g>
     <g
        inkscape:groupmode="layer"
@@ -1112,7 +1125,7 @@
            id="tspan37750"
            style="stroke-width:0.264583"
            x="65.554115"
-           y="70.748749"></tspan></text>
+           y="70.748749" /></text>
     </g>
     <g
        inkscape:groupmode="layer"
