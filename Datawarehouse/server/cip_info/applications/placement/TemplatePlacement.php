@@ -102,8 +102,4 @@ class TemplatePlacement extends Template {
     EOT;
   }
 
-  public function placement_get_result () {
-
-  }
-
 }

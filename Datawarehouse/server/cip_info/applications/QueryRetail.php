@@ -126,11 +126,15 @@ class QueryRetail {
     $arr_article = explode(' ', $article);
     foreach ($arr_article as $article) {
      /**
-      * I dont know how to use prepared statements for a multi word search..
+      * I dont know how to use prepared statements for an undefined amount
+      * of search strings
+      *
       * while this is a kind of naive way to secure queries against
       * injection, it is better than nothing at this point..
+      *
       * you can for example write DELETE- (notice the hyphen) and it
-      * willl go unnoticed however, this will never be public facing
+      * will go unnoticed however, this will never be a public facing
+      * service anyways
       */
 
       $this->check_illegal_word($article);

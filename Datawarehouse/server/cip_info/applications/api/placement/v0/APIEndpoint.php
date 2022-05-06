@@ -89,7 +89,7 @@ class APIEndpoint {
 
     // only allow if "-" in string longer than 1 character
     if (strlen($this->shelf) > 1) {
-      if ( !(strpos($this->shelf, '-'))) {
+      if ( !(strpos($this->shelf, '-')) ) {
         $this->http_response_code = 501;
         $this->data['response'] = 'shelf value ' . $this->shelf . ' has no delimitter';
         return;

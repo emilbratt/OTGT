@@ -1,12 +1,5 @@
 <?php
 
-/**
- *
- * for finding items in a convenient fashion
- * searching by brand, article, barcode, category etc,
- *
- */
-
 class Find {
 
   protected $page = 'Finn Vare';
