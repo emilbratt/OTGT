@@ -47,7 +47,7 @@ class Home extends Placement {
       $hyperlink->link_redirect('placement/fromimported');
       $this->template->hyperlink_button('Legg inn fra Mottak', $hyperlink->url);
       $hyperlink->link_redirect('placement/newestplacements');
-      $this->template->hyperlink_button('Se Nye plasseringer', $hyperlink->url);
+      $this->template->hyperlink_button('Nye plasseringer', $hyperlink->url);
       $this->placement_scan_item();
     }
     // step 2: validate item scan and then scan shelf (this form sets both placement_scan_item and placement_scan_shelf)
@@ -273,6 +273,9 @@ class FromImported extends Placement {
       }
       $this->template->table_end();
       $this->template->script_table_row_value_update_location_input();
+    }
+    else {
+      $this->template->message('Ingen varer har kommet inn i dag');
     }
   }
 }
