@@ -3,7 +3,7 @@
 <pre>
 OTGT/ -> This is the root directory for this repository
   |
-  ├── Datawarehouse/ -> For serving the main applications that the rest of the repository depends on
+  ├── Datawarehouse/ -> serving the main applications that the rest of the repository depends on
   |
   ├── Floor_Plan/ -> assets regarding floor plan developed with Ink Scape
   |
