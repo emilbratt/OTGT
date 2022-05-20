@@ -54,6 +54,7 @@ class Apprequest {
     if ($this->show_errors) {
       echo "Directory: applications/$this->app_dir not found";
     }
+
     http_response_code(404);
     exit(1);
   }
@@ -84,6 +85,7 @@ class Apprequest {
     if ($this->show_errors) {
       echo "Class $this->app_class: " . $_SERVER['HTTP_HOST'] . "/$this->app_dir.php does not exist";
     }
+
     http_response_code(404);
     exit(1);
     }

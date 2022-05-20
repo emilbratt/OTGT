@@ -9,16 +9,18 @@
  */
 
  /**
-  * all requests regardles of URL or http method, goes through this file
+  *
+  * all requests regardless of URL or http method, goes through this file
   * which means that every dependent file that is included will have to
   * be referenced as of the relative path to THIS file
   *
   */
 
-// the environment file as seen relative from this directory
-const FILE_ENVIRONMENT = '../../../../environment.ini';
-// and checking if it is created on a new installation
-if ( !(is_file(FILE_ENVIRONMENT)) ) {
+// the environment file as seen relative from this directory stored as constant
+const ENVIRONMENT_INI = '../../../../environment.ini';
+
+// checking if it is created on a new installation
+if ( !(is_file(ENVIRONMENT_INI)) ) {
   echo 'create environment.ini from a copy of the environment.ini.template<br>';
   echo 'and fill in a value for each variable<br>';
   echo '<br>';
@@ -29,6 +31,7 @@ if ( !(is_file(FILE_ENVIRONMENT)) ) {
   exit(1);
 }
 
+// the main entrypoint
 require_once '../applications/AppRequest.php';
 $main = new Apprequest;
 $main = null;

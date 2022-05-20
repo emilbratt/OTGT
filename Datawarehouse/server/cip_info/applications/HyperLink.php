@@ -13,9 +13,9 @@
 
 class HyperLink {
 
-  protected $home_address; // example: http://hostname:8080
-  protected $query_string; // example: foo=bar&this=that
-  public $url; // example: http://hostname:8080/some/where?foo=bar&this=that
+  protected $home_address; // will hold something like: http://hostname:8080
+  protected $query_string; // will hold something like: foo=bar&this=that
+  public $url; // will hold something like: http://hostname:8080/some/where?foo=bar&this=that
 
   function __construct () {
     $this->url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -28,9 +28,13 @@ class HyperLink {
 
   public function add_query ($key, $val) {
    /**
-    * add query string: http://hostname:8080?foo=bar -> http://hostname:8080?foo=bar&this=that
-    * or
-    * change query string if key exists: http://hostname:8080?foo=bar -> http://hostname:8080?foo=that
+    * this function will add key value (or if key exists, change value) to the URL's query string
+    *
+    * addiong query string:
+    *   http://hostname:8080?foo=bar -> http://hostname:8080?foo=bar&this=that
+    *
+    * changing query string if key exists:
+    *   http://hostname:8080?hello=world -> http://hostname:8080?hello=bob
     *
     * first, remove or replace with empty string if key exist
     * regex: starts with either ? or & followed by $key followed by = and any value until & or end of string
@@ -43,7 +47,7 @@ class HyperLink {
     // then change/add query string to our
     $this->url = $this->home_address . $this->query_string;
 
-    // fix ? instead of & after redirect url
+    // inserts ? instead of & as first symbol before the query string
     $search = $_SERVER['REDIRECT_URL'] . '&';
     $replace = $_SERVER['REDIRECT_URL'] . '?';
     $this->url = preg_replace("~$search~", $replace, $this->url);

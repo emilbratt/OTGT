@@ -18,7 +18,7 @@ class Environment {
   public $env_config;
 
   function __construct () {
-    $this->env_config = parse_ini_file(FILE_ENVIRONMENT, $process_sections = true);
+    $this->env_config = parse_ini_file(ENVIRONMENT_INI, $process_sections = true);
   }
 
   public function retail ($key) {

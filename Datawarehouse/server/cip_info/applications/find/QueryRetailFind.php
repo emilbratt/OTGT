@@ -53,10 +53,8 @@ class QueryRetailFindByArticle extends QueryRetail {
       supplyid,
       lastimported,
       lastsold
-
     FROM
       Article
-
     LEFT JOIN
     (
       SELECT
