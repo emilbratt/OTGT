@@ -10,7 +10,9 @@ xset -dpms
 # add hot-key to exit X server with CTRL-ATL-Backspace
 setxkbmap -option terminate:ctrl_alt_bksp
 
-# start Chromium-browser in kiosk mode
+# use stream-edit (sed) to parse and change the "exit cleanlu" to force clean start to avoid pop-ups on launch
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' ~/.config/chromium/'Local State'
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' ~/.config/chromium/Default/Preferences
-chromium-browser --disable-features=TranslateUI --noerrdialogs --disable-infobars --kiosk 'http://salesreport'
+
+# start Chromium-browser in kiosk mode
+chromium-browser --disable-features=TranslateUI --noerrdialogs --disable-infobars --start-fullscreen 'http://192.168.1.26'
