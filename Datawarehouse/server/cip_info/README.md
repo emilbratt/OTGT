@@ -90,10 +90,14 @@ Open the virtual host config /etc/apache2/sites-available/datawarehouse.conf and
 DocumentRoot /var/www/html/OTGT/Datawarehouse/server/cip/document_root
 ```
 
-Enable override all for this directory for .htaccess to work
+Enable redirect for every request to index.php (change directory if needed)
 ```
 <Directory "/var/www/html/OTGT/Datawarehouse/server/cip_info/document_root">
-        AllowOverride All
+  # enable rewrite engine
+  RewriteEngine On
+
+  # set rewrite rule based on regex (1st flag) and call index.php (2nd flag with query string in $1 conserving the query string as stated in the 3rd flag)
+  RewriteRule	^(.*)$	index.php?$1	[QSA,L]
 </Directory>
 ```
 ..then save the virtual host config
