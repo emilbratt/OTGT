@@ -325,4 +325,14 @@ CREATE TABLE `turnover_hourly` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+DROP TABLE IF EXISTS `chat`;
+CREATE TABLE `chat` (
+  `chat_id` int NOT NULL AUTO_INCREMENT,
+  `chat_by` varchar(32) NOT NULL,
+  `chat_to` varchar(32),
+  `chat_text` text NOT NULL,
+  `chat_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (chat_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Dump completed on 2022-04-13 19:45:23
