@@ -14,6 +14,7 @@
 class Home {
 
   protected $page = 'Hjem';
+  protected $note;
   protected $environment;
   protected $navigation;
   protected $title;
@@ -54,6 +55,12 @@ class Home {
 
   public function run () {
     $this->template->title_left_and_right($this->title_left, $this->title_right);
+
+
+    // fetch latest note from memory if exist
+    $this->display_note();
+
+    // fetch some sammple reports to show on homepage
     $this->turnover();
     if ($this->environment->competitive('show')) {
       $this->users_sales_count_today();
@@ -62,6 +69,24 @@ class Home {
     $this->last_ten_sold_items();
     $this->brands_imported_today();
     $this->template->print($this->page);
+  }
+
+  protected function get_note () {
+    $this->note = $this->database_dw->mem_get('home_page_note')['mem_val'];
+  }
+
+  private function display_note () {
+    if(isset($_POST['note_input_form'])) {
+      $this->database_dw->mem_insert('home_page_note', $_POST['note_input_form']);
+    }
+    $this->get_note();
+    if ( empty($this->note) ) {
+      $this->note = '';
+    }
+    $this->template->second_title('Notat:');
+    $this->template->message('Husk: alle kan legge til, endre eller fjerne dette notatet');
+    $this->template->note_input_form($this->note);
+
   }
 
   private function turnover () {
@@ -217,5 +242,28 @@ class Home {
       $this->template->table_end();
     }
   }
+
+}
+
+
+class Note extends Home {
+
+  public function run () {
+    if(isset($_POST['note_input_form'])) {
+      $this->database_dw->mem_insert('home_page_note', $_POST['note_input_form']);
+    }
+    $this->get_note();
+    if ( empty($this->note) ) {
+      $this->note = '';
+    }
+    $this->template->title_left_and_right('Notat for hjemmeside', $this->title_right);
+    $this->template->message('Husk: alle kan legge til, endre eller fjerne dette notatet');
+    $this->template->note_input_form($this->note);
+    $hyperlink = new HyperLink();
+    $hyperlink->link_redirect('home');
+    $this->template->hyperlink_button('Gå tilbake', $hyperlink->url);
+    $this->template->print($this->page);
+  }
+
 
 }

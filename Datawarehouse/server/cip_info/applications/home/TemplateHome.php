@@ -8,6 +8,10 @@ class TemplateHome extends Template {
     parent::__construct();
 
     $this->css .= <<<EOT
+    .note_input_form {
+      background-color: $this->colour_search_background;
+      color: #BBBBFF;
+    }
     /* TITLE */
     .second_title {
       padding: 0px;
@@ -79,7 +83,21 @@ class TemplateHome extends Template {
       <h3>$string</h3>
     </div>\n
     EOT;
+  }
 
+  public function note_input_form ($note = '') {
+    $this->html .= <<<EOT
+    <div class="">
+    <form action="" method="post">
+    <textarea style="font-size: 18px; width:600px; height: 200px;"
+      name="note_input_form"
+      rows="25"
+      cols="120"
+      class="note_input_form">$note</textarea>
+    <input type="submit" value="Lagre Notat">
+    </form>
+    </div>
+    EOT;
   }
 
   public function _table_row_value ($string, $text_align = 'center', $font_size = '18', $hyperlink = null) {
