@@ -10,7 +10,7 @@ class TemplateDeveloping extends Template {
     $this->image_path_floor = $this->image_path . '/location/floor';
     $this->css .= <<<EOT
     .sql_shell_form {
-      background-color: #202020;
+      background-color: $this->colour_search_background;
       color: #BBBBFF;
     }
     /* TABLE */
