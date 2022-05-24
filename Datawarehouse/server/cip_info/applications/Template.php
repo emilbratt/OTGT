@@ -491,16 +491,16 @@ class Template {
     // passing a url as second arg will make it a clickabel button
     if ($hyperlink == null) {
       $this->html .= <<<EOT
-        <th id="th_no_hyperlink">$string</th>\n
+          <th id="th_no_hyperlink">$string</th>\n
       EOT;
       return;
     }
     $this->html .= <<<EOT
-      <th>
-        <a href="$hyperlink">
-          <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
-        </a>
-      </th>\n
+        <th>
+          <a href="$hyperlink">
+            <button style="width: 100%; font-size: 20px;" id="input_field_submit">$string</button>
+          </a>
+        </th>\n
     EOT;
   }
 
@@ -508,7 +508,7 @@ class Template {
     // passing a url as second arg will make it a clickabel button
     if ($hyperlink == null) {
       $this->html .= <<<EOT
-        <td>$string</td>\n
+          <td>$string</td>\n
       EOT;
       return;
     }
