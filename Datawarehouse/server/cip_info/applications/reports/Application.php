@@ -63,7 +63,6 @@ class Reports {
 class Home extends Reports {
 
   public function run () {
-
     $this->template->sub_navbar($this->navigation->sub_nav_links);
     $this->template->print($this->page);
   }
@@ -74,7 +73,6 @@ class Home extends Reports {
 class Soldout extends Reports {
 
   public function run () {
-
     $type = 'thisday';
     if(isset($_GET['type'])) {
       $type = $_GET['type'];
@@ -170,7 +168,6 @@ class Soldout extends Reports {
 class Imported extends Reports {
 
   public function run () {
-
     $type = 'thisday';
     if(isset($_GET['type'])) {
       $type = $_GET['type'];
@@ -270,7 +267,6 @@ class Imported extends Reports {
 class Sales extends Reports {
 
   public function run () {
-
     $type = 'thisday';
     if(isset($_GET['type'])) {
       $type = $_GET['type'];
@@ -393,6 +389,7 @@ class NotSoldLately extends Reports {
     if ( $_GET['input_field_stock_operator'] == '<' ) {
       $s_o = 'mindre enn';
     }
+    $l = strtoupper($l);
     $this->template->message("Alle varer $b på lager $l hvor lager antall er $s_o  $s_n og ikke solgt siste $d_p $arr_convert_sql_to_nor[$d_p_y]");
 
     $table_headers = [
