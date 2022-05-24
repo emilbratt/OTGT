@@ -56,9 +56,8 @@ class Home {
   public function run () {
     $this->template->title_left_and_right($this->title_left, $this->title_right);
 
-
-    // fetch latest note from memory if exist
-    $this->display_note();
+    // fetch note from db cache table
+    $this->home_page_note();
 
     // fetch some sammple reports to show on homepage
     $this->turnover();
@@ -71,21 +70,25 @@ class Home {
     $this->template->print($this->page);
   }
 
-  protected function get_note () {
-    $this->note = $this->database_dw->mem_get('home_page_note')['mem_val'];
-  }
-
-  private function display_note () {
+  private function home_page_note () {
+    // on every page load, delete note if from yesterday
+    // ..might imporve this logic later with a daemon or cron-like solution
+    $this->query_dw->remove_note_from_yesterday();
+    $stmt = $this->database_dw->cnxn->prepare($this->query_dw->get());
+    $stmt->execute();
+    // insert new note if requested
     if(isset($_POST['note_input_form'])) {
       $this->database_dw->mem_insert('home_page_note', $_POST['note_input_form']);
     }
-    $this->get_note();
+    // fetch note that resides currently in the database cache table
+    $this->note = $this->database_dw->mem_get('home_page_note')['mem_val'];
     if ( empty($this->note) ) {
       $this->note = '';
     }
-    $this->template->second_title('Notat:');
-    $this->template->message('Husk: alle kan legge til, endre eller fjerne dette notatet');
+    // show note
+    $this->template->second_title('Notat');
     $this->template->note_input_form($this->note);
+    $this->template->message('Husk: notater forsvinner etter 1 dag og alle kan legge til, endre eller fjerne dette notatet');
 
   }
 
@@ -242,28 +245,5 @@ class Home {
       $this->template->table_end();
     }
   }
-
-}
-
-
-class Note extends Home {
-
-  public function run () {
-    if(isset($_POST['note_input_form'])) {
-      $this->database_dw->mem_insert('home_page_note', $_POST['note_input_form']);
-    }
-    $this->get_note();
-    if ( empty($this->note) ) {
-      $this->note = '';
-    }
-    $this->template->title_left_and_right('Notat for hjemmeside', $this->title_right);
-    $this->template->message('Husk: alle kan legge til, endre eller fjerne dette notatet');
-    $this->template->note_input_form($this->note);
-    $hyperlink = new HyperLink();
-    $hyperlink->link_redirect('home');
-    $this->template->hyperlink_button('Gå tilbake', $hyperlink->url);
-    $this->template->print($this->page);
-  }
-
 
 }
