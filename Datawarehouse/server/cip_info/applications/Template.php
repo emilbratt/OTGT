@@ -80,6 +80,8 @@ class Template {
     /* INFO / FEEDBACK */
     .message {
       width: 100%;
+      margin-top: -10px;
+      margin-bottom: -10px;
       color: $this->colour_default_text;
       font-size: 18px;
     }
