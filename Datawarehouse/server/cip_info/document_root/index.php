@@ -16,8 +16,15 @@
   *
   */
 
-// the environment file as seen relative from this directory stored as constant
+
+ /**
+  * load the envirement for system wide configurations, auth. and settings
+  * that is used globally in the repository
+  */
 const ENVIRONMENT_INI = '../../../../environment.ini';
+require_once '../applications/Environment.php';
+
+
 
 // checking if it is created on a new installation
 if ( !(is_file(ENVIRONMENT_INI)) ) {

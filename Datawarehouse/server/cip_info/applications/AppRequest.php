@@ -8,7 +8,6 @@ class Apprequest {
   private $show_errors;
 
   function __construct ()  {
-    require_once '../applications/Environment.php';
     $environment = new Environment();
     $this->show_errors = $environment->developement('show_errors');
     if ($this->show_errors) {
