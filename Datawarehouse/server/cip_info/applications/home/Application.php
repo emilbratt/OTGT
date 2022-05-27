@@ -165,7 +165,7 @@ class Home {
       $soldqty = $this->database_retail->result['soldqty'];
       $salesperson = CharacterConvert::utf_to_norwegian($this->database_retail->result['salesperson']);
       $time = $this->database_retail->result['time'];
-      $this->template->second_title('Dyreste artikkel solgt i dag til kr. ' . $price);
+      $this->template->second_title('Største salg i dag til kr. ' . $price);
       $this->template->table_start();
       $this->template->table_row_start();
       $this->template->table_row_value($soldqty . ' stk ' . $_l, $this->hyperlink->url);
