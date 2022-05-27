@@ -1,6 +1,9 @@
 ; replace INSERT with correct values and change filename to environment.ini
 ; NOTE: keep values (unless bool) inside double qoutes to avoid errors on special chars
 
+[assets] ; path where we store generated files
+  webserver = "INSERT"
+
 [retail] ; retail server and database used in our shop
   db_host = "INSERT"
   db_port = "INSERT"

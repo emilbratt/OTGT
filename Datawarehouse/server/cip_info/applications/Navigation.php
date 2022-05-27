@@ -16,12 +16,12 @@ class Navigation {
     $this->top_nav_links['Rapporter'] = $this->uri . '/reports';
     $this->top_nav_links['Strekkoder'] = $this->uri . '/barcodes';
     $this->top_nav_links['Kart'] = $this->uri . '/map';
+    $this->top_nav_links['Instrukser'] = $this->uri . '/instructions';
     $this->top_nav_links['Om'] = $this->uri . '/about';
 
     // show extra nav links in top menu for developer if enabled
     if ($this->environment->developement('show_nav_links')) {
       $this->top_nav_links['Devtools'] = $this->uri . '/developing';
-      $this->top_nav_links['Instrukser'] = $this->uri . '/instructions';
       $this->top_nav_links['API'] = $this->uri . '/api';
       $this->top_nav_links['Example'] = $this->uri . '/example';
     }

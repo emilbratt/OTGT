@@ -471,13 +471,13 @@ class Template {
 
   public function table_start () {
     $this->html .= <<<EOT
-    <table id="find_item">\n
+    <table id="generic_table">\n
     EOT;
   }
 
   public function table_full_width_start () {
     $this->html .= <<<EOT
-    <table class="full_width_table" id="find_item">\n
+    <table class="full_width_table" id="generic_table">\n
     EOT;
   }
 
@@ -591,7 +591,7 @@ class Template {
       var input, filter, table, tr, td, i, text_val;
       input = document.getElementById("filter_row");
       filter = input.value.toUpperCase();
-      table = document.getElementById("find_item");
+      table = document.getElementById("generic_table");
       tr = table.getElementsByTagName("tr");
       for (i = 0; i < tr.length; i++) {
         td = tr[i].getElementsByTagName("td")[$col_index];

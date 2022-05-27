@@ -35,7 +35,15 @@ def post (QUERY, DATA):
 
 def put (QUERY, DATA):
     r = requests.put(URL + QUERY, data=DATA)
-    print('POST request: ' + r.url)
+    print('PUT request: ' + r.url)
+    print('Response: ' + str(r.status_code))
+    print('Response Headers')
+    print(json.dumps(dict(r.request.headers), indent = 4))
+    print(json.dumps(r.json(), indent=4, sort_keys=True))
+
+def delete (QUERY):
+    r = requests.delete(URL + QUERY)
+    print('DELETE request: ' + r.url)
     print('Response: ' + str(r.status_code))
     print('Response Headers')
     print(json.dumps(dict(r.request.headers), indent = 4))
@@ -43,5 +51,6 @@ def put (QUERY, DATA):
 
 
 if __name__ == '__main__':
-    get('api/article/v0/get_article_id/5712396000612')
-    post('api/placement/v0/update_by_article_id', {'article_id': '10', 'shelf': 'a-a-3'})
+    # get('api/article/v0/get_article_id/5712396000612')
+    # post('api/placement/v0/update_by_article_id', {'article_id': '10', 'shelf': 'a-a-3'})
+    delete('api/instructions/v0/delete/bygg/varme_styring.pdf')

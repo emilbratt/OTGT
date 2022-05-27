@@ -14,11 +14,14 @@
 
 class Environment {
 
-  protected $env_file_path;
-  public $env_config;
+  private $env_config;
 
   function __construct () {
     $this->env_config = parse_ini_file(ENVIRONMENT_INI, $process_sections = true);
+  }
+
+  public function assets ($key) {
+    return $this->env_config['assets'][$key];
   }
 
   public function retail ($key) {

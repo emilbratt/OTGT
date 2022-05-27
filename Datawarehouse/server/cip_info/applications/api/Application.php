@@ -52,8 +52,8 @@ class API {
     $api_log = new APILog();
     $api_log->run();
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode($api->data);
     http_response_code($api->http_response_code);
+    echo json_encode($api->data);
   }
 
 }
@@ -73,6 +73,7 @@ class Home extends API {
   protected $navigation;
   protected $hyperlink;
   protected $current_api_endpoints;
+  protected $formdata;
 
   function __construct () {
     require_once '../applications/HyperLink.php';
@@ -98,9 +99,13 @@ class Home extends API {
         ['url' => 'api/placement/v0/update_by_article_id {"article_id": "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by article id', 'active' => true],
         ['url' => 'api/placement/v0/updatebybarcode {"barcode: "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by barcode', 'active' => false],
       ],
-      'Brands' => [
-        ['url' => 'api/brands/v0/all', 'method' => 'GET', 'info' => 'get list of all brands', 'active' => false],
-        ['url' => 'api/brands/v0/brand/{brand_id}', 'method' => 'GET', 'info' => 'get info for specific brand', 'active' => false],
+      // 'Brands' => [
+      //   ['url' => 'api/brands/v0/all', 'method' => 'GET', 'info' => 'get list of all brands', 'active' => false],
+      //   ['url' => 'api/brands/v0/brand/{brand_id}', 'method' => 'GET', 'info' => 'get info for specific brand', 'active' => false],
+      // ],
+      'Instructions' => [
+        ['url' => 'api/instructions/v0/create/ {""}', 'method' => 'POST', 'info' => 'add instruction (pdf)', 'active' => false],
+        ['url' => 'api/instructions/v0/delete/category/instruction.pdf', 'method' => 'DELETE', 'info' => 'delete instruction', 'active' => true],
       ],
     ];
   }
@@ -127,12 +132,17 @@ class Home extends API {
     $this->template->print($this->page);
   }
 
+  protected function get_form_data_from_stream () {
+    // creates a php array that can be accessed with $var['key']
+    parse_str(file_get_contents("php://input"), $this->formdata);
+  }
+
 }
 
 /**
  *
  * classes / pages that must be declared for the api endpoints
- * for that page to be in an activated state
+ * for that page to be reachable from the AppRequest.php script
  *
  */
 
@@ -150,6 +160,10 @@ class Article extends API {
 
 class Placement extends API {
   // update item location
+}
+
+class Instructions extends API {
+  // handle instructions (pdf files) with ObjectStorage class
 }
 
 class Test extends API {
