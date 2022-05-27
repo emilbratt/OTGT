@@ -162,12 +162,13 @@ class Home {
       if (strlen($brand) < 2 or $brand == null) {
         $_l = $article;
       }
+      $soldqty = $this->database_retail->result['soldqty'];
       $salesperson = CharacterConvert::utf_to_norwegian($this->database_retail->result['salesperson']);
       $time = $this->database_retail->result['time'];
       $this->template->second_title('Dyreste artikkel solgt i dag til kr. ' . $price);
       $this->template->table_start();
       $this->template->table_row_start();
-      $this->template->table_row_value($_l, $this->hyperlink->url);
+      $this->template->table_row_value($soldqty . ' stk ' . $_l, $this->hyperlink->url);
       $this->template->table_row_end();
       $this->template->table_row_start();
       $this->template->table_row_value('Solgt av ' . $salesperson . ' klokken ' . $time);

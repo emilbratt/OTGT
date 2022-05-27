@@ -21,7 +21,7 @@ class QueryRetailHome extends QueryRetail {
       CustomerSaleHeader.totalPayed AS price,
       CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 108) AS time,
       hipUser.userFirstName AS salesperson,
-      CustomerSales.totalThisSale AS price,
+      CAST(CustomerSales.noOfArticles AS INT) AS soldqty,
       CustomerSales.work_produsent AS brand,
       CustomerSales.work_articlename AS article,
       CustomerSales.articleId AS article_id
