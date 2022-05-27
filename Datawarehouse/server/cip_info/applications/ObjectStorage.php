@@ -133,8 +133,6 @@ class ObjectStorage {
     }
     $this->check_exist();
     $this->check_writable();
-// echo 'current root: ' . $this->path_current; echo '<br>';
-// echo 'current path: ' . $this->path_root; echo '<br>';echo '<br>';
   }
 
   public function change_filename ($filename) {
@@ -177,7 +175,7 @@ class ObjectStorage {
   }
 
   public function get_path_file () {
-    // mostly for debuggin
+    // mostly for debugging
     return $this->path_file;
   }
 
