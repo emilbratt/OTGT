@@ -77,7 +77,8 @@ class Home extends Instructions {
       foreach ($this->fileobject->content_list as $instruction) {
         $query = 'category=' . $this->category . '&' . 'instruction=' . $instruction;
         // remove file extension and swap underscore with whitespace for print
-        $instruction_name = explode('.', $instruction)[0];
+        $instruction_name = $instruction;
+        $instruction_name = explode('.pdf', $instruction_name)[0];
         $instruction_name = str_replace('_', ' ', $instruction_name);
         $this->hyperlink->link_redirect_multi_query('instructions', $query);
         $sub_nav_links[$instruction_name] = $this->hyperlink->url;
