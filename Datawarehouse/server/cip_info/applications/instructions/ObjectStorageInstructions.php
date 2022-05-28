@@ -23,7 +23,7 @@ class ObjectStorageInstructions extends ObjectStorage {
     // sanitize full path
     $this->normalize_path_file();
     if ( !(move_uploaded_file($_FILES[$key]["tmp_name"], $this->path_file)) ) {
-      $this->message_error = 'FEIL: noe galt skjedde under lagring av ' . $this->name_file;
+      $this->message_error = 'FEIL: noe galt skjedde under lagring av ' . $this->name_file . ', er filen for stor?';
       $this->upload_error = true;
       return;
     }
