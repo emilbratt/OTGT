@@ -8,6 +8,7 @@
  *  add graph report for sales count pr hour/day/week etc. and compare with earlier
  *  add a live feed showing the status (relaxed, busy, very busy etc.) based on how many customers (how many recent sales) to notify if we need more staff in shop
  *  add app find -> items by category
+ *  add (on app instructions) check if user agent ios or android to not embed pdf, but instruct to click full screen
  *
  */
 
