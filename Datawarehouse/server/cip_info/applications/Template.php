@@ -672,7 +672,7 @@ class Template {
   public function image_show ($image) {
     $b64image = base64_encode($image);
     $this->html .= <<<EOT
-    <div>
+    <div id="image_show">
       <img class="image_show" src="data:image/png;base64,$b64image">
     </div>\n
     EOT;

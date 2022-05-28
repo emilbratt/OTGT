@@ -37,7 +37,7 @@ class Barcodes {
 
   protected function validate_label () {
     $this->valid_label = false;
-    if (preg_match('/(\ø|æ|å|Ø|Æ|Å)/', $this->label) ) {
+    if ( preg_match('/(\ø|æ|å|Ø|Æ|Å)/', $this->label) ) {
       $this->template->message($this->label . ' inneholder ugyldig tegn');
       $this->valid_label = false;
       return;
@@ -52,6 +52,39 @@ class Barcodes {
       $this->valid_label = true;
       return;
     }
+  }
+
+  protected function send_post_request_to_api () {
+    $this->valid_label = false;
+    $this->data_send = [
+      'barcodes' => [$this->label],
+      'caller' => $this->environment->datawarehouse('cip_info_host'),
+    ];
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $this->url_api);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->data_send));
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $body = curl_exec($curl);
+    if ( curl_errno($curl) ) {
+      if ( $this->environment->developement('show_debug') ) {
+        $this->template->message('Error on curl request: ' . curl_error($curl));
+      }
+      $this->template->message('Ingen kontakt med strekkode generator: ' . $this->url_api);
+    }
+    $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    curl_close ($curl);
+    if ($http_status_code == 201) {
+      $this->template->image_show($body);
+    }
+  }
+
+  protected function load_form () {
+    $this->template->message('Generer ved å skrive inn valgt tekst under og trykk Enter');
+    $this->template->form_start('POST');
+    $this->template->form_input_label('form_input_label', $focus = true);
+    $this->template->form_end('Generer');
   }
 
 }
@@ -73,6 +106,7 @@ class GenerateBarcode extends Barcodes {
     $hyperlink = new HyperLink();
     $hyperlink->link_redirect('barcodes');
     $this->template->hyperlink_button('Tilbake', $hyperlink->url);
+    $this->template->title('Generer strekkode kode');
 
     $this->char_limit = 100;
     $host = $this->environment->datawarehouse('barcode_generator_host');
@@ -83,43 +117,36 @@ class GenerateBarcode extends Barcodes {
       $this->label = $_POST['form_input_label'];
       $this->validate_label();
       if ($this->valid_label) {
-        $this->send_label_to_api();
+        $this->send_post_request_to_api();
       }
     }
     $this->template->print($this->page);
   }
 
-  private function load_form () {
-    $this->template->form_start('POST');
-    $this->template->form_input_label('form_input_label', $focus = true);
-    $this->template->form_end('Lag strekkode');
-  }
+}
 
 
-  private function send_label_to_api () {
-    $this->valid_label = false;
-    $this->data_send = [
-      'barcodes' => [$this->label],
-      'caller' => $this->environment->datawarehouse('cip_info_host'),
-    ];
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $this->url_api);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-    curl_setopt($curl, CURLOPT_POST, true);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->data_send));
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $body = curl_exec($curl);
-    if (curl_errno($curl)) {
-      if ( $this->environment->developement('show_debug') ) {
-        $this->template->message('Error on curl request: ' . curl_error($curl));
+class GenerateQRCode extends Barcodes {
+
+  public function run () {
+    $hyperlink = new HyperLink();
+    $hyperlink->link_redirect('barcodes');
+    $this->template->hyperlink_button('Tilbake', $hyperlink->url);
+    $this->template->title('Generer QR kode');
+
+    $this->char_limit = 1000;
+    $host = $this->environment->datawarehouse('barcode_generator_host');
+    $port = $this->environment->datawarehouse('barcode_generator_port');
+    $this->load_form();
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      $this->get_api_url('qrcode/single/');
+      $this->label = $_POST['form_input_label'];
+      $this->validate_label();
+      if ($this->valid_label) {
+        $this->send_post_request_to_api();
       }
-      $this->template->message('Ingen kontakt med strekkode generator: ' . $this->url_api);
     }
-    $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    curl_close ($curl);
-    if ($http_status_code == 201) {
-      $this->template->image_show($body);
-    }
+    $this->template->print($this->page);
   }
 
 }
@@ -135,9 +162,12 @@ class GenerateShelfLabels extends Barcodes {
     $hyperlink->link_redirect('barcodes');
     $this->template->hyperlink_button('Tilbake', $hyperlink->url);
 
+
     $this->valid_label = false;
     $this->get_api_url();
     $this->get_limits();
+    $this->template->title('Generer hyllemerker');
+    $this->template->message('Lag opp til ' . $this->sheet_limit . ' hyllemerker tilpasset utskriftklart A4 ark');
     $this->load_shelf_label_form();
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       $this->template->print($this->page);
@@ -146,7 +176,7 @@ class GenerateShelfLabels extends Barcodes {
       $this->validate_labels();
       if ($this->valid_label) {
         // no html printing because we expect an octet stream (byte array)
-        $this->send_labels_to_api();
+        $this->send_to_api_ang_generate_shelf_labels();
         return;
       }
       $this->template->print($this->page);
@@ -161,7 +191,6 @@ class GenerateShelfLabels extends Barcodes {
       $this->template->custom_html('<div class="center_div">');
       $this->template->custom_html('<br>');
       $this->template->hyperlink_button('Tøm alle felt', $hyperlink->url);
-      $this->template->message('<br>Lag hyllemerker for å skrive ut på A4 ark');
       $this->template->custom_html('</div>');
     } else {
       if ( $this->environment->developement('show_debug') ) {
@@ -185,12 +214,12 @@ class GenerateShelfLabels extends Barcodes {
 
     // build the individual requests, but do not execute them
     $curl_1 = curl_init($api_sheet_limit);
-    $curl_2 = curl_init($api_char_limit);
     curl_setopt($curl_1, CURLOPT_URL, $api_sheet_limit);
-    curl_setopt($curl_2, CURLOPT_URL, $api_char_limit);
     curl_setopt($curl_1, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-    curl_setopt($curl_2, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
     curl_setopt($curl_1, CURLOPT_RETURNTRANSFER, true);
+    $curl_2 = curl_init($api_char_limit);
+    curl_setopt($curl_2, CURLOPT_URL, $api_char_limit);
+    curl_setopt($curl_2, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
     curl_setopt($curl_2, CURLOPT_RETURNTRANSFER, true);
 
     // multi-curl handle for asynchronous fetching
@@ -211,7 +240,7 @@ class GenerateShelfLabels extends Barcodes {
     $this->sheet_limit = json_decode($this->sheet_limit, $associative = true);
     $this->char_limit = curl_multi_getcontent($curl_2);
     $this->char_limit = json_decode($this->char_limit, $associative = true);
-    if (isset($this->sheet_limit['limit']) && isset($this->char_limit['limit'])) {
+    if ( isset($this->sheet_limit['limit']) && isset($this->char_limit['limit']) ) {
       $this->sheet_limit = $this->sheet_limit['limit'];
       $this->char_limit = $this->char_limit['limit'];
       $this->limit_fetch_ok = true;
@@ -250,7 +279,7 @@ class GenerateShelfLabels extends Barcodes {
     }
   }
 
-  private function send_labels_to_api () {
+  private function send_to_api_ang_generate_shelf_labels () {
     $this->get_api_url('shelf/');
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $this->url_api);

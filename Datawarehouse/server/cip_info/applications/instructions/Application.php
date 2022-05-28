@@ -76,7 +76,7 @@ class Home extends Instructions {
     if (!empty($this->fileobject->content_list)) {
       foreach ($this->fileobject->content_list as $instruction) {
         $query = 'category=' . $this->category . '&' . 'instruction=' . $instruction;
-        // remove file extension and swap underscore with whitespace for print
+        // tmp remove file extension and swap underscore with whitespace for readablilty
         $instruction_name = $instruction;
         $instruction_name = explode('.pdf', $instruction_name)[0];
         $instruction_name = str_replace('_', ' ', $instruction_name);
@@ -92,43 +92,43 @@ class Home extends Instructions {
   }
 
   private function show_instruction () {
-    $query = 'category=' . $this->category . '&' . 'instruction=' . $this->instruction;
-    $this->hyperlink->link_redirect_multi_query('instructions/ShowPDF', $query);
+    $host = $this->environment->datawarehouse('barcode_generator_host');
+    $port = $this->environment->datawarehouse('barcode_generator_port');
+    $query = 'api/instructions/v0/view/' . $this->category . '/' . $this->instruction;
+    $this->hyperlink->link_redirect($query);
+    $this->url_api = 'http://'.$host.':'.$port.'/qrcode/single/';
+    $this->data_send = [
+      'barcodes' => [$this->hyperlink->url],
+      'caller' => $this->environment->datawarehouse('cip_info_host'),
+    ];
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $this->url_api);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->data_send));
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $body = curl_exec($curl);
+    if ( curl_errno($curl) ) {
+      if ( $this->environment->developement('show_debug') ) {
+        $this->template->message('Error on curl request: ' . curl_error($curl));
+      }
+      $this->template->message('Ingen kontakt med strekkode generator: ' . $this->url_api);
+    }
+    $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    curl_close ($curl);
+
     $this->template->embed_pdf($this->hyperlink->url);
     $this->template->hyperlink_button('Fullskjerm', $this->hyperlink->url);
-    $this->template->button_fetch_api_delete_instruction($this->category, $this->instruction);
-
-    $this->generate_qrcode();
-  }
-
-  private function generate_qrcode () {
-    // add qr code to be printed for users to scan with handhield
-    return;
-  }
-
-}
-
-class ShowPDF extends Instructions {
-
- /*
-  * will send the response body as pdf withoud any html
-  * usecase: when scanning qr code with direct link to the pdf
-  */
-
-  public function run () {
-
-    if ( ! (isset($_GET['category'])) or !(isset($_GET['instruction'])) ) {
-      echo 'not category or instruction was passed';
-      return;
+    if ($http_status_code == 201) {
+      $this->template->button_show_qr_code();
     }
-    $this->category = $_GET['category'];
-    $this->instruction = $_GET['instruction'];
-    $this->fileobject->change_path($this->category);
-    $this->fileobject->change_filename($this->instruction);
-    $this->fileobject->read_file();
+    $this->template->button_fetch_api_delete_instruction($this->category, $this->instruction);
+    $this->template->message('Hold nede ALT og trykk venstre piltast for å gå ut av fullskjerm');
+    $this->template->image_show($body);
   }
 
 }
+
 
 
 class Administrate extends Instructions {

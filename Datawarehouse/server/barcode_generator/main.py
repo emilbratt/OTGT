@@ -12,6 +12,9 @@ from fastapi.responses import JSONResponse, StreamingResponse, Response
 
 from barcode.writer import ImageWriter
 from barcode import Code128
+
+import qrcode
+
 from PIL import Image, ImageDraw, ImageFont
 
 ENVIRONMENT_FILE = '../../environment.ini'
@@ -20,9 +23,10 @@ SHEET_BARCODE_MAX_LIMIT = 36 # max barcodes that fit on a paper sheet
 SHELF_LABEL_MAX_CHAR = 6 # max characters that fit on a shelf label
 APP_DIR = os.path.dirname(os.path.realpath(__file__))
 FONT = ImageFont.truetype(os.path.join(APP_DIR, 'font', 'FreeSans.ttf'), 72)
-BARCODE_DIR = os.path.join(os.path.expanduser('~'), 'barcodes')
-if not os.path.isdir(BARCODE_DIR):
-    os.mkdir(BARCODE_DIR)
+QRMODES = {
+    'alphanumeric': 'REVOLUTION NO. 9', # chars, numbers and symbols (good for URL`s)
+    'numeric': '64', # fastest but only positive numbers
+}
 if not os.path.isfile(ENVIRONMENT_FILE):
     exit('could not locate environment.ini, current path is set: ' + ENVIRONMENT_FILE)
 config = configparser.ConfigParser()
@@ -35,7 +39,8 @@ class TestModel(BaseModel):
     caller: str
 
 
-class BarcodeModel(BaseModel):
+# barcodes and qr codes are generated based data in this model
+class DataCodeModel(BaseModel):
     # barcode values go here
     barcodes: list
     # identify caller (android device, browser, hostname etc.)
@@ -45,14 +50,11 @@ class BarcodeModel(BaseModel):
 class BarcodeGenerate:
     def __init__(self, barcodes = ['barcode']):
         self.barcodes = barcodes
-        self.barcode_filename = os.path.join(BARCODE_DIR, 'final_barcode')
-        self.sheet_filename = os.path.join(BARCODE_DIR, 'final_sheet')
         self.barcode_pixel_height = 90 # barcode height in pixels for sheet
         self.success = True
         self.label = 'nolabel'
         self.generated = {}
         self.msg = 'OK'
-
 
 
     def get_barcode_byte_array(self):
@@ -67,11 +69,9 @@ class BarcodeGenerate:
         self.sheet_obj.save(byte_array, format='png')
         return byte_array.getvalue()
 
-
     def generate_single_barcode(self):
         self.label = self.barcodes[0]
         self.barcode_obj = Code128(self.label, writer=ImageWriter())
-
 
     def generate_shelf_label_sheet(self):
         # this is where we generate shelf labels for the inventory
@@ -88,7 +88,6 @@ class BarcodeGenerate:
                 pixels_from_left = 645
             pixels_from_top = self.barcode_pixel_height * (i % (SHEET_BARCODE_MAX_LIMIT // 2)) + 75
             self.label = barcode
-            self.barcode_path = os.path.join(BARCODE_DIR, self.label)
 
             # generate stock barcode
             self.barcode_obj = Code128(self.label, writer=ImageWriter())
@@ -113,13 +112,6 @@ class BarcodeGenerate:
             rendered_barcode.close()
             cropped_version.close()
 
-
-    def save_barcode(self):
-        self.barcode_obj.save('%s.png' % self.barcode_filename)
-
-    def save_sheet(self):
-        self.sheet_obj.save('%s.png' % self.sheet_filename)
-
     def close_sheet(self):
         self.sheet_obj.close()
 
@@ -140,6 +132,37 @@ class BarcodeGenerateShelfSingleSheet(BarcodeGenerate):
             self.msg = 'max allowed barcodes: ' + str(SHEET_BARCODE_MAX_LIMIT) + ', barcodes sent: ' + str(barcode_count)
         self.generate_shelf_label_sheet()
 
+
+class QRGenerate:
+    def __init__(self, qrcodes = ['code']):
+        self.qr_object = qrcode.QRCode(version=1,
+                                    error_correction=qrcode.constants.ERROR_CORRECT_L,
+                                    box_size=10,
+                                    border=2,)
+        self.qrcode = qrcodes
+        self.success = True
+        self.label = 'nolabel'
+        self.generated = {}
+        self.msg = 'OK'
+
+    def get_qrcode_byte_array(self):
+        byte_array = io.BytesIO()
+        rendered_qrcode = self.qr_object.make_image(fill_color="black", back_color="white")
+        rendered_qrcode.save(byte_array, format='png')
+        rendered_qrcode.close()
+        return byte_array.getvalue()
+
+    def generate_single_qrcode(self):
+        self.label = self.qrcode[0]
+        self.qr_object.add_data(self.label)
+        self.qr_object.make(fit=True)
+
+
+
+class QRGenerateSingle(QRGenerate):
+    def __init__(self, barcode = 'barcode'):
+        QRGenerate.__init__(self, [barcode])
+        self.generate_single_qrcode()
 
 
 app = FastAPI()
@@ -169,7 +192,7 @@ async def barcode_single(barcode: str):
                     content=byte_array, media_type="image/png")
 
 @app.post("/barcode/single/")
-async def barcode_single(item: BarcodeModel):
+async def barcode_single(item: DataCodeModel):
     b = BarcodeGenerateSingle(item.barcodes[0])
     byte_array = b.get_barcode_byte_array()
     return Response(status_code=status.HTTP_201_CREATED,
@@ -194,7 +217,7 @@ async def shelf_single(barcode: str):
 
 # using POST we can send an array with barcodes (max N that can fit on A4 sheet)
 @app.post("/shelf/")
-async def shelf_multiple(item: BarcodeModel):
+async def shelf_multiple(item: DataCodeModel):
     b = BarcodeGenerateShelfSingleSheet(item.barcodes)
     byte_array = b.get_sheet_byte_array()
     b.close_sheet()
@@ -205,15 +228,10 @@ async def shelf_multiple(item: BarcodeModel):
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             content={'response': b.msg})
 
-# using POST we can send an array with barcodes (max N that can fit on A4 sheet)
-@app.post("/shelf/store/")
-async def shelf_multiple(item: BarcodeModel):
-    b = BarcodeGenerateShelfSingleSheet(item.barcodes)
-    b.save_sheet()
-    b.close_sheet()
-    if b.success:
-        return JSONResponse(status_code=status.HTTP_201_CREATED,
-                            content={"response": b.msg, 'generated': b.generated})
-    else:
-        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            content={'response': b.msg})
+
+@app.post("/qrcode/single/")
+async def qrcode_single(item: DataCodeModel):
+    b = QRGenerateSingle(item.barcodes[0])
+    byte_array = b.get_qrcode_byte_array()
+    return Response(status_code=status.HTTP_201_CREATED,
+                    content=byte_array, media_type="image/png")

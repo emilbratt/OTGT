@@ -14,6 +14,9 @@ class TemplateBarcodes extends Template {
     #medium_input_length {
       width: 150px
     }
+    #form_input_label {
+      width: 400px
+    }
     button {
       border: 1px solid $this->colour_default_text;
       display: inline;

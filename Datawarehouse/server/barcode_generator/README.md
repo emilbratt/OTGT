@@ -1,12 +1,16 @@
 ## About
-requests from cip_info (or any device on local network) can send request
-to the python fastapi backend for generating barcodes
+powered by:
+[Uvicorn ASGI server](https://www.uvicorn.org/)
+[Python FastAPI backend](https://fastapi.tiangolo.com/)
+[Pydantic datamodel](https://pydantic-docs.helpmanual.io/)
+[Python Barcocde](https://pypi.org/project/python-barcode/)
+[Python qrcode](https://pypi.org/project/qrcode/)
 
-barcodes will be generated and served based on specified api requests
-
+any device on local network can send request to the python fastapi backend
+for generating barcodes and qr-codes
 
 ### dependencies
-* the barcode backend does not need to run as http user and therefore we use default user
+* the backend does not need to run as http user and therefore we use default user
 install python dependencies with user that has uid 1000
 ```
 pip3 install --user fastapi
@@ -14,8 +18,9 @@ pip3 install --user pydantic
 pip3 install --user uvicorn
 pip3 install --user aiofiles
 pip3 install --user requests
-pip3 install --user python-barcode
 pip3 install --user Pillow
+pip3 install --user python-barcode
+pip3 install --user qrcode
 ```
 
 ### create service for fastapi uvicorn

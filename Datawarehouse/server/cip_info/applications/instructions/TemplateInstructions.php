@@ -19,6 +19,15 @@ class TemplateInstructions extends Template {
     button:hover {
       background-color: $this->colour_default_hover;
     }
+    /* hide the qr code and show when clicking button */
+    #image_show {
+      display: none;
+    }
+    .image_show {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }\n
     EOT;
   }
 
@@ -102,11 +111,28 @@ class TemplateInstructions extends Template {
     EOT;
   }
 
+
+  public function button_show_qr_code () {
+    $this->html .= <<<EOT
+    <button onclick="show_qr_code()">QR-kode</button>\n
+    EOT;
+    $this->script .= <<<EOT
+    <script>
+    function show_qr_code() {
+      var x = document.getElementById("image_show");
+      x.style.display = "block";
+    }
+    </script>\n
+    EOT;
+  }
+
+
+
   public function button_fetch_api_delete_instruction ($category = '', $instruction = '') {
     // this button sends request to api and the api handles validation etc.
     $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
     $this->html .= <<<EOT
-    <button style="float: right;" id="button_fetch_api_delete_instruction">Slett</button>\n
+    <button id="button_fetch_api_delete_instruction">Slett Instruks</button>\n
     EOT;
     $this->script .= <<<EOT
     <script>
@@ -130,7 +156,6 @@ class TemplateInstructions extends Template {
     });
     </script>\n
     EOT;
-
   }
 
   public function embed_pdf ($url) {
@@ -139,8 +164,9 @@ class TemplateInstructions extends Template {
     $this->html .= <<<EOT
     <object width="100%" height="800" type="application/pdf" data="$url">
       <p>Kunne ikke laste inn pdf</p>
-    </object>
+    </object>\n
     EOT;
   }
+
 
 }

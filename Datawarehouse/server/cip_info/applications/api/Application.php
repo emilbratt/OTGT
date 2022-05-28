@@ -104,8 +104,9 @@ class Home extends API {
       //   ['url' => 'api/brands/v0/brand/{brand_id}', 'method' => 'GET', 'info' => 'get info for specific brand', 'active' => false],
       // ],
       'Instructions' => [
+        ['url' => 'api/instructions/v0/view/{category}/{instruction}.pdf', 'method' => 'GET', 'info' => 'view/download instruction', 'active' => true],
         ['url' => 'api/instructions/v0/create/ {""}', 'method' => 'POST', 'info' => 'add instruction (pdf)', 'active' => false],
-        ['url' => 'api/instructions/v0/delete/category/instruction.pdf', 'method' => 'DELETE', 'info' => 'delete instruction', 'active' => true],
+        ['url' => 'api/instructions/v0/delete/{category}/{instruction}.pdf', 'method' => 'DELETE', 'info' => 'delete instruction', 'active' => true],
       ],
     ];
   }
