@@ -179,8 +179,11 @@ class ObjectStorage {
     readfile($this->path_file);
   }
 
+  public function get_name_file () {
+    return $this->name_file;
+  }
+
   public function get_path_file () {
-    // mostly for debugging
     return $this->path_file;
   }
 

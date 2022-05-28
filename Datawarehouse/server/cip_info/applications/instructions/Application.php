@@ -183,9 +183,14 @@ class Administrate extends Instructions {
     if ( !(isset($_FILES[$_key])) ) {
       return;
     }
+
     if ($_FILES[$_key]['type'] !== 'application/pdf') {
-      $this->template->message('Varsel: Instrukser må være i PDF format..');
-      return;
+      // a false positive happens if any letter in pdf extension is upper-case
+      $ext = pathinfo($_FILES[$_key]['name'], PATHINFO_EXTENSION);
+      if (strtolower($ext) !== 'pdf') {
+        $this->template->message('Varsel: Instrukser må være i PDF format..');
+        return;
+      }
     }
     $this->category = $_POST['input_field_instructions_select_category'];
     $this->instruction = $_FILES[$_key]['name'];
@@ -195,7 +200,9 @@ class Administrate extends Instructions {
       $this->template->message($this->fileobject->message_error);
       return;
     }
-    $querystring = "category=$this->category&instruction=$this->instruction";
+    // filename might have been altered, we grab the correctone from fileobject
+    $filname = $this->fileobject->get_name_file();
+    $querystring = "category=$this->category&instruction=$filname";
     $this->hyperlink->link_redirect_multi_query('instructions', $querystring);
     $this->template->hyperlink_button('Gå til instruks', $this->hyperlink->url);
 
