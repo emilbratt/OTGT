@@ -3,8 +3,9 @@
 /**
  *
  * NOTE:
- *  deprecate date stuff and move to Date.php
- *  create own file for UserAgent and CharacterConvert
+ *  this file is porly written and was never meant to survive this long,
+ *  deprecate Dates, UserAgent and CharacterConvert and create a dedicated
+ *  script named according to class for each with a proper implementation
  *
  */
 
