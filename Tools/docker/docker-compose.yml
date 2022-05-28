@@ -1,6 +1,7 @@
 version: "3.9"
 
 # db_datawarehouse uses a docker volume for persistent database store
+# web_cip_info uses a docker wolume for user files (object storage)
 
 services:
   db_datawarehouse:
@@ -33,6 +34,7 @@ services:
     build: ./cip_info
     container_name: web_cip_info
     volumes:
+      - web_cip_info:/cip_info_assets
       - ../../:/var/www/html
       - ./cip_info/php_conf/php.ini_developement:/usr/local/etc/php/php.ini
       - ./cip_info/apache-conf/apache2.conf:/etc/apache2/apache2.conf
@@ -44,3 +46,4 @@ services:
 
 volumes:
   db_datawarehouse: {}
+  web_cip_info: {}
