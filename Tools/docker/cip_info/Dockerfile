@@ -6,7 +6,4 @@ RUN docker-php-ext-install pdo pdo_mysql
 # add directory for assets
 # ..it will be used as a docker volume,
 # ..but need to exist for us to set correct owner
-RUN mkdir /cip_info_assets
-
-# set owner to www-data using uid 33
-RUN chown 33:33 /cip_info_assets
+RUN mkdir /cip_info_assets && chown 33:33 /cip_info_assets
