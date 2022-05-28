@@ -97,6 +97,11 @@ class ObjectStorage {
     }
     $this->path_file = $this->path_root . $path_filename;
     $this->normalize_path_file();
+    if ( !(is_file($this->path_file)) ) {
+      $this->message_error = $this->path_file . ' does not exist or is not at file';
+      return false;
+    }
+    return true;
   }
 
   protected function normalize_path_file () {
