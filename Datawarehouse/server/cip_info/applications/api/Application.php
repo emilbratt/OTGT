@@ -99,6 +99,11 @@ class Home extends API {
         ['url' => 'api/placement/v0/update_by_article_id {"article_id": "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by article id', 'active' => true],
         ['url' => 'api/placement/v0/updatebybarcode {"barcode: "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by barcode', 'active' => false],
       ],
+      'Cache' => [
+        ['url' => 'api/cache/v0/read/{key}', 'method' => 'GET', 'info' => 'get cache', 'active' => true],
+        ['url' => 'api/cache/v0/set {"mem_key: "val", "mem_val": "val"}', 'method' => 'POST', 'info' => 'insert cache', 'active' => true],
+        ['url' => 'api/cache/v0/delete/{key}', 'method' => 'DELETE', 'info' => 'delete cache', 'active' => true],
+      ],
       // 'Brands' => [
       //   ['url' => 'api/brands/v0/all', 'method' => 'GET', 'info' => 'get list of all brands', 'active' => false],
       //   ['url' => 'api/brands/v0/brand/{brand_id}', 'method' => 'GET', 'info' => 'get info for specific brand', 'active' => false],
@@ -149,6 +154,10 @@ class Home extends API {
 
 class Barcode extends API {
   // get article data from barcode
+}
+
+class Cache extends API {
+  // get, set and delete data from datwarehouse cache database table
 }
 
 class Brands extends API {
