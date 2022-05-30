@@ -3,7 +3,6 @@
 /**
  *
  * TODO:
- *  add auto fetch new note in home page (js)
  *  add graph report for turnover and compare with earlier
  *  add graph report for sales count pr hour/day/week etc. and compare with earlier
  *  add a live feed showing the status (relaxed, busy, very busy etc.) based on how many customers (how many recent sales) to notify if we need more staff in shop
