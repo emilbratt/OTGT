@@ -9,7 +9,7 @@ class APIEndpoint {
   function __construct ($request) {
     require_once '../applications/DatabaseRetail.php';
     require_once '../applications/api/article/v0/APIQueryRetail.php';
-    $this->http_response_code = 404;
+    $this->http_response_code = 500;
     $this->data = '';
     $this->request = $request;
   }
@@ -24,14 +24,14 @@ class APIEndpoint {
         break;
       case 'sales':
         $this->data = ['response' => 'article sales not implemented yet'];
-        $this->http_response_code = 404;
+        $this->http_response_code = 500;
         break;
       case 'imports':
         $this->data = ['response' => 'article imports not implemented yet'];
-        $this->http_response_code = 404;
+        $this->http_response_code = 500;
         break;
       default:
-        $this->data = ['response' => 'invalid endpoint'];
+        $this->data = ['response' => 'could not find endpoint'];
         $this->http_response_code = 500;
     }
   }

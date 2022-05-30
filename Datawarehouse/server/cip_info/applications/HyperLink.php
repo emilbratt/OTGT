@@ -28,6 +28,11 @@ class HyperLink {
 
   public function add_query ($key, $val) {
    /**
+    * NOTE:
+    *   written before I found out about http_build_query() - > https://www.php.net/http_build_query
+    *   I guess this is what you get for not properly reading docs and doing research
+    *   at least I got to write my own implementation..
+    *
     * this function will add key value (or if key exists, change value) to the URL's query string
     *
     * addiong query string:

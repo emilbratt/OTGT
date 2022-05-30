@@ -13,6 +13,7 @@ class APIEndpoint {
   function __construct ($request) {
     require_once '../applications/api/placement/v0/APIQueryRetail.php';
     require_once '../applications/api/placement/v0/APIQueryDatawarehouse.php';
+    $this->http_response_code = 500;
     $this->request = $request;
     $this->data = array();
 
@@ -23,7 +24,7 @@ class APIEndpoint {
 
   public function run () {
     switch ($this->request[0]) {
-      case "update_by_article_id":
+      case 'update_by_article_id':
         $this->update_by_article_id();
         break;
       default:

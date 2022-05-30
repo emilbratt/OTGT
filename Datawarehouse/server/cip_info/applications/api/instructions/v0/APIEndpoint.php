@@ -16,13 +16,13 @@ class APIEndpoint {
   public function run () {
     $this->http_response_code = 500;
     switch ($this->request[0]) {
-      case "view":
-      $this->view();
+      case 'view':
+        $this->view();
         break;
-      case "delete":
+      case 'delete':
         $this->delete();
         break;
-      case "create":
+      case 'create':
         $this->create();
         break;
       default:
