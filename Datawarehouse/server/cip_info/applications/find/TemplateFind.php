@@ -139,7 +139,7 @@ class TemplateFind extends Template {
         <tr>
           <td style="width: 60%;">
             <input style="width: 100%;"
-            type="search"  autofocus="autofocus" onfocus="this.select()"
+            type="search" autofocus="autofocus" onfocus="this.select()"
             id="input_field_article" name="input_field_article"
             placeholder="Artikkel" value="$article">
           </td>
