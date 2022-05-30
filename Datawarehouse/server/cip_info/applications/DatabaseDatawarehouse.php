@@ -177,6 +177,28 @@ class DatabaseDatawarehouse {
     }
   }
 
+  public function mem_delete_yesterday ($key) {
+    // delete cache from yesterday or older
+    $query = <<<EOT
+    DELETE FROM cip_cache
+    WHERE mem_key = '$key' AND DATE(mem_time) < DATE(CURDATE())
+    EOT;
+    try {
+      $stmt = $this->cnxn->prepare($query);
+      $stmt->execute();
+      return $stmt;
+    }
+    catch(Exception $e)  {
+      if($this->environment->developement('show_errors')) {
+        echo '<pre>';
+        print_r($e->getMessage());
+        echo $query;
+        echo '</pre>';
+      }
+      exit(1);
+    }
+  }
+
   function __destruct () {
 
   }

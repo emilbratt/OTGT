@@ -56,14 +56,18 @@ class Developing {
 
   protected function run_sql_shell_query () {
     $this->stmt = $this->database->cnxn->prepare($this->query);
+    $start_time = microtime(true);
     $this->stmt->execute();
+    $end_time = microtime(true);
+    $query_time = ($end_time - $start_time);
     $this->field_count = $this->stmt->columnCount();
     try {
       $this->result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
       // unlike PDOStatement::columnCount, PDOStatement::rowCount(); is not stable
       // across all drivers, so we simply pass the array to php's count() instead
       $this->row_count = count($this->result);
-      $this->template->message("Rows: $this->row_count");
+      $this->template->message('Rows: ' . $this->row_count);
+      $this->template->message('Time: ' . $query_time);
     }
     catch(Exception $e)  {
       $this->template->message($e->getMessage());

@@ -13,16 +13,31 @@ class QueryRetailHome extends QueryRetail {
     parent::__construct();
   }
 
-  public function most_expensive_item_sold_today () {
+  public function get_min_customer_sales_id_today () {
+    $this->query .= <<<EOT
+    SELECT
+      MIN(CustomerSales.CustomerSalesId) AS min_id
+    FROM
+     CustomerSales
+    INNER JOIN
+      CustomerSaleHeader
+    ON
+      CustomerSales.customerSaleHeaderId = CustomerSaleHeader.customerSaleHeaderId
+    WHERE
+      CustomerSaleHeader.salesDate > CAST(CURRENT_TIMESTAMP AS DATE)\n
+    EOT;
+  }
+
+  public function most_expensive_item_sold_today ($customer_sales_id) {
     $this->query .= <<<EOT
     SELECT TOP 1
       CustomerSaleHeader.customerSaleHeaderId,
-      CustomerSaleHeader.userId,
-      CustomerSaleHeader.totalPayed AS price,
+      CustomerSaleHeader.userId AS sales_header_id,
       CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 108) AS time,
       hipUser.userFirstName AS salesperson,
       CAST(CustomerSales.noOfArticles AS INT) AS soldqty,
       CustomerSales.work_produsent AS brand,
+      CustomerSales.usedPricePerUnit as price,
       CustomerSales.work_articlename AS article,
       CustomerSales.articleId AS article_id
     FROM
@@ -36,14 +51,15 @@ class QueryRetailHome extends QueryRetail {
     ON
       CustomerSaleHeader.userId = hipUser.userId
     WHERE
-      CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)
+      CustomerSales.CustomerSalesId >= '$customer_sales_id'
+      -- CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)
 
     ORDER BY
       CustomerSales.totalThisSale DESC\n
     EOT;
   }
 
-  public function last_ten_sold_items () {
+  public function last_ten_sold_items ($customer_sales_id) {
     $this->query .= <<<EOT
     SELECT TOP 10
       CustomerSaleHeader.customerSaleHeaderId,
@@ -66,7 +82,8 @@ class QueryRetailHome extends QueryRetail {
       CustomerSaleHeader.userId = hipUser.userId
     WHERE
       CustomerSales.articleId IS NOT NULL
-      AND CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)
+      AND CustomerSales.CustomerSalesId >= '$customer_sales_id'
+      --AND CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)
     ORDER BY
       CustomerSaleHeader.salesDate DESC\n
     EOT;
@@ -74,7 +91,6 @@ class QueryRetailHome extends QueryRetail {
 
   public function brands_imported_today () {
     $this->query .= <<<EOT
-
     SELECT
       Brands.brandLabel AS brand,
       COUNT(Brands.brandLabel) AS articles_imported
@@ -115,19 +131,16 @@ class QueryRetailHome extends QueryRetail {
     EOT;
   }
 
-  public function turnover_today () {
+  public function turnover_today ($customer_sales_id) {
     $this->query .= <<<EOT
     SELECT
-      CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102) AS date_turnover,
-      CASE
-        WHEN CAST(SUM(Brto_Salg_Kr) AS INT) IS NULL THEN 0
-        ELSE CAST(SUM(Brto_Salg_Kr) AS INT)
-      END AS sum_turnover
+      CAST(SUM(CustomerSales.totalThisSale) AS INT) AS sum_turnover
     FROM
-      view_HIP_salesInfo_10
+      CustomerSales
     WHERE
-      CONVERT(VARCHAR(10), [salesdate], 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)
-      AND isGiftCard ='0'
+      CustomerSales.CustomerSalesId >= '$customer_sales_id'
+      AND isGiftCardSaleType = NULL
+    \n
     EOT;
   }
 
@@ -146,26 +159,25 @@ class QueryRetailHome extends QueryRetail {
     EOT;
   }
 
-  public function users_sales_count_today () {
+  public function users_sales_metrics ($customer_sales_id) {
     $this->query .= <<<EOT
     SELECT
-      salesperson,
-      article_count
+      hipUser.userFirstName AS salesperson,
+      SUM(CustomerSales.noOfArticles) AS article_count,
+      CAST(SUM(CustomerSales.totalThisSale) AS INT) AS total
     FROM
-      (
-        SELECT
-        BrukerFornavn AS salesperson,
-        SUM(AntallArtikler) AS article_count
-      FROM
-        view_HIP_SalesInfo_Detail
-      WHERE
-        CONVERT(VARCHAR(10), SalgsDato, 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)
-        AND BrukerFornavn != ''
-      GROUP BY
-        BrukerFornavn
-      ) sold_most
+      CustomerSales
+    FULL JOIN CustomerSaleHeader
+      ON CustomerSales.customerSaleHeaderId = CustomerSaleHeader.customerSaleHeaderId
+    FULL JOIN hipUser
+      ON CustomerSaleHeader.userId = hipUser.userId
+    WHERE
+      CustomerSales.CustomerSalesId >= '$customer_sales_id'
+      AND isGiftCardSaleType = NULL
+    GROUP BY
+      hipUser.userFirstName
     ORDER BY
-      article_count DESC\n
+      salesperson ASC\n
     EOT;
   }
 

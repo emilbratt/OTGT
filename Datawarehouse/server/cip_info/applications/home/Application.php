@@ -25,6 +25,7 @@ class Home {
   protected $query_retail;
   protected $database_dw;
   protected $query_dw;
+  protected $min_customer_sales_id_today;
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
@@ -36,6 +37,8 @@ class Home {
     require_once '../applications/home/TemplateHome.php';
     require_once '../applications/home/QueryRetailHome.php';
     require_once '../applications/home/QueryDatawarehouseHome.php';
+
+    $this->min_customer_sales_id_today = false;
 
     $this->environment = new Environment();
     $this->template = new TemplateHome();
@@ -59,23 +62,41 @@ class Home {
     // fetch note from db cache table
     $this->home_page_note();
 
-    // fetch some sammple reports to show on homepage
+    // get simple reports
+    $this->get_reports();
+
+    $this->template->print($this->page);
+  }
+
+  private function get_reports () {
+    $this->database_dw->mem_delete_yesterday('min_customer_sales_id_today');
+    $this->get_min_customer_sales_id_today();
+    if ( !($this->min_customer_sales_id_today)) {
+      $this->template->message('Feil: kunne ikke hente ut cache: "min_customer_sales_id_today" for rapporter');
+      return;
+    }
     $this->turnover();
     if ($this->environment->competitive('show')) {
-      $this->users_sales_count_today();
+      $this->users_sales_metrics();
     }
     $this->most_expensive_item_sold_today();
     $this->last_ten_sold_items();
     $this->brands_imported_today();
-    $this->template->print($this->page);
+  }
+
+  private function get_min_customer_sales_id_today () {
+    $this->min_customer_sales_id_today = $this->database_dw->mem_get('min_customer_sales_id_today')['mem_val'];
+    if ( !($this->min_customer_sales_id_today)) {
+      $this->query_retail->get_min_customer_sales_id_today();
+      $this->database_retail->select_single_row($this->query_retail->get());
+      $this->min_customer_sales_id_today = $this->database_retail->result['min_id'];
+      $this->database_dw->mem_insert('min_customer_sales_id_today', $this->min_customer_sales_id_today);
+    }
   }
 
   private function home_page_note () {
     // on every page load, delete note if from yesterday
-    // ..might imporve this logic later with a daemon or cron-like solution
-    $this->query_dw->remove_note_from_yesterday();
-    $stmt = $this->database_dw->cnxn->prepare($this->query_dw->get());
-    $stmt->execute();
+    $this->database_dw->mem_delete_yesterday('home_page_note');
     // insert new note if requested
     if(isset($_POST['note_input_form'])) {
       $this->database_dw->mem_insert('home_page_note', $_POST['note_input_form']);
@@ -88,12 +109,11 @@ class Home {
     // show note
     $this->template->second_title('Notat');
     $this->template->note_input_form($this->note);
-    $this->template->message('Husk: notater forsvinner etter 1 dag og alle kan legge til, endre eller fjerne dette notatet');
-
+    $this->template->message('Husk: alle kan legge til, endre eller fjerne notater og disse forsvinner etter 1 dag');
   }
 
   private function turnover () {
-    $this->query_retail->turnover_today();
+    $this->query_retail->turnover_today($this->min_customer_sales_id_today);
     $this->database_retail->select_single_row($this->query_retail->get());
     if ( !($this->database_retail->result) ) {
       return;
@@ -107,17 +127,14 @@ class Home {
       4 => null,
       52 => null,
     ];
-    $date_obj = new Date();
-    $date_today = $date_obj->sql_compatible_date();
+
     foreach ($weeks_behind as $i => $val) {
       $s_i = strval($i);
       $turnover = null;
+      $this->database_dw->mem_delete_yesterday('turnover_week_behind_' . $s_i);
       $mem = $this->database_dw->mem_get('turnover_week_behind_' . $s_i);
       if ( !(empty($mem)) ) {
-        $cache_date = $date_obj->date_from_time_stamp($mem['mem_time']);
-        if ( $cache_date == $date_today ) {
-          $weeks_behind[$i] = $mem['mem_val'];
-        }
+        $weeks_behind[$i] = $mem['mem_val'];
       }
       if ( $weeks_behind[$i] === null ) {
         // if null, no cache was grabbed and we need to fetch from retail
@@ -131,27 +148,30 @@ class Home {
       }
     }
     $this->template->table_start();
+
     $this->template->table_row_start();
     foreach ($weeks_behind as $i => $val) {
       $s = strval($i);
       $m = 'uke' . str_repeat('r', ($i != 1) * 1);
       $this->template->table_row_value('|');
       $this->template->_table_row_value("$s $m siden", 'center');
-      $this->template->table_row_value('|');
     }
+    $this->template->table_row_value('|');
     $this->template->table_row_end();
+
     $this->template->table_row_start();
     foreach ($weeks_behind as $i => $val) {
       $this->template->table_row_value('|');
       $this->template->_table_row_value('kr. <strong>' . $val . '</strong>', 'center');
-      $this->template->table_row_value('|');
     }
+    $this->template->table_row_value('|');
     $this->template->table_row_end();
+
     $this->template->table_end();
   }
 
   private function most_expensive_item_sold_today () {
-    $this->query_retail->most_expensive_item_sold_today();
+    $this->query_retail->most_expensive_item_sold_today($this->min_customer_sales_id_today);
     $this->database_retail->select_single_row($this->query_retail->get());
     if ($this->database_retail->result) {
       $price = $this->database_retail->result['price'];
@@ -178,10 +198,10 @@ class Home {
   }
 
   private function last_ten_sold_items () {
-    $this->query_retail->last_ten_sold_items();
+    $this->query_retail->last_ten_sold_items($this->min_customer_sales_id_today);
     $this->database_retail->select_multi_row($this->query_retail->get());
     if ($this->database_retail->result) {
-      $this->template->second_title('Nylige salg');
+      $this->template->second_title('Siste 10 salg i dag');
       $this->template->table_full_width_start();
       $this->template->table_row_start();
       $this->template->table_row_value('<strong>Selger</strong>');
@@ -201,7 +221,7 @@ class Home {
       }
       $this->template->table_end();
       $this->hyperlink->link_redirect('reports/sales');
-      $this->template->hyperlink_button('Se alle', $this->hyperlink->url);
+      $this->template->hyperlink_button('Se alle salg', $this->hyperlink->url);
     }
   }
 
@@ -227,20 +247,22 @@ class Home {
     }
   }
 
-  private function users_sales_count_today () {
-    $this->query_retail->users_sales_count_today();
+  private function users_sales_metrics () {
+    $this->query_retail->users_sales_metrics($this->min_customer_sales_id_today);
     $this->database_retail->select_multi_row($this->query_retail->get());
     if ($this->database_retail->result) {
-      $this->template->second_title('Flest salg i dag');
+      $this->template->second_title('Salgsfordeling i dag');
       $this->template->table_start();
       $this->template->table_row_start();
       $this->template->_table_row_value('<strong>Selger</strong>', 'left');
-      $this->template->_table_row_value('<strong>Salg</strong>', 'left');
+      $this->template->_table_row_value('<strong>Antal</strong>', 'left');
+      $this->template->_table_row_value('<strong>Total</strong>', 'left');
       $this->template->table_row_end();
       foreach ($this->database_retail->result as $row) {
         $this->template->table_row_start();
         $this->template->_table_row_value('| ' . CharacterConvert::utf_to_norwegian($row['salesperson']), 'left');
         $this->template->_table_row_value('| ' . $row['article_count'], 'left');
+        $this->template->_table_row_value('| ' . $row['total'] . ' kr.', 'left');
         $this->template->table_row_end();
       }
       $this->template->table_end();
