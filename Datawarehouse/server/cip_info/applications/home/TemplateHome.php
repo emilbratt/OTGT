@@ -107,11 +107,14 @@ class TemplateHome extends Template {
     $this->html .= <<<EOT
     <div class="">
     <form action="" method="post">
-    <textarea id="note_input_form" style="font-size: 18px; width:600px; height: 200px;"
+    <!--
+      <textarea id="note_input_form" style="font-size: 18px; width:650px; height: 220px;"
+    -->
+    <textarea id="note_input_form" style="font-size: 18px;"
       name="note_input_form"
       onkeypress="stop_auto_fetch_note()"
-      rows="25"
-      cols="120"
+      rows="10"
+      cols="55"
       class="note_input_form">$note</textarea>
     <input type="submit" value="Lagre Notat">
     </form>
