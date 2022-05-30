@@ -85,21 +85,6 @@ class TemplateHome extends Template {
     EOT;
   }
 
-  public function note_input_form ($note = '') {
-    $this->html .= <<<EOT
-    <div class="">
-    <form action="" method="post">
-    <textarea style="font-size: 18px; width:600px; height: 200px;"
-      name="note_input_form"
-      rows="25"
-      cols="120"
-      class="note_input_form">$note</textarea>
-    <input type="submit" value="Lagre Notat">
-    </form>
-    </div>
-    EOT;
-  }
-
   public function _table_row_value ($string, $text_align = 'center', $font_size = '18', $hyperlink = null) {
     // passing a url as second arg will make it a clickabel button
     $font_size = $font_size . 'px';
@@ -117,5 +102,49 @@ class TemplateHome extends Template {
         </td>\n
     EOT;
   }
+
+  public function note_input_form ($note = '') {
+    $this->html .= <<<EOT
+    <div class="">
+    <form action="" method="post">
+    <textarea id="note_input_form" style="font-size: 18px; width:600px; height: 200px;"
+      name="note_input_form"
+      onkeypress="stop_auto_fetch_note()"
+      rows="25"
+      cols="120"
+      class="note_input_form">$note</textarea>
+    <input type="submit" value="Lagre Notat">
+    </form>
+    </div>
+    EOT;
+
+    // auto fetch new note, but disable if "on key press event -> stop_auto_fetch_note()"
+    $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+    $this->script .= <<<EOT
+    <script>
+    function auto_fetch_note() {
+      fetch('$host/api/cache/v0/read/home_page_note')
+      .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("Could not reach website.");
+          }
+      })
+      .then(json => document.getElementById("note_input_form").value = json.mem_val)
+      .catch(err => console.error(err));
+    }
+
+    function stop_auto_fetch_note() {
+      clearInterval(auto_fetch_interval);
+    }
+
+    // interval is set in millieseconds
+    const auto_fetch_interval = setInterval(auto_fetch_note, 10000);
+    </script>
+    EOT;
+
+  }
+
 
 }
