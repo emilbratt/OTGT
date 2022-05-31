@@ -133,6 +133,7 @@ class ObjectStorage {
     // remember that it only changes the path within the path_root that
     // might have changed depending on if set_root_path() has been called
     $this->path_current = $this->path_root . $directory;
+    $this->path_current = str_replace(' ', '_', $this->path_current);
     if ( ! (preg_match($this->re_trailing_slash, $this->path_current)) ) {
       $this->path_current .= '/';
     }

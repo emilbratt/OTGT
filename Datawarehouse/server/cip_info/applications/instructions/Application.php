@@ -65,7 +65,10 @@ class Home extends Instructions {
     $this->fileobject->list_content();
     foreach ($this->fileobject->content_list as $category) {
       $this->hyperlink->link_redirect_query('instructions', 'category', $category);
+      // if underscore in name, we show whitespace instead to the user
+      $category = str_replace('_', ' ', $category);
       $sub_nav_links[$category] = $this->hyperlink->url;
+
     }
     $this->template->sub_navbar($sub_nav_links);
   }

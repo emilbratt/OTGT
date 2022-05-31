@@ -57,8 +57,9 @@ class TemplateInstructions extends Template {
         name="input_field_instructions_select_category">\n
     EOT;
     foreach ($categories as $category) {
+      $show = str_replace('_', ' ', $category);
       $this->html .= <<<EOT
-        <option value="$category">$category</option>\n
+        <option value="$category">$show</option>\n
       EOT;
     }
     $this->html .= <<<'EOT'
@@ -97,8 +98,9 @@ class TemplateInstructions extends Template {
         name="input_field_instructions_delete_category">\n
     EOT;
     foreach ($categories as $category) {
+      $show = str_replace('_', ' ', $category);
       $this->html .= <<<EOT
-        <option value="$category">$category</option>\n
+        <option value="$category">$show</option>\n
       EOT;
     }
     $this->html .= <<<'EOT'
@@ -110,7 +112,6 @@ class TemplateInstructions extends Template {
     </form><br>
     EOT;
   }
-
 
   public function button_show_qr_code () {
     $this->html .= <<<EOT
@@ -125,8 +126,6 @@ class TemplateInstructions extends Template {
     </script>\n
     EOT;
   }
-
-
 
   public function button_fetch_api_delete_instruction ($category = '', $instruction = '') {
     // this button sends request to api and the api handles validation etc.
