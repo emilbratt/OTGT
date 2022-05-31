@@ -179,7 +179,7 @@ class Template {
       /* somehow this will be same hight as $this->form_default_height.. */
       height: 22px;
     }
-    input[type="text"], input[type="search"], input[type="date"], input[type="number"] {
+    input[type="text"], input[type="search"], input[type="date"], input[type="number"], input[type="file"] {
       background-color: $this->colour_input_background;
       color: $this->colour_default_text;
       border: 1px solid $this->colour_default_border;

@@ -149,14 +149,17 @@ class Administrate extends Instructions {
       $this->template->form_add_instruction_category();
     } else {
       // all set, we can show all forms
-      $this->template->title('Last opp Instruks (må være PDF-fil)');
+      $this->template->title('Last opp Instruks i pdf');
       $this->template->form_upload_instruction($this->fileobject->content_list);
+      $this->template->line_break();
 
       $this->template->title('Legg til Kategori');
       $this->template->form_add_instruction_category();
+      $this->template->line_break();
 
       $this->template->title('Slett Kategori (ADVARSEL: sletter alle instrukser for valgt kategori)');
       $this->template->form_delete_instruction_category($this->fileobject->content_list);
+      $this->template->line_break();
     }
     $this->template->line_break();
     $this->hyperlink->link_redirect('instructions');

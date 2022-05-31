@@ -7,7 +7,7 @@ class TemplateInstructions extends Template {
   function __construct () {
     parent::__construct();
     $this->css .= <<<EOT
-    button {
+    button, select {
       border: 1px solid $this->colour_default_text;
       display: inline;
       font-size: 15px;
@@ -16,7 +16,20 @@ class TemplateInstructions extends Template {
       width: 170px;
       height: 30px;
     }
-    button:hover {
+    button:hover, select:hover {
+      background-color: $this->colour_default_hover;
+    }
+    input[type="file"] {
+      display: none;
+    }
+    .custom_file_upload_button {
+      background-color: $this->colour_input_background;
+      color: $this->colour_default_text;
+      border: 1px solid $this->colour_default_border;
+      display: inline-block;
+      padding: 5px 10px;
+    }
+    .custom_file_upload_button:hover {
       background-color: $this->colour_default_hover;
     }
     /* hide the qr code and show when clicking button */
@@ -51,7 +64,6 @@ class TemplateInstructions extends Template {
       return;
     }
     $this->html .= <<<EOT
-    <p>Velg Kategori:</p>
     <form enctype="multipart/form-data" method="POST">
       <select id="input_field_instructions_select_category"
         name="input_field_instructions_select_category">\n
@@ -64,7 +76,8 @@ class TemplateInstructions extends Template {
     }
     $this->html .= <<<'EOT'
       </select>
-      <p>Velg Fil:</p>
+
+      <label for="button_file_upload" class="custom_file_upload_button">Velg Fil</label>
       <!-- 10 MB = 1024 * (1024 * 10) = 10485760 bytes -->
       <input
         type="hidden"
@@ -73,15 +86,14 @@ class TemplateInstructions extends Template {
 
       <input required
         type="file"
+        id="button_file_upload"
         name="input_field_instructions_upload_file" />
-      <br>
 
       <input
         type="submit"
         name="input_field_instructions_upload_submit"
         value="Last opp" />
     </form>
-    <br>
     EOT;
   }
 
@@ -91,9 +103,6 @@ class TemplateInstructions extends Template {
     }
     $this->html .= <<<EOT
     <form method="POST">
-      <label for="input_field_instructions_delete_category">
-        Velg Kategori:
-      </label>
       <select id="input_field_instructions_delete_category"
         name="input_field_instructions_delete_category">\n
     EOT;
@@ -104,12 +113,12 @@ class TemplateInstructions extends Template {
       EOT;
     }
     $this->html .= <<<'EOT'
-      </select><br>
+      </select>
       <input
         type="submit"
         name="input_field_instructions_upload_submit"
         value="Slett Kategori" />
-    </form><br>
+    </form>
     EOT;
   }
 
