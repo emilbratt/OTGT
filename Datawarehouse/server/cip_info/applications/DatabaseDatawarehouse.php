@@ -75,12 +75,12 @@ class DatabaseDatawarehouse {
     }
   }
 
-
- /** THE CACHE/MEMORY TABLE FOR NONE CRITICAL DATA
-  * the below methods include easy to handle memory storage for quick access
-  * mainly we only have to use use mem_insert() and mem_get()
-  * however, we include the method mem_delete() if we specifically want to
-  * delete something from the cache table for any reason
+ /**
+  * THE CACHE/MEMORY TABLE FOR NONE CRITICAL DATA
+  *   the below methods include easy to handle memory storage for quick access
+  *   mainly we only have to use use mem_insert() and mem_get()
+  *   however, we include the method mem_delete() if we specifically want to
+  *   delete something from the cache table for any reason
   */
   public function mem_insert ($key, $val) {
     // inserts if not exist, updates (including new timestamp) if exists
