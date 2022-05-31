@@ -325,10 +325,13 @@ class Template {
     EOT;
   }
 
-  public function line_break () {
-    $this->html .= <<<EOT
-    <br>\n
-    EOT;
+  public function line_break ($n = 1) {
+    while ($n >= 1) {
+      $this->html .= <<<EOT
+      <br>\n
+      EOT;
+      $n--;
+    }
   }
 
   public function div_start ($width = '100', $display = 'inline-block', $float = false) {
@@ -354,6 +357,15 @@ class Template {
     $this->html .= <<<EOT
     <a href="$hyperlink">
       <button>$string</button>
+    </a>\n
+    EOT;
+  }
+
+  public function wide_hyperlink_button ($string, $hyperlink, $width = '400') {
+    $width = $width . 'px';
+    $this->html .= <<<EOT
+    <a href="$hyperlink">
+      <button style="width: $width;">$string</button>
     </a>\n
     EOT;
   }

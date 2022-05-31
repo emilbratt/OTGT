@@ -13,8 +13,13 @@ class TemplateInstructions extends Template {
       font-size: 15px;
       color: $this->colour_default_text;
       background-color: $this->colour_default_background;
-      width: 170px;
       height: 30px;
+    }
+    button {
+      width: 250px;
+    }
+    select {
+      width: 170px;
     }
     button:hover, select:hover {
       background-color: $this->colour_default_hover;
@@ -40,7 +45,34 @@ class TemplateInstructions extends Template {
       display: block;
       margin-left: auto;
       margin-right: auto;
-    }\n
+    }
+    /* TABLE */
+    table {
+      font-family: arial;
+      font-size: 18px;
+    }
+    td {
+      border: 1px solid $this->colour_default_border;
+      text-align: left;
+      padding-left: 2px;
+    }
+    th {
+      background-color: $this->colour_header_background;
+      height: 32px;
+    }
+    #th_no_hyperlink {
+      border: 1px solid $this->colour_default_text;
+    }
+    th a {
+      height: 27px;
+      font-size: 20px;
+    }
+    tr {
+
+      border: 1px solid $this->colour_default_border;
+    }
+
+    \n
     EOT;
   }
 
@@ -170,11 +202,19 @@ class TemplateInstructions extends Template {
     // shows an html object window of a pdf where $url is the the pdf target
     // where a body is returned as application/pdf and not html
     $this->html .= <<<EOT
-    <object width="100%" height="800" type="application/pdf" data="$url">
+    <object width="100%" height="500" type="application/pdf" data="$url">
       <p>Kunne ikke laste inn pdf</p>
     </object>\n
     EOT;
   }
 
+  public function image_show ($image) {
+    $b64image = base64_encode($image);
+    $this->html .= <<<EOT
+    <div id="image_show">
+      <img class="image_show" src="data:image/png;base64,$b64image">
+    </div>\n
+    EOT;
+  }
 
 }

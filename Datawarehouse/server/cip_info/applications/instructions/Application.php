@@ -19,8 +19,8 @@ class Instructions {
   protected $instruction;
 
   function __construct () {
-    require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
+    require_once '../applications/UserAgent.php';
     require_once '../applications/instructions/TemplateInstructions.php';
     require_once '../applications/instructions/NavigationInstructions.php';
     require_once '../applications/instructions/ObjectStorageInstructions.php';
@@ -68,7 +68,6 @@ class Home extends Instructions {
       // if underscore in name, we show whitespace instead to the user
       $category = str_replace('_', ' ', $category);
       $sub_nav_links[$category] = $this->hyperlink->url;
-
     }
     $this->template->sub_navbar($sub_nav_links);
   }
@@ -77,21 +76,28 @@ class Home extends Instructions {
     $this->fileobject->change_path($this->category);
     $this->fileobject->list_content();
     if (!empty($this->fileobject->content_list)) {
+
+      // do some preparing to format length of clickable button
+      $longest_witdh = 100;
+      foreach ($this->fileobject->content_list as $instruction) {
+        $_w = strlen($instruction) * 10;
+        if ( $_w > $longest_witdh) $longest_witdh = $_w;
+      }
+      $this->template->title(str_replace('_', ' ', $this->category));
       foreach ($this->fileobject->content_list as $instruction) {
         $query = 'category=' . $this->category . '&' . 'instruction=' . $instruction;
-        // tmp remove file extension and swap underscore with whitespace for readablilty
+        $this->hyperlink->link_redirect_multi_query('instructions', $query);
         $instruction_name = $instruction;
+        // tmp remove file extension and swap underscore with whitespace for readablilty
         $instruction_name = explode('.pdf', $instruction_name)[0];
         $instruction_name = str_replace('_', ' ', $instruction_name);
-        $this->hyperlink->link_redirect_multi_query('instructions', $query);
-        $sub_nav_links[$instruction_name] = $this->hyperlink->url;
+        $this->template->wide_hyperlink_button($instruction_name, $this->hyperlink->url, $width = $longest_witdh);
+        $this->template->line_break(2);
       }
-      $this->template->sub_navbar($sub_nav_links);
     } else {
-      $this->template->message('Fant ingen instrukser for ' . $this->category);
+      $this->template->title('Fant ingen instrukser for ' . $this->category);
     }
     $this->hyperlink->link_redirect('instructions');
-    $this->template->hyperlink_button('Tilbake', $this->hyperlink->url);
   }
 
   private function show_instruction () {
@@ -104,6 +110,10 @@ class Home extends Instructions {
       'barcodes' => [$this->hyperlink->url],
       'caller' => $this->environment->datawarehouse('cip_info_host'),
     ];
+    $user_agent = new UserAgent();
+    if ( $user_agent->is_mobile()) {
+      header('Location: ' . $this->hyperlink->url);
+    }
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $this->url_api);
     curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
@@ -131,7 +141,6 @@ class Home extends Instructions {
   }
 
 }
-
 
 
 class Administrate extends Instructions {
@@ -192,6 +201,7 @@ class Administrate extends Instructions {
 
     if ($_FILES[$_key]['type'] !== 'application/pdf') {
       // a false positive happens if any letter in pdf extension is upper-case
+      // we do another test explicitly checking the extension if first check is false
       $ext = pathinfo($_FILES[$_key]['name'], PATHINFO_EXTENSION);
       if (strtolower($ext) !== 'pdf') {
         $this->template->message('Varsel: Instrukser må være i PDF format..');
@@ -206,7 +216,7 @@ class Administrate extends Instructions {
       $this->template->message($this->fileobject->message_error);
       return;
     }
-    // filename might have been altered, we grab the correctone from fileobject
+    // filename might have been altered, we grab the one from fileobject
     $filname = $this->fileobject->get_name_file();
     $this->template->message($filname . ' ble lastet opp');
     $this->hyperlink->link_redirect_query('instructions', 'category', $this->category);
