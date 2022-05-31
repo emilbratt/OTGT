@@ -202,8 +202,8 @@ class Administrate extends Instructions {
     }
     // filename might have been altered, we grab the correctone from fileobject
     $filname = $this->fileobject->get_name_file();
-    $querystring = "category=$this->category&instruction=$filname";
-    $this->hyperlink->link_redirect_multi_query('instructions', $querystring);
+    $this->template->message($filname . ' ble lastet opp');
+    $this->hyperlink->link_redirect_query('instructions', 'category', $this->category);
     $this->template->hyperlink_button('Gå til instruks', $this->hyperlink->url);
 
   }
