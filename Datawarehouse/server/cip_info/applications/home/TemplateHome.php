@@ -172,11 +172,11 @@ class TemplateHome extends Template {
     $this->html .= <<<EOT
 
     <div style="width: 30%;">
-      <div id="shop_busy_banner_desc" style="width:100%; text-align: left; font-size: 18px;">Sjekker status i butikk..</div>
+      <div id="shop_busy_banner_desc" style="width:100%; text-align: left; font-size: 18px;"></div>
 
       <div id="busy_colour_gradient"></div>
 
-      <div id="shop_busy_arrow" style="width:0%; background-color: $this->colour_page_background; text-align: right; font-size: 28px;">&#x2192;</div>
+      <div id="shop_busy_arrow" style="width:0%; background-color: $this->colour_page_background; text-align: right; font-size: 28px;"></div>
     </div>\n
     EOT;
 
@@ -200,6 +200,8 @@ class TemplateHome extends Template {
       })
       .catch(err => console.error(err));
     }
+    auto_fetch_shop_busy();
+
     // interval is set in millieseconds
     const auto_fetch_interval_shop_busy = setInterval(auto_fetch_shop_busy, 10000);
     </script>
