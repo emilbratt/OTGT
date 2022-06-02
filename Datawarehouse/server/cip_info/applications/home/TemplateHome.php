@@ -12,6 +12,25 @@ class TemplateHome extends Template {
       background-color: $this->colour_search_background;
       color: #BBBBFF;
     }
+
+    #busy_colour_gradient {
+      height: 5px;
+      background-color: #C4EFFF; /* For browsers that do not support gradients */
+      background-image: linear-gradient(
+         to right,
+         #C4EFFF,
+         #A2F2DD,
+         #ABF5CC,
+         #9BF2B4,
+         #96FA99,
+         #ADFF85,
+         #DEFF7A,
+         #FF7C17,
+         #FF4B0A,
+         #ED0000
+       );
+    }
+
     /* TITLE */
     .second_title {
       padding: 0px;
@@ -128,22 +147,65 @@ class TemplateHome extends Template {
     function auto_fetch_note() {
       fetch('$host/api/cache/v0/read/home_page_note')
       .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Could not reach website.");
-          }
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Could not reach api endpoint.");
+        }
       })
       .then(json => document.getElementById("note_input_form").value = json.mem_val)
       .catch(err => console.error(err));
     }
 
     function stop_auto_fetch_note() {
-      clearInterval(auto_fetch_interval);
+      clearInterval(auto_fetch_interval_notes);
     }
 
     // interval is set in millieseconds
-    const auto_fetch_interval = setInterval(auto_fetch_note, 10000);
+    const auto_fetch_interval_notes = setInterval(auto_fetch_note, 10000);
+    </script>
+    EOT;
+
+  }
+
+  public function shop_how_busy ($seed_minutes = '5') {
+    $this->html .= <<<EOT
+
+    <div style="width: 20%;">
+      <div id="shop_busy_banner_desc" style="width:100%; text-align: left; font-size: 18px;">
+        Henter butikkstatus..
+      </div>
+
+      <div id="busy_colour_gradient"></div>
+
+      <div id="shop_busy_arrow" style="width:0%; background-color: $this->colour_page_background; text-align: right; font-size: 28px;"></div>
+    </div>\n
+    EOT;
+
+    // auto fetch new note, but disable if "on key press event -> stop_auto_fetch_note()"
+    $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+    $this->script .= <<<EOT
+    <script>
+    function auto_fetch_shop_busy() {
+      fetch('$host/api/shop/v0/howbusy/$seed_minutes')
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Could not reach api endpoint.");
+        }
+      })
+      .then((json) => {
+        document.getElementById("shop_busy_banner_desc").innerHTML = json['desc'];
+        document.getElementById("shop_busy_arrow").style.width = json['precent'];
+        document.getElementById("shop_busy_arrow").innerHTML = '&#x2191';
+      })
+      .catch(err => console.error(err));
+    }
+
+
+    // interval is set in millieseconds
+    const auto_fetch_interval_shop_busy = setInterval(auto_fetch_shop_busy, 2000);
     </script>
     EOT;
 

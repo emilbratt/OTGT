@@ -62,6 +62,10 @@ class Home {
     // fetch note from db cache table
     $this->home_page_note();
 
+    // show "progress bar" for how busy (sales and sellers present) in shop at this time
+    $this->template->second_title('Pågang i butikk');
+    $this->template->shop_how_busy();
+
     // get simple reports
     $this->get_reports();
 
@@ -69,12 +73,14 @@ class Home {
   }
 
   private function get_reports () {
-    $this->database_dw->mem_delete_yesterday('min_customer_sales_id_today');
     $this->get_min_customer_sales_id_today();
-    if ( !($this->min_customer_sales_id_today)) {
-      $this->template->message('Feil: kunne ikke hente ut cache: "min_customer_sales_id_today" for rapporter');
+    if ( !($this->min_customer_sales_id_today) ) {
+      if ($this->environment->developement('show_debug')) {
+        $this->template->message('Warning: could not get cache "min_customer_sales_id_today" for reports');
+      }
       return;
     }
+    // only if above block succeed, the below block will execute
     $this->turnover();
     if ($this->environment->competitive('show')) {
       $this->users_sales_metrics();
@@ -85,8 +91,10 @@ class Home {
   }
 
   private function get_min_customer_sales_id_today () {
+    // we do not want to get yesterdays or older value
+    $this->database_dw->mem_delete_yesterday('min_customer_sales_id_today');
     $this->min_customer_sales_id_today = $this->database_dw->mem_get('min_customer_sales_id_today')['mem_val'];
-    if ( !($this->min_customer_sales_id_today)) {
+    if ( !($this->min_customer_sales_id_today) ) {
       $this->query_retail->get_min_customer_sales_id_today();
       $this->database_retail->select_single_row($this->query_retail->get());
       $this->min_customer_sales_id_today = $this->database_retail->result['min_id'];

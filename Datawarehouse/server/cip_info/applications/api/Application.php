@@ -43,7 +43,6 @@ class API {
      require_once "../applications/api/$this->api_name/$this->api_verison/APIEndpoint.php";
   }
 
-
   public function run () {
     // every api request is ran from here by inherited objects
     $this->parse_request_for_api();
@@ -98,6 +97,9 @@ class Home extends API {
       'Placement' => [
         ['url' => 'api/placement/v0/update_by_article_id {"article_id": "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by article id', 'active' => true],
         ['url' => 'api/placement/v0/updatebybarcode {"barcode: "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by barcode', 'active' => false],
+      ],
+      'Shop' => [
+        ['url' => 'api/shop/v0/howbusy/{N_seed_minutes})', 'method' => 'GET', 'info' => 'get integer 1-10 (1 relaxed to 10 busy) with {N} = include sales from N minutes back', 'active' => true],
       ],
       'Cache' => [
         ['url' => 'api/cache/v0/read/{key}', 'method' => 'GET', 'info' => 'get cache', 'active' => true],
@@ -170,6 +172,10 @@ class Article extends API {
 
 class Placement extends API {
   // update item location
+}
+
+class Shop extends API {
+  // variuos metrics and general data regarding retail shop
 }
 
 class Instructions extends API {

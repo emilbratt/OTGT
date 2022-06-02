@@ -255,6 +255,23 @@ class QueryRetail {
     }
   }
 
+  public function get_min_customer_sales_id_today () {
+    // knowing the lowest sales id for today makes it quick to do queries
+    // to find sales data for today instead of passing todays date as a parameter
+    $this->query .= <<<EOT
+    SELECT
+      MIN(CustomerSales.CustomerSalesId) AS min_id
+    FROM
+     CustomerSales
+    INNER JOIN
+      CustomerSaleHeader
+    ON
+      CustomerSales.customerSaleHeaderId = CustomerSaleHeader.customerSaleHeaderId
+    WHERE
+      CustomerSaleHeader.salesDate > CAST(CURRENT_TIMESTAMP AS DATE)\n
+    EOT;
+  }
+
   public function print () {
     // for debugging only (show current query)
     echo '<pre>';

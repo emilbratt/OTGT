@@ -62,7 +62,7 @@ class TemplateDeveloping extends Template {
     $this->html .= <<<EOT
     <div class="">
     <form action="" method="post">
-    <textarea style="font-size: 18px; width:1000px; height: 700px;"
+    <textarea style="font-size: 18px;"
       name="sql_shell_query"
       rows="25"
       cols="120"

@@ -13,21 +13,6 @@ class QueryRetailHome extends QueryRetail {
     parent::__construct();
   }
 
-  public function get_min_customer_sales_id_today () {
-    $this->query .= <<<EOT
-    SELECT
-      MIN(CustomerSales.CustomerSalesId) AS min_id
-    FROM
-     CustomerSales
-    INNER JOIN
-      CustomerSaleHeader
-    ON
-      CustomerSales.customerSaleHeaderId = CustomerSaleHeader.customerSaleHeaderId
-    WHERE
-      CustomerSaleHeader.salesDate > CAST(CURRENT_TIMESTAMP AS DATE)\n
-    EOT;
-  }
-
   public function most_expensive_item_sold_today ($customer_sales_id) {
     $this->query .= <<<EOT
     SELECT TOP 1
