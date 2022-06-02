@@ -171,10 +171,8 @@ class TemplateHome extends Template {
   public function shop_how_busy ($seed_minutes = '5') {
     $this->html .= <<<EOT
 
-    <div style="width: 20%;">
-      <div id="shop_busy_banner_desc" style="width:100%; text-align: left; font-size: 18px;">
-        Henter butikkstatus..
-      </div>
+    <div style="width: 30%;">
+      <div id="shop_busy_banner_desc" style="width:100%; text-align: left; font-size: 18px;">Sjekker status i butikk..</div>
 
       <div id="busy_colour_gradient"></div>
 
@@ -202,10 +200,8 @@ class TemplateHome extends Template {
       })
       .catch(err => console.error(err));
     }
-
-
     // interval is set in millieseconds
-    const auto_fetch_interval_shop_busy = setInterval(auto_fetch_shop_busy, 2000);
+    const auto_fetch_interval_shop_busy = setInterval(auto_fetch_shop_busy, 10000);
     </script>
     EOT;
 
