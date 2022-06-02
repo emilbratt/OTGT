@@ -176,7 +176,7 @@ class TemplateHome extends Template {
 
       <div id="busy_colour_gradient"></div>
 
-      <div id="shop_busy_arrow" style="width:0%; background-color: $this->colour_page_background; text-align: right; font-size: 28px;"></div>
+      <div id="shop_busy_arrow" style="width:0%; background-color: $this->colour_page_background; text-align: right; font-size: 28px;">&#x2192;</div>
     </div>\n
     EOT;
 

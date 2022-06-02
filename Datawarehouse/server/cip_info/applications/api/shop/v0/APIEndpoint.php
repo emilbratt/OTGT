@@ -40,17 +40,17 @@ class APIEndpoint {
     '10' => '237, 0, 0',
   ];
   const HOW_BUSY_DESCRIPTION = [
-    '0' => 'Ingen trykk i butikk',
-    '1' => 'Veldig lite trykk i butikk',
-    '2' => 'Veldig lite trykk i butikk',
-    '3' => 'Lite trykk i butikk',
-    '4' => 'Noe trykk i butikk',
-    '5' => 'Noe trykk i butikk',
-    '6' => 'Noe trykk i butikk',
-    '7' => 'Mye Trykk i butikk',
-    '8' => 'Veldig mye trykk i butikk',
-    '9' => 'Veldig mye trykk i butikk',
-    '10' => 'Veldig mye trykk i butikk',
+    '0' => 'Ingen pågang',
+    '1' => 'Veldig lite pågang',
+    '2' => 'Veldig lite pågang',
+    '3' => 'Lite pågang',
+    '4' => 'Noe pågang',
+    '5' => 'Noe pågang',
+    '6' => 'Noe pågang',
+    '7' => 'Mye pågang',
+    '8' => 'Veldig mye pågang',
+    '9' => 'Veldig mye pågang',
+    '10' => 'Veldig mye pågang',
   ];
   const HOW_BUSY_PERCENTAGE = [
     '0' => '0%',
