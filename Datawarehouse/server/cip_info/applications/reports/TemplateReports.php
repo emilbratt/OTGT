@@ -229,7 +229,7 @@ class TemplateReports extends Template {
         EOT;
       } else {
         $this->html .= <<<EOT
-        <option value="$db_current_year">$db_current_year</option>\n
+              <option value="$db_current_year">$db_current_year</option>\n
         EOT;
       }
       $db_current_year--;
