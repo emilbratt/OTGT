@@ -257,10 +257,6 @@ class TemplateReports extends Template {
       </form>
     </div><br>\n
     EOT;
-
-
-    return;
-
   }
 
   public function message ($str) {
@@ -272,7 +268,6 @@ class TemplateReports extends Template {
       <p><i>$str</i></p>
     </div>\n
     EOT;
-
   }
 
 }
