@@ -327,7 +327,7 @@ class SalesHistory extends Reports {
     }
     $this->template->table_row_end();
     $query = new QueryReports();
-    $query->sales();
+    $query->sales_history();
     $hyperlink_row = new HyperLink();
     try {
       foreach ($this->database->cnxn->query($query->get()) as $row) {

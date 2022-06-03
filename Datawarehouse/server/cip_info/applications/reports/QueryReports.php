@@ -265,7 +265,7 @@ class QueryReports extends QueryRetail {
     EOT;
   }
 
-  public function sales () {
+  public function sales_history () {
     $_date = 'CONVERT(VARCHAR(5), CustomerSaleHeader.salesDate, 8)';
     if ($this->time_span == 'thisweek' or $this->time_span == 'thismonth' ) {
       $_date = 'CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 105)';
