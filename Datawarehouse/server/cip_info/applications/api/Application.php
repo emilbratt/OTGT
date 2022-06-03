@@ -101,6 +101,9 @@ class Home extends API {
       'Shop' => [
         ['url' => 'api/shop/v0/howbusy/{N_seed_minutes})', 'method' => 'GET', 'info' => 'get integer 1-10 (1 relaxed to 10 busy) with {N} = include sales from N minutes back', 'active' => true],
       ],
+      'Sales' => [
+        ['url' => 'api/sales/v0/salesperhour/{YYYY}/{M})/{DAYOFMONTH}', 'method' => 'GET', 'info' => 'sales count and turnover for each hour, params = INT, and last two params are optional', 'active' => true],
+      ],
       'Cache' => [
         ['url' => 'api/cache/v0/read/{key}', 'method' => 'GET', 'info' => 'get cache', 'active' => true],
         ['url' => 'api/cache/v0/set {"mem_key: "val", "mem_val": "val"}', 'method' => 'POST', 'info' => 'insert cache', 'active' => true],
@@ -180,6 +183,10 @@ class Shop extends API {
 
 class Instructions extends API {
   // handle instructions (pdf files) with ObjectStorage class
+}
+
+class Sales extends API {
+  // sales metrics from shop
 }
 
 class Test extends API {

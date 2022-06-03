@@ -459,4 +459,50 @@ class QueryReports extends QueryRetail {
     EOT;
   }
 
+  public function sales_per_hour () {
+    $year = $_GET['input_field_YYYY'];
+    $month = $_GET['input_field_MM'];
+    $day = $_GET['input_field_DOM'];
+    $where_condition = "YEAR(CustomerSaleHeader.salesDate) = $year\n";
+    if ( !(empty($month)) ) {
+      $where_condition .= "  AND MONTH(CustomerSaleHeader.salesDate) = $month\n";
+    }
+    if ( !(empty($day)) ) {
+      $where_condition .= "  AND DAY(CustomerSaleHeader.salesDate) = $day\n";
+    }
+    if ( !(empty($day)) and empty($month) ) {
+      $message = "Oversikt salg for hver time for den $day hver måned i $year";
+    }
+    $this->query .= <<<EOT
+    SELECT
+      DATEPART(HOUR, CustomerSaleHeader.salesDate) AS at_hour,
+      COUNT(CustomerSaleHeader.customerSaleHeaderId) AS total_sales,
+      CEILING(SUM(CustomerSaleHeader.netpayed)) AS total_net_sum,
+      CEILING(SUM(CustomerSaleHeader.totalPayed)) AS total_sum
+    FROM
+      CustomerSaleHeader
+    WHERE
+      $where_condition
+    GROUP BY
+      DATEPART(hour, CustomerSaleHeader.salesDate)\n
+    EOT;
+
+    $this->sort = 'at_hour';
+    if(isset($_GET['sort'])) {
+      $this->sort = $_GET['sort'];
+    }
+    switch ($this->order) {
+      case 'ascending':
+        $string_order = 'ASC';
+        break;
+      case 'descending':
+        $string_order = 'DESC';
+        break;
+    }
+    $this->query .= <<<EOT
+    ORDER BY
+      $this->sort $string_order\n
+    EOT;
+  }
+
 }

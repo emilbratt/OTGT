@@ -198,6 +198,52 @@ class TemplateReports extends Template {
     EOT;
   }
 
+  public function report_form_sales_per_hour () {
+    $db_first_year = 2011;
+    $db_current_year = intval(date("Y"));
+    $this->html .= <<<EOT
+    <div id="input_field_div" style="width: 400px;">
+      <form method="GET">
+        <table>
+        <tr>
+          <td style="width: 30%;">
+          <select style="width: 100%;" id="input_field_YYYY" name="input_field_YYYY">\n
+    EOT;
+    while ($db_first_year <= $db_current_year) {
+      $this->html .= <<<EOT
+            <option value="$db_first_year">$db_first_year</option>\n
+      EOT;
+      $db_first_year++;
+    }
+    $this->html .= <<<EOT
+          </select>
+          </td>
+          <td style="width: 20%;">
+            <input style="width: 100%;"
+            type="search"
+            id="input_field_MM" name="input_field_MM"
+            placeholder="Måned" value="">
+          </td>
+          <td style="width: 20%;">
+            <input style="width: 100%;"
+            type="search"
+            id="input_field_DOM" name="input_field_DOM"
+            placeholder="Dato" value="">
+          </td>
+          <td style="width: 30%;">
+            <input style="width: 100%;" type="submit" value="Generer Rapport" >
+          </td>
+        </tr>
+        </table>
+      </form>
+    </div><br>\n
+    EOT;
+
+
+    return;
+
+  }
+
   public function message ($str) {
     foreach ($this->arr_convert_sql_to_nor as $eng => $nor) {
       str_replace($eng, $nor, $str);

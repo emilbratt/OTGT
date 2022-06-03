@@ -15,6 +15,7 @@ class NavigationReports extends Navigation {
       'Utsolgte varer' => $this->app_uri . '/soldout',
       'Alle Salg' => $this->app_uri . '/saleshistory',
       'Ikke solgt på lenge' => $this->app_uri . '/notsoldlately',
+      'Salg pr. time' => $this->app_uri . '/salesperhour',
     ];
   }
 

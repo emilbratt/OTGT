@@ -22,6 +22,20 @@ class Reports {
   protected $order; // keeping track of what order should be passed when clicking header col of result table
   protected $arrow_symbol; // show arrow pointing at the way the table is ordered
   protected $hyper_link;
+  const MONTH_CONVERT = [
+    1 => 'Januar',
+    2 => 'Februar',
+    3 => 'Mars',
+    4 => 'April',
+    5 => 'Mai',
+    6 => 'Juni',
+    7 => 'Juli',
+    8 => 'August',
+    9 => 'September',
+    10 => 'Oktober',
+    11 => 'November',
+    12 => 'Desember',
+  ];
 
   function __construct () {
     // shows reports of soldout items for today, this week or this month
@@ -437,6 +451,86 @@ class NotSoldLately extends Reports {
         $this->template->table_row_value($row['location'], $hyperlink_row->url);
         $this->template->table_row_value($row['lastimported']);
         $this->template->table_row_value($row['supplyid']);
+        $this->template->table_row_end();
+      }
+    }
+    catch(Exception $e)  {
+      if($this->environment->developement('show_errors')) {
+        echo '<pre>';
+        print_r($e->getMessage());
+        echo $query;
+        echo '</pre>';
+      }
+      exit(1);
+    }
+    $this->template->table_end();
+  }
+
+}
+
+
+class SalesPerHour extends Reports {
+
+  public function run () {
+    $this->title_left = 'Rapport: Timessalg';
+    $this->template->title_left_and_right($this->title_left, $this->title_right);
+    $this->template->report_form_sales_per_hour();
+
+    if ( isset($_GET['input_field_YYYY'])
+    and  isset($_GET['input_field_MM'])
+    and  isset($_GET['input_field_DOM']) ) {
+      $this->show_report();
+    }
+    $this->template->print($this->page);
+  }
+
+  private function show_report () {
+    // for message string, we gather some values
+    $year = $_GET['input_field_YYYY'];
+    $month = $_GET['input_field_MM'];
+    $day = $_GET['input_field_DOM'];
+    $message = "Oversikt salg for hver time i $year";
+    if ( !(empty($day)) and !(empty($month)) ) {
+      $m = self::MONTH_CONVERT[$month];
+      $message = "Oversikt salg for hver time $day $m $year";
+    }
+    if ( empty($day) and !(empty($month)) ) {
+      $m = self::MONTH_CONVERT[$month];
+      $message = "Oversikt salg for hver time for $m i $year";
+    }
+    if ( !(empty($day)) and empty($month) ) {
+      $message = "Oversikt salg for hver time for den $day hver måned i $year";
+    }
+    $this->template->message($message);
+    $table_headers = [
+      'Klokketime' => 'at_hour',
+      'Antall Salg' => 'total_sales',
+      'Bruttosalg KR.' => 'total_net_sum',
+      'Totalsalg KR.' => 'total_sum',
+    ];
+    $this->template->table_full_width_start();
+    $this->template->table_row_start();
+    $hyperlink_header = new HyperLink();
+    foreach ($table_headers as $alias => $name) {
+      $hyperlink_header->add_query('sort', $name);
+      $hyperlink_header->add_query('order', $this->order);
+      if ($name == $this->sort_by) {
+        $alias .= $this->arrow_symbol;
+      }
+      $this->template->table_row_header($alias, $hyperlink_header->url);
+    }
+    $this->template->table_row_end();
+    $query = new QueryReports();
+    $query->sales_per_hour();
+    // $query->print();
+    $hyperlink_row = new HyperLink();
+    try {
+      foreach ($this->database->cnxn->query($query->get()) as $row) {
+        $this->template->table_row_start();
+        $this->template->table_row_value($row['at_hour']);
+        $this->template->table_row_value($row['total_sales']);
+        $this->template->table_row_value($row['total_net_sum']);
+        $this->template->table_row_value($row['total_sum']);
         $this->template->table_row_end();
       }
     }
