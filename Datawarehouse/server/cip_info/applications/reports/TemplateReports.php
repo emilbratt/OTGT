@@ -209,11 +209,11 @@ class TemplateReports extends Template {
           <td style="width: 30%;">
           <select style="width: 100%;" id="input_field_YYYY" name="input_field_YYYY">\n
     EOT;
-    while ($db_first_year <= $db_current_year) {
+    while ($db_current_year >= $db_first_year) {
       $this->html .= <<<EOT
-            <option value="$db_first_year">$db_first_year</option>\n
+            <option value="$db_current_year">$db_current_year</option>\n
       EOT;
-      $db_first_year++;
+      $db_current_year--;
     }
     $this->html .= <<<EOT
           </select>
