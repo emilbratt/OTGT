@@ -264,7 +264,7 @@ class Imported extends Reports {
 }
 
 
-class Sales extends Reports {
+class SalesHistory extends Reports {
 
   public function run () {
     $type = 'thisday';
