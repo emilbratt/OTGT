@@ -25,10 +25,6 @@ class QueryReports extends QueryRetail {
     if(isset($_GET['order'])) {
       $this->order = $_GET['order'];
     }
-    $this->date_part_type = 'year';
-    if(isset($_GET['input_field_date_part_type'])) {
-      $this->date_part_type = $_GET['input_field_date_part_type'];
-    }
   }
 
   public function sold_out () {
@@ -410,7 +406,7 @@ class QueryReports extends QueryRetail {
       Brands ON Article.brandId = Brands.brandId
     WHERE
       articleStock.stockQty $stock_operator '$stock_limit'
-      AND articleStock.lastSold < DATEADD($this->date_part_type, -$num_year, CURRENT_TIMESTAMP)\n
+      AND articleStock.lastSold < DATEADD($date_part_type, -$num_year, CURRENT_TIMESTAMP)\n
     EOT;
     if ($location !== '') {
       $this->query .= <<<EOT
