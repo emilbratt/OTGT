@@ -359,6 +359,7 @@ class Sales extends Reports {
 
 }
 
+
 class NotSoldLately extends Reports {
 
   public function run () {
@@ -366,7 +367,12 @@ class NotSoldLately extends Reports {
     $this->template->title_left_and_right($this->title_left, $this->title_right);
     $this->template->reports_form_brand_year_num_stock_limit();
 
-    if ( isset($_GET['input_field_brand']) and  isset($_GET['input_field_location']) and isset($_GET['input_field_date_part_type']) and isset($_GET['input_field_date_part_num']) and isset($_GET['input_field_stock_num']) and isset($_GET['input_field_stock_operator']) ) {
+    if ( isset($_GET['input_field_brand'])
+    and  isset($_GET['input_field_location'])
+    and  isset($_GET['input_field_date_part_type'])
+    and  isset($_GET['input_field_date_part_num'])
+    and  isset($_GET['input_field_stock_num'])
+    and  isset($_GET['input_field_stock_operator']) ) {
         $this->show_report();
     }
     $this->template->print($this->page);
