@@ -119,7 +119,7 @@ class TemplateReports extends Template {
     *   stock operator < or >
     *   N stock limit
     */
-
+    // this logic preserves previous query string and add them to the form
     $brand = '';
     if (isset($_GET['input_field_brand'])) {
       $brand = $_GET['input_field_brand'];
@@ -199,8 +199,21 @@ class TemplateReports extends Template {
   }
 
   public function report_form_sales_per_hour () {
+    // this logic preserves previous query string and add them to the form
     $db_first_year = 2011;
     $db_current_year = intval(date("Y"));
+    $year = $db_current_year;
+    if (isset($_GET['input_field_YYYY'])) {
+      $year = $_GET['input_field_YYYY'];
+    }
+    $month = '';
+    if (isset($_GET['input_field_MM'])) {
+      $month = $_GET['input_field_MM'];
+    }
+    $day = '';
+    if (isset($_GET['input_field_DOM'])) {
+      $day = $_GET['input_field_DOM'];
+    }
     $this->html .= <<<EOT
     <div id="input_field_div" style="width: 400px;">
       <form method="GET">
@@ -210,9 +223,15 @@ class TemplateReports extends Template {
           <select style="width: 100%;" id="input_field_YYYY" name="input_field_YYYY">\n
     EOT;
     while ($db_current_year >= $db_first_year) {
-      $this->html .= <<<EOT
-            <option value="$db_current_year">$db_current_year</option>\n
-      EOT;
+      if ( $db_current_year === intval($year) ) {
+        $this->html .= <<<EOT
+              <option selected value="$db_current_year">$db_current_year</option>\n
+        EOT;
+      } else {
+        $this->html .= <<<EOT
+        <option value="$db_current_year">$db_current_year</option>\n
+        EOT;
+      }
       $db_current_year--;
     }
     $this->html .= <<<EOT
@@ -222,13 +241,13 @@ class TemplateReports extends Template {
             <input style="width: 100%;"
             type="search"
             id="input_field_MM" name="input_field_MM"
-            placeholder="Måned" value="">
+            placeholder="Måned" value="$month">
           </td>
           <td style="width: 20%;">
             <input style="width: 100%;"
             type="search"
             id="input_field_DOM" name="input_field_DOM"
-            placeholder="Dato" value="">
+            placeholder="Dato" value="$day">
           </td>
           <td style="width: 30%;">
             <input style="width: 100%;" type="submit" value="Generer Rapport" >

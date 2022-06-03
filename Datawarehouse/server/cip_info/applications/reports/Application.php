@@ -529,8 +529,8 @@ class SalesPerHour extends Reports {
         $this->template->table_row_start();
         $this->template->table_row_value($row['at_hour']);
         $this->template->table_row_value($row['total_sales']);
-        $this->template->table_row_value($row['total_net_sum']);
-        $this->template->table_row_value($row['total_sum']);
+        $this->template->table_row_value(number_format($row['total_net_sum'], 0, '', '.') . ',-');
+        $this->template->table_row_value(number_format($row['total_sum'], 0, '', '.') . ',-');
         $this->template->table_row_end();
       }
     }
