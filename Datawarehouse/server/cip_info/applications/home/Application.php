@@ -76,7 +76,7 @@ class Home {
     $this->get_min_customer_sales_id_today();
     if ( !($this->min_customer_sales_id_today) ) {
       if ($this->environment->developement('show_debug')) {
-        $this->template->message('Warning: could not get cache "min_customer_sales_id_today" for reports');
+        $this->template->message('Warning: could not get cache "min_customer_sales_id_today" for reports (if no registered sales today, this message can be ignored)');
       }
       return;
     }
