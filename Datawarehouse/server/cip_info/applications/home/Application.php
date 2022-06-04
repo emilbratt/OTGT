@@ -93,12 +93,15 @@ class Home {
   private function get_min_customer_sales_id_today () {
     // we do not want to get yesterdays or older value
     $this->database_dw->mem_delete_yesterday('min_customer_sales_id_today');
+    // the end result of this block will either pass a number or just false to min_customer_sales_id_today
     $this->min_customer_sales_id_today = $this->database_dw->mem_get('min_customer_sales_id_today')['mem_val'];
     if ( !($this->min_customer_sales_id_today) ) {
       $this->query_retail->get_min_customer_sales_id_today();
       $this->database_retail->select_single_row($this->query_retail->get());
       $this->min_customer_sales_id_today = $this->database_retail->result['min_id'];
-      $this->database_dw->mem_insert('min_customer_sales_id_today', $this->min_customer_sales_id_today);
+      if ($this->min_customer_sales_id_today) {
+        $this->database_dw->mem_insert('min_customer_sales_id_today', $this->min_customer_sales_id_today);
+      }
     }
   }
 
