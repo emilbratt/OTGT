@@ -196,6 +196,7 @@ class TemplateHome extends Template {
       .then((json) => {
         document.getElementById("shop_busy_banner_desc").innerHTML = json['desc'];
         document.getElementById("shop_busy_arrow").style.width = json['precent'];
+        document.getElementById("shop_busy_arrow").style.color = json['hex'];
         document.getElementById("shop_busy_arrow").innerHTML = '&#x2191';
       })
       .catch(err => console.error(err));

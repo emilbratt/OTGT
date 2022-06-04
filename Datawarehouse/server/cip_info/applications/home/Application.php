@@ -64,7 +64,7 @@ class Home {
 
     // show "progress bar" for how busy (sales and sellers present) in shop at this time
     $this->template->second_title('Pågang i butikk');
-    $this->template->shop_how_busy('10');
+    $this->template->shop_how_busy('12');
 
     // get simple reports
     $this->get_reports();
