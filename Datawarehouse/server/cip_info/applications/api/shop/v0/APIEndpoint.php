@@ -126,7 +126,6 @@ class APIEndpoint {
       $this->min_customer_sales_id_today = $this->database_retail->result['min_id'];
       if ( !($this->min_customer_sales_id_today)) {
         $this->data = ['response' => 'could not load minimum customer_sales_id for today'];
-        $this->http_response_code = 500;
         return;
       }
       $database_dw->mem_insert('min_customer_sales_id_today', $this->min_customer_sales_id_today);
