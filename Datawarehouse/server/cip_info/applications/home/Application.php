@@ -229,7 +229,7 @@ class Home {
         $this->template->table_row_end();
       }
       $this->template->table_end();
-      $this->hyperlink->link_redirect('reports/sales');
+      $this->hyperlink->link_redirect('reports/saleshistory');
       $this->template->hyperlink_button('Se alle salg', $this->hyperlink->url);
     }
   }
