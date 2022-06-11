@@ -6,7 +6,11 @@
  *  reports -> sales pr. hour -> implement choice for weekdays
  *  reports -> turnover -> add graph report for turnover and compare with earlier
  *  reports -> add graph report for sales count pr hour/day/week etc. and compare with earlier
- *  add app find -> items by category
+ *
+ *  find -> items by category
+ *
+ *  navigation -> add external URLS from environment or an asset file called urls.json etc.
+ *    NOTE: urls might be confidential such as direct links to object storage etc. and so no hardcoding here..
  *
  */
 
