@@ -9,8 +9,7 @@
  *
  *  find -> items by category
  *
- *  navigation -> add external URLS from environment or an asset file called urls.json etc.
- *    NOTE: urls might be confidential such as direct links to object storage etc. and so no hardcoding here..
+ *  navigation -> add external URLS (with metadata like title etc.) that can be added via web and stored in db
  *
  */
 
