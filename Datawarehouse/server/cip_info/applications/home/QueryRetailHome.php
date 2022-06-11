@@ -148,7 +148,7 @@ class QueryRetailHome extends QueryRetail {
     $this->query .= <<<EOT
     SELECT
       hipUser.userFirstName AS salesperson,
-      SUM(CustomerSales.noOfArticles) AS article_count,
+      CAST(SUM(CustomerSales.noOfArticles) AS INT) AS article_count,
       CAST(SUM(CustomerSales.totalThisSale) AS INT) AS total
     FROM
       CustomerSales
