@@ -50,5 +50,5 @@ require_once '../applications/Environment.php';
 
 // the main entrypoint
 require_once '../applications/AppRequest.php';
-$main = new Apprequest;
-$main = null;
+$app = new Apprequest;
+$app->run();

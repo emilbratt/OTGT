@@ -2,8 +2,8 @@
 
 class Apprequest {
 
-  protected $app_dir;
-  protected $app_class;
+  private $app_dir;
+  private $app_class;
   private $url_split;
   private $show_errors;
 
@@ -16,28 +16,30 @@ class Apprequest {
       error_reporting(E_ALL);
     }
     unset ($environment);
+  }
 
+  public function run () {
     // this is where the application is loaded and instantiated based on URI
     $this->load_app_dir();
     require_once "../applications/$this->app_dir/Application.php";
     // this is where we load the correct page specified as a class
     $this->load_app_class();
-    // this is where the application is started
-    $app = new $this->app_class;
-    $app->run();
+    // this is where the page for the specific application is started
+    $page = new $this->app_class;
+    $page->run();
     // this is where the application is terminated
   }
 
   private function load_app_dir () {
     // the 1st word in the url = app directory which resides in ../applications
     // defaults that is changed if specified in URL
-    if($_SERVER['REDIRECT_URL'] === '/') {
+    if ($_SERVER['REDIRECT_URL'] === '/') {
       $this->app_dir = 'home';
       return;
     }
 
     $this->url_split = explode('/', strtolower(substr($_SERVER['REDIRECT_URL'], 1)));
-    if (isset($this->url_split[0])) {
+    if ( isset($this->url_split[0]) ) {
       $this->app_dir = $this->url_split[0];
     }
 
@@ -46,7 +48,7 @@ class Apprequest {
     }
 
     $this->app_dir = explode('&', $this->app_dir)[0];
-    if(is_dir("../applications/$this->app_dir")) {
+    if ( is_dir("../applications/$this->app_dir") ) {
       return;
     }
 
@@ -60,23 +62,23 @@ class Apprequest {
 
   private function load_app_class () {
     // the 2nd word in the url = app class which is loaded in Application.php
-    if($_SERVER['REDIRECT_URL'] === '/') {
+    if ($_SERVER['REDIRECT_URL'] === '/') {
       $this->app_class = 'Home';
       return;
     }
 
     $this->app_class = 'Home';
-    if (isset($this->url_split[1])) {
+    if ( isset($this->url_split[1]) ) {
       $this->app_class = ucfirst($this->url_split[1]);
     }
 
     // load class in Application.php
-    if (class_exists($this->app_class)) {
+    if ( class_exists($this->app_class) ) {
       return;
     }
 
     $this->app_class = explode('&', $this->url_split[1])[0];
-    if(class_exists($this->app_class)) {
+    if ( class_exists($this->app_class) ) {
       return;
     }
 
