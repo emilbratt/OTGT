@@ -210,14 +210,25 @@ class TemplateReports extends Template {
     if (isset($_GET['input_field_MM'])) {
       $month = $_GET['input_field_MM'];
     }
-    $day = '';
+    $dom = '';
     if (isset($_GET['input_field_DOM'])) {
-      $day = $_GET['input_field_DOM'];
+      $dom = $_GET['input_field_DOM'];
+    }
+    $dow = '';
+    if (isset($_GET['input_field_DOW'])) {
+      $dow = $_GET['input_field_DOW'];
+    }
+    $hod = '';
+    if (isset($_GET['input_field_HOD'])) {
+      $hod = $_GET['input_field_HOD'];
     }
     $this->html .= <<<EOT
-    <div id="input_field_div" style="width: 400px;">
+    <div id="input_field_div" style="width: 600px;">
       <form method="GET">
         <table>
+        <tr>
+          <td>År</td> <td>Måned</td> <td>Dato</td> <td>Ukedag</td> <td>Klokketime</td>
+        </tr>
         <tr>
           <td style="width: 30%;">
           <select style="width: 100%;" id="input_field_YYYY" name="input_field_YYYY">\n
@@ -241,13 +252,25 @@ class TemplateReports extends Template {
             <input style="width: 100%;"
             type="search"
             id="input_field_MM" name="input_field_MM"
-            placeholder="Måned" value="$month">
+            placeholder="1-12" value="$month">
           </td>
           <td style="width: 20%;">
             <input style="width: 100%;"
             type="search"
             id="input_field_DOM" name="input_field_DOM"
-            placeholder="Dato" value="$day">
+            placeholder="1-31" value="$dom">
+          </td>
+          <td style="width: 20%;">
+            <input style="width: 100%;"
+            type="search"
+            id="input_field_DOW" name="input_field_DOW"
+            placeholder="1-7" value="$dow">
+          </td>
+          <td style="width: 20%;">
+            <input style="width: 100%;"
+            type="search"
+            id="input_field_HOD" name="input_field_HOD"
+            placeholder="0-23" value="$hod">
           </td>
           <td style="width: 30%;">
             <input style="width: 100%;" type="submit" value="Generer Rapport" >

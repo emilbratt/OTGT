@@ -462,17 +462,24 @@ class QueryReports extends QueryRetail {
   public function sales_per_hour () {
     $year = $_GET['input_field_YYYY'];
     $month = $_GET['input_field_MM'];
-    $day = $_GET['input_field_DOM'];
+    $dom = $_GET['input_field_DOM'];
+    $dow = $_GET['input_field_DOW'];
+    $hod = $_GET['input_field_HOD'];
     $where_condition = "YEAR(CustomerSaleHeader.salesDate) = $year\n";
+
     if ( !(empty($month)) ) {
       $where_condition .= "  AND MONTH(CustomerSaleHeader.salesDate) = $month\n";
     }
-    if ( !(empty($day)) ) {
-      $where_condition .= "  AND DAY(CustomerSaleHeader.salesDate) = $day\n";
+    if ( !(empty($dom)) ) {
+      $where_condition .= "  AND DAY(CustomerSaleHeader.salesDate) = $dom\n";
     }
-    if ( !(empty($day)) and empty($month) ) {
-      $message = "Oversikt salg for hver time for den $day hver måned i $year";
+    if ( !(empty($dow)) ) {
+      $where_condition .= "  AND DATEPART(WEEKDAY, CustomerSaleHeader.salesDate) = $dow\n";
     }
+    if ( !(empty($hod)) ) {
+      $where_condition .= "  AND DATEPART(HOUR, CustomerSaleHeader.salesDate) = $hod\n";
+    }
+
     $this->query .= <<<EOT
     SELECT
       DATEPART(HOUR, CustomerSaleHeader.salesDate) AS at_hour,

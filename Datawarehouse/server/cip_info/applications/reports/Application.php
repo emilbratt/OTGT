@@ -36,6 +36,15 @@ class Reports {
     11 => 'November',
     12 => 'Desember',
   ];
+  const DAYOFWEEK_CONVERT = [
+    1 => 'Mandag',
+    2 => 'Tirsdag',
+    3 => 'Onsdag',
+    4 => 'Torsdag',
+    5 => 'Fredag',
+    6 => 'Lørdag',
+    7 => 'Søndag',
+  ];
 
   function __construct () {
     // shows reports of soldout items for today, this week or this month
@@ -474,11 +483,12 @@ class SalesPerHour extends Reports {
   public function run () {
     $this->title_left = 'Rapport: Timessalg';
     $this->template->title_left_and_right($this->title_left, $this->title_right);
+    $this->template->message('Felt utenom årstall er valgfritt');
     $this->template->report_form_sales_per_hour();
-
     if ( isset($_GET['input_field_YYYY'])
     and  isset($_GET['input_field_MM'])
-    and  isset($_GET['input_field_DOM']) ) {
+    and  isset($_GET['input_field_DOM'])
+    and  isset($_GET['input_field_DOW']) ) {
       $this->show_report();
     }
     $this->template->print($this->page);
@@ -486,22 +496,8 @@ class SalesPerHour extends Reports {
 
   private function show_report () {
     // for message string, we gather some values
-    $year = $_GET['input_field_YYYY'];
-    $month = $_GET['input_field_MM'];
-    $day = $_GET['input_field_DOM'];
-    $message = "Oversikt salg for hver time i $year";
-    if ( !(empty($day)) and !(empty($month)) ) {
-      $m = self::MONTH_CONVERT[$month];
-      $message = "Oversikt salg for hver time $day $m $year";
-    }
-    if ( empty($day) and !(empty($month)) ) {
-      $m = self::MONTH_CONVERT[$month];
-      $message = "Oversikt salg for hver time for $m i $year";
-    }
-    if ( !(empty($day)) and empty($month) ) {
-      $message = "Oversikt salg for hver time for den $day hver måned i $year";
-    }
-    $this->template->message($message);
+    $this->add_message();
+
     $table_headers = [
       'Klokketime' => 'at_hour',
       'Antall Salg' => 'total_sales',
@@ -544,6 +540,36 @@ class SalesPerHour extends Reports {
       exit(1);
     }
     $this->template->table_end();
+  }
+
+  private function add_message () {
+    $message = 'År: ' . $_GET['input_field_YYYY'];
+
+    $m = 'Alle';
+    if ( !(empty($_GET['input_field_MM'])) ) {
+      $m = self::MONTH_CONVERT[$_GET['input_field_MM']];
+    }
+    $message .= '<br>Måned: ' .  $m;
+
+    $m = 'Alle';
+    if ( !(empty($_GET['input_field_DOM'])) ) {
+      $m = $_GET['input_field_DOM'];
+    }
+    $message .= '<br>Dato: ' .  $m;
+
+    $m = 'Alle';
+    if ( !(empty($_GET['input_field_DOW'])) ) {
+      $m = self::DAYOFWEEK_CONVERT[$_GET['input_field_DOW']];
+    }
+    $message .= '<br>Ukedag: ' . $m;
+
+    $m = 'Alle';
+    if ( !(empty($_GET['input_field_HOD'])) ) {
+      $m = $_GET['input_field_HOD'];
+    }
+    $message .= '<br>Klokketime: ' . $m;
+
+    $this->template->message($message);
   }
 
 }
