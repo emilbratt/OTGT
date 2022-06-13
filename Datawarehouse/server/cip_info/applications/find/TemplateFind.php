@@ -160,7 +160,6 @@ class TemplateFind extends Template {
     EOT;
   }
 
-
   public function form_shelf () {
     $shelf = '';
     if ( isset($_GET['input_field_shelf'])) {
@@ -175,9 +174,8 @@ class TemplateFind extends Template {
             <input style="width: 100%;"
             type="search"  autofocus="autofocus" onfocus="this.select()"
             id="input_field_shelf" name="input_field_shelf"
-            placeholder="Plassering X-X-Y" value="$shelf">
+            placeholder="Plassering X-Y-Z" value="$shelf">
           </td>
-
           <td style="width: 10%;">
             <input style="width: 100%;" type="submit" value="Søk" >
           </td>
@@ -187,7 +185,6 @@ class TemplateFind extends Template {
     </div><br>\n
     EOT;
   }
-
 
   public function form_barcode ($action = "byarticle") {
     // $action will send to specified app
