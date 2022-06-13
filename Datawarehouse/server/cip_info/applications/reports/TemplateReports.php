@@ -227,7 +227,11 @@ class TemplateReports extends Template {
       <form method="GET">
         <table>
         <tr>
-          <td>År</td> <td>Måned</td> <td>Dato</td> <td>Ukedag</td> <td>Klokketime</td>
+          <td>År</td>
+          <td>Måned</td>
+          <td>Dato</td>
+          <td>Ukedag</td>
+          <td>Klokketime</td>
         </tr>
         <tr>
           <td style="width: 30%;">
