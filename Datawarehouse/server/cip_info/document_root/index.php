@@ -3,7 +3,6 @@
 /**
  *
  * TODO:
- *  reports -> sales pr. hour -> implement choice for weekdays
  *  reports -> turnover -> add graph report for turnover and compare with earlier
  *  reports -> add graph report for sales count pr hour/day/week etc. and compare with earlier
  *
