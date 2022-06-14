@@ -261,7 +261,7 @@ class TemplateFind extends Template {
     <input
       style="display: inline-block; width: 55px; height: 22px;"
       type="text"
-      onkeyup="convert_input_to_uppercase()"
+      onkeyup="sanitize_input_for_shelf_label()"
       id="button_fetch_api_post_update_placement"
       >
     </form>\n
@@ -289,8 +289,8 @@ class TemplateFind extends Template {
       });
     }
 
-    // force all input to upper case
-    function convert_input_to_uppercase() {
+    // force all input to upper case and whitespace to underscore
+    function sanitize_input_for_shelf_label() {
       var x = document.getElementById('button_fetch_api_post_update_placement');
       x.value = x.value.toUpperCase();
       x.value = x.value.replace(/\s+/g, '-');
