@@ -448,7 +448,7 @@ class ByArticle extends Find {
       }
       $this->template->line_break();
       $this->template->_title('Plassering');
-      $this->template->button_fetch_api_post_update_placement($article_id, $retail_location);
+      $this->template->button_fetch_api_post_update_placement($article_id);
       if ($has_location) {
       // print out all placement registered for item
         $this->template->table_start();

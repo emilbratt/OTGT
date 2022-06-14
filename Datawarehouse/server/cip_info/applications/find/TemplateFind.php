@@ -247,7 +247,13 @@ class TemplateFind extends Template {
     EOT;
   }
 
-  public function button_fetch_api_post_update_placement ($article_id = '', $shelf = '') {
+  public function button_fetch_api_post_update_placement ($article_id = false) {
+    if ($article_id === false) {
+      echo 'button_fetch_api_post_update_placement(article_id)<br>';
+      echo 'takes article_id as parameter<br>';
+      echo 'but none was passed';
+      exit(1);
+    }
     // this button sends request to api and the api handles validation etc.
     $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
     $this->html .= <<<EOT
@@ -255,14 +261,14 @@ class TemplateFind extends Template {
     <input
       style="display: inline-block; width: 55px; height: 22px;"
       type="text"
-      id="input_id_$article_id"
+      id="button_fetch_api_post_update_placement"
       >
     </form>\n
     EOT;
     $this->script .= <<<EOT
     <script>
     function button_fetch_api_post_update_placement(article_id) {
-      var shelf = document.getElementById('input_id_' + article_id).value;
+      var shelf = document.getElementById('button_fetch_api_post_update_placement').value;
 
       const form_data = new FormData();
       form_data.append('article_id', article_id);
@@ -273,9 +279,9 @@ class TemplateFind extends Template {
         body: form_data
       }).then(response => {
         if (response.ok) {
-          document.getElementById('input_id_' + article_id).style.backgroundColor = '$this->colour_update_value_ok';
+          document.getElementById('button_fetch_api_post_update_placement').style.backgroundColor = '$this->colour_update_value_ok';
         } else {
-          document.getElementById('input_id_' + article_id).style.backgroundColor = '$this->colour_update_value_error';
+          document.getElementById('button_fetch_api_post_update_placement').style.backgroundColor = '$this->colour_update_value_error';
         }
       });
 
