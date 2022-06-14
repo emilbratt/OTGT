@@ -8,7 +8,7 @@ class TemplateBarcodes extends Template {
     parent::__construct();
 
     $this->css .= <<<EOT
-    #short_input_length {
+    .short_input_length {
       width: 80px;
     }
     #medium_input_length {
@@ -74,8 +74,22 @@ class TemplateBarcodes extends Template {
       $even = strval($i + 1);
       $this->html .= <<<EOT
       <div>
-        <input id="short_input_length" type="text" name="$odd" maxlength="$char_limit">
-        <input id="short_input_length" type="text" name="$even" maxlength="$char_limit">
+        <input
+          id="input_id_$odd"
+          class="short_input_length"
+          type="text"
+          name="$odd"
+          onkeyup="sanitize_input_for_shelf_label('$odd')"
+          maxlength="$char_limit">
+
+        <input
+          id="input_id_$even"
+          class="short_input_length"
+          type="text"
+          name="$even"
+          onkeyup="sanitize_input_for_shelf_label('$even')"
+          maxlength="$char_limit">
+
       </div>\n
       EOT;
     }
@@ -83,6 +97,17 @@ class TemplateBarcodes extends Template {
     <input id="medium_input_length" type="submit" value="Generer">
     </form>
     </div>\n
+    EOT;
+
+    $this->script .= <<<EOT
+    <script>
+    // force all input to upper case and whitespace to underscore
+    function sanitize_input_for_shelf_label(N) {
+      var x = document.getElementById('input_id_' + N);
+      x.value = x.value.toUpperCase();
+      x.value = x.value.replace(/\s+/g, '-');
+    }
+    </script>\n
     EOT;
   }
 
