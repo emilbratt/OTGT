@@ -537,6 +537,7 @@ class Template {
     <input
       style="display: inline-block; height: 22px; text-align: center; width: 60px;"
       type="text"
+      onkeyup="sanitize_input_for_shelf_label('$article_id')"
       id="input_id_$article_id"
       value="$shelf"
       >
@@ -568,6 +569,13 @@ class Template {
           document.getElementById('input_id_' + article_id).style.backgroundColor = '$this->colour_update_value_error';
         }
       });
+    }
+
+    // force all input to upper case and whitespace to underscore
+    function sanitize_input_for_shelf_label(article_id) {
+      var x = document.getElementById('input_id_' + article_id);
+      x.value = x.value.toUpperCase();
+      x.value = x.value.replace(/\s+/g, '-');
     }
     </script>\n
     EOT;
