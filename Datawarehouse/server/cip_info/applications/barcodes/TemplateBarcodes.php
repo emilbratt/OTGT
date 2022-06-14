@@ -38,30 +38,6 @@ class TemplateBarcodes extends Template {
     EOT;
   }
 
-  public function _barcode_form ($sheet_limit, $char_limit) {
-    // the sheet_limit must be passed because we need to know the maximum
-    // number of input fields -> shelf labels that can fit on a paper sheet
-    $this->html .= <<<EOT
-    <div class="center_div">
-    <form enctype="multipart/form-data" method="POST">\n
-    EOT;
-    for ($i = 1; $i <= $sheet_limit; $i+=2) {
-      $odd = strval($i);
-      $even = strval($i + 1);
-      $this->html .= <<<EOT
-      <div>
-        <input id="short_input_length" type="text" name="$odd" maxlength="$char_limit">
-        <input id="short_input_length" type="text" name="$even" maxlength="$char_limit">
-      </div>\n
-      EOT;
-    }
-    $this->html .= <<<EOT
-    <input id="medium_input_length" type="submit" value="Generer">
-    </form>
-    </div>\n
-    EOT;
-  }
-
   public function _shelf_label_form ($sheet_limit, $char_limit) {
     // the sheet_limit must be passed because we need to know the maximum
     // number of input fields -> shelf labels that can fit on a paper sheet
