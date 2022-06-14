@@ -66,7 +66,8 @@ class QueryRetailPlacement extends QueryRetail {
       SELECT articleId
       FROM StockAdjustment
       WHERE adjustmentCode = '41'
-      AND CONVERT(VARCHAR(10), [adjustmentDate], 102) = CONVERT(VARCHAR(10), CURRENT_TIMESTAMP, 102)
+      AND DATEPART(WEEK, [adjustmentDate]) = DATEPART(WEEK, CURRENT_TIMESTAMP)
+      AND DATEPART(YEAR, [adjustmentDate]) = DATEPART(YEAR, CURRENT_TIMESTAMP)
     )
 
     ORDER BY
