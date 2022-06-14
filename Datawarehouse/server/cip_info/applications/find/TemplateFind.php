@@ -261,12 +261,15 @@ class TemplateFind extends Template {
     <input
       style="display: inline-block; width: 55px; height: 22px;"
       type="text"
+      onkeyup="convert_input_to_uppercase()"
       id="button_fetch_api_post_update_placement"
       >
     </form>\n
     EOT;
+
     $this->script .= <<<EOT
     <script>
+    // sends formdata to api to update placement for the current article
     function button_fetch_api_post_update_placement(article_id) {
       var shelf = document.getElementById('button_fetch_api_post_update_placement').value;
 
@@ -284,10 +287,16 @@ class TemplateFind extends Template {
           document.getElementById('button_fetch_api_post_update_placement').style.backgroundColor = '$this->colour_update_value_error';
         }
       });
+    }
 
+    // force all input to upper case
+    function convert_input_to_uppercase() {
+      var x = document.getElementById('button_fetch_api_post_update_placement');
+      x.value = x.value.toUpperCase();
+      x.value = x.value.replace(/\s+/g, '-');
     }
     </script>\n
     EOT;
-
   }
+
 }
