@@ -13,6 +13,9 @@ class Reports {
   protected $environment;
   protected $title_left = 'Rapport: ';
   protected $title_right;
+  protected $data_send = array();
+  protected $spreadsheet_data = array();
+  protected $hyperlink_spreadsheet;
   protected $database;
   protected $navigation;
   protected $template;
@@ -47,8 +50,9 @@ class Reports {
   ];
 
   function __construct () {
-    // shows reports of soldout items for today, this week or this month
-    require_once '../applications/Environment.php';
+    // session is used to store previously fetched data to generate spreadsheets
+    session_start();
+
     require_once '../applications/DatabaseRetail.php';
     require_once '../applications/Helpers.php';
     require_once '../applications/HyperLink.php';
@@ -56,6 +60,15 @@ class Reports {
     require_once '../applications/reports/NavigationReports.php';
     require_once '../applications/reports/TemplateReports.php';
     require_once '../applications/reports/QueryReports.php';
+
+    $this->environment = new Environment();
+    $this->navigation = new NavigationReports();
+    $this->database = new DatabaseRetail();
+    $this->template = new TemplateReports();
+
+    // takes url used to visit the specific page and add spreadsheet as query parameter
+    $this->hyperlink_spreadsheet = new HyperLink();
+    $this->hyperlink_spreadsheet->add_query('spreadsheet', 'true');
 
     $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
 
@@ -75,12 +88,71 @@ class Reports {
       $this->sort_by = $_GET['sort'];
     }
 
-    $this->environment = new Environment();
-    $this->navigation = new NavigationReports();
-    $this->database = new DatabaseRetail();
-    $this->template = new TemplateReports();
+    // if clicked on button for downloading spreadsheet, new window will open in browser
+    if ( isset($_GET['spreadsheet']) ) {
+      if ( isset($_SESSION['spreadsheet']) ) {
+        $this->send_to_api_and_generate_spreadsheet();
+      }
+      else {
+        if ( $this->environment->developement('show_debug') ) {
+          echo ("no value found in \$_SESSION['spreadsheet']");
+        }
+        exit(1);
+      }
+    }
     $this->template->top_navbar($this->navigation->top_nav_links, $this->page);
+    if (isset($_SESSION['message'])) {
+      $this->template->message($_SESSION['message']);
+      unset($_SESSION['message']);
+    }
   }
+
+
+  private function send_to_api_and_generate_spreadsheet () {
+    $this->data_send = [
+      'rows' => $_SESSION['spreadsheet'],
+      'caller' => $this->environment->datawarehouse('cip_info_host'),
+      'filename' => explode('/', $_SERVER['REDIRECT_URL'])[2],
+      'has_header' => true,
+    ];
+    $host = $this->environment->datawarehouse('spreadsheet_generator_host');
+    $port = $this->environment->datawarehouse('spreadsheet_generator_port');
+    $url_api = 'http://'.$host.':'.$port.'/spreadsheet';
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $url_api);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->data_send));
+    // curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(['caller' => 'world', 'rows' => ['data']]));
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $body = curl_exec($curl);
+    // var_dump($body); die;
+    if (curl_errno($curl)) {
+      if ( $this->environment->developement('show_debug') ) {
+        $this->template->message('Error on curl request: ' . curl_error($curl));
+        $this->template->print($this->page);
+      }
+    }
+    $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    curl_close ($curl);
+    // return;
+    if ($http_status_code == 201) {
+      $filename = explode('/', $_SERVER['REDIRECT_URL'])[2];
+      header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      // header('Content-Type: application/octet-stream');
+      header('Content-Transfer-Encoding: binary');
+      header('Cache-Control: must-revalidate');
+      header('Content-Disposition: attachment; filename=' . $filename . '.xlsx');
+      echo $body;
+      exit(0);
+    }
+    else if ($http_status_code == 422) {
+        $m = 'Varsel: For mange rader til å skrive ut regneark<br>';
+        $m .= '..prøv å forminske rader ved å legge til kriterier i rapporten';
+        $_SESSION['message'] = $m;
+    }
+  }
+
 }
 
 class Home extends Reports {
@@ -140,10 +212,14 @@ class Soldout extends Reports {
 
     $this->template->script_filter_row_button();
 
+    $this->template->hyperlink_button_target_top('Last ned regneark', $this->hyperlink_spreadsheet->url);
+
     $this->template->table_full_width_start();
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
+    $spreadsheet_row = array();
     foreach ($table_headers as $alias => $name) {
+      array_push($spreadsheet_row, $alias);
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
       if ($name == $this->sort_by) {
@@ -151,6 +227,7 @@ class Soldout extends Reports {
       }
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
+    array_push($this->spreadsheet_data, $spreadsheet_row);
     $this->template->table_row_end();
     $hyperlink_header = null;
     $query = new QueryReports();
@@ -161,14 +238,22 @@ class Soldout extends Reports {
         $article_id = $row['article_id'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
-        $this->template->table_row_value($row['quantity']);
-        $this->template->table_row_value($row['location'], $hyperlink_row->url);
-        $this->template->table_row_value($row['lastimported']);
-        $this->template->table_row_value($row['lastsold']);
-        $this->template->table_row_value($row['supplyid']);
+        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
+        $article = CharacterConvert::utf_to_norwegian($row['article']);
+        $quantity = $row['quantity'];
+        $location = $row['location'];
+        $last_imported = $row['lastimported'];
+        $last_sold = $row['lastsold'];
+        $supply_id = $row['supplyid'];
+        $this->template->table_row_value($brand);
+        $this->template->table_row_value($article, $hyperlink_row->url);
+        $this->template->table_row_value($quantity);
+        $this->template->table_row_value($location, $hyperlink_row->url);
+        $this->template->table_row_value($last_imported);
+        $this->template->table_row_value($last_sold);
+        $this->template->table_row_value($supply_id);
         $this->template->table_row_end();
+        array_push($this->spreadsheet_data, [$brand, $article, $quantity, $location, $last_imported, $last_sold, $supply_id]);
       }
     }
     catch(Exception $e)  {
@@ -181,7 +266,7 @@ class Soldout extends Reports {
       exit(1);
     }
     $this->template->table_end();
-
+    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
     $this->template->print($this->page);
   }
 
@@ -238,11 +323,15 @@ class Imported extends Reports {
 
     $this->template->script_filter_row_button();
 
+    $this->template->hyperlink_button_target_top('Last ned regneark', $this->hyperlink_spreadsheet->url);
+
     $this->template->table_full_width_start();
     $this->template->table_row_start();
 
     $hyperlink_header = new HyperLink();
+    $spreadsheet_row = array();
     foreach ($table_headers as $alias => $name) {
+      array_push($spreadsheet_row, $alias);
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
       if ($name == $this->sort_by) {
@@ -250,6 +339,7 @@ class Imported extends Reports {
       }
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
+    array_push($this->spreadsheet_data, $spreadsheet_row);
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->imported();
@@ -259,15 +349,24 @@ class Imported extends Reports {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
         $article_id = $row['article_id'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
+
+        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
+        $article = CharacterConvert::utf_to_norwegian($row['article']);
+        $import_qty = $row['import_qty'];
+        $quantity = $row['quantity'];
+        $location = $row['location'];
+        $last_imported = $row['lastimported'];
+        $supply_id = $row['supplyid'];
         $this->template->table_row_start();
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['import_qty']));
-        $this->template->table_row_value($row['quantity']);
-        $this->template->table_row_value($row['location'], $hyperlink_row->url);
-        $this->template->table_row_value($row['lastimported']);
-        $this->template->table_row_value($row['supplyid']);
+        $this->template->table_row_value($brand);
+        $this->template->table_row_value($article, $hyperlink_row->url);
+        $this->template->table_row_value($import_qty);
+        $this->template->table_row_value($quantity);
+        $this->template->table_row_value($location, $hyperlink_row->url);
+        $this->template->table_row_value($last_imported);
+        $this->template->table_row_value($supply_id);
         $this->template->table_row_end();
+        array_push($this->spreadsheet_data, [$brand, $article, $import_qty, $quantity, $location, $last_imported, $supply_id]);
       }
     }
     catch(Exception $e)  {
@@ -280,7 +379,7 @@ class Imported extends Reports {
       exit(1);
     }
     $this->template->table_end();
-    $hyperlink_row = null;
+    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
     $this->template->print($this->page);
   }
 
@@ -336,11 +435,16 @@ class SalesHistory extends Reports {
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
     $this->template->script_filter_row_button('2');
+
+    $this->template->hyperlink_button_target_top('Last ned regneark', $this->hyperlink_spreadsheet->url);
+
     $this->template->table_full_width_start();
 
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
+    $spreadsheet_row = array();
     foreach ($table_headers as $alias => $name) {
+      array_push($spreadsheet_row, $alias);
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
       if ($name == $this->sort_by) {
@@ -348,6 +452,7 @@ class SalesHistory extends Reports {
       }
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
+    array_push($this->spreadsheet_data, $spreadsheet_row);
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->sales_history();
@@ -356,14 +461,21 @@ class SalesHistory extends Reports {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
         $article_id = $row['article_id'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
+        $name = CharacterConvert::utf_to_norwegian($row['name']);
+        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
+        $article = CharacterConvert::utf_to_norwegian($row['article']);
+        $soldqty = $row['soldqty'];
+        $salesdate = $row['salesdate'];
+        $price = round($row['price'], 2);
         $this->template->table_row_start();
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['name']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
-        $this->template->table_row_value($row['soldqty']);
-        $this->template->table_row_value($row['salesdate']);
-        $this->template->table_row_value(round($row['price'], 2));
+        $this->template->table_row_value($name);
+        $this->template->table_row_value($brand);
+        $this->template->table_row_value($article, $hyperlink_row->url);
+        $this->template->table_row_value($soldqty);
+        $this->template->table_row_value($salesdate);
+        $this->template->table_row_value($price);
         $this->template->table_row_end();
+        array_push($this->spreadsheet_data, [$name, $brand, $article, $soldqty, $salesdate, $price]);
       }
     }
     catch(Exception $e)  {
@@ -376,7 +488,7 @@ class SalesHistory extends Reports {
       exit(1);
     }
     $this->template->table_end();
-    $hyperlink_row = null;
+    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
     $this->template->print($this->page);
   }
 
@@ -396,7 +508,7 @@ class NotSoldLately extends Reports {
     and  isset($_GET['input_field_date_part_num'])
     and  isset($_GET['input_field_stock_num'])
     and  isset($_GET['input_field_stock_operator']) ) {
-        $this->show_report();
+      $this->show_report();
     }
     $this->template->print($this->page);
   }
@@ -433,10 +545,14 @@ class NotSoldLately extends Reports {
 
     $this->template->script_filter_row_button();
 
+    $this->template->hyperlink_button_target_top('Last ned regneark', $this->hyperlink_spreadsheet->url);
+
     $this->template->table_full_width_start();
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
+    $spreadsheet_row = array();
     foreach ($table_headers as $alias => $name) {
+      array_push($spreadsheet_row, $alias);
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
       if ($name == $this->sort_by) {
@@ -444,6 +560,7 @@ class NotSoldLately extends Reports {
       }
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
+    array_push($this->spreadsheet_data, $spreadsheet_row);
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->in_stock_not_sold_lately();
@@ -452,15 +569,24 @@ class NotSoldLately extends Reports {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
         $article_id = $row['article_id'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
+        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
+        $article = CharacterConvert::utf_to_norwegian($row['article']);
+        $lastsold = $row['lastsold'];
+        $quantity = $row['quantity'];
+        $location = $row['location'];
+        $lastimported = $row['lastimported'];
+        $supplyid = $row['supplyid'];
         $this->template->table_row_start();
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
-        $this->template->table_row_value($row['lastsold']);
-        $this->template->table_row_value($row['quantity']);
-        $this->template->table_row_value($row['location'], $hyperlink_row->url);
-        $this->template->table_row_value($row['lastimported']);
-        $this->template->table_row_value($row['supplyid']);
+        $this->template->table_row_value($brand);
+        $this->template->table_row_value($article, $hyperlink_row->url);
+        $this->template->table_row_value($lastsold);
+        $this->template->table_row_value($quantity);
+        $this->template->table_row_value($location, $hyperlink_row->url);
+        $this->template->table_row_value($lastimported);
+        $this->template->table_row_value($supplyid);
         $this->template->table_row_end();
+        array_push($this->spreadsheet_data, [$brand, $article, $lastsold, $quantity, $location, $lastimported, $supplyid]);
+        sleep(0.025);
       }
     }
     catch(Exception $e)  {
@@ -473,6 +599,7 @@ class NotSoldLately extends Reports {
       exit(1);
     }
     $this->template->table_end();
+    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
   }
 
 }
@@ -498,6 +625,8 @@ class SalesPerHour extends Reports {
     // for message string, we gather some values
     $this->add_message();
 
+    $this->template->hyperlink_button_target_top('Last ned regneark', $this->hyperlink_spreadsheet->url);
+
     $table_headers = [
       'Klokketime' => 'at_hour',
       'Antall Salg' => 'total_sales',
@@ -507,7 +636,9 @@ class SalesPerHour extends Reports {
     $this->template->table_full_width_start();
     $this->template->table_row_start();
     $hyperlink_header = new HyperLink();
+    $spreadsheet_row = array();
     foreach ($table_headers as $alias => $name) {
+      array_push($spreadsheet_row, $alias);
       $hyperlink_header->add_query('sort', $name);
       $hyperlink_header->add_query('order', $this->order);
       if ($name == $this->sort_by) {
@@ -515,6 +646,7 @@ class SalesPerHour extends Reports {
       }
       $this->template->table_row_header($alias, $hyperlink_header->url);
     }
+    array_push($this->spreadsheet_data, $spreadsheet_row);
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->sales_per_hour();
@@ -522,12 +654,17 @@ class SalesPerHour extends Reports {
     $hyperlink_row = new HyperLink();
     try {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
+        $at_hour = $row['at_hour'];
+        $total_sales = $row['total_sales'];
+        $total_net_sum = number_format($row['total_net_sum'], 0, '', '.') . ',-';
+        $total_sum = number_format($row['total_sum'], 0, '', '.') . ',-';
         $this->template->table_row_start();
-        $this->template->table_row_value($row['at_hour']);
-        $this->template->table_row_value($row['total_sales']);
-        $this->template->table_row_value(number_format($row['total_net_sum'], 0, '', '.') . ',-');
-        $this->template->table_row_value(number_format($row['total_sum'], 0, '', '.') . ',-');
+        $this->template->table_row_value($at_hour);
+        $this->template->table_row_value($total_sales);
+        $this->template->table_row_value($total_net_sum);
+        $this->template->table_row_value($total_sum);
         $this->template->table_row_end();
+        array_push($this->spreadsheet_data, [$at_hour, $total_sales, $total_net_sum, $total_sum]);
       }
     }
     catch(Exception $e)  {
@@ -540,6 +677,7 @@ class SalesPerHour extends Reports {
       exit(1);
     }
     $this->template->table_end();
+    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
   }
 
   private function add_message () {

@@ -244,6 +244,24 @@ class Template {
     $this->html .= <<<EOT
     </pre>\n
     EOT;
+    // show _SESSION array if set
+    $this->html .= <<<EOT
+    <p>\$_SESSION</p>
+    <pre>\n
+    EOT;
+    if (isset($_SESSION)) {
+      foreach ($_SESSION as $key => $val) {
+        if ( is_array($val) ) {
+          $v = json_encode($val, JSON_UNESCAPED_UNICODE);
+          $this->html .= "<pre>$v</pre>\n";
+        } else {
+          $this->html .= "$key --> $val\n";
+        }
+      }
+    }
+    $this->html .= <<<EOT
+    </pre>\n
+    EOT;
   }
 
   public function custom_html ($str) {
@@ -356,6 +374,14 @@ class Template {
   public function hyperlink_button ($string, $hyperlink) {
     $this->html .= <<<EOT
     <a href="$hyperlink">
+      <button>$string</button>
+    </a>\n
+    EOT;
+  }
+
+  public function hyperlink_button_target_top ($string, $hyperlink) {
+    $this->html .= <<<EOT
+    <a href="$hyperlink" target="_top">
       <button>$string</button>
     </a>\n
     EOT;
@@ -709,6 +735,9 @@ class Template {
     <html>
     <head>
     <title>$page</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
     $this->css
     </style>

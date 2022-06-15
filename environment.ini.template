@@ -27,6 +27,8 @@
   db_password_post = "INSERT"
   barcode_generator_host = "INSERT"
   barcode_generator_port = "INSERT"
+  spreadsheet_generator_host = "INSERT"
+  spreadsheet_generator_port = "INSERT"
 
 [nextcloud_otgt] ; self-hosted nextcloud instance used for OTGT
   nc_host = "INSERT"

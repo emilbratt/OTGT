@@ -297,4 +297,13 @@ class TemplateReports extends Template {
     EOT;
   }
 
+  public function embed_spreadsheet ($url) {
+    // shows an html object window of a pdf where $url is the the pdf target
+    // where a body is returned as application/pdf and not html
+    $this->html .= <<<EOT
+    <object width="100%" height="500" type="text/csv" data="$url">
+      <p>Kunne ikke laste inn csv</p>
+    </object>\n
+    EOT;
+  }
 }
