@@ -253,7 +253,7 @@ class Soldout extends Reports {
         $this->template->table_row_value($last_sold);
         $this->template->table_row_value($supply_id);
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$brand, $article, $quantity, $location, $last_imported, $last_sold, $supply_id]);
+        array_push($this->spreadsheet_data, [$brand, $article, intval($quantity), $location, $last_imported, $last_sold, $supply_id]);
       }
     }
     catch(Exception $e)  {
@@ -366,7 +366,7 @@ class Imported extends Reports {
         $this->template->table_row_value($last_imported);
         $this->template->table_row_value($supply_id);
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$brand, $article, $import_qty, $quantity, $location, $last_imported, $supply_id]);
+        array_push($this->spreadsheet_data, [$brand, $article, intval($import_qty), intval($quantity), $location, $last_imported, $supply_id]);
       }
     }
     catch(Exception $e)  {
@@ -475,7 +475,7 @@ class SalesHistory extends Reports {
         $this->template->table_row_value($salesdate);
         $this->template->table_row_value($price);
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$name, $brand, $article, $soldqty, $salesdate, $price]);
+        array_push($this->spreadsheet_data, [$name, $brand, $article, intval($soldqty), $salesdate, floatval($price)]);
       }
     }
     catch(Exception $e)  {
@@ -585,7 +585,7 @@ class NotSoldLately extends Reports {
         $this->template->table_row_value($lastimported);
         $this->template->table_row_value($supplyid);
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$brand, $article, $lastsold, $quantity, $location, $lastimported, $supplyid]);
+        array_push($this->spreadsheet_data, [$brand, $article, $lastsold, intval($quantity), $location, $lastimported, $supplyid]);
         sleep(0.025);
       }
     }
@@ -656,15 +656,15 @@ class SalesPerHour extends Reports {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
         $at_hour = $row['at_hour'];
         $total_sales = $row['total_sales'];
-        $total_net_sum = number_format($row['total_net_sum'], 0, '', '.') . ',-';
-        $total_sum = number_format($row['total_sum'], 0, '', '.') . ',-';
+        $total_net_sum = $row['total_net_sum'];
+        $total_sum = $row['total_sum'];
         $this->template->table_row_start();
         $this->template->table_row_value($at_hour);
         $this->template->table_row_value($total_sales);
-        $this->template->table_row_value($total_net_sum);
-        $this->template->table_row_value($total_sum);
+        $this->template->table_row_value(number_format($total_net_sum, 0, '', '.') . ',-');
+        $this->template->table_row_value(number_format($total_sum, 0, '', '.') . ',-');
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$at_hour, $total_sales, $total_net_sum, $total_sum]);
+        array_push($this->spreadsheet_data, [$at_hour, intval($total_sales), intval($total_net_sum), intval($total_sum)]);
       }
     }
     catch(Exception $e)  {
