@@ -3,11 +3,12 @@
 class QueryRetail {
 
   protected $query;
-  protected $template = "SET LANGUAGE NORWEGIAN\n"; // always use norwegian
+  protected $template;
   protected $illegal_reserved_words; // simple way to prevent script kiddie level sql injection
   protected $special_characters; // mainly to swap "æ", "ø" and "å" to  "_"
 
   function __construct () {
+    $this->template = "SET LANGUAGE NORWEGIAN\n"; // always use norwegian
     $this->illegal_reserved_words = [
       'DATABASE', 'DELETE', 'MODIFY', 'UPDATE', 'INSERT', 'DROP',
     ];
