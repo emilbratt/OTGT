@@ -33,7 +33,7 @@ class Lemon {
 // creating the home class that will be called if second query string is omitted
 class Home extends Lemon {
   public function run () {
-    ... // this is where the entrypoint is for home visited from mydomain/lemon
+    ... // this is where the entrypoint is for home visiting mydomain/lemon
     ...
     ...
 
@@ -43,7 +43,7 @@ class Home extends Lemon {
 
 class Juice extends Lemon {
   public function run () {
-    ... // this is where the entrypoint is for juice | visit from mydomain/lemon/juice
+    ... // this is where the entrypoint is for juice when visiting mydomain/lemon/juice
     ...
     ...
   }

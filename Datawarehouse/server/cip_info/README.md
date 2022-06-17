@@ -1,5 +1,5 @@
 ## About
-This is the webserver that brings some functionality to the user such as reading values from the POS database and reports
+This is the main webserver which also connects to the other services found within the OTGT/Datawarehouse/server/ directory
 
 
 ## Setting up the http server
