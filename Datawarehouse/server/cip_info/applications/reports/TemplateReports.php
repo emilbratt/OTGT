@@ -61,7 +61,7 @@ class TemplateReports extends Template {
       font-size: 15px;
       color: $this->colour_default_text;
       background-color: $this->colour_default_background;
-      width: 150px;
+      width: 160px;
       height: 30px;
     }
     a button:hover {
