@@ -38,7 +38,6 @@ class Home {
     require_once '../applications/home/QueryRetailHome.php';
     require_once '../applications/home/QueryDatawarehouseHome.php';
 
-    $this->min_customer_sales_id_today = false;
 
     $this->environment = new Environment();
     $this->template = new TemplateHome();
@@ -75,9 +74,6 @@ class Home {
   private function get_reports () {
     $this->get_min_customer_sales_id_today();
     if ( !($this->min_customer_sales_id_today) ) {
-      if ($this->environment->developement('show_debug')) {
-        $this->template->message('Warning: could not get cache "min_customer_sales_id_today" for reports (if no registered sales today, this message can be ignored)');
-      }
       return;
     }
     // only if above block succeed, the below block will execute
@@ -94,15 +90,34 @@ class Home {
     // we do not want to get yesterdays or older value
     $this->database_dw->mem_delete_yesterday('min_customer_sales_id_today');
     // the end result of this block will either pass a number or just false to min_customer_sales_id_today
-    $this->min_customer_sales_id_today = $this->database_dw->mem_get('min_customer_sales_id_today')['mem_val'];
-    if ( !($this->min_customer_sales_id_today) ) {
-      $this->query_retail->get_min_customer_sales_id_today();
+    $min_id = $this->database_dw->mem_get('min_customer_sales_id_today')['mem_val'];
+    if ($min_id != false) {
+      // we might still have grabbed yesterdays id from cache
+      // if inserted at around 00:00 on date shift (this has happened)
+      // lets really confirm that this id is todays minimum sales id
+      $this->query_retail->select_confirm_min_customer_sales_id_is_today($min_id);
       $this->database_retail->select_single_row($this->query_retail->get());
-      $this->min_customer_sales_id_today = $this->database_retail->result['min_id'];
-      if ($this->min_customer_sales_id_today) {
-        $this->database_dw->mem_insert('min_customer_sales_id_today', $this->min_customer_sales_id_today);
+      $is_valid = $this->database_retail->result['min_id'];
+      // if row returned, id is valid and we can jump out
+      if ($is_valid) {
+        $this->min_customer_sales_id_today = $min_id;
+        return;
       }
     }
+    // if id from cache was not found or if id not valid, we need to grab from retail database
+    $this->query_retail->select_min_customer_sales_id_today();
+    $this->database_retail->select_single_row($this->query_retail->get());
+    // if row returned, we have an id and can update cache
+    $this->min_customer_sales_id_today = $this->database_retail->result['min_id'];
+    if ($this->min_customer_sales_id_today) {
+      $this->database_dw->mem_insert('min_customer_sales_id_today', $this->min_customer_sales_id_today);
+      return;
+    }
+    if ($this->environment->developement('show_debug')) {
+      $this->template->message('Warning: could not get "min_customer_sales_id_today"');
+      $this->template->message('..if no registered sales today, this message can most likely be ignored');
+    }
+
   }
 
   private function home_page_note () {

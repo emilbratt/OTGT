@@ -42,10 +42,10 @@ class APIEndpoint {
   const HOW_BUSY_DESCRIPTION = [
     '0' => 'Ingen pågang',
     '1' => 'Veldig lite pågang',
-    '2' => 'Lite pågang',
-    '3' => 'Noe pågang',
-    '4' => 'Noe pågang',
-    '5' => 'En del pågang',
+    '2' => 'Noe pågang',
+    '3' => 'Merkbar Pågang',
+    '4' => 'En del pågang',
+    '5' => 'Mye pågang',
     '6' => 'Mye pågang',
     '7' => 'Mye pågang',
     '8' => 'Veldig mye pågang',
@@ -115,36 +115,54 @@ class APIEndpoint {
   }
 
   private function get_min_customer_sales_id_today () {
-    // we do not want to get yesterdays or older value
     $database_dw = new DatabaseDatawarehouse();
     $database_dw->mem_delete_yesterday('min_customer_sales_id_today');
-    $this->min_customer_sales_id_today = $database_dw->mem_get('min_customer_sales_id_today')['mem_val'];
-    if ( !($this->min_customer_sales_id_today) ) {
-      $query = new APIQueryRetail();
-      $query->get_min_customer_sales_id_today();
-      $this->database_retail->select_single_row($query->get());
-      $this->min_customer_sales_id_today = $this->database_retail->result['min_id'];
-      if ( !($this->min_customer_sales_id_today)) {
-        $this->data = ['response' => 'could not load minimum customer_sales_id for today'];
+    // the end result of this block will either pass a number or just false to min_customer_sales_id_today
+    $min_id = $database_dw->mem_get('min_customer_sales_id_today')['mem_val'];
+    if ($min_id != false) {
+      // we might still have grabbed yesterdays id from cache
+      // if inserted at around 00:00 on date shift (this has happened)
+      // lets really confirm that this id is todays minimum sales id
+      $query_retail = new APIQueryRetail();
+      $query_retail->select_confirm_min_customer_sales_id_is_today($min_id);
+      $this->database_retail->select_single_row($query_retail->get());
+      $is_valid = $this->database_retail->result['min_id'];
+      // if row returned, id is valid and we can jump out
+      if ($is_valid) {
+        $this->min_customer_sales_id_today = $min_id;
         return;
       }
+    }
+
+    // if id from cache was not found or if id not valid, we need to grab from retail database
+    $query_retail->select_min_customer_sales_id_today();
+    $this->database_retail->select_single_row($query_retail->get());
+    // if row returned, we have an id and can update cache
+    $this->min_customer_sales_id_today = $this->database_retail->result['min_id'];
+    // insert to cache if row returned
+    if ($this->min_customer_sales_id_today) {
       $database_dw->mem_insert('min_customer_sales_id_today', $this->min_customer_sales_id_today);
+      return;
     }
   }
 
   private function calculate_how_busy () {
-    $query = new APIQueryRetail();
-    $query->howbusy($this->seed_minutes, $this->min_customer_sales_id_today);
-    $this->database_retail->select_single_row($query->get());
-    if ( !($this->database_retail->result) ) {
-      // no result means no sales which means relaxed which means 1 as result
-      $this->howbusy_result = 1;
-      return;
+    // if we hav min_customer_sales_id_today, we can qoery for how busy
+    if ($this->min_customer_sales_id_today) {
+      $query = new APIQueryRetail();
+      $query->howbusy($this->seed_minutes, $this->min_customer_sales_id_today);
+      $this->database_retail->select_single_row($query->get());
+      if ($this->database_retail->result != false) {
+        // grouping by seller means that we will get a row for each seller
+        $this->howbusy_result = strval($this->database_retail->result['busy_result']);
+        $this->n_sales = strval($this->database_retail->result['sales']);
+        $this->n_sellers = strval($this->database_retail->result['sellers']);
+        return;
+      }
     }
-    // grouping by seller means that we will get a row for each seller
-    $this->howbusy_result = $this->database_retail->result['busy_result'];
-    $this->n_sales = $this->database_retail->result['sales'];
-    $this->n_sellers = $this->database_retail->result['sellers'];
-
+    // no results = no sales => not busy
+    $this->howbusy_result = '0';
+    $this->n_sales = '0';
+    $this->n_sellers = '0';
   }
 }
