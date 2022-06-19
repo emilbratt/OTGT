@@ -137,6 +137,10 @@ class TemplateFind extends Template {
       <form method="GET">
         <table>
         <tr>
+        <td style="width: 60%;">Artikkel</td>
+        <td style="width: 30%;">Merke</td>
+        </tr>
+        <tr>
           <td style="width: 60%;">
             <input style="width: 100%;"
             type="search" autofocus="autofocus" onfocus="this.select()"
