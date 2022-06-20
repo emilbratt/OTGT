@@ -664,7 +664,7 @@ class SalesPerHour extends Reports {
         $this->template->table_row_value(number_format($total_net_sum, 0, '', '.') . ',-');
         $this->template->table_row_value(number_format($total_sum, 0, '', '.') . ',-');
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$at_hour, intval($total_sales), intval($total_net_sum), intval($total_sum)]);
+        array_push($this->spreadsheet_data, [intval($at_hour), intval($total_sales), intval($total_net_sum), intval($total_sum)]);
       }
     }
     catch(Exception $e)  {
