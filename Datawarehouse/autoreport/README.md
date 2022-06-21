@@ -1,3 +1,6 @@
+## under developement, this application is not in a working state atm.
+*main script to run is autoreport.py
+
 ## About
 * runs auto reporting on sales, inventory imports, turnover e.g.  
 
