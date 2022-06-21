@@ -132,8 +132,10 @@ class APIEndpoint {
         $this->min_customer_sales_id_today = $min_id;
         return;
       }
+      unset($query_retait);
     }
 
+    $query_retail = new APIQueryRetail();
     // if id from cache was not found or if id not valid, we need to grab from retail database
     $query_retail->select_min_customer_sales_id_today();
     $this->database_retail->select_single_row($query_retail->get());
