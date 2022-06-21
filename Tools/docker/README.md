@@ -2,7 +2,7 @@
 
 ### setup
 * make sure to have docker and docker-compose installed on your system
-* make sure create the environment.ini file derived from environment.ini.template
+* create the environment.ini file using the template -> environment.ini.template
 
 ### commands
 * start containers
