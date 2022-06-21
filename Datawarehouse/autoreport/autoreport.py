@@ -6,12 +6,14 @@ import CloudHandle
 import DatabaseHandle
 
 def main():
-    print(Environment.get('cloudstorage', 'host'))
-    print(Environment.get('cloudstorage', 'user_autoreport'))
+
     cloud = CloudHandle.Download()
     cloud = CloudHandle.Upload()
-    retailhandle = DatabaseHandle.Retail()
-    datawarehousehandle = DatabaseHandle.Datawarehouse()
+
+    conf = Environment.database_retail()
+    retailhandle = DatabaseHandle.Retail(conf)
+    conf = Environment.database_datawarehouse()
+    datawarehousehandle = DatabaseHandle.Datawarehouse(conf)
 
 
 if __name__ == '__main__':
