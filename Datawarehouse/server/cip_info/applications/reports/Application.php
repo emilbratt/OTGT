@@ -168,6 +168,7 @@ class Home extends Reports {
 class Soldout extends Reports {
 
   public function run () {
+    $this->page = 'Utsolgt';
     $type = 'thisday';
     if(isset($_GET['type'])) {
       $type = $_GET['type'];
@@ -276,6 +277,7 @@ class Soldout extends Reports {
 class Imported extends Reports {
 
   public function run () {
+    $this->page = 'Varemottak';
     $type = 'thisday';
     if(isset($_GET['type'])) {
       $type = $_GET['type'];
@@ -389,6 +391,7 @@ class Imported extends Reports {
 class SalesHistory extends Reports {
 
   public function run () {
+    $this->page = 'Alle Salg';
     $type = 'thisday';
     if(isset($_GET['type'])) {
       $type = $_GET['type'];
@@ -498,6 +501,7 @@ class SalesHistory extends Reports {
 class NotSoldLately extends Reports {
 
   public function run () {
+    $this->page = 'Ikke solgt på lenge';
     $this->title_left = 'Rapport: Varer på lager som ikke er solgt på lenge';
     $this->template->title_left_and_right($this->title_left, $this->title_right);
     $this->template->reports_form_brand_year_num_stock_limit();
@@ -608,6 +612,7 @@ class NotSoldLately extends Reports {
 class SalesPerHour extends Reports {
 
   public function run () {
+    $this->page = 'Salg pr. time';
     $this->title_left = 'Rapport: Timessalg';
     $this->template->title_left_and_right($this->title_left, $this->title_right);
     $this->template->message('Felt utenom årstall er valgfritt');

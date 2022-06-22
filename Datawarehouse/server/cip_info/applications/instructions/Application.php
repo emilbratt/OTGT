@@ -49,7 +49,7 @@ class Home extends Instructions {
     if (isset($_GET['category'])) {
       $this->category = $_GET['category'];
       $this->list_instructions();
-      $this->template->print($this->page);
+      $this->template->print($this->category);
       return;
     }
 

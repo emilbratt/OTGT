@@ -41,13 +41,14 @@ class Placement {
 class Home extends Placement {
 
   public function run () {
+    $hyperlink = new HyperLink();
+    $hyperlink->link_redirect('placement/fromimported');
+    $this->template->hyperlink_button('Legg inn fra Mottak', $hyperlink->url);
+    $hyperlink->link_redirect('placement/newestplacements');
+    $this->template->hyperlink_button('Nye plasseringer', $hyperlink->url);
+
     // step 1: scan item (this form sets placement_scan_item)
     if ( !(isset($_POST['barcode'])) ) {
-      $hyperlink = new HyperLink();
-      $hyperlink->link_redirect('placement/fromimported');
-      $this->template->hyperlink_button('Legg inn fra Mottak', $hyperlink->url);
-      $hyperlink->link_redirect('placement/newestplacements');
-      $this->template->hyperlink_button('Nye plasseringer', $hyperlink->url);
       $this->placement_scan_item();
     }
     // step 2: validate item scan and then scan shelf (this form sets both placement_scan_item and placement_scan_shelf)
