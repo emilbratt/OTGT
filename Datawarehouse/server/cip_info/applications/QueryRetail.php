@@ -285,7 +285,7 @@ class QueryRetail {
       CustomerSales.customerSaleHeaderId = CustomerSaleHeader.customerSaleHeaderId
     WHERE
       CustomerSales.CustomerSalesId = '$N'
-      AND CustomerSaleHeader.salesDate = CAST(CURRENT_TIMESTAMP AS DATE)\n
+      AND CAST(CustomerSaleHeader.salesDate AS DATE) = CAST(CURRENT_TIMESTAMP AS DATE)\n
     EOT;
   }
 
