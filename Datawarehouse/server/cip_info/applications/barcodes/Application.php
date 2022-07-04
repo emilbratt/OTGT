@@ -176,7 +176,7 @@ class GenerateShelfLabels extends Barcodes {
       $this->validate_labels();
       if ($this->valid_label) {
         // no html printing because we expect an octet stream (byte array)
-        $this->send_to_api_ang_generate_shelf_labels();
+        $this->send_to_api_and_generate_shelf_labels();
         return;
       }
       $this->template->print($this->page);
@@ -279,7 +279,7 @@ class GenerateShelfLabels extends Barcodes {
     }
   }
 
-  private function send_to_api_ang_generate_shelf_labels () {
+  private function send_to_api_and_generate_shelf_labels () {
     $this->get_api_url('shelf/');
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $this->url_api);
