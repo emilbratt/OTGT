@@ -421,6 +421,7 @@ class SalesHistory extends Reports {
       'Merke' => 'brand',
       'Navn' => 'article',
       'Antall' => 'soldqty',
+      'Plassering' => 'location',
       $_key => 'salesdate',
       'Pris' => 'price',
     ];
@@ -468,6 +469,7 @@ class SalesHistory extends Reports {
         $brand = CharacterConvert::utf_to_norwegian($row['brand']);
         $article = CharacterConvert::utf_to_norwegian($row['article']);
         $soldqty = $row['soldqty'];
+        $location = $row['location'];
         $salesdate = $row['salesdate'];
         $price = round($row['price'], 2);
         $this->template->table_row_start();
@@ -475,6 +477,7 @@ class SalesHistory extends Reports {
         $this->template->table_row_value($brand);
         $this->template->table_row_value($article, $hyperlink_row->url);
         $this->template->table_row_value($soldqty);
+        $this->template->table_row_value($location, $hyperlink_row->url);
         $this->template->table_row_value($salesdate);
         $this->template->table_row_value($price);
         $this->template->table_row_end();

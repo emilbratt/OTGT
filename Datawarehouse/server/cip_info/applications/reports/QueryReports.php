@@ -277,7 +277,8 @@ class QueryReports extends QueryRetail {
       CustomerSales.usedPricePerUnit AS price,
       CustomerSales.disCount AS discount,
       CustomerSaleHeader.additionalInfo AS paymentmethod,
-      Article.suppliers_art_no AS supplyid
+      Article.suppliers_art_no AS supplyid,
+      articleStock.StorageShelf AS location
     FROM
       CustomerSales
     FULL JOIN Article
@@ -288,6 +289,8 @@ class QueryReports extends QueryRetail {
       ON Brands.brandId = Article.brandId
     FULL JOIN hipUser
       ON CustomerSaleHeader.userId = hipUser.userId
+    INNER JOIN
+      articleStock ON Article.articleId = articleStock.articleId
     WHERE
       Article.articleId IS NOT NULL\n
     EOT;
@@ -357,6 +360,9 @@ class QueryReports extends QueryRetail {
         break;
       case 'discount':
         $string_sort = 'CustomerSales.disCount';
+        break;
+      case 'location':
+        $string_sort = 'location';
         break;
       case 'paymentmethod':
         $string_sort = 'CustomerSaleHeader.additionalInfo';
