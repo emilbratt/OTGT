@@ -296,7 +296,7 @@ class NewestPlacements extends Placement {
 
   private function show_latest_placements () {
     $query_datawarehouse = new QueryDatawarehousePlacement();
-    $limit = '50';
+    $limit = '100';
     $query_datawarehouse->latest_registered_placements($limit);
     $this->database_datawarehouse->select_multi_row($query_datawarehouse->get());
     if ($this->database_datawarehouse->result) {
