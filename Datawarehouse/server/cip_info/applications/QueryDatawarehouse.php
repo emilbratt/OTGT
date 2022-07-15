@@ -24,6 +24,14 @@ class QueryDatawarehouse {
       EOT;
     }
 
+  public function update_timestamp_for_placement () {
+    $this->query = <<<EOT
+    UPDATE placement
+    SET timestamp = :timestamp, yyyymmdd = :yyyymmdd
+    WHERE article_id = :article_id AND stock_location = :shelf
+    EOT;
+  }
+
     public function get () {
       $query = $this->query;
       $this->start_new();
