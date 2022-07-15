@@ -13,22 +13,16 @@ class QueryRetailPlacement extends QueryRetail {
     parent::__construct();
   }
 
-  public function basic_article_info_by_ean () {
+  public function article_id_and_article_name_by_ean () {
     $ean = $_POST['barcode'];
     $this->query .= <<<EOT
     SELECT
       Article.articleId AS article_id,
-      Article.articleName AS article,
-      articleStock.StorageShelf AS location,
-      Brands.brandLabel AS brand
+      Article.articleName AS article
     FROM
       Article
     INNER JOIN
-      articleStock ON Article.articleId = articleStock.articleId
-    INNER JOIN
       ArticleEAN ON Article.articleId = ArticleEAN.articleId
-    INNER JOIN
-      Brands ON Article.brandId = Brands.brandId
     WHERE
       ArticleEAN.eanCode = '$ean'\n
     EOT;

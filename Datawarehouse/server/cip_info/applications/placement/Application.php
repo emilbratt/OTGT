@@ -11,12 +11,16 @@ class Placement {
   protected $ean;
   protected $message;
   protected $article_id;
-  protected $article_id_ok;
-  protected $ean_ok;
   protected $shelf;
-  protected $shelf_ok;
+  protected $is_shelf;
+  protected $is_ean;
+  protected $date_time;
+  protected $yyyymmdd;
 
   function __construct () {
+    // session is used to store previously fetched multiple items
+    session_start();
+
     require_once '../applications/Date.php';
     require_once '../applications/DatabaseRetail.php';
     require_once '../applications/DatabaseDatawarehouse.php';
@@ -47,191 +51,183 @@ class Home extends Placement {
     $hyperlink->link_redirect('placement/newestplacements');
     $this->template->hyperlink_button('Nye plasseringer', $hyperlink->url);
 
-    // step 1: scan item (this form sets placement_scan_item)
-    if ( !(isset($_POST['barcode'])) ) {
-      $this->placement_scan_item();
+    $this->template->line_break(2);
+    $this->template->form_start('POST');
+    $this->template->_form_scan_item();
+    $this->template->_form_end();
+
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+      // GET request means we have not scanned any items and thus show instruction
+      $this->template->title('Registrer vareplassering');
+      $this->template->message('Start med å skanne en eller flere varer');
+      $this->template->message('Etterpå så skanner du hyllemerking');
+      // we also remove the articles just in case user has navigated in and out
+      unset($_SESSION['articles']);
     }
-    // step 2: validate item scan and then scan shelf (this form sets both placement_scan_item and placement_scan_shelf)
-    else if ( isset($_POST['barcode']) and (!(isset($_POST['shelf']))) ) {
-      $this->placement_scan_shelf();
+    else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+      // POST request means we have scanned a barcode
+      if ( isset($_POST['barcode']) ) {
+        $this->handle_barcode();
+      }
     }
-    // step 3: upload new shelf value for item using placement_scan_item and placement_scan_shelf
-    else if ( isset($_POST['article_id']) and isset($_POST['shelf']) ) {
-      $this->placement_update();
+
+    if (isset($_SESSION['articles'])) {
+      $this->print_scanned_items();
+      $this->template->message('Skann hyllemerking for å legge inn plassering på alle varer over');
     }
 
     $this->template->print($this->page);
   }
 
-  private function placement_scan_item () {
-    $this->template->title('Skann Vare');
-    $this->template->form_start('POST');
-    $this->template->_form_scan_item();
-    $this->template->_form_end();
-  }
-
-  private function placement_scan_shelf () {
-    $this->ean = $_POST['barcode'];
-    $this->validate_barcode();
-    if ( !($this->ean_ok) ) {
-      $this->placement_scan_item();
-      $this->template->message($this->message);
+  private function handle_barcode () {
+    // first we check if it is an ean
+    $this->confirm_ean();
+    if ($this->is_ean) {
+      $this->add_item_to_session();
       return;
     }
-
-    $query_retail = new QueryRetailPlacement();
-    $query_retail->basic_article_info_by_ean();
-    $this->database_retail->select_single_row($query_retail->get());
-    if ( !($this->database_retail->result) ) {
-      $this->placement_scan_item();
-      $this->template->title('Ingen vare med strekkode: ' . $_POST['barcode']);
+    // second, we check if it is a shelf
+    $this->confirm_shelf();
+    if ($this->is_shelf) {
+      $this->update_database();
       return;
     }
-
-    $this->article_id = $this->database_retail->result['article_id'];
-    $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
-    $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
-    $location = $this->database_retail->result['location'];
-    $this->template->title('Skann Hylle');
-    $this->template->form_start('POST');
-    $this->template->_form_scan_shelf($this->article_id, $article, $brand);
-    $this->template->_form_end();
-    $this->template->title($brand . ' ' . $article);
-    if ( ($location != null) and (strlen($location) > 0) ) {
-      $this->template->image_location($location);
-      $this->template->title($location);
-    }
+    $this->template->message($this->message);
+    // lastly, if none above, nothing to do
   }
 
-  private function placement_update () {
-    $this->article_id = $_POST['article_id'];
-    $this->validate_article_id();
-    if ( !($this->article_id_ok)) {
-      $this->template->message($this->message);
-      return;
-    }
-    $this->shelf = $_POST['shelf'];
-    $this->validate_shelf();
-    if ( !($this->shelf_ok) ) {
-      $this->placement_scan_shelf();
-      $this->template->message($this->message);
-      return;
-    }
-    // at this point, we can update the new shelf value to retail and datawarehouse
-    $this->update_placement_to_retail();
-    $this->insert_placement_to_datawarehouse();
-    // reload the scan item form
-    $this->placement_scan_item();
-  }
-
-  private function update_placement_to_retail () {
-    $query_retail = new QueryRetailPlacement();
-    $query_retail->update_placement_by_article_id($this->article_id, $this->shelf);
-    $stmt = $this->database_retail->cnxn->prepare($query_retail->get());
-    $stmt->execute();
-  }
-
-  private function insert_placement_to_datawarehouse () {
-    $date_obj = new Date;
-    $query_datawarehouse = new QueryDatawarehousePlacement();
-
-    $timestamp = $date_obj->date_time;
-    $yyyymmdd = $date_obj->yyyymmdd;
-
-    $query_datawarehouse->insert_placement();
-    $stmt = $this->database_datawarehouse->cnxn->prepare($query_datawarehouse->get());
-
-    $values = ['article_id' => $this->article_id, 'shelf' => $this->shelf, 'timestamp' => $timestamp, 'yyyymmdd' => $yyyymmdd];
-    // since article_id constraint might not have been updated to datawareouse
-    // we make a try / exception to handle that specific case
-    try {
-      $stmt->execute($values);
-    }
-    catch(PDOException $e) {
-      if (strpos($e, 'Integrity constraint violation') !== false) {
-        $this->template->message('Info: denne varen finnes kun i HIP databasen foreløpig');
-      }
-      else {
-        $dev_phone = $this->environment->contact_dev('phone');
-        $dev_email = $this->environment->contact_dev('email');
-        $dev = $this->environment->contact_dev('name');
-        $this->template->title('Noe galt skjedde');
-        $this->template->message('Kontakt: ' . $dev);
-        $this->template->message('Epost: ' . $dev_email);
-        $this->template->message('Telefon: ' .$dev_phone);
-        $this->template->message('Og oppgi informasjonen under');
-        $this->template->message($e);
-        $this->template->print($this->page);
-        exit(1);
-      }
-    }
-  }
-
-  private function validate_article_id () {
-    // this should never error out, but we include it just in case
-    $this->article_id_ok = false;
-    if ( !(is_numeric($this->article_id)) ) {
-      $this->message = 'Artikkel id stemmer ikke, noe galt skjedde<br>';
-      $this->message .= 'For hjelp, kontakt<br>';
-      $dev_phone = $this->environment->contact_dev('phone');
-      $dev_email = $this->environment->contact_dev('email');
-      $dev = $this->environment->contact_dev('name');
-      $this->message .= 'Utvikler: ' . $dev . '<br>';
-      $this->message .= 'Epost: ' . $dev_email . '<br>';
-      $this->message .= 'Telefon: ' . $dev_phone;
-      return;
-    }
-  $this->article_id_ok = true;
-  }
-
-  private function validate_barcode () {
-    $this->ean_ok = false;
-    if ( $this->ean == '') {
+  private function confirm_ean() {
+    $this->is_ean = false;
+    if ( $_POST['barcode'] == '') {
       $this->message = 'Tom strekkode';
       return;
     }
-    else if ( !(is_numeric($this->ean)) ) {
+    else if ( !(is_numeric($_POST['barcode'])) ) {
       $this->message = 'Strekkoder kan kun inneholde tall';
       return;
     }
-    else if ( strlen($this->ean) < 8 ) {
+    else if ( strlen($_POST['barcode']) < 8 ) {
       $this->message = 'Strekkoder kan ha minimum 8 tall';
       return;
     }
-    else if ( strlen($this->ean) > 13 ) {
+    else if ( strlen($_POST['barcode']) > 13 ) {
       $this->message = 'Strekkoder kan ha maksimum 13 tall';
       return;
     }
-    $this->ean_ok = true;
+    $this->is_ean = true;
   }
 
-  private function validate_shelf () {
-    $this->shelf_ok = false;
+  private function confirm_shelf () {
+    $this->shelf = $_POST['barcode'];
+    $this->is_shelf = false;
     // swap out de-limitters to "-" (currently allow "+", " ", and ".")
     $this->shelf = str_replace('+', '-', $this->shelf);
     $this->shelf = str_replace(' ', '-', $this->shelf);
     $this->shelf = str_replace('.', '-', $this->shelf);
     $this->shelf = str_replace(',', '-', $this->shelf);
     $this->shelf = strtoupper($this->shelf);
-    // then check integrity of the format
+    // if empty
     if (strlen($this->shelf) < 1) {
-      $this->message = 'Hyllelplass må være minst en karakter';
+      $this->message = 'Hyllemerking inneholder ingen karakterer';
       return;
     }
-    if ( (strlen($this->shelf) == 1) and ($this->shelf == ' ') ) {
-      $this->message = 'Hvis du kun skal ha en bokstav så kan det ikke være mellomrom tegn';
+    // if whitespace
+    if ($this->shelf == ' ') {
+      $this->message = 'Hyllemerking er tom';
       return;
     }
+    // if character but no hyphen
     if (strlen($this->shelf) > 1) {
       if ( !(strpos($this->shelf, '-'))) {
-        $this->message = 'Det må brukes bindestrek for å skille mellom lager, hylle og plass<br>';
-        $this->message .= 'Eksempel: F-B-10<br>';
-        $this->message .= '..hvor F = lager, B = hylle og 10 er plass på hylla<br>';
-        $this->message .= 'Tips: du kan også skrive kun F hvis du ikke vil registrere hylle og plass<br>';
+        $this->message = 'Hyllemerking er lengre enn 1 karakter og har ikke bindestrek';
         return;
       }
     }
-  $this->shelf_ok = true;
+    $this->is_shelf = true;
+  }
+
+  private function add_item_to_session () {
+    // takes barcode from $_POST['barcode'] and gets article id and article name
+    $query_retail = new QueryRetailPlacement();
+    $query_retail->article_id_and_article_name_by_ean();
+    $this->database_retail->select_single_row($query_retail->get());
+    if ( !($this->database_retail->result) ) {
+      return;
+    }
+    // to append to the array, make sure it exists (on first run it most likely does not)
+    if ( !(isset($_SESSION['articles'])) ) {
+      $_SESSION['articles'] = array();
+    }
+    $id = $this->database_retail->result['article_id'];
+    $name= CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
+    $_SESSION['articles'][$_POST['barcode']] = ['id' => $id, 'name' => $name];
+  }
+
+  private function print_scanned_items () {
+    $this->template->title('Varer skannet hittil');
+    $this->template->table_full_width_start();
+    $this->template->table_row_start();
+    $this->template->table_row_value('<strong>Strekkode</strong>');
+    $this->template->table_row_value('<strong>Artikkel</strong>');
+    $this->template->table_row_end();
+    foreach($_SESSION['articles'] as $barcode => $arr) {
+      $this->template->table_row_start();
+      $this->template->table_row_value($barcode);
+      $this->template->table_row_value($arr['name']);
+      $this->template->table_row_end();
+    }
+    $this->template->table_end();
+  }
+
+  private function update_database () {
+    if ( !(isset($_SESSION['articles'])) ) {
+      return;
+    }
+    $date_obj = new Date;
+    $this->date_time = $date_obj->date_time;
+    $this->yyyymmdd = $date_obj->yyyymmdd;
+    foreach($_SESSION['articles'] as $barcode => $arr) {
+      $this->article_id = $arr['id'];
+      $this->placement_to_retail_db();
+      $this->placement_to_datawarehouse_db();
+    }
+    unset($_SESSION['articles']);
+    $this->template->message('Varer oppdatert med plassering ' . $this->shelf);
+    $this->template->message('Du kan fortsette med å skanne nye varer');
+  }
+
+  private function placement_to_retail_db () {
+    $query = new QueryRetailPlacement();
+    $query->update_placement_by_article_id($this->article_id, $this->shelf);
+    $stmt = $this->database_retail->cnxn->prepare($query->get());
+    $stmt->execute();
+  }
+
+  private function placement_to_datawarehouse_db () {
+    // these values go into the database
+    $values = [
+      'article_id' => $this->article_id,
+      'shelf' => $this->shelf,
+      'timestamp' => $this->date_time,
+      'yyyymmdd' => $this->yyyymmdd
+    ];
+
+    // first, try to do an update of timestamp (works if placement exists)
+    $query= new QueryDatawarehousePlacement();
+    $query->update_timestamp_for_placement();
+    $stmt = $this->database_datawarehouse->cnxn->prepare($query->get());
+    $stmt->execute($values);
+    $this->data['database_datawarehouse'] = true;
+    if ($stmt->rowCount() > 0) {
+      // affected rows means record exists and timestamp update succeeded
+      return;
+    }
+
+    // if this block runs, it means we need to insert a new record
+    $query->insert_placement();
+    $stmt = $this->database_datawarehouse->cnxn->prepare($query->get());
+    $stmt->execute($values);
+    $this->data['database_datawarehouse'] = true;
   }
 
 }
@@ -276,7 +272,7 @@ class FromImported extends Placement {
       $this->template->script_table_row_value_update_location_input();
     }
     else {
-      $this->template->message('Ingen varer har kommet inn i dag');
+      $this->template->message('Ingen varer har kommet inn i denne uken');
     }
   }
 }
