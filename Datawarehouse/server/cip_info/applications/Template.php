@@ -585,7 +585,7 @@ class Template {
       form_data.append('article_id', article_id);
       form_data.append('shelf', shelf);
 
-      fetch('$host/api/placement/v0/update_by_article_id', {
+      fetch('$host/api/placement/v1/update_by_article_id', {
         method: 'POST',
         body: form_data
       }).then(response => {

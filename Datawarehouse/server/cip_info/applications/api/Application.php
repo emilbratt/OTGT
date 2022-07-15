@@ -96,6 +96,7 @@ class Home extends API {
       ],
       'Placement' => [
         ['url' => 'api/placement/v0/update_by_article_id {"article_id": "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by article id', 'active' => true],
+        ['url' => 'api/placement/v1/update_by_article_id {"article_id": "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by article id', 'active' => true],
         ['url' => 'api/placement/v0/updatebybarcode {"barcode: "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by barcode', 'active' => false],
       ],
       'Shop' => [
