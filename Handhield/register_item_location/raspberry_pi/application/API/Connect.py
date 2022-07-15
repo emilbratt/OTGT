@@ -13,7 +13,7 @@ HOST = config['datawarehouse']['cip_info_host'].strip('"')
 PORT = config['datawarehouse']['cip_info_port'].strip('"')
 URL = 'http' + '://' + HOST + ':' + PORT + '/'
 API_ENDPOINT_GET_ARTICLE_ID = 'api/article/v0/get_article_id/'
-API_ENDPOINT_POST_PLACEMENT = 'api/placement/v0/update_by_article_id'
+API_ENDPOINT_POST_PLACEMENT = 'api/placement/v1/update_by_article_id'
 
 
 class Connect:
