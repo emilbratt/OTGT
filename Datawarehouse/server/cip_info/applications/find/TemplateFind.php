@@ -102,6 +102,10 @@ class TemplateFind extends Template {
     #input_field_brand {
       display: inline;
       width: 170px;
+    }
+    #input_field_supplyid{
+      display: inline;
+      width: 170px;
     }\n
     EOT;
   }
@@ -128,6 +132,10 @@ class TemplateFind extends Template {
     if ( isset($_GET['input_field_article'])) {
       $article = $_GET['input_field_article'];
     }
+    $supplyid= '';
+    if ( isset($_GET['input_field_supplyid'])) {
+      $supplyid = $_GET['input_field_supplyid'];
+    }
     $brand = '';
     if ( isset($_GET['input_field_brand'])) {
       $brand = $_GET['input_field_brand'];
@@ -137,17 +145,26 @@ class TemplateFind extends Template {
       <form method="GET">
         <table>
         <tr>
-        <td style="width: 60%;">Artikkel</td>
-        <td style="width: 30%;">Merke</td>
+        <td style="width: 50%;">Artikkel</td>
+        <td style="width: 20%;">Lev.Id</td>
+        <td style="width: 20%;">Merke</td>
         </tr>
         <tr>
-          <td style="width: 60%;">
+          <td style="width: 50%;">
             <input style="width: 100%;"
             type="search" autofocus="autofocus" onfocus="this.select()"
             id="input_field_article" name="input_field_article"
             placeholder="Artikkel" value="$article">
           </td>
-          <td style="width: 30%;">
+
+          <td style="width: 20%;">
+            <input style="width: 100%;"
+            type="search"
+            id="input_field_supplyid" name="input_field_supplyid"
+            placeholder="Lev.ID" value="$supplyid">
+          </td>
+
+          <td style="width: 20%;">
             <input style="width: 100%;"
             type="search"
             id="input_field_brand" name="input_field_brand"
@@ -178,7 +195,7 @@ class TemplateFind extends Template {
             <input style="width: 100%;"
             type="search"  autofocus="autofocus" onfocus="this.select()"
             id="input_field_shelf" name="input_field_shelf"
-            placeholder="Plassering X-Y-Z" value="$shelf">
+            placeholder="For eksempel A eller E-A-12 etc." value="$shelf">
           </td>
           <td style="width: 10%;">
             <input style="width: 100%;" type="submit" value="Søk" >

@@ -113,6 +113,22 @@ class QueryRetail {
     EOT;
   }
 
+  public function where_supplyid () {
+    $string = $_GET['input_field_supplyid'];
+    if ($string == '') {
+      return;
+    }
+    $this->check_illegal_word($string);
+    if ( $this->has_where() ) {
+      $this->query .= <<<EOT
+      AND Article.suppliers_art_no LIKE '%$string%'\n
+      EOT; return;
+    }
+    $this->query .= <<<EOT
+    WHERE Article.suppliers_art_no LIKE '%$string%'\n
+    EOT;
+  }
+
   public function where_article () {
     $article = $_GET['input_field_article'];
     if ($article == '') {

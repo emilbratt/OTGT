@@ -96,19 +96,17 @@ class BySearch extends Find {
 
   public function run () {
     // if form is passed, handle query and show result table
-    if(isset($_GET['input_field_brand']) or isset($_GET['input_field_article'])) {
-      $this->template->form_search();
+    $this->template->form_search();
+
+    if ( isset($_GET['input_field_brand'])
+    or   isset($_GET['input_field_article'])
+    or   isset($_GET['input_field_supplyid']) ) {
       $this->validate_user_input();
       if ($this->user_input_ok) {
         $this->result_set();
         $this->template->css_result_set();
       }
     }
-    else {
-      $this->template->message('Søk på vare');
-      $this->template->form_search();
-    }
-
     $this->template->print($this->page);
   }
 
@@ -116,23 +114,40 @@ class BySearch extends Find {
     // if search string is to short, the query will become to expensive
     // and potentially to many rows; we set a lower limit to characters
     $this->user_input_ok = false;
-    $search_string_brand_len = strlen($_GET['input_field_brand']);
-    $search_string_article_len = strlen($_GET['input_field_article']);
-    if ($search_string_brand_len < 1 and $search_string_article_len < 1) {
-      return; // clicking search with both search boxes empty, just return (it might be a miss-click)
-    }
-    else if ($search_string_brand_len < 1 and $search_string_article_len < 5) {
-      $this->template->message('Hvis du utelater Merke, bruk minst 5 tegn for å søke på artikkel');
+
+    $a = $_GET['input_field_article'];
+    $b = $_GET['input_field_brand'];
+    $s = $_GET['input_field_supplyid'];
+
+    // if the total search string across all input has 0, it most likely is a miss-click
+    if (strlen($b . $s . $a) < 1) {
       return;
     }
-    else if ($search_string_article_len < 1 and $search_string_brand_len < 4) {
-      $this->template->message('Hvis du utelater Artikkel, bruk minst 4 tegn for å søke på Merke');
-      return;
+
+    // if article string is less than 4 characters
+    if ( strlen($a) < 4 ) {
+      if ( strlen($b . $s) == 0 ) {
+        $this->template->message('Bruk minst 4 tegn på å søke på artikkel hvis andre felt er tomme');
+        return;
+      }
     }
-    else if (($search_string_brand_len + $search_string_article_len) < 4) {
-      $this->template->message('Minst 5 tegn (fordelt på Merke og Artikkel) totalt for å søke');
-      return;
+
+    // if brand string is less than 3 characters
+    if ( strlen($b) < 3 ) {
+      if ( strlen($a . $s) == 0 ) {
+        $this->template->message('Bruk minst 3 tegn på å søke på merke hvis andre felt er tomme');
+        return;
+      }
     }
+
+    // if supplyid string is less than 3 characters
+    if ( strlen($s) < 3 ) {
+      if ( strlen($a . $b) == 0 ) {
+        $this->template->message('Bruk minst 3 tegn på å søke på Leverandør-id hvis andre felt er tomme');
+        return;
+      }
+    }
+
     $this->user_input_ok = true;
   }
 
@@ -169,6 +184,7 @@ class BySearch extends Find {
     $query->select_fields();
     $query->where_brand();
     $query->where_article();
+    $query->where_supplyid();
     $query->where_article_expired();
     $query->sort_by();
     $this->database_retail = new DatabaseRetail();
