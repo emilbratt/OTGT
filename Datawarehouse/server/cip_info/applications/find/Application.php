@@ -370,9 +370,18 @@ class ByArticle extends Find {
       $this->template->_table_row_value('Pris:', 'left');
       $this->template->_table_row_value($price . ' kr.', 'left');
       $this->template->table_row_end();
+      $this->template->table_end();
+
+      $this->template->line_break();
+
+      $this->template->table_start();
       $this->template->table_row_start();
       $this->template->_table_row_value('Kategori:', 'left');
       $this->template->_table_row_value($category, 'left');
+      $this->template->table_row_end();
+      $this->template->table_row_start();
+      $this->template->_table_row_value('Lev.ID:', 'left');
+      $this->template->_table_row_value($supplyid, 'left');
       $this->template->table_row_end();
       $this->template->table_end();
 
@@ -396,7 +405,7 @@ class ByArticle extends Find {
       // $query->print();
       $query = null;
       $this->template->title('Strekkoder');
-      $title = 'Nå:';
+      $title = 'På pristag:';
       $i = 1;
       if ($this->database_retail->result) {
         $this->template->table_start();
@@ -406,7 +415,7 @@ class ByArticle extends Find {
             $this->template->_table_row_value($title, 'left');
             $this->template->_table_row_value($row['barcode'], 'left');
             $this->template->table_row_end();
-            $title = 'Tidligere:';
+            $title = 'Også i bruk:';
           }
           else if ($i === 2) {
             $this->template->table_row_start();
