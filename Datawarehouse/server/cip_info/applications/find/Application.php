@@ -65,7 +65,7 @@ class Find {
 
   protected function validate_search_string_barcode () {
     $check_num = is_numeric($_GET['input_field_barcode']);
-    $check_len = (strlen($_GET['input_field_barcode']) == 13 or strlen($_GET['input_field_barcode']) >= 8);
+    $check_len = (strlen($_GET['input_field_barcode']) < 14 or strlen($_GET['input_field_barcode']) > 7);
     $this->search_string_barcode = ($check_num == true and $check_len == true);
   }
   protected function validate_search_string_article_id () {
@@ -118,6 +118,20 @@ class BySearch extends Find {
     $a = $_GET['input_field_article'];
     $b = $_GET['input_field_brand'];
     $s = $_GET['input_field_supplyid'];
+
+    // user might have scanned an item with EAN number, check this first
+    if ( is_numeric($a) ) {
+      if ( strlen($a) > 10 ) {
+        $hyperlink = new HyperLink();
+        $hyperlink->link_redirect('find/byarticle');
+        $this->template->message('Er dette en strekkode: ' . $a);
+        $this->template->message('Søkestrengen inneholder kun tall og du søker på varer nå');
+        $this->template->message('..hvis du ønsker å skanne en vare så trykker du knappen under');
+        $this->template->hyperlink_button('Skann Vare', $hyperlink->url);
+        $this->template->line_break();
+        $this->template->line_break();
+      }
+    }
 
     // if the total search string across all input has 0, it most likely is a miss-click
     if (strlen($b . $s . $a) < 1) {
