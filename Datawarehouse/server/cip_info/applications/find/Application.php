@@ -428,55 +428,19 @@ class ByArticle extends Find {
       $this->template->table_row_end();
       $this->template->table_end();
 
-      $this->template->line_break();
       $query = new QueryRetailFindByArticle();
       $query->select_barcodes_by_article_id($article_id);
       $this->database_retail->select_multi_row($query->get());
       // $query->print();
       $query = null;
-      $this->template->title('Strekkoder');
-      $title = 'På pristag:';
-      $i = 1;
-      if ($this->database_retail->result) {
-        $this->template->table_start();
-        foreach ($this->database_retail->result as $row) {
-          if ($i === 1) {
-            $this->template->table_row_start();
-            $this->template->_table_row_value($title, 'left');
-            $this->template->_table_row_value($row['barcode'], 'left');
-            $this->template->table_row_end();
-            $title = 'Også i bruk:';
-          }
-          else if ($i === 2) {
-            $this->template->table_row_start();
-            $this->template->_table_row_value('------------', 'left');
-            $this->template->_table_row_value('----------------------', 'left');
-            $this->template->table_row_end();
-            $this->template->table_row_start();
-            $this->template->_table_row_value($title, 'left');
-            $this->template->_table_row_value($row['barcode'], 'left');
-            $this->template->table_row_end();
-            $title = '';
-          }
-          else {
-            $this->template->table_row_start();
-            $this->template->_table_row_value($title, 'left');
-            $this->template->_table_row_value($row['barcode'], 'left');
-            $this->template->table_row_end();
-          }
-          $i++;
-        }
-        $this->template->table_end();
-      }
 
+      $this->template->_title('Plassering');
+      $this->template->button_fetch_api_post_update_placement($article_id);
       // if we have a registered location, fetch extra location (if exists) from datawarehouse
       $has_location = false;
       if ( ($retail_location != null) and (strlen($retail_location) > 0) ) {
         $has_location = true;
       }
-      $this->template->line_break();
-      $this->template->_title('Plassering');
-      $this->template->button_fetch_api_post_update_placement($article_id);
       if ($has_location) {
       // print out all placement registered for item
         $this->template->table_start();
@@ -513,15 +477,49 @@ class ByArticle extends Find {
         }
         $this->template->table_end();
       }
+
+      $this->template->title('Strekkoder');
+      $title = 'På pristag:';
+      $i = 1;
+      if ($this->database_retail->result) {
+        $this->template->table_start();
+        foreach ($this->database_retail->result as $row) {
+          if ($i === 1) {
+            $this->template->table_row_start();
+            $this->template->_table_row_value($title, 'left');
+            $this->template->_table_row_value($row['barcode'], 'left');
+            $this->template->table_row_end();
+            $title = 'Også i bruk:';
+          }
+          else if ($i === 2) {
+            $this->template->table_row_start();
+            $this->template->_table_row_value('------------', 'left');
+            $this->template->_table_row_value('----------------------', 'left');
+            $this->template->table_row_end();
+            $this->template->table_row_start();
+            $this->template->_table_row_value($title, 'left');
+            $this->template->_table_row_value($row['barcode'], 'left');
+            $this->template->table_row_end();
+            $title = '';
+          }
+          else {
+            $this->template->table_row_start();
+            $this->template->_table_row_value($title, 'left');
+            $this->template->_table_row_value($row['barcode'], 'left');
+            $this->template->table_row_end();
+          }
+          $i++;
+        }
+        $this->template->table_end();
+      }
       // end div for for left side info
       $this->template->div_end();
 
-      if ($has_location) {
-        // show placement map on right side
-        $this->template->div_start('60', 'inline-block');
-        $this->template->image_location($retail_location);
-        $this->template->div_end();
-      }
+      // show placement map on right side
+      $this->template->div_start('60', 'inline-block');
+      $this->template->image_location($retail_location);
+      $this->template->div_end();
+
       // end div for right side info
       $this->template->div_end();
     }
