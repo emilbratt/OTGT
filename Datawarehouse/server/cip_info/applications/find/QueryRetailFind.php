@@ -99,7 +99,7 @@ class QueryRetailFindByArticle extends QueryRetail {
         ArticleEAN.eanCode = '$ean'\n
       EOT;
     }
-    if ( isset($_GET['article_id'])) {
+    else if ( isset($_GET['article_id'])) {
       $article_id = $_GET['article_id'];
       $this->query .= <<<EOT
       WHERE
