@@ -133,7 +133,7 @@ class TemplateHome extends Template {
       name="note_input_form"
       onkeypress="stop_auto_fetch_note()"
       rows="10"
-      cols="55"
+      cols="65"
       class="note_input_form">$note</textarea>
     <input type="submit" value="Lagre Notat">
     </form>
