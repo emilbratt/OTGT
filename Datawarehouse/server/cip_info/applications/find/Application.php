@@ -518,9 +518,10 @@ class ByArticle extends Find {
       // show placement map on right side
       $this->template->div_start('60', 'inline-block');
       $this->template->image_location($retail_location);
+      // end div for right side info
       $this->template->div_end();
 
-      // end div for right side info
+      // end div for both sides
       $this->template->div_end();
     }
   }
