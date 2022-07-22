@@ -9,10 +9,6 @@ class TemplateFind extends Template {
   function __construct () {
     parent::__construct();
 
-    $this->image_path_location = $this->image_path . '/location';
-  }
-
-  public function css_result_set () {
     $this->css .= <<<EOT
     /* TABLE */
     table {
@@ -34,12 +30,6 @@ class TemplateFind extends Template {
     th a {
       height: 27px;
       font-size: 20px;
-    }
-    tr:nth-child(even) {
-      background-color: $this->colour_row_background_2;
-    }
-    tr:nth-child(odd) {
-      background-color: $this->colour_row_background_1;
     }
     #hidden_submit {
       display: none;
@@ -78,8 +68,20 @@ class TemplateFind extends Template {
       background-color: $this->colour_default_background;
       width: 150px;
       height: $this->form_default_height;
-    }
+    }\n
+    EOT;
+    $this->image_path_location = $this->image_path . '/location';
+  }
+
+  public function css_search_result_set () {
+    $this->css .= <<<EOT
     /* set fixed length for each table column */
+    tr:nth-child(even) {
+      background-color: $this->colour_row_background_2;
+    }
+    tr:nth-child(odd) {
+      background-color: $this->colour_row_background_1;
+    }
     td:nth-child(1) {
       width: 10%;
     }
@@ -106,6 +108,21 @@ class TemplateFind extends Template {
     #input_field_supplyid{
       display: inline;
       width: 170px;
+    }\n
+    EOT;
+  }
+
+  public function css_article_movement_result_set () {
+    $this->css .= <<<EOT
+    td, th {
+      width: 165px;
+      font-size: 20px;
+    }
+    tr:nth-child(even) {
+      background-color: $this->colour_row_background_2;
+    }
+    tr:nth-child(odd) {
+      background-color: $this->colour_row_background_1;
     }\n
     EOT;
   }
@@ -207,7 +224,7 @@ class TemplateFind extends Template {
     EOT;
   }
 
-  public function form_barcode ($action = "byarticle") {
+  public function form_barcode ($action = 'byarticle') {
     // $action will send to specified app
     $barcode = '';
     if ( isset($_GET['input_field_barcode']) ) {

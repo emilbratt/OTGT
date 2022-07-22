@@ -17,6 +17,17 @@ class Find {
   protected $toggle_expired_message;
   protected $search_string_barcode;
   protected $search_string_article_id;
+  const ADJUSTMENT_CODE = [
+    '9' =>'salg', // NOTE: N < 0 = removed from sales header "fjernet fra bong"
+    '10' => 'kreditering', // NOTE: N = cancels out N sale (code 9)
+    '41' => 'varemottak',
+    '1' =>'korreksjon minus',
+    '2' =>'korreksjon pluss',
+    '3' =>'telling',
+    '4' =>'mottak fra bestilling',
+    '33' => 'tilleggende telling',
+    '91' => 'intern pakkeseddel el. web-pakkeseddel',
+  ];
 
   function __construct () {
     require_once '../applications/DatabaseRetail.php';
@@ -96,7 +107,7 @@ class BySearch extends Find {
 
   public function run () {
     // if form is passed, handle query and show result table
-    $this->template->form_search();
+    $this->template->form_search('byarticles');
 
     if ( isset($_GET['input_field_brand'])
     or   isset($_GET['input_field_article'])
@@ -104,7 +115,7 @@ class BySearch extends Find {
       $this->validate_user_input();
       if ($this->user_input_ok) {
         $this->result_set();
-        $this->template->css_result_set();
+        $this->template->css_search_result_set();
       }
     }
     $this->template->print($this->page);
@@ -228,7 +239,7 @@ class BySearch extends Find {
 class ByShelf extends Find {
 
     public function run () {
-      $this->template->css_result_set();
+      $this->template->css_search_result_set();
       if( isset($_GET['input_field_shelf']) ) {
         $this->template->form_shelf();
           $this->validate_user_input();
@@ -351,18 +362,6 @@ class ByArticle extends Find {
       }
     }
 
-    $table_headers = [
-      'Merke' => 'brand',
-      'Navn' => 'article',
-      'Kategori' => 'category',
-      'Pris' => 'price',
-      'Lager' => 'quantity',
-      'Plassering' => 'location',
-      'Lev. ID' => 'supplyid',
-      'Sist Importert' => 'lastimported',
-      'Sist Solgt' => 'lastsold',
-    ];
-
     $query = new QueryRetailFindByArticle();
     $query->select_item_info();
     $this->database_retail = new DatabaseRetail();
@@ -383,6 +382,9 @@ class ByArticle extends Find {
       $supplyid = $this->database_retail->result['supplyid'];
       $lastimported = $this->database_retail->result['lastimported'];
       $lastsold = $this->database_retail->result['lastsold'];
+      $hyperlink = new HyperLink();
+      $hyperlink->link_redirect_query('find/articlemovement', 'article_id', $article_id);
+      $this->template->hyperlink_button('Varebevegelse', $hyperlink->url);
 
       $this->template->div_start('100', 'block');
 
@@ -430,15 +432,7 @@ class ByArticle extends Find {
 
       $this->template->line_break();
       $this->template->sales_count($article_id);
-/*
-      $this->template->table_start();
-      $this->template->table_row_start();
-      $this->template->_table_row_value('Salg 12 mnd.:', 'left');
-      $this->template->_table_row_value('10'  . ' stk.', 'left');
-      $this->template->table_row_end();
-      $this->template->table_end();
 
-      */
       $query = new QueryRetailFindByArticle();
       $query->select_barcodes_by_article_id($article_id);
       $this->database_retail->select_multi_row($query->get());
@@ -530,6 +524,102 @@ class ByArticle extends Find {
 
       // end div for both sides
       $this->template->div_end();
+    }
+  }
+
+}
+
+class ArticleMovement extends Find {
+
+  /*
+   * list a result table showing all movements for article
+   */
+
+  public function run () {
+    $this->template->css_article_movement_result_set();
+    $this->template->form_barcode('articlemovement');
+    if ( isset($_GET['input_field_barcode']) or isset($_GET['article_id']) ) {
+      $this->get_article_movement_result();
+    }
+    $this->template->print($this->page);
+  }
+
+  private function get_article_movement_result () {
+    $query = new QueryRetailFindArticleMovement();
+    $this->database_retail = new DatabaseRetail();
+    $query->article_info();
+    $this->database_retail->select_single_row($query->get());
+    if ($this->database_retail->result) {
+      $article_id = $this->database_retail->result['article_id'];
+      $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
+      $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
+      $quantity = $this->database_retail->result['quantity'];
+      $supplyid = $this->database_retail->result['supplyid'];
+    } else {
+      return;
+    }
+
+    $query->select_article_movement_summary();
+    $this->database_retail->select_multi_row($query->get());
+    // $query->print();
+    if ($this->database_retail->result) {
+      // link to show ordinary item info
+      $hyperlink = new HyperLink();
+      $hyperlink->link_redirect_query('find/byarticle', 'article_id', $article_id);
+      $this->template->hyperlink_button('Vareinfo', $hyperlink->url);
+
+      $this->template->title($brand . ' - ' . '<i>' . $article . '</i>');
+      $arr_new = array();
+      $year = $this->database_retail->result[0]['yyyy'];
+      $arr_years = [$year];
+      $re_formated = array();
+      $arr_cur = array();
+      foreach ($this->database_retail->result as $row) {
+        $arr_new[$row['movement']][$row['yyyy']] = intval($row['qty']);
+
+        if ( intval($row['yyyy'] < $year) ) {
+          $re_formated[$year] = $arr_cur;
+          $year = intval($row['yyyy']);
+          array_push($arr_years, $year);
+          $arr_cur = array();
+        }
+        $arr_cur[$row['movement']] = $row['qty'];
+      }
+      $arr_cur[$row['movement']] = $row['qty'];
+      $re_formated[$year] = $arr_cur;
+
+      // if removed from salesheader (fjernet fra bong), we subtract that value and only yse sales-count
+      if ( isset($arr_new[self::ADJUSTMENT_CODE[10]]) ) {
+        foreach ($arr_new[self::ADJUSTMENT_CODE[10]] as $key => $qty) {
+          if ( isset($arr_new[self::ADJUSTMENT_CODE[9]][$key]) ) {
+            $arr_new [self::ADJUSTMENT_CODE[9]][$key] -=$qty;
+          }
+        }
+      }
+      unset($arr_new[self::ADJUSTMENT_CODE[10]]);
+
+      // this is where we print each table based on category in ADJUSTMENT_CODE
+      $included_codes = [9, 41, 2, 1, 3];
+      $this->template->table_start();
+      $this->template->table_row_start();
+      $this->template->table_row_value('År');
+      foreach ($included_codes as $code) {
+        $this->template->table_row_value (ucfirst(self::ADJUSTMENT_CODE[$code]));
+      }
+      $this->template->table_row_end();
+      foreach ($arr_years as $year) {
+        $this->template->table_row_start();
+        $this->template->table_row_value($year);
+        foreach ($included_codes as $code) {
+          $val = '0';
+          if ( isset($arr_new[self::ADJUSTMENT_CODE[$code]][$year]) ) {
+            $val = strval($arr_new[self::ADJUSTMENT_CODE[$code]][$year]);
+          }
+          $this->template->table_row_value($val);
+        }
+        $this->template->table_row_end();
+      }
+      $this->template->table_end();
     }
   }
 
