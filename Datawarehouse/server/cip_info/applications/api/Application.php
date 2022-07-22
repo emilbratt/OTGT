@@ -93,6 +93,7 @@ class Home extends API {
       'Article' => [
         ['url' => 'api/article/v0/movement/{article_id}', 'method' => 'GET', 'info' => 'get list of all movements for specific item', 'active' => true],
         ['url' => 'api/article/v0/get_article_id/{barcode}', 'method' => 'GET', 'info' => 'get article id from barcode', 'active' => true],
+        ['url' => 'api/article/v0/sales_count/{article_id}/{daysback})', 'method' => 'GET', 'info' => 'sales count for article where second param is optional to limit days back, example: 365 includes from today and a year back', 'active' => true],
       ],
       'Placement' => [
         ['url' => 'api/placement/v0/update_by_article_id {"article_id": "val", "shelf": "val"}', 'method' => 'POST', 'info' => 'placement for item by article id', 'active' => true],
@@ -103,7 +104,7 @@ class Home extends API {
         ['url' => 'api/shop/v0/howbusy/{N_seed_minutes})', 'method' => 'GET', 'info' => 'get integer 1-10 (1 relaxed to 10 busy) with {N} = include sales from N minutes back', 'active' => true],
       ],
       'Sales' => [
-        ['url' => 'api/sales/v0/salesperhour/{YYYY}/{M})/{DAYOFMONTH}', 'method' => 'GET', 'info' => 'sales count and turnover for each hour, params = INT, and last two params are optional', 'active' => true],
+        ['url' => 'api/sales/v0/salesperhour/{YYYY}/{M})/{DAYOFMONTH}', 'method' => 'GET', 'info' => 'total sales count and turnover for each hour, params = INT, and last two params are optional', 'active' => true],
       ],
       'Cache' => [
         ['url' => 'api/cache/v0/read/{key}', 'method' => 'GET', 'info' => 'get cache', 'active' => true],

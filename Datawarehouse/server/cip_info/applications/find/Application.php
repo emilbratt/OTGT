@@ -428,6 +428,17 @@ class ByArticle extends Find {
       $this->template->table_row_end();
       $this->template->table_end();
 
+      $this->template->line_break();
+      $this->template->sales_count($article_id);
+/*
+      $this->template->table_start();
+      $this->template->table_row_start();
+      $this->template->_table_row_value('Salg 12 mnd.:', 'left');
+      $this->template->_table_row_value('10'  . ' stk.', 'left');
+      $this->template->table_row_end();
+      $this->template->table_end();
+
+      */
       $query = new QueryRetailFindByArticle();
       $query->select_barcodes_by_article_id($article_id);
       $this->database_retail->select_multi_row($query->get());
@@ -436,13 +447,9 @@ class ByArticle extends Find {
 
       $this->template->_title('Plassering');
       $this->template->button_fetch_api_post_update_placement($article_id);
-      // if we have a registered location, fetch extra location (if exists) from datawarehouse
       $has_location = false;
       if ( ($retail_location != null) and (strlen($retail_location) > 0) ) {
-        $has_location = true;
-      }
-      if ($has_location) {
-      // print out all placement registered for item
+        // print out all placement registered for item
         $this->template->table_start();
         $this->template->table_row_start();
         $this->template->_table_row_value('Nå:', 'left');

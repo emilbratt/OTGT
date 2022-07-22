@@ -3,6 +3,7 @@
 class Template {
 
   protected $environment;
+  protected $fetch_api_host;
   protected $colour_page_background = '#202020';
   protected $colour_default_background = '#222222';
   protected $colour_default_text = '#BBBBFF';
@@ -28,6 +29,7 @@ class Template {
 
   function __construct () {
     $this->environment = new Environment();
+    $this->fetch_api_host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
 
     // this is used for resolving correct X and Y position for circle
     // add or remove entries as you see fit

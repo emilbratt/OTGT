@@ -49,8 +49,8 @@ def delete (QUERY):
 
 if __name__ == '__main__':
     # get('api/article/v0/get_article_id/5712396000612')
-    post('api/placement/v1/update_by_article_id', {'article_id': '10', 'shelf': 'a-b-2'})
+    #post('api/placement/v1/update_by_article_id', {'article_id': '10', 'shelf': 'a-b-2'})
     # delete('api/instructions/v0/delete/bygg/varme_styring.pdf')
-    #post('api/cache/v0/set', {'mem_key': 'test', 'mem_val': 'hello world'})
+    post('api/cache/v0/set', {'mem_key': 'api_article_v0_min_stock_adjustment_id_for_2021_07_22', 'mem_val': '1080899'})
     #get('api/cache/v0/read/test')
-    #delete('api/cache/v0/delete/test')
+    #delete('api/cache/v0/delete/min_momement_id_last_year')

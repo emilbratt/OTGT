@@ -276,7 +276,6 @@ class TemplateFind extends Template {
       exit(1);
     }
     // this button sends request to api and the api handles validation etc.
-    $host = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/';
     $this->html .= <<<EOT
     <form style="margin-left: 35px;" action="javascript:button_fetch_api_post_update_placement('$article_id')">
     <input
@@ -298,7 +297,7 @@ class TemplateFind extends Template {
       form_data.append('article_id', article_id);
       form_data.append('shelf', shelf);
 
-      fetch('$host/api/placement/v1/update_by_article_id', {
+      fetch('$this->fetch_api_host/api/placement/v1/update_by_article_id', {
         method: 'POST',
         body: form_data
       }).then(response => {
@@ -317,6 +316,37 @@ class TemplateFind extends Template {
       x.value = x.value.replace(/\s+/g, '-');
     }
     </script>\n
+    EOT;
+  }
+
+  public function sales_count ($article_id) {
+    $this->html .= <<<EOT
+    <table id="sales_count">
+      <tr>
+        <td style="font-size: 18px; text-align: left;">Salg 12 mnd.:</td>
+        <td id="sales_count_value" style="font-size: 18px; text-align: left;">Laster inn..</td>
+      </tr>
+    </table>
+    EOT;
+
+    $this->script .= <<<EOT
+    <script>
+    function fetch_sales_count() {
+      fetch('$this->fetch_api_host/api/article/v0/sales_count/$article_id/365')
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Could not reach api endpoint.");
+        }
+      })
+      .then((json) => {
+        document.getElementById("sales_count_value").innerHTML = json['sales_count'] + " stk.";
+      })
+      .catch(err => console.error(err));
+    }
+    fetch_sales_count();
+    </script>
     EOT;
   }
 

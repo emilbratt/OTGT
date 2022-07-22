@@ -51,13 +51,13 @@ class TemplateAPI extends Template {
     }
     /* set fixed length for each table column */
     td:nth-child(1) {
-      width: 80px;
+      width: 70px;
     }
     td:nth-child(2) {
-      width: 800px;
+      width: 700px;
     }
     td:nth-child(3) {
-      width: 700px;
+      width: 1000px;
     }\n
     EOT;
   }
