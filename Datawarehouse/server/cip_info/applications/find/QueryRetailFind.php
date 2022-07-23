@@ -192,7 +192,7 @@ class QueryRetailFindArticleMovement extends QueryRetail {
       Article
     INNER JOIN
       articleStock ON Article.articleId = articleStock.articleId
-    INNER JOIN
+    FULL JOIN
       Brands ON Article.brandId = Brands.brandId
     $where_clause
     EOT;
