@@ -567,27 +567,22 @@ class ArticleMovement extends Find {
       $hyperlink = new HyperLink();
       $hyperlink->link_redirect_query('find/byarticle', 'article_id', $article_id);
       $this->template->hyperlink_button('Vareinfo', $hyperlink->url);
-
       $this->template->title($brand . ' - ' . '<i>' . $article . '</i>');
+
+      $this->template->line_break();
+
+      // prepare result-set to fit the layout we want
       $arr_new = array();
       $year = $this->database_retail->result[0]['yyyy'];
       $arr_years = [$year];
-      $re_formated = array();
-      $arr_cur = array();
       foreach ($this->database_retail->result as $row) {
         $arr_new[$row['movement']][$row['yyyy']] = intval($row['qty']);
-
         if ( intval($row['yyyy'] < $year) ) {
-          $re_formated[$year] = $arr_cur;
           $year = intval($row['yyyy']);
           array_push($arr_years, $year);
-          $arr_cur = array();
         }
         $arr_cur[$row['movement']] = $row['qty'];
       }
-      $arr_cur[$row['movement']] = $row['qty'];
-      $re_formated[$year] = $arr_cur;
-
       // if removed from salesheader (fjernet fra bong), we subtract that value and only yse sales-count
       if ( isset($arr_new[self::ADJUSTMENT_CODE[10]]) ) {
         foreach ($arr_new[self::ADJUSTMENT_CODE[10]] as $key => $qty) {
@@ -598,27 +593,39 @@ class ArticleMovement extends Find {
       }
       unset($arr_new[self::ADJUSTMENT_CODE[10]]);
 
-      // this is where we print each table based on category in ADJUSTMENT_CODE
+      // I only want to include records from these adjustmend codes
       $included_codes = [9, 41, 2, 1, 3];
+
       $this->template->table_start();
       $this->template->table_row_start();
       $this->template->table_row_value('År');
-      foreach ($included_codes as $code) {
-        $this->template->table_row_value (ucfirst(self::ADJUSTMENT_CODE[$code]));
-      }
+      // create a total summary with an array holding the total
+      $arr_rollup = array();
+        foreach ($included_codes as $code) {
+          $this->template->table_row_value (ucfirst(self::ADJUSTMENT_CODE[$code]));
+          $arr_rollup[$code] = 0;
+        }
       $this->template->table_row_end();
       foreach ($arr_years as $year) {
         $this->template->table_row_start();
         $this->template->table_row_value($year);
         foreach ($included_codes as $code) {
-          $val = '0';
+          $val = 0;
           if ( isset($arr_new[self::ADJUSTMENT_CODE[$code]][$year]) ) {
-            $val = strval($arr_new[self::ADJUSTMENT_CODE[$code]][$year]);
+            $val = intval($arr_new[self::ADJUSTMENT_CODE[$code]][$year]);
           }
-          $this->template->table_row_value($val);
+          $arr_rollup[$code] += $val;
+          $this->template->table_row_value(strval($val));
         }
         $this->template->table_row_end();
       }
+      // show total sum for each category using rollup array
+      $this->template->table_row_start();
+      $this->template->table_row_value('Total');
+      foreach ($arr_rollup as $total) {
+        $this->template->table_row_value(strval($total));
+      }
+      $this->template->table_row_end();
       $this->template->table_end();
     }
   }
