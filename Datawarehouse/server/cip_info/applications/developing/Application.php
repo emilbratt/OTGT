@@ -345,3 +345,11 @@ class MemoryDatabase extends Developing {
     $this->template->print($this->page);
   }
 }
+
+class PHPinfo extends Developing {
+
+  public function run () {
+    phpinfo($flags = INFO_ALL);
+  }
+
+}
