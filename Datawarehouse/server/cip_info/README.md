@@ -113,6 +113,12 @@ sudo a2enmod rewrite
 ```
 
 
+### Test connection from shell
+issue this command from the same host as web-server (this host)
+```
+tsql -H <dbname> -p <port> -U sa -P <password>
+```
+
 ### PHP ini
 
 Open php ini for apache /etc/php/<php_version>/apache2/php.ini and uncomment / add lines

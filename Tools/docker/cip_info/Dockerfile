@@ -3,7 +3,16 @@ MAINTAINER Emil <emilbratt@mail.com>
 
 RUN docker-php-ext-install pdo pdo_mysql
 
-# add directory for assets
-# ..it will be used as a docker volume,
-# ..but need to exist for us to set correct owner
+# adds directory for assets
 RUN mkdir /cip_info_assets && chown 33:33 /cip_info_assets
+
+RUN apt update && apt install freetds-bin tdsodbc -y
+
+COPY ./freetds.conf /etc/freetds/freetds.conf
+COPY ./odbcinst.ini /etc/odbcinst.ini
+COPY ./odbc.ini /etc/odbc.ini
+RUN odbcinst -i -d -f /usr/share/tdsodbc/odbcinst.ini
+
+RUN apt update && apt install unixodbc unixodbc-dev -y \
+ && docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
+ && docker-php-ext-install pdo_odbc

@@ -44,6 +44,9 @@ mysql -pmypassword < /script.sql
 exit
 ```
 
+### db_retail
+* restore database from MS SQL database by running script inside ./db_retail/restore.sh
+
 ### directory overview
 <pre>
 docker/ -> run "docker-compose up" from here to start

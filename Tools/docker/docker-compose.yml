@@ -2,8 +2,18 @@ version: "3.9"
 
 # db_datawarehouse uses a docker volume for persistent database store
 # web_cip_info uses a docker wolume for user files (object storage)
+# no volumes set up for db_retail, yet
 
 services:
+  db_retail:
+    build: ./db_retail
+    container_name: db_retail
+    environment:
+      MSSQL_SA_PASSWORD: Mys3cretPWD
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+
   db_datawarehouse:
     build: ./db_datawarehouse
     container_name: db_datawarehouse
@@ -30,6 +40,7 @@ services:
   web_cip_info:
     depends_on:
       - db_datawarehouse
+      - db_retail
       - web_barcode_generator
     build: ./cip_info
     container_name: web_cip_info
