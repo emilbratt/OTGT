@@ -20,7 +20,6 @@ function _restore_backup () {
   docker exec -it $_CONTAINER /opt/mssql-tools/bin/sqlcmd \
    -S localhost -U SA -P $_PASSWORD \
    -Q 'RESTORE DATABASE HIP FROM DISK = "/var/opt/mssql/backup/DB.bak" WITH MOVE "HIP" TO "/var/opt/mssql/data/HIP.mdf", MOVE "HIP_log" TO "/var/opt/mssql/data/HIP_log.ndf"'
-
 }
 
 function _list_database_files () {
@@ -51,13 +50,13 @@ function _options () {
   echo "File to restore from $_FILE_DB_BAK"
   echo "Docker container name $_CONTAINER"
   echo "User sa password $_PASSWORD"
-
-  echo 'LISTING OPTIONS'
+  echo ''
+  echo '--Listing Options--'
   echo "1 restore $_FILE_DB_BAK to MS SQL container (make sure file and container exists first)"
   echo '2 list database files from backup inside '
   echo '3 open sql shell inside container'
   echo '0 exit'
-
+  echo ''
   printf 'Type number: '; read _option
 
   if [[ $_option == 0 ]]; then
