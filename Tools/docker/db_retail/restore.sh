@@ -21,7 +21,7 @@ function restore_backup () {
 
 }
 
-function list_databass () {
+function list_database_files () {
   docker exec -it $_CONTAINER /opt/mssql-tools/bin/sqlcmd \
     -S localhost \
     -U SA -P "$_PASSWORD" \
@@ -54,7 +54,7 @@ if [[ $_OPTN == 0 ]]; then
 elif [[ $_OPTN == '1' ]]; then
   restore_backup
 elif [[ $_OPTN == 2 ]]; then
-  list_databass
+  list_database_files
 elif [[ $_OPTN == 3 ]]; then
   open_sql_shell
 fi

@@ -2,7 +2,7 @@
 
 ### setup
 * make sure to have docker and docker-compose installed on your system
-* create the environment.ini file using the template -> environment.ini.template
+* create the environment.ini file by copying and ediiting the environment.ini.template
 
 ### commands
 * start containers
@@ -27,20 +27,28 @@ docker-compose down -v
 ```
 
 ### cip_info
-* change configs can be done inside the cip_info directory
+* changes to PHP and Apache configs can be done inside the cip_info before starting containers
 
 ### db_datawarehouse
 * adding and running sql script on service db_datawarehouse (commands below need tweaking)
+copy over sql script from host to the root directory inside container
 ```
-# copy over sql script from host to the root directory inside container
 docker cp ./script.sql db_datawarehouse:/script.sql
-# open a shell inside the container
+```
+open a shell inside the container
+```
 docker exec -u 0 -it db_datawarehouse  bash
-# if database need to be specified (example uses CIP)
+```
+if database need to be specified (example uses CIP)
+```
 mysql -pmypassword CIP < /script.sql
-# if not
+```
+if not
+```
 mysql -pmypassword < /script.sql
-# when done, exit container
+```
+when done, exit container
+```
 exit
 ```
 
