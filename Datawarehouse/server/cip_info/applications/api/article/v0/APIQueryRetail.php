@@ -53,38 +53,35 @@ class APIQueryRetail extends QueryRetail {
   public function sales_count ($article_id, $adjustment_id = '0') {
     // if $adjustment_id = 0 it will include all records
     $this->query .= <<<EOT
-    SELECT SUM(sales_qty - credit_qty) AS sales_count FROM
+    SELECT CAST(SUM(sales_qty - credit_qty) AS INT) AS sales_count FROM
     (
       SELECT
-        -- mother query takes these summarizes these values, but
-        -- the nested queries might return a null value if no rows returned
-        -- so we force the null value to become 0 to make aggregation possible
         CASE
-          WHEN sales_qty = NULL THEN '0' ELSE sales_qty
+          WHEN sales_qty IS NULL THEN '0' ELSE sales_qty
         END AS sales_qty,
         CASE
-          WHEN credit_qty = NULL THEN '0' ELSE credit_qty
+          WHEN credit_qty IS NULL THEN '0' ELSE credit_qty
         END AS credit_qty
       FROM
       (
-      SELECT
-          SUM(adjustmentQty) as sales_qty
-      FROM
-          StockAdjustment
-      WHERE
-          articleId = '$article_id'
-          AND stockAdjustmenId >= '$adjustment_id'
-          AND adjustmentCode  = '9'
+        SELECT
+            SUM(adjustmentQty) as sales_qty
+        FROM
+            StockAdjustment
+        WHERE
+            articleId = '$article_id'
+            AND stockAdjustmenId >= '$adjustment_id'
+            AND adjustmentCode  = '9'
       )sales,
       (
-      SELECT
-          SUM(adjustmentQty) as credit_qty
-      FROM
-          StockAdjustment
-      WHERE
-          articleId = '$article_id'
-          AND stockAdjustmenId >= '$adjustment_id'
-          AND adjustmentCode  = '10'
+        SELECT
+            SUM(adjustmentQty) as credit_qty
+        FROM
+            StockAdjustment
+        WHERE
+            articleId = '$article_id'
+            AND stockAdjustmenId >= '$adjustment_id'
+            AND adjustmentCode  = '10'
       )credit
     )summary_table
 
@@ -102,6 +99,7 @@ class APIQueryRetail extends QueryRetail {
       -- adjustmentDate >= DATEADD(DD, -$days_back, CURRENT_TIMESTAMP)
     ORDER BY
       stockAdjustmenId asc
+
     EOT;
   }
 }

@@ -132,6 +132,7 @@ class APIEndpoint {
     $query_retail = new APIQueryRetail();
     // if id from cache was not found or if id not valid, we need to grab from retail database
     $query_retail->sales_count($this->article_id, $this->adjustment_id);
+    // $query_retail->print();
     $database_retail->select_single_row($query_retail->get());
     // insert to cache if row returned
     if ($database_retail->result) {
@@ -149,10 +150,12 @@ class APIEndpoint {
     $mem_key = 'api_article_v0_min_stock_adjustment_id_for_' . $yyyymmdd;
     // fetch value from cache table
     $database_dw->mem_delete_yesterday($mem_key);
-    $this->adjustment_id = $database_dw->mem_get($mem_key)['mem_val'];
-    if ( is_numeric($this->adjustment_id) ) {
-      // this means we got a "valid" value from cache table and can return
-      return;
+    if ( isset($database_dw->mem_get($mem_key)['mem_val']) ) {
+      $this->adjustment_id = $database_dw->mem_get($mem_key)['mem_val'];
+      if ( is_numeric($this->adjustment_id) ) {
+        // this means we got a "valid" value from cache table and can return
+        return;
+      }
     }
     // if id from cache was not found or if its not valid, we need to grab new
     $database_retail = new DatabaseRetail();
