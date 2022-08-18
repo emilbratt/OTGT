@@ -47,13 +47,10 @@ services:
     volumes:
       - web_cip_info:/cip_info_assets
       - ../../:/var/www/html
-      # - ./web_cip_info/freetds/freetds.conf:/etc/freetds/freetds.conf
-      # - ./web_cip_info/freetds/odbc.ini:/etc/odbc.ini
-      # - ./web_cip_info/freetds/odbcinst.ini:/etc/odbcinst.ini
-      - ./web_cip_info/php_conf/php.ini_developement:/usr/local/etc/php/php.ini
-      - ./web_cip_info/apache-conf/apache2.conf:/etc/apache2/apache2.conf
-      - ./web_cip_info/sites-available/000-default.conf:/etc/apache2/sites-available/000-default.conf
-      - ./web_cip_info/conf-available/docker-php.conf:/etc/apache2/conf-available/docker-php.conf
+      - ./web_cip_info/php/php.ini:/usr/local/etc/php/php.ini
+      - ./web_cip_info/apache/apache2.conf:/etc/apache2/apache2.conf
+      - ./web_cip_info/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./web_cip_info/apache/docker-php.conf:/etc/apache2/conf-available/docker-php.conf
     ports:
       - "8080:80"
     restart: always
