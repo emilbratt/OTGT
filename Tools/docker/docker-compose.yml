@@ -29,7 +29,7 @@ services:
       - "3306:3306"
 
   web_barcode_generator:
-    build: ./barcode_generator
+    build: ./web_barcode_generator
     container_name: web_barcode_generator
     volumes:
       - ../../:/code/app
@@ -38,7 +38,7 @@ services:
     restart: always
 
   web_spreadsheet_generator:
-    build: ./spreadsheet_generator
+    build: ./web_spreadsheet_generator
     container_name: web_spreadsheet_generator
     volumes:
       - ../../:/code/app
