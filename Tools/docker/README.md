@@ -2,7 +2,7 @@
 
 ### setup
 * make sure to have docker and docker-compose installed on your system and your user part of the Docker group (no sudo here)
-* create the environment.ini file by copying and ediiting the environment.ini.template
+* create the environment.ini and place it in the root of the repository by copying and ediiting the environment.ini.template (also in the root of repository)
 
 ### commands
 start containers
