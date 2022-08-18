@@ -5,23 +5,23 @@
 * create the environment.ini file by copying and ediiting the environment.ini.template
 
 ### commands
-* start containers
+start containers
 ```
 docker-compose up
 # or as daemon (no log output)
 docker-compose up -d
 ```
-* start containers and force rebuild
+start containers and force rebuild
 ```
 docker-compose up --no-deps --build
 # daemon
 docker-compose up -d --no-deps --build
 ```
-* stop containers
+stop containers
 ```
 docker-compose down
 ```
-* stop containers and remove docker volumes declared in docker-compose.yml
+stop containers and remove docker volumes declared in docker-compose.yml
 ```
 docker-compose down -v
 ```
