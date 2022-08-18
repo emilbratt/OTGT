@@ -115,7 +115,7 @@ class QueryReports extends QueryRetail {
         $string_sort = 'articleStock.lastSold';
         break;
       case 'location':
-        $string_sort = 'location';
+        $string_sort = 'articleStock.StorageShelf';
         break;
       case 'paymentmethod':
         $string_sort = 'CustomerSaleHeader.additionalInfo';
@@ -124,10 +124,10 @@ class QueryReports extends QueryRetail {
         $string_sort = 'StockAdjustment.adjustmentQty';
         break;
       case 'lastimported':
-        $string_sort = 'lastimported';
+        $string_sort = 'articleStock.lastReceivedFromSupplier';
         break;
       case 'supplyid':
-        $string_sort = 'supplyid';
+        $string_sort = 'Article.suppliers_art_no';
         break;
       case 'salesdate':
         $string_sort = 'CustomerSaleHeader.salesDate';
