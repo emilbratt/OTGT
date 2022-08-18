@@ -56,7 +56,7 @@ exit
 ```
 
 ### db_retail
-* restore database from MS SQL database by running script inside ./db_retail/restore.sh
+* restore database from MS SQL database by running script restore.sh inside directory db_retail/
 * [MS SQL Docs](https://docs.microsoft.com/en-us/sql/linux/new-to-sql-learning-resources?view=sql-server-ver16)
 * [MS SQL 2019 Container](https://docs.microsoft.com/en-gb/sql/linux/quickstart-install-connect-docker?view=sql-server-ver15&pivots=cs1-bash)
 * [MS SQL Backup & Restore](https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-migrate-restore-database?view=sql-server-linux-ver15)
