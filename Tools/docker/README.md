@@ -7,8 +7,9 @@
 * start all services by running from this directory: $ docker-compose up
 * restore datawarehouse database to [db_datawarehouse](#db_datawarehouse)
 * restore retail database to [db_retail](#db_retail)
+* and optionally see more commands options regarding [docker-compose](#docker-compose) and the overview of directories [directories](#directory-overview)
 
-### commands
+### docker-compose
 start containers
 ```
 docker-compose up
