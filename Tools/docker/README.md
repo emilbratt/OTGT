@@ -4,7 +4,7 @@
 * make sure to have docker and docker-compose installed on your system
 * make sure your user is part of the Docker group (no sudo here)
 * create the environment.ini and place it in the root of the repository by copying and ediiting the environment.ini.template (also in the root of repository)
-* configure Apache, ODBC and PHP from inside cip_info/
+* configure Apache, ODBC and PHP from inside web_cip_info/
 * start all services by running from this directory: $ docker-compose up
 * restore datawarehouse database to [db_datawarehouse container](#service-db_datawarehouse)
 * restore retail database to [db_retail container](#service-db_retail)
@@ -36,8 +36,8 @@ stop containers and remove docker volumes declared in docker-compose.yml
 docker-compose down -v
 ```
 
-### service cip_info
-* changes to PHP and Apache configs can be done inside the cip_info before starting containers
+### service web_cip_info
+* changes to PHP and Apache configs can be done inside the web_cip_info before starting containers
 
 ### service db_datawarehouse
 copy over sql script from host to the root directory inside container
@@ -74,9 +74,9 @@ docker/ -> each directory inside here holds the dependencies for the container
   |
   ├── barcode_generator/ -> Bercode generating service API
   |
-  ├── cip_info/ -> Main web-site user interface
+  ├── web_cip_info/ -> Main web-site user interface
   |                           
-  ├── db_datawarehouse/ -> Datawarehouse backend for cip_info
+  ├── db_datawarehouse/ -> Datawarehouse backend for web_cip_info
   |                           
-  └── db_retail/ -> Retail database backen for cip_info
+  └── db_retail/ -> Retail database backen for web_cip_info
 </pre>
