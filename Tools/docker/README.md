@@ -6,8 +6,8 @@
 * create the environment.ini and place it in the root of the repository by copying and ediiting the environment.ini.template (also in the root of repository)
 * configure Apache, ODBC and PHP from inside cip_info/
 * start all services by running from this directory: $ docker-compose up
-* restore datawarehouse database to [db_datawarehouse](#db_datawarehouse)
-* restore retail database to [db_retail](#db_retail)
+* restore datawarehouse database to [db_datawarehouse container](#db_datawarehouse)
+* restore retail database to [db_retail container](#db_retail)
 * and optionally see commands options regarding [docker-compose](#docker-compose) and/or overview of directories [directories](#directory-overview)
 
 ### docker-compose
