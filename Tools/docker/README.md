@@ -5,8 +5,8 @@
 * create the environment.ini and place it in the root of the repository by copying and ediiting the environment.ini.template (also in the root of repository)
 * configure Apache, ODBC and PHP from inside cip_info/
 * start all services by running from this directory: $ docker-compose up
-* restore database to [db_datawarehouse](#db_datawarehouse)
-* restore database from MS SQL database by running script restore.sh inside directory db_retail/
+* restore datawarehouse database to [db_datawarehouse](#db_datawarehouse)
+* restore retail database to [db_retail](#db_retail)
 
 ### commands
 start containers
@@ -60,6 +60,7 @@ exit
 ```
 
 ### db_retail
+* restore database from MS SQL database by running script restore.sh inside directory db_retail/
 * [MS SQL Docs](https://docs.microsoft.com/en-us/sql/linux/new-to-sql-learning-resources?view=sql-server-ver16)
 * [MS SQL 2019 Container](https://docs.microsoft.com/en-gb/sql/linux/quickstart-install-connect-docker?view=sql-server-ver15&pivots=cs1-bash)
 * [MS SQL Backup & Restore](https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-migrate-restore-database?view=sql-server-linux-ver15)
