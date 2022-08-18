@@ -8,6 +8,7 @@ services:
   db_retail:
     build: ./db_retail
     container_name: db_retail
+    restart: always
     environment:
       MSSQL_SA_PASSWORD: Mys3cretPWD
       ACCEPT_EULA: "Y"
