@@ -77,7 +77,7 @@ class QueryReports extends QueryRetail {
           $m = date('m', strtotime($this->time_span));
           $d = date('d', strtotime($this->time_span));
           $this->query .= <<<EOT
-            AND CONVERT(VARCHAR(10), articleStock.lastSold, 102) = "$y.$m.$d"\n
+            AND CONVERT(VARCHAR(10), articleStock.lastSold, 102) = '$y.$m.$d'\n
           EOT;
         }
     }
@@ -214,7 +214,7 @@ class QueryReports extends QueryRetail {
           $m = date('m', strtotime($this->time_span));
           $d = date('d', strtotime($this->time_span));
           $this->query .= <<<EOT
-            AND CONVERT(VARCHAR(10), [adjustmentDate], 102) = "$y.$m.$d"\n
+            AND CONVERT(VARCHAR(10), [adjustmentDate], 102) = '$y.$m.$d'\n
           EOT;
         }
     }
@@ -319,7 +319,7 @@ class QueryReports extends QueryRetail {
           $m = date('m', strtotime($this->time_span));
           $d = date('d', strtotime($this->time_span));
           $this->query .= <<<EOT
-            AND CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 102) = "$y.$m.$d"\n
+            AND CONVERT(VARCHAR(10), CustomerSaleHeader.salesDate, 102) = '$y.$m.$d'\n
           EOT;
         }
     }
