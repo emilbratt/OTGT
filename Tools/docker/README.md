@@ -70,13 +70,13 @@ exit
 
 ### directory overview
 <pre>
-docker/ -> run "docker-compose up" from here to start
+docker/ -> each directory inside here holds the dependencies for the container
   |
-  ├── barcode_generator/ -> Dockerfile and requirements for the Python FastAPI backend
+  ├── barcode_generator/ -> Bercode generating service API
   |
-  ├── cip_info/ -> configs for the main web server that users interact with
+  ├── cip_info/ -> Main web-server where all user interaction is happening
   |                           
-  ├── db_datawarehouse/ -> Dockerfile and init script for MariaDB datawarehouse database
+  ├── db_datawarehouse/ -> Datawarehouse backend for cip_info
   |                           
-  └── db_retail/ -> Dockerfile and restore database script for the MS SQL retail database
+  └── db_retail/ -> Retail database backent for cip_info
 </pre>
