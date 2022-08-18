@@ -37,11 +37,21 @@ services:
       - "8081:8081"
     restart: always
 
+  web_spreadsheet_generator:
+    build: ./spreadsheet_generator
+    container_name: web_spreadsheet_generator
+    volumes:
+      - ../../:/code/app
+    ports:
+      - "8082:8082"
+    restart: always
+
   web_cip_info:
     depends_on:
       - db_datawarehouse
       - db_retail
       - web_barcode_generator
+      - web_spreadsheet_generator
     build: ./web_cip_info
     container_name: web_cip_info
     volumes:
