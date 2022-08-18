@@ -30,7 +30,6 @@ docker-compose down -v
 * changes to PHP and Apache configs can be done inside the cip_info before starting containers
 
 ### db_datawarehouse
-* adding and running sql script on service db_datawarehouse (commands below need tweaking)
 copy over sql script from host to the root directory inside container
 ```
 docker cp ./script.sql db_datawarehouse:/script.sql
