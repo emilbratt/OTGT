@@ -92,17 +92,42 @@ class TemplateReports extends Template {
       display: block;
     }
     EOT;
-    $_date = date("Y-m-d");
+    // default pre-defined value in the calendar form or from last used e.g. GET
+    $_pre_value_from_date = date("Y-m-d");
+    $_pre_value_to_date = date("Y-m-d");
+    if ( isset($_GET['calendar_from_date']) ) {
+      $_pre_value_from_date = $_GET['calendar_from_date'];
+    }
+    if ( isset($_GET['calendar_to_date']) ) {
+      $_pre_value_to_date = $_GET['calendar_to_date'];
+    }
+    $_pre_value_from_date = '2022-06-20';
     $this->html .= <<<EOT
     <div class="reports_form_input_date">
     <form method="GET">
     <input
+      type="hidden"
+      name="date_type"
+      value="calendar">
+
+    <label for="from_date">Fra dato</label><br>
+    <input
+      id="from_date"
       type="date"
-      value="$_date"
+      value="$_pre_value_from_date"
       min="2011-01-01"
-      name="type">
+      name="calendar_from_date">
+    <br>
+    <label for="to_date">Til dato</label><br>
+    <input
+      id="to_date"
+      type="date"
+      value="$_pre_value_to_date"
+      min="2011-01-01"
+      name="calendar_to_date">
 
     <input
+      style="display: block;"
       type="submit"
       value="Velg Dato">
     </form>

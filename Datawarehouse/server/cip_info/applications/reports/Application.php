@@ -25,6 +25,8 @@ class Reports {
   protected $order; // keeping track of what order should be passed when clicking header col of result table
   protected $arrow_symbol; // show arrow pointing at the way the table is ordered
   protected $hyper_link;
+  protected $date_type;
+  protected $article_status; // all items, expired items, non expired items
   const MONTH_CONVERT = [
     1 => 'Januar',
     2 => 'Februar',
@@ -71,6 +73,26 @@ class Reports {
     $this->hyperlink_spreadsheet->add_query('spreadsheet', 'true');
 
     $this->title_right = 'Dato idag: ' . Dates::get_this_weekday() . ' ' . date("d/m-Y");
+
+    // default is none-expired (show only active articles), can be flipped with button
+    $this->article_status = 'active';
+    $this->article_status_message = 'Vis Kun Aktive';
+    if(isset($_GET['article_status'])) {
+      if($_GET['article_status'] == 'expired') {
+        $this->article_status = 'all';
+        $this->article_status_message = 'Vis Aktive & Utgåtte';
+      }
+      else if($_GET['article_status'] == 'active') {
+        $this->article_status = 'expired';
+        $this->article_status_message = 'Vis Kun Utgåtte';
+      }
+    }
+
+    // mainly used to show date info regarding query results
+    $this->date_type = 'thisday';
+    if(isset($_GET['date_type'])) {
+      $this->date_type = $_GET['date_type'];
+    }
 
     // default is ascending, but we flip the order of rows if ascending is already set
     $this->order = 'ascending';
@@ -153,6 +175,29 @@ class Reports {
     }
   }
 
+  protected function get_left_title_date ($pre_string = '') {
+    $this->title_left .= $pre_string;
+    switch ($this->date_type) {
+      case 'thisday':
+        $this->title_left .= ' i dag';
+        break;
+      case 'thisweek':
+        $this->title_left .= ' denne uken';
+        break;
+      case 'thismonth':
+        $this->title_left .= ' ' . Dates::get_this_month();
+        break;
+      case 'calendar':
+        $date = new Date();
+        $date->format_from_string($_GET['calendar_from_date']);
+        $date_from = $date->display;
+        $date->format_from_string($_GET['calendar_to_date']);
+        $date_to = $date->display;
+        $this->title_left .= ' mellom ' . $date_from . ' og ' . $date_to;
+        break;
+    }
+  }
+
 }
 
 class Home extends Reports {
@@ -169,30 +214,12 @@ class Soldout extends Reports {
 
   public function run () {
     $this->page = 'Utsolgt';
-    $type = 'thisday';
-    if(isset($_GET['type'])) {
-      $type = $_GET['type'];
-    }
-    switch ($type) {
-      case 'thisday':
-        $this->title_left .= ' Utsolgte varer i dag';
-        break;
-      case 'thisweek':
-        $this->title_left .= ' Utsolgte varer denne uken';
-      break;
-      case 'thismonth':
-        $this->title_left .= ' Utsolgte varer '. Dates::get_this_month() . ' ' . date("Y");
-      break;
-      default:
-        $date = new Date();
-        $date->format_from_string($type);
-        $this->title_left .= ' Utsolgte varer ' . $date->display;
-    }
+    $this->get_left_title_date('Utsolgte varer');
 
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
-      'Lager' => 'quantity',
+      'Lager' => 'stock_quantity',
       'Plassering' => 'location',
       'Sist Importert' => 'lastimported',
       'Sist Solgt' => 'lastsold',
@@ -204,14 +231,18 @@ class Soldout extends Reports {
     $this->template->reports_form_input_date();
 
     $hyperlink_time_span = new HyperLink();
-    $hyperlink_time_span->add_query('type', 'thisday');
+    $hyperlink_time_span->add_query('date_type', 'thisday');
     $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
-    $hyperlink_time_span->add_query('type', 'thisweek');
+    $hyperlink_time_span->add_query('date_type', 'thisweek');
     $this->template->hyperlink_button('Denne Uka', $hyperlink_time_span->url);
-    $hyperlink_time_span->add_query('type', 'thismonth');
+    $hyperlink_time_span->add_query('date_type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
     $this->template->script_filter_row_button();
+
+    $hyperlink_toggle = new HyperLink();
+    $hyperlink_toggle->add_query('article_status', $this->article_status);
+    $this->template->hyperlink_button($this->article_status_message, $hyperlink_toggle->url);
 
     $this->template->hyperlink_button_target_top('Last ned regneark', $this->hyperlink_spreadsheet->url);
 
@@ -233,6 +264,7 @@ class Soldout extends Reports {
     $hyperlink_header = null;
     $query = new QueryReports();
     $query->sold_out();
+    // $query->print();
     $hyperlink_row = new HyperLink();
     try {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
@@ -241,7 +273,7 @@ class Soldout extends Reports {
         $this->template->table_row_start();
         $brand = CharacterConvert::utf_to_norwegian($row['brand']);
         $article = CharacterConvert::utf_to_norwegian($row['article']);
-        $quantity = $row['quantity'];
+        $quantity = $row['stock_quantity'];
         $location = $row['location'];
         $last_imported = $row['lastimported'];
         $last_sold = $row['lastsold'];
@@ -278,34 +310,16 @@ class Imported extends Reports {
 
   public function run () {
     $this->page = 'Varemottak';
-    $type = 'thisday';
-    if(isset($_GET['type'])) {
-      $type = $_GET['type'];
-    }
-    switch ($type) {
-      case 'thisday':
-        $this->title_left .= ' Mottatte varer i dag';
-        break;
-      case 'thisweek':
-        $this->title_left .= ' Mottatte varer denne uken';
-      break;
-      case 'thismonth':
-        $this->title_left .= ' Mottatte varer ' . Dates::get_this_month() . ' ' . date("Y");
-      break;
-      default:
-        $date = new Date();
-        $date->format_from_string($type);
-        $this->title_left .= ' Mottatte varer ' . $date->display;
-    }
-    $_key = 'Tid';
-    if ($type == 'thisweek' or $type == 'thismonth') {
-      $_key = 'Dato';
+    $this->get_left_title_date('Mottatte varer');
+    $_key = 'Dato';
+    if ($this->date_type == 'thisday') {
+      $_key = 'Tid';
     }
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
       'Importert' => 'importquantity',
-      'Lager' => 'quantity',
+      'Lager' => 'stock_quantity',
       'Plassering' => 'location',
       $_key => 'lastimported',
       'Lev. ID' => 'supplyid',
@@ -316,14 +330,18 @@ class Imported extends Reports {
     $this->template->reports_form_input_date();
 
     $hyperlink_time_span = new HyperLink();
-    $hyperlink_time_span->add_query('type', 'thisday');
+    $hyperlink_time_span->add_query('date_type', 'thisday');
     $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
-    $hyperlink_time_span->add_query('type', 'thisweek');
+    $hyperlink_time_span->add_query('date_type', 'thisweek');
     $this->template->hyperlink_button('Denne Uka', $hyperlink_time_span->url);
-    $hyperlink_time_span->add_query('type', 'thismonth');
+    $hyperlink_time_span->add_query('date_type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
     $this->template->script_filter_row_button();
+
+    $hyperlink_toggle = new HyperLink();
+    $hyperlink_toggle->add_query('article_status', $this->article_status);
+    $this->template->hyperlink_button($this->article_status_message, $hyperlink_toggle->url);
 
     $this->template->hyperlink_button_target_top('Last ned regneark', $this->hyperlink_spreadsheet->url);
 
@@ -355,7 +373,7 @@ class Imported extends Reports {
         $brand = CharacterConvert::utf_to_norwegian($row['brand']);
         $article = CharacterConvert::utf_to_norwegian($row['article']);
         $import_qty = $row['import_qty'];
-        $quantity = $row['quantity'];
+        $stock_quantity = $row['stock_quantity'];
         $location = $row['location'];
         $last_imported = $row['lastimported'];
         $supply_id = $row['supplyid'];
@@ -363,12 +381,12 @@ class Imported extends Reports {
         $this->template->table_row_value($brand);
         $this->template->table_row_value($article, $hyperlink_row->url);
         $this->template->table_row_value($import_qty);
-        $this->template->table_row_value($quantity);
+        $this->template->table_row_value($stock_quantity);
         $this->template->table_row_value($location, $hyperlink_row->url);
         $this->template->table_row_value($last_imported);
         $this->template->table_row_value($supply_id);
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$brand, $article, intval($import_qty), intval($quantity), $location, $last_imported, $supply_id]);
+        array_push($this->spreadsheet_data, [$brand, $article, intval($import_qty), intval($stock_quantity), $location, $last_imported, $supply_id]);
       }
     }
     catch(Exception $e)  {
@@ -392,38 +410,19 @@ class SalesHistory extends Reports {
 
   public function run () {
     $this->page = 'Alle Salg';
-    $type = 'thisday';
-    if(isset($_GET['type'])) {
-      $type = $_GET['type'];
-    }
-    switch ($type) {
-      case 'thisday':
-        $this->title_left .= ' Alle salg i dag';
-        break;
-      case 'thisweek':
-        $this->title_left .= ' Alle salg denne uken';
-      break;
-      case 'thismonth':
-        $this->title_left .= ' Alle salg '. Dates::get_this_month() . ' ' . date("Y");
-      break;
-      default:
-        $date = new Date();
-        $date->format_from_string($type);
-        $this->title_left .= ' Alle salg ' . $date->display;
-    }
-
-    $_key = 'Tid';
-    if ($type == 'thisweek' or $type == 'thismonth') {
-      $_key = 'Dato';
+    $this->get_left_title_date('Alle salg');
+    $_key = 'Dato';
+    if ($this->date_type == 'thisday') {
+      $_key = 'Tid';
     }
     $table_headers = [
-      'Selger' => 'name',
+      'Selger' => 'seller_name',
       'Merke' => 'brand',
       'Navn' => 'article',
       'Antall' => 'soldqty',
       'Plassering' => 'location',
       $_key => 'salesdate',
-      'Pris' => 'price',
+      'Pris' => 'sold_price',
     ];
 
     $this->template->title_left_and_right($this->title_left, $this->title_right);
@@ -431,14 +430,18 @@ class SalesHistory extends Reports {
     $this->template->reports_form_input_date();
 
     $hyperlink_time_span = new HyperLink();
-    $hyperlink_time_span->add_query('type', 'thisday');
+    $hyperlink_time_span->add_query('date_type', 'thisday');
     $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
-    $hyperlink_time_span->add_query('type', 'thisweek');
+    $hyperlink_time_span->add_query('date_type', 'thisweek');
     $this->template->hyperlink_button('Denne Uka', $hyperlink_time_span->url);
-    $hyperlink_time_span->add_query('type', 'thismonth');
+    $hyperlink_time_span->add_query('date_type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
     $this->template->script_filter_row_button('2');
+
+    $hyperlink_toggle = new HyperLink();
+    $hyperlink_toggle->add_query('article_status', $this->article_status);
+    $this->template->hyperlink_button($this->article_status_message, $hyperlink_toggle->url);
 
     $this->template->hyperlink_button_target_top('Last ned regneark', $this->hyperlink_spreadsheet->url);
 
@@ -461,27 +464,28 @@ class SalesHistory extends Reports {
     $query = new QueryReports();
     $query->sales_history();
     $hyperlink_row = new HyperLink();
+    // $query->print();
     try {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
         $article_id = $row['article_id'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
-        $name = CharacterConvert::utf_to_norwegian($row['name']);
+        $seller_name = CharacterConvert::utf_to_norwegian($row['seller_name']);
         $brand = CharacterConvert::utf_to_norwegian($row['brand']);
         $article = CharacterConvert::utf_to_norwegian($row['article']);
         $soldqty = $row['soldqty'];
         $location = $row['location'];
         $salesdate = $row['salesdate'];
-        $price = round($row['price'], 2);
+        $sold_price = round($row['sold_price'], 2);
         $this->template->table_row_start();
-        $this->template->table_row_value($name);
+        $this->template->table_row_value($seller_name);
         $this->template->table_row_value($brand);
         $this->template->table_row_value($article, $hyperlink_row->url);
         $this->template->table_row_value($soldqty);
         $this->template->table_row_value($location, $hyperlink_row->url);
         $this->template->table_row_value($salesdate);
-        $this->template->table_row_value($price);
+        $this->template->table_row_value($sold_price);
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$name, $brand, $article, intval($soldqty), $salesdate, floatval($price)]);
+        array_push($this->spreadsheet_data, [$seller_name, $brand, $article, intval($soldqty), $salesdate, floatval($sold_price)]);
       }
     }
     catch(Exception $e)  {
@@ -544,7 +548,7 @@ class NotSoldLately extends Reports {
       'Merke' => 'brand',
       'Navn' => 'article',
       'Sist Solgt' => 'lastsold',
-      'Lager' => 'quantity',
+      'Lager' => 'stock_quantity',
       'Plassering' => 'location',
       'Sist Importert' => 'lastimported',
       'Lev. ID' => 'supplyid',
@@ -571,6 +575,7 @@ class NotSoldLately extends Reports {
     $this->template->table_row_end();
     $query = new QueryReports();
     $query->in_stock_not_sold_lately();
+    // $query->print();
     $hyperlink_row = new HyperLink();
     try {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
@@ -579,7 +584,7 @@ class NotSoldLately extends Reports {
         $brand = CharacterConvert::utf_to_norwegian($row['brand']);
         $article = CharacterConvert::utf_to_norwegian($row['article']);
         $lastsold = $row['lastsold'];
-        $quantity = $row['quantity'];
+        $stock_quantity = $row['stock_quantity'];
         $location = $row['location'];
         $lastimported = $row['lastimported'];
         $supplyid = $row['supplyid'];
@@ -587,12 +592,12 @@ class NotSoldLately extends Reports {
         $this->template->table_row_value($brand);
         $this->template->table_row_value($article, $hyperlink_row->url);
         $this->template->table_row_value($lastsold);
-        $this->template->table_row_value($quantity);
+        $this->template->table_row_value($stock_quantity);
         $this->template->table_row_value($location, $hyperlink_row->url);
         $this->template->table_row_value($lastimported);
         $this->template->table_row_value($supplyid);
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$brand, $article, $lastsold, intval($quantity), $location, $lastimported, $supplyid]);
+        array_push($this->spreadsheet_data, [$brand, $article, $lastsold, intval($stock_quantity), $location, $lastimported, $supplyid]);
         sleep(0.025);
       }
     }
