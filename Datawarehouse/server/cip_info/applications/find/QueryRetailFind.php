@@ -14,7 +14,7 @@ class QueryRetailFindBySearch extends QueryRetail {
       Article.articleId AS article_id,
       Brands.brandLabel AS brand,
       Article.articleName AS article,
-      CAST (stockQty AS INT) AS quantity,
+      CAST (stockQty AS INT) AS stock_quantity,
       articleStock.StorageShelf AS location,
       Article.suppliers_art_no AS supplyid,
       ArticleEAN.eanCode AS barcode
@@ -48,7 +48,7 @@ class QueryRetailFindByArticle extends QueryRetail {
       article,
       category,
       price,
-      quantity,
+      stock_quantity,
       location,
       supplyid,
       lastimported,
@@ -74,7 +74,7 @@ class QueryRetailFindByArticle extends QueryRetail {
     (
       SELECT
         Article.ArticleId AS b_article_id,
-        articleStock.stockQty AS quantity,
+        CAST (articleStock.stockQty AS INT) AS stock_quantity,
         articleStock.StorageShelf AS location,
         Article.suppliers_art_no AS supplyid,
         CAST(articleStock.lastReceivedFromSupplier AS DATE) AS lastimported,
@@ -186,7 +186,7 @@ class QueryRetailFindArticleMovement extends QueryRetail {
       Article.articleId AS article_id,
       Brands.brandLabel AS brand,
       Article.articleName AS article,
-      CAST (stockQty AS INT) AS quantity,
+      CAST (stockQty AS INT) AS stock_quantity,
       Article.suppliers_art_no AS supplyid
     FROM
       Article

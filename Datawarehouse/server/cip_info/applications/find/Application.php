@@ -73,7 +73,6 @@ class Find {
     }
   }
 
-
   protected function validate_search_string_barcode () {
     $check_num = is_numeric($_GET['input_field_barcode']);
     $check_len = (strlen($_GET['input_field_barcode']) < 14 or strlen($_GET['input_field_barcode']) > 7);
@@ -183,7 +182,7 @@ class BySearch extends Find {
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
-      'Lager' => 'quantity',
+      'Lager' => 'stock_quantity',
       'Plassering' => 'location',
       'Lev. ID & Strekkode' => 'supplyid',
     ];
@@ -212,6 +211,7 @@ class BySearch extends Find {
     $query->where_supplyid();
     $query->where_article_expired();
     $query->sort_by();
+    // $query->print();
     $this->database_retail = new DatabaseRetail();
     $this->database_retail->select_multi_row($query->get());
     $query = null;
@@ -224,7 +224,7 @@ class BySearch extends Find {
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
-        $this->template->table_row_value($row['quantity']);
+        $this->template->table_row_value($row['stock_quantity']);
         $this->template->table_row_value($row['location'], $hyperlink_row->url);
         $this->template->table_row_value($row['supplyid'] . ' // ' . $barcode);
         $this->template->table_row_end();
@@ -271,7 +271,7 @@ class ByShelf extends Find {
     $table_headers = [
       'Merke' => 'brand',
       'Navn' => 'article',
-      'Lager' => 'quantity',
+      'Lager' => 'stock_quantity',
       'Plassering' => 'location',
       'Lev. ID & Strekkode' => 'supplyid',
     ];
@@ -309,7 +309,7 @@ class ByShelf extends Find {
         $this->template->table_row_start();
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
         $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
-        $this->template->table_row_value($row['quantity']);
+        $this->template->table_row_value($row['stock_quantity']);
         $this->template->table_row_value($row['location'], $hyperlink_row->url);
         $this->template->table_row_value($row['supplyid'] . ' // ' . $barcode);
         $this->template->table_row_end();
@@ -377,7 +377,7 @@ class ByArticle extends Find {
       $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
       $category = CharacterConvert::utf_to_norwegian($this->database_retail->result['category']);
       $price = $this->database_retail->result['price'];
-      $quantity = $this->database_retail->result['quantity'];
+      $stock_quantity = $this->database_retail->result['stock_quantity'];
       $retail_location = $this->database_retail->result['location'];
       $supplyid = $this->database_retail->result['supplyid'];
       $lastimported = $this->database_retail->result['lastimported'];
@@ -396,7 +396,7 @@ class ByArticle extends Find {
       $this->template->table_start();
       $this->template->table_row_start();
       $this->template->_table_row_value('Antall: ', 'left');
-      $this->template->_table_row_value($quantity . ' på lager.', 'left');
+      $this->template->_table_row_value($stock_quantity . ' på lager.', 'left');
       $this->template->table_row_end();
       $this->template->table_row_start();
       $this->template->_table_row_value('Pris:', 'left');
@@ -553,7 +553,7 @@ class ArticleMovement extends Find {
       $article_id = $this->database_retail->result['article_id'];
       $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
       $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
-      $quantity = $this->database_retail->result['quantity'];
+      $quantity = $this->database_retail->result['stock_quantity'];
       $supplyid = $this->database_retail->result['supplyid'];
     } else {
       return;
