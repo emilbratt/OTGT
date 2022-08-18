@@ -47,14 +47,14 @@ echo '2 list database files from backup inside '
 echo '3 open sql shell inside container'
 echo '0 exit'
 
-printf 'Type number: '; read _OPTN
+printf 'Type number: '; read _option
 
-if [[ $_OPTN == 0 ]]; then
+if [[ $_option == 0 ]]; then
   exit
-elif [[ $_OPTN == '1' ]]; then
+elif [[ $_option == '1' ]]; then
   restore_backup
-elif [[ $_OPTN == 2 ]]; then
+elif [[ $_option == 2 ]]; then
   list_database_files
-elif [[ $_OPTN == 3 ]]; then
+elif [[ $_option == 3 ]]; then
   open_sql_shell
 fi

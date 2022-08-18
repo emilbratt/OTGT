@@ -8,9 +8,9 @@ RUN mkdir /cip_info_assets && chown 33:33 /cip_info_assets
 
 RUN apt update && apt install freetds-bin tdsodbc -y
 
-COPY ./freetds.conf /etc/freetds/freetds.conf
-COPY ./odbcinst.ini /etc/odbcinst.ini
-COPY ./odbc.ini /etc/odbc.ini
+COPY ./freetds/freetds.conf /etc/freetds/freetds.conf
+COPY ./freetds/odbcinst.ini /etc/odbcinst.ini
+COPY ./freetds/odbc.ini /etc/odbc.ini
 RUN odbcinst -i -d -f /usr/share/tdsodbc/odbcinst.ini
 
 RUN apt update && apt install unixodbc unixodbc-dev -y \
