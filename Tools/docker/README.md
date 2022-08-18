@@ -1,7 +1,8 @@
 ## spin up containers for developing
 
 ### setup
-* make sure to have docker and docker-compose installed on your system and your user part of the Docker group (no sudo here)
+* make sure to have docker and docker-compose installed on your system
+* make sure your user is part of the Docker group (no sudo here)
 * create the environment.ini and place it in the root of the repository by copying and ediiting the environment.ini.template (also in the root of repository)
 * configure Apache, ODBC and PHP from inside cip_info/
 * start all services by running from this directory: $ docker-compose up
