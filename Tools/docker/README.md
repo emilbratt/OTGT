@@ -73,11 +73,11 @@ exit
 <pre>
 docker/ -> each directory inside here holds the dependencies for the container
   |
-  ├── barcode_generator/ -> Bercode generating service API
+  ├── barcode_generator/ -> Bercode generating service API | written in Python
   |
-  ├── web_cip_info/ -> Main service runnng the web-site
+  ├── web_cip_info/ -> Main service runnng the web-site written | PHP backend
   |                           
-  ├── db_datawarehouse/ -> Datawarehouse backend for web_cip_info
+  ├── db_datawarehouse/ -> Datawarehouse backend for web_cip_info | running on MariaDB
   |                           
-  └── db_retail/ -> Retail database backend for web_cip_info
+  └── db_retail/ -> Retail database backend for web_cip_info | running on MS SQL Server
 </pre>
