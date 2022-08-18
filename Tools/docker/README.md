@@ -4,11 +4,12 @@
 * make sure to have docker and docker-compose installed on your system
 * make sure your user is part of the Docker group (no sudo here)
 * create the environment.ini and place it in the root of the repository by copying and ediiting the environment.ini.template (also in the root of repository)
-* configure Apache, ODBC and PHP from inside web_cip_info/
+* check configurations for Apache, ODBC and PHP from inside web_cip_info/ (should not need any change)
 * start all services by running from this directory: $ docker-compose up
 * restore datawarehouse database to [db_datawarehouse container](#service-db_datawarehouse)
 * restore retail database to [db_retail container](#service-db_retail)
-* and optionally see commands options regarding [docker-compose](#docker-compose) and/or overview of directories [directories](#directory-overview)
+* see command options regarding [docker-compose](#docker-compose)
+* see overview of directories [directories](#directory-overview)
 
 ### docker-compose
 start containers
@@ -37,7 +38,7 @@ docker-compose down -v
 ```
 
 ### service web_cip_info
-* changes to PHP and Apache configs can be done inside the web_cip_info before starting containers
+* Apache, ODBC and PHP config files are found inside directory web_cip_info/
 
 ### service db_datawarehouse
 copy over sql script from host to the root directory inside container
