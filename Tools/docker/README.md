@@ -70,5 +70,7 @@ docker/ -> run "docker-compose up" from here to start
   |
   ├── cip_info/ -> configs for the main web server that users interact with
   |                           
-  └── db_datawarehouse/ -> Dockerfile and init script for datawarehouse database
+  ├── db_datawarehouse/ -> Dockerfile and init script for MariaDB datawarehouse database
+  |                           
+  └── db_retail/ -> Dockerfile and restore database script for the MS SQL retail database
 </pre>
