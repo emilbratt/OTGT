@@ -74,9 +74,9 @@ docker/ -> each directory inside here holds the dependencies for the container
   |
   ├── barcode_generator/ -> Bercode generating service API
   |
-  ├── cip_info/ -> Main web-server where all user interaction is happening
+  ├── cip_info/ -> Main web-site user interface
   |                           
   ├── db_datawarehouse/ -> Datawarehouse backend for cip_info
   |                           
-  └── db_retail/ -> Retail database backent for cip_info
+  └── db_retail/ -> Retail database backen for cip_info
 </pre>
