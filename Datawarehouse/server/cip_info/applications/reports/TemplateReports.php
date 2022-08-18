@@ -101,7 +101,6 @@ class TemplateReports extends Template {
     if ( isset($_GET['calendar_to_date']) ) {
       $_pre_value_to_date = $_GET['calendar_to_date'];
     }
-    $_pre_value_from_date = '2022-06-20';
     $this->html .= <<<EOT
     <div class="reports_form_input_date">
     <form method="GET">
