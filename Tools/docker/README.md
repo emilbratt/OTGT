@@ -8,13 +8,17 @@
 start containers
 ```
 docker-compose up
-# or as daemon (no log output)
+```
+or as daemon (no log output)
+```
 docker-compose up -d
 ```
 start containers and force rebuild
 ```
 docker-compose up --no-deps --build
-# daemon
+```
+daemon
+```
 docker-compose up -d --no-deps --build
 ```
 stop containers
