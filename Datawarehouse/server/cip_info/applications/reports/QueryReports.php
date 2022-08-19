@@ -284,6 +284,7 @@ class QueryReports extends QueryRetail {
 
   public function in_stock_not_sold_lately () {
     $brand = $_GET['input_field_brand'];
+    $brand = str_replace("'", '_', $brand);
     $location = $_GET['input_field_location'];
     $num_year = $_GET['input_field_date_part_num'];
     $stock_operator = $_GET['input_field_stock_operator'];
