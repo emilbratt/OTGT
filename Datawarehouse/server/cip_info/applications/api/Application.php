@@ -107,8 +107,8 @@ class Home extends API {
         ['url' => 'api/sales/v0/salesperhour/{YYYY}/{M})/{DAYOFMONTH}', 'method' => 'GET', 'info' => 'total sales count and turnover for each hour, params = INT, and last two params are optional', 'active' => true],
       ],
       'Cache' => [
-        ['url' => 'api/cache/v0/read/{key}', 'method' => 'GET', 'info' => 'get cache', 'active' => true],
-        ['url' => 'api/cache/v0/set {"mem_key: "val", "mem_val": "val"}', 'method' => 'POST', 'info' => 'insert cache', 'active' => true],
+        ['url' => 'api/cache/v0/get/{key}', 'method' => 'GET', 'info' => 'get cache', 'active' => true],
+        ['url' => 'api/cache/v0/set {"mem_key: "val", "mem_val": "val"}', 'method' => 'POST', 'info' => 'insert/update cache', 'active' => true],
         ['url' => 'api/cache/v0/delete/{key}', 'method' => 'DELETE', 'info' => 'delete cache', 'active' => true],
       ],
       // 'Brands' => [

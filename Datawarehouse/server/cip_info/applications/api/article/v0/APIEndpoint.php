@@ -150,10 +150,10 @@ class APIEndpoint {
     $mem_key = 'api_article_v0_min_stock_adjustment_id_for_' . $yyyymmdd;
     // fetch value from cache table
     $database_dw->mem_delete_yesterday($mem_key);
-    if ( isset($database_dw->mem_get($mem_key)['mem_val']) ) {
-      $this->adjustment_id = $database_dw->mem_get($mem_key)['mem_val'];
-      if ( is_numeric($this->adjustment_id) ) {
-        // this means we got a "valid" value from cache table and can return
+    $mem_res = $database_dw->mem_get($mem_key);
+    if ($mem_res !== false) {
+      if (is_numeric($mem_res['mem_val'])) {
+        $this->adjustment_id = $mem_res['mem_val'];
         return;
       }
     }
@@ -162,10 +162,9 @@ class APIEndpoint {
     $query_retail = new APIQueryRetail();
     $query_retail->min_stock_adjustment_id_for_day_back($this->days_back, );
     $database_retail->select_single_row($query_retail->get());
-    $val = $database_retail->result['stock_adjustment_id'];
-    if ($database_retail->result) {
+    if ($database_retail->result !== false) {
       $this->adjustment_id = $database_retail->result['stock_adjustment_id'];
-      $database_dw->mem_insert($mem_key, $this->adjustment_id);
+      $database_dw->mem_set($mem_key, $this->adjustment_id);
       return;
     }
     $this->adjustment_id = false;

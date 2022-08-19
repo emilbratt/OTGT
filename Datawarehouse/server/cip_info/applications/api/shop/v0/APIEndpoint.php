@@ -118,17 +118,18 @@ class APIEndpoint {
     $database_dw = new DatabaseDatawarehouse();
     $database_dw->mem_delete_yesterday('min_customer_sales_id_today');
     // the end result of this block will either pass a number or just false to min_customer_sales_id_today
-    if ( isset($database_dw->mem_get('min_customer_sales_id_today')['mem_val']) ) {
-      $min_id = $database_dw->mem_get('min_customer_sales_id_today')['mem_val'];
+    $mem_res = $database_dw->mem_get('min_customer_sales_id_today');
+    if ($mem_res !== false) {
+      $min_id = $mem_res['mem_val'];
       // we might still have grabbed yesterdays id from cache
       // if inserted at around 00:00 on date shift (this has happened)
       // lets really confirm that this id is todays minimum sales id
       $query_retail = new APIQueryRetail();
       $query_retail->select_confirm_min_customer_sales_id_is_today($min_id);
       $this->database_retail->select_single_row($query_retail->get());
-      $is_valid = $this->database_retail->result['min_id'];
+      $res = $this->database_retail->result['min_id'];
       // if row returned, id is valid and we can jump out
-      if ($is_valid) {
+      if ($res) {
         $this->min_customer_sales_id_today = $min_id;
         return;
       }
@@ -142,7 +143,7 @@ class APIEndpoint {
     $this->min_customer_sales_id_today = $this->database_retail->result['min_id'];
     // insert to cache if row returned
     if ($this->min_customer_sales_id_today) {
-      $database_dw->mem_insert('min_customer_sales_id_today', $this->min_customer_sales_id_today);
+      $database_dw->mem_set('min_customer_sales_id_today', $this->min_customer_sales_id_today);
       return;
     }
   }

@@ -52,5 +52,5 @@ if __name__ == '__main__':
     #post('api/placement/v1/update_by_article_id', {'article_id': '10', 'shelf': 'a-b-2'})
     # delete('api/instructions/v0/delete/bygg/varme_styring.pdf')
     post('api/cache/v0/set', {'mem_key': 'api_article_v0_min_stock_adjustment_id_for_2021_07_22', 'mem_val': '1080899'})
-    #get('api/cache/v0/read/test')
+    #get('api/cache/v0/get/test')
     #delete('api/cache/v0/delete/min_momement_id_last_year')

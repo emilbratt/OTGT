@@ -145,7 +145,7 @@ class TemplateHome extends Template {
     $this->script .= <<<EOT
     <script>
     function auto_fetch_note() {
-      fetch('$host/api/cache/v0/read/home_page_note')
+      fetch('$host/api/cache/v0/get/home_page_note')
       .then(response => {
         if (response.ok) {
           return response.json();

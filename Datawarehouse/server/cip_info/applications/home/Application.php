@@ -90,16 +90,17 @@ class Home {
     // we do not want to get yesterdays or older value
     $this->database_dw->mem_delete_yesterday('min_customer_sales_id_today');
     // the end result of this block will either pass a number or just false to min_customer_sales_id_today
-    $min_id = $this->database_dw->mem_get('min_customer_sales_id_today')['mem_val'];
-    if ($min_id != false) {
+    $mem_res = $this->database_dw->mem_get('min_customer_sales_id_today');
+    if ($mem_res !== false) {
+      $min_id = $mem_res['mem_val'];
       // we might still have grabbed yesterdays id from cache
       // if inserted at around 00:00 on date shift (this has happened)
       // lets really confirm that this id is todays minimum sales id
       $this->query_retail->select_confirm_min_customer_sales_id_is_today($min_id);
       $this->database_retail->select_single_row($this->query_retail->get());
-      $is_valid = $this->database_retail->result['min_id'];
-      // if row returned, id is valid and we can jump out
-      if ($is_valid) {
+      $res = $this->database_retail->result['min_id'];
+      // if row returned then id from cache is valid and we can exit here
+      if ($res) {
         $this->min_customer_sales_id_today = $min_id;
         return;
       }
@@ -109,8 +110,8 @@ class Home {
     $this->database_retail->select_single_row($this->query_retail->get());
     // if row returned, we have an id and can update cache
     $this->min_customer_sales_id_today = $this->database_retail->result['min_id'];
-    if ($this->min_customer_sales_id_today) {
-      $this->database_dw->mem_insert('min_customer_sales_id_today', $this->min_customer_sales_id_today);
+    if ( is_numeric($this->min_customer_sales_id_today) ) {
+      $this->database_dw->mem_set('min_customer_sales_id_today', $this->min_customer_sales_id_today);
       return;
     }
     if ($this->environment->developement('show_debug')) {
@@ -124,17 +125,18 @@ class Home {
     // on every page load, delete note if from yesterday
     $this->database_dw->mem_delete_yesterday('home_page_note');
     // insert new note if requested
-    if(isset($_POST['note_input_form'])) {
-      $this->database_dw->mem_insert('home_page_note', $_POST['note_input_form']);
+    if ( isset($_POST['note_input_form']) ) {
+      $this->database_dw->mem_set('home_page_note', $_POST['note_input_form']);
     }
+    // set an empty string as default (used if no note exists in database)
+    $note = '';
     // fetch note that resides currently in the database cache table
-    $this->note = $this->database_dw->mem_get('home_page_note')['mem_val'];
-    if ( empty($this->note) ) {
-      $this->note = '';
+    $mem_res = $this->database_dw->mem_get('home_page_note');
+    if ( $mem_res !== false) {
+      $note = $mem_res['mem_val'];
     }
-    // show note
     $this->template->second_title('Notat');
-    $this->template->note_input_form($this->note);
+    $this->template->note_input_form($note);
     $this->template->message('Husk: alle kan legge til, endre eller fjerne notater og disse forsvinner etter 1 dag');
   }
 
@@ -153,14 +155,13 @@ class Home {
       4 => null,
       52 => null,
     ];
-
     foreach ($weeks_behind as $i => $val) {
       $s_i = strval($i);
       $turnover = null;
       $this->database_dw->mem_delete_yesterday('turnover_week_behind_' . $s_i);
-      $mem = $this->database_dw->mem_get('turnover_week_behind_' . $s_i);
-      if ( !(empty($mem)) ) {
-        $weeks_behind[$i] = $mem['mem_val'];
+      $mem_res = $this->database_dw->mem_get('turnover_week_behind_' . $s_i);
+      if ($mem_res !== false) {
+        $weeks_behind[$i] = $mem_res['mem_val'];
       }
       if ( $weeks_behind[$i] === null ) {
         // if null, no cache was grabbed and we need to fetch from retail
@@ -168,7 +169,7 @@ class Home {
         $this->database_retail->select_single_row($this->query_retail->get());
         if ($this->database_retail->result) {
           $turnover = $this->database_retail->result['sum_turnover'];
-          $this->database_dw->mem_insert('turnover_week_behind_' . $s_i, $turnover);
+          $this->database_dw->mem_set('turnover_week_behind_' . $s_i, $turnover);
           $weeks_behind[$i] = $turnover;
         }
       }

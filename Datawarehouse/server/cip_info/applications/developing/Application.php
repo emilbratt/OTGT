@@ -326,22 +326,33 @@ class GenerateLabelDummySheet extends Developing {
 class MemoryDatabase extends Developing {
   public function run () {
     $this->database = new DatabaseDatawarehouse();
-    $key = 'hello';
-    $val = 'world';
-    $this->template->message('INSERTING ' . $val . ' using key: ' . $key);
-    $this->database->mem_insert($key, $val);
-    $this->template->message('value after insert: ' . $this->database->mem_get($key)['mem_val']);
-    $this->template->message('timestamp after insert: ' . $this->database->mem_get($key)['mem_time']);
-    $val = 'new ' . $val;
-    sleep(1);
-    $this->template->message('INSERTING AGAIN ' . $val . ' using key: ' . $key);
-    $this->database->mem_insert($key, $val);
-    $this->template->message('value after update: ' . $this->database->mem_get($key)['mem_val']);
-    $this->template->message('timestamp update: ' . $this->database->mem_get($key)['mem_time']);
-    $this->template->message('DELETING ' . $val . ' using key: ' . $key);
+    $key = 'memory_key';
+    $val = 'this is the value stored in memory';
+
+    // insert memory to cache table
+    $this->template->message('INSERTING: ' . $val);
+    $this->database->mem_set($key, $val);
+    $mem_res = $this->database->mem_get($key);
+    if ($mem_res) {
+      $this->template->message('TIMESTAMP FOR INSERT: ' . $mem_res['mem_time']);
+    }
+
+    $this->template->line_break();
+
+    // if inserting value with existing key, timestamp and value will change
+    $val = 'this is the new value that is updated rather than inserted';
+    $this->template->message('INSERTING AGAIN: ' . $val);
+    $this->database->mem_set($key, $val);
+    $mem_res = $this->database->mem_get($key);
+    if ($mem_res) {
+      $this->template->message('TIMESTAMP FOR UPDATE: ' . $mem_res['mem_time']);
+    }
+
+    $this->template->line_break();
+
+    // remove memory from cache table
+    $this->template->message('DELETING: ' . $val);
     $this->database->mem_delete($key);
-    $this->template->message('value after delete: ' . $this->database->mem_get($key)['mem_val']);
-    $this->template->message('timestamp delete: ' . $this->database->mem_get($key)['mem_time']);
     $this->template->print($this->page);
   }
 }
