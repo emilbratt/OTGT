@@ -23,7 +23,7 @@ class APIQueryRetail extends QueryRetail {
 
   public function movement ($article_id) {
     $this->query .= <<<EOT
-    SELECT stockAdjustmenId, movement, qty, date FROM
+    SELECT stockAdjustmenId, movement, CAST(qty AS INT), date FROM
     (
       SELECT
         stockAdjustmenId AS stockAdjustmenId,
