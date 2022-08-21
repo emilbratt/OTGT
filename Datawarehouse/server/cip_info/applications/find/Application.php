@@ -364,9 +364,9 @@ class ByArticle extends Find {
 
     $query = new QueryRetailFindByArticle();
     $query->select_item_info();
+    // $query->print();
     $this->database_retail = new DatabaseRetail();
     $this->database_retail->select_single_row($query->get());
-    // $query->print();
     $query = null;
 
     // all results are handled and printed on screen here
