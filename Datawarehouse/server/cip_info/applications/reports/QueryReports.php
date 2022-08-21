@@ -54,8 +54,10 @@ class QueryReports extends QueryRetail {
         $calendar_to_date = str_replace('-', '.', $_GET['calendar_to_date']);
         $this->query .= <<<EOT
           AND CONVERT(VARCHAR(10), $field_name, 102)
-            BETWEEN '$calendar_from_date'
-            AND '$calendar_to_date'\n
+            BETWEEN
+              '$calendar_from_date'
+            AND
+              '$calendar_to_date'\n
         EOT;
         break;
       default:
@@ -97,12 +99,15 @@ class QueryReports extends QueryRetail {
 
   }
 
-  private function add_where_clause_sort () {
+  private function add_order_bye_sort () {
     if(isset($_GET['sort'])) {
       $this->sort = $_GET['sort'];
     }
     switch ($this->sort) {
       case 'article':
+        $string_sort = 'Article.articleName';
+        break;
+      case 'Article.articleName':
         $string_sort = 'Article.articleName';
         break;
       case 'brand':
@@ -143,6 +148,12 @@ class QueryReports extends QueryRetail {
         break;
       case 'soldqty':
         $string_sort = 'CustomerSales.noOfArticles';
+        break;
+      case 'abc_code':
+        $string_sort = 'abc_code';
+        break;
+      case 'sales_total':
+        $string_sort = 'sales_total';
         break;
     }
     switch ($this->order) {
@@ -188,7 +199,7 @@ class QueryReports extends QueryRetail {
     $this->add_where_clause_article_status();
     $this->add_where_clause_date('articleStock.lastSold');
     $this->sort = 'lastsold';
-    $this->add_where_clause_sort();
+    $this->add_order_bye_sort();
   }
 
   public function imported () {
@@ -238,7 +249,7 @@ class QueryReports extends QueryRetail {
     $this->query .= ")\n";
 
     $this->sort = 'lastimported';
-    $this->add_where_clause_sort();
+    $this->add_order_bye_sort();
   }
 
   public function sales_history () {
@@ -278,7 +289,7 @@ class QueryReports extends QueryRetail {
     $this->add_where_clause_date('CustomerSaleHeader.salesDate');
     $this->add_where_clause_article_status();
     $this->sort = 'salesdate';
-    $this->add_where_clause_sort();
+    $this->add_order_bye_sort();
 
   }
 
@@ -321,7 +332,7 @@ class QueryReports extends QueryRetail {
       EOT;
     }
     $this->sort = 'lastsold';
-    $this->add_where_clause_sort();
+    $this->add_order_bye_sort();
   }
 
   public function sales_per_hour () {
@@ -375,6 +386,310 @@ class QueryReports extends QueryRetail {
     ORDER BY
       $this->sort $string_order\n
     EOT;
+  }
+
+  public function all_brands () {
+    $this->query .= <<<EOT
+    SELECT
+      brandId AS brand_id,
+      brandLabel AS brand
+    FROM
+      Brands
+    WHERE
+      brandLabel IS NOT NULL
+      AND DATALENGTH(brandLabel) > 0
+    ORDER BY
+      brandLabel
+    EOT;
+  }
+
+  public function brand_by_brand_id ($brand_id = false) {
+    if ( isset($_GET['brand_id']) ) {
+      $brand_id = $_GET['brand_id'];
+    }
+    if ($brand_id === false) {
+      return false;
+    }
+    if ( is_numeric($brand_id) ) {
+      $this->query .= <<<EOT
+      SELECT brandLabel AS brand
+      FROM   Brands
+      WHERE  brandId = '$brand_id'
+      EOT;
+    }
+  }
+
+  public function brand_full_overview ($brand_id = false) {
+    if ($brand_id === false) {
+      return false;
+    }
+    $this->query .= <<<EOT
+    SELECT
+      Article.articleId AS article_id,
+      Brands.brandLabel AS brand_name,
+      Article.articleName AS article_name,
+      Article.abc_code AS abc_code, -- abc codes e.g. computing velocity codes to measure sales performance
+      CAST (articleStock.stockQty AS INT) AS stock_quantity,
+
+      movement_summary.sum_manual_adjust AS manual_adjustment_total,
+      CONVERT(VARCHAR(10), movement_summary.min_man_minus_date, 23) AS min_man_minus_date,
+      CONVERT(VARCHAR(10), movement_summary.max_man_minus_date, 23) AS max_man_minus_date,
+      CONVERT(VARCHAR(10), movement_summary.min_man_plus_date, 23) AS min_man_plus_date,
+      CONVERT(VARCHAR(10), movement_summary.max_man_plus_date, 23) AS max_man_plus_date,
+
+      movement_summary.sum_sales AS sales_total,
+      CONVERT(VARCHAR(10), articleStock.lastSold, 23) AS lastsold,
+      CONVERT(VARCHAR(10), movement_summary.min_sales_date, 23) AS min_sales_date,
+      CONVERT(VARCHAR(10), movement_summary.max_sales_date, 23) AS max_sales_date,
+      CONVERT(VARCHAR(10), movement_summary.min_credit_date, 23) AS min_credit_date,
+      CONVERT(VARCHAR(10), movement_summary.max_credit_date, 23) AS max_credit_date,
+
+      movement_summary.receive_qty AS received_total,
+      CONVERT(VARCHAR(10), articleStock.lastReceivedFromSupplier, 23) AS lastimported,
+      CONVERT(VARCHAR(10), movement_summary.min_receive_date, 23) AS min_receive_date,
+      CONVERT(VARCHAR(10), movement_summary.max_receive_date, 23) AS max_receive_date,
+
+      Article.suppliers_art_no AS supplyid
+
+    FROM
+      Article
+    INNER JOIN
+      Brands ON Article.brandId = Brands.brandId
+    INNER JOIN
+      articleStock ON Article.articleId = articleStock.articleId
+    INNER JOIN
+    (
+
+      SELECT
+        Article.articleId AS mov_article_id,
+        mov_qty_sum.min_man_minus_date,
+        mov_qty_sum.max_man_minus_date,
+
+        mov_qty_sum.min_man_plus_date,
+        mov_qty_sum.max_man_plus_date,
+
+        mov_qty_sum.min_sales_date,
+        mov_qty_sum.max_sales_date,
+
+        mov_qty_sum.min_credit_date,
+        mov_qty_sum.max_credit_date,
+
+        mov_qty_sum.min_receive_date,
+        mov_qty_sum.max_receive_date,
+
+        SUM(mov_qty_sum.man_plus_qty - mov_qty_sum.man_minus_qty) AS sum_manual_adjust,
+        SUM(mov_qty_sum.sales_qty - mov_qty_sum.credit_qty) AS sum_sales,
+        mov_qty_sum.receive_qty
+      FROM
+        Article
+      INNER JOIN
+      (
+        SELECT
+          Article.articleId AS mov_sum_article_id,
+          CASE
+            WHEN man_minus_qty IS NULL THEN '0'
+            ELSE man_minus_qty
+          END AS man_minus_qty,
+          min_man_minus_date,
+          max_man_minus_date,
+
+          CASE
+            WHEN man_plus_qty IS NULL THEN '0'
+            ELSE man_plus_qty
+          END AS man_plus_qty,
+          min_man_plus_date,
+          max_man_plus_date,
+
+          CASE
+            WHEN sales_qty IS NULL THEN '0'
+            ELSE sales_qty
+          END AS sales_qty,
+          min_sales_date,
+          max_sales_date,
+
+          CASE
+            WHEN credit_qty IS NULL THEN '0'
+            ELSE credit_qty
+          END AS credit_qty,
+          min_credit_date,
+          max_credit_date,
+
+          CASE
+            WHEN receive_qty IS NULL THEN '0'
+            ELSE receive_qty
+          END AS receive_qty,
+          min_receive_date,
+          max_receive_date
+
+        FROM
+          Article
+        LEFT JOIN
+        (
+
+          SELECT
+            Article.articleId AS code_1_article_id,
+            CAST(SUM(adjustmentQty) AS INT) AS man_minus_qty,
+            MIN(StockAdjustment.adjustmentDate) AS min_man_minus_date,
+            MAX(StockAdjustment.adjustmentDate) AS max_man_minus_date
+          FROM
+            StockAdjustment
+          INNER JOIN
+            Article ON StockAdjustment.articleId = Article.articleId
+          INNER JOIN
+            Brands ON Article.brandId = Brands.brandId
+
+          WHERE
+            StockAdjustment.adjustmentCode  = '1' -- code for manual correction minus
+            AND Brands.brandId = '$brand_id'
+
+
+    EOT;
+    $this->add_where_clause_date('StockAdjustment.adjustmentDate');
+    $this->query .= <<<EOT
+
+          GROUP BY
+            Article.articleId
+
+        )code_1 ON Article.articleId = code_1.code_1_article_id
+        LEFT JOIN
+
+        (
+          SELECT
+            Article.articleId AS code_2_article_id,
+            CAST(SUM(adjustmentQty) AS INT) AS man_plus_qty,
+            MIN(StockAdjustment.adjustmentDate) AS min_man_plus_date,
+            MAX(StockAdjustment.adjustmentDate) AS max_man_plus_date
+          FROM
+            StockAdjustment
+          INNER JOIN
+            Article ON StockAdjustment.articleId = Article.articleId
+          INNER JOIN
+            Brands ON Article.brandId = Brands.brandId
+
+          WHERE
+            StockAdjustment.adjustmentCode  = '2' -- code for manual correction plus
+            AND Brands.brandId = '$brand_id'
+
+    EOT;
+    $this->add_where_clause_date('StockAdjustment.adjustmentDate');
+    $this->query .= <<<EOT
+
+          GROUP BY
+            Article.articleId
+
+        )code_2 ON Article.articleId = code_2.code_2_article_id
+
+        LEFT JOIN
+        (
+
+          SELECT
+            Article.articleId AS code_9_article_id,
+            CAST(SUM(adjustmentQty) AS INT) AS sales_qty,
+            MIN(StockAdjustment.adjustmentDate) AS min_sales_date,
+            MAX(StockAdjustment.adjustmentDate) AS max_sales_date
+          FROM
+            StockAdjustment
+          INNER JOIN
+            Article ON StockAdjustment.articleId = Article.articleId
+          INNER JOIN
+            Brands ON Article.brandId = Brands.brandId
+
+          WHERE
+            StockAdjustment.adjustmentCode  = '9' -- code for sales
+            AND Brands.brandId = '$brand_id'
+
+    EOT;
+    $this->add_where_clause_date('StockAdjustment.adjustmentDate');
+    $this->query .= <<<EOT
+
+          GROUP BY
+            Article.articleId
+
+        )code_9 ON Article.articleId = code_9.code_9_article_id
+        LEFT JOIN
+
+        (
+          SELECT
+            Article.articleId AS code_10_article_id,
+            CAST(SUM(adjustmentQty) AS INT) AS credit_qty,
+            MIN(StockAdjustment.adjustmentDate) AS min_credit_date,
+            MAX(StockAdjustment.adjustmentDate) AS max_credit_date
+          FROM
+            StockAdjustment
+          INNER JOIN
+            Article ON StockAdjustment.articleId = Article.articleId
+          INNER JOIN
+            Brands ON Article.brandId = Brands.brandId
+
+          WHERE
+            StockAdjustment.adjustmentCode  = '10' -- code for credit
+            AND Brands.brandId = '$brand_id'
+
+    EOT;
+    $this->add_where_clause_date('StockAdjustment.adjustmentDate');
+    $this->query .= <<<EOT
+
+          GROUP BY
+            Article.articleId
+
+        )code_10 ON Article.articleId = code_10.code_10_article_id
+
+        LEFT JOIN
+        (
+          SELECT
+            Article.articleId AS code_41_article_id,
+            CAST(SUM(adjustmentQty) AS INT) AS receive_qty,
+            MIN(StockAdjustment.adjustmentDate) AS min_receive_date,
+            MAX(StockAdjustment.adjustmentDate) AS max_receive_date
+          FROM
+            StockAdjustment
+          INNER JOIN
+            Article ON StockAdjustment.articleId = Article.articleId
+          INNER JOIN
+            Brands ON Article.brandId = Brands.brandId
+
+          WHERE
+            StockAdjustment.adjustmentCode  = '41' -- code for credit
+            AND Brands.brandId = '$brand_id'
+
+    EOT;
+    $this->add_where_clause_date('StockAdjustment.adjustmentDate');
+    $this->query .= <<<EOT
+
+          GROUP BY
+            Article.articleId
+
+        )code_41 ON Article.articleId = code_41.code_41_article_id
+
+        WHERE
+          Article.articleId = code_9.code_9_article_id
+          OR Article.articleId  = code_10.code_10_article_id
+          OR Article.articleId  = code_41.code_41_article_id
+
+      )mov_qty_sum ON Article.articleId = mov_qty_sum.mov_sum_article_id
+      GROUP BY
+        mov_qty_sum.receive_qty,
+        mov_qty_sum.min_man_minus_date,
+        mov_qty_sum.max_man_minus_date,
+        mov_qty_sum.min_man_plus_date,
+        mov_qty_sum.max_man_plus_date,
+        mov_qty_sum.min_sales_date,
+        mov_qty_sum.max_sales_date,
+        mov_qty_sum.min_credit_date,
+        mov_qty_sum.max_credit_date,
+        mov_qty_sum.min_receive_date,
+        mov_qty_sum.max_receive_date,
+        Article.articleId
+
+    )movement_summary ON Article.articleId = movement_summary.mov_article_id
+    WHERE Article.articleId IS NOT NULL\n
+    EOT;
+    $this->add_where_clause_article_status();
+    $this->sort = 'Article.articleName';
+    $this->add_order_bye_sort();
+    if ($this->sort !== 'Article.articleName') {
+      $this->query .= ',Article.articleName';
+    }
   }
 
 }

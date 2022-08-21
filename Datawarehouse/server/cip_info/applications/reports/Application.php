@@ -27,6 +27,8 @@ class Reports {
   protected $hyper_link;
   protected $date_type;
   protected $article_status; // all items, expired items, non expired items
+  protected $brand; // mainly used in reports/brand/brand_id
+  protected $brand_id; // mainly used in reports/brand/brand_id
   const MONTH_CONVERT = [
     1 => 'Januar',
     2 => 'Februar',
@@ -129,7 +131,6 @@ class Reports {
     }
   }
 
-
   private function send_to_api_and_generate_spreadsheet () {
     $this->data_send = [
       'rows' => $_SESSION['spreadsheet'],
@@ -145,7 +146,6 @@ class Reports {
     curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
     curl_setopt($curl, CURLOPT_POST, true);
     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->data_send));
-    // curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(['caller' => 'world', 'rows' => ['data']]));
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $body = curl_exec($curl);
     // var_dump($body); die;
@@ -157,11 +157,9 @@ class Reports {
     }
     $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     curl_close ($curl);
-    // return;
     if ($http_status_code == 201) {
       $filename = explode('/', $_SERVER['REDIRECT_URL'])[2];
       header('Content-type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      // header('Content-Type: application/octet-stream');
       header('Content-Transfer-Encoding: binary');
       header('Cache-Control: must-revalidate');
       header('Content-Disposition: attachment; filename=' . $filename . '.xlsx');
@@ -198,6 +196,10 @@ class Reports {
     }
   }
 
+  function __destruct() {
+    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
+  }
+
 }
 
 class Home extends Reports {
@@ -232,13 +234,13 @@ class Soldout extends Reports {
 
     $hyperlink_time_span = new HyperLink();
     $hyperlink_time_span->add_query('date_type', 'thisday');
-    $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
+    $this->template->hyperlink_button('I dag', $hyperlink_time_span->url);
     $hyperlink_time_span->add_query('date_type', 'thisweek');
     $this->template->hyperlink_button('Denne Uka', $hyperlink_time_span->url);
     $hyperlink_time_span->add_query('date_type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
-    $this->template->script_filter_row_button();
+    $this->template->script_filter_row_button('1', 'Filtrer etter artikkel', $auto_focus = true);
 
     $hyperlink_toggle = new HyperLink();
     $hyperlink_toggle->add_query('article_status', $this->article_status);
@@ -276,17 +278,17 @@ class Soldout extends Reports {
         $quantity = $row['stock_quantity'];
         $location = $row['location'];
         $last_imported = $row['lastimported'];
-        $last_sold = $row['lastsold'];
+        $lastsold = $row['lastsold'];
         $supply_id = $row['supplyid'];
         $this->template->table_row_value($brand);
         $this->template->table_row_value($article, $hyperlink_row->url);
         $this->template->table_row_value($quantity);
         $this->template->table_row_value($location, $hyperlink_row->url);
         $this->template->table_row_value($last_imported);
-        $this->template->table_row_value($last_sold);
+        $this->template->table_row_value($lastsold);
         $this->template->table_row_value($supply_id);
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$brand, $article, intval($quantity), $location, $last_imported, $last_sold, $supply_id]);
+        array_push($this->spreadsheet_data, [$brand, $article, intval($quantity), $location, $last_imported, $lastsold, $supply_id]);
       }
     }
     catch(Exception $e)  {
@@ -299,7 +301,6 @@ class Soldout extends Reports {
       exit(1);
     }
     $this->template->table_end();
-    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
     $this->template->print($this->page);
   }
 
@@ -331,13 +332,13 @@ class Imported extends Reports {
 
     $hyperlink_time_span = new HyperLink();
     $hyperlink_time_span->add_query('date_type', 'thisday');
-    $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
+    $this->template->hyperlink_button('I dag', $hyperlink_time_span->url);
     $hyperlink_time_span->add_query('date_type', 'thisweek');
     $this->template->hyperlink_button('Denne Uka', $hyperlink_time_span->url);
     $hyperlink_time_span->add_query('date_type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
-    $this->template->script_filter_row_button();
+    $this->template->script_filter_row_button(1, 'Filtrer etter artikkel', $auto_focus = true);
 
     $hyperlink_toggle = new HyperLink();
     $hyperlink_toggle->add_query('article_status', $this->article_status);
@@ -399,7 +400,6 @@ class Imported extends Reports {
       exit(1);
     }
     $this->template->table_end();
-    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
     $this->template->print($this->page);
   }
 
@@ -431,13 +431,13 @@ class SalesHistory extends Reports {
 
     $hyperlink_time_span = new HyperLink();
     $hyperlink_time_span->add_query('date_type', 'thisday');
-    $this->template->hyperlink_button('Idag', $hyperlink_time_span->url);
+    $this->template->hyperlink_button('I dag', $hyperlink_time_span->url);
     $hyperlink_time_span->add_query('date_type', 'thisweek');
     $this->template->hyperlink_button('Denne Uka', $hyperlink_time_span->url);
     $hyperlink_time_span->add_query('date_type', 'thismonth');
     $this->template->hyperlink_button('Denn Måneden', $hyperlink_time_span->url);
 
-    $this->template->script_filter_row_button('2');
+    $this->template->script_filter_row_button('2', 'Filtrer etter artikkel', $auto_focus = true);
 
     $hyperlink_toggle = new HyperLink();
     $hyperlink_toggle->add_query('article_status', $this->article_status);
@@ -498,7 +498,6 @@ class SalesHistory extends Reports {
       exit(1);
     }
     $this->template->table_end();
-    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
     $this->template->print($this->page);
   }
 
@@ -554,7 +553,7 @@ class NotSoldLately extends Reports {
       'Lev. ID' => 'supplyid',
     ];
 
-    $this->template->script_filter_row_button();
+    $this->template->script_filter_row_button('1', 'Filtrer etter artikkel');
 
     $this->template->hyperlink_button_target_top('Last ned regneark', $this->hyperlink_spreadsheet->url);
 
@@ -611,7 +610,6 @@ class NotSoldLately extends Reports {
       exit(1);
     }
     $this->template->table_end();
-    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
   }
 
 }
@@ -690,7 +688,6 @@ class SalesPerHour extends Reports {
       exit(1);
     }
     $this->template->table_end();
-    $_SESSION['spreadsheet'] = $this->spreadsheet_data;
   }
 
   private function add_message () {
@@ -721,6 +718,224 @@ class SalesPerHour extends Reports {
     $message .= '<br>Klokketime: ' . $m;
 
     $this->template->message($message);
+  }
+
+}
+
+
+class Brand extends Reports {
+
+  private $report_type;
+
+  // uncommenting will disable buttons
+  const ARR_REPORTS = [
+    'summary_total' => 'Sammendrag',
+    // 'sold_out' => 'Utsolgt',
+    // 'sales_history' => 'Salgshistorikk',
+    // 'qty_for_recent_sales' => 'Salg registrert salg',
+  ];
+
+  public function run () {
+    $this->page = 'Merke rapport';
+    $this->handle_request();
+    $this->template->print($this->page);
+  }
+
+  private function handle_request () {
+    $this->report_type = null;
+    $this->brand_id = false;
+    if ( isset($_SERVER['REQUEST_URI']) ) {
+      $arr = explode('reports/brand/', $_SERVER['REQUEST_URI']);
+      if ( isset($arr[1]) ) {
+        $arr = explode('/', $arr[1]);
+        $this->brand_id = $arr[0];
+        if ( isset($arr[1]) ) {
+          $arr = explode($this->brand_id, $arr[1]);
+          $this->report_type = explode('?', $arr[0])[0];
+        }
+      }
+    }
+    if ( is_numeric($this->brand_id) ) {
+      $this->get_brand_from_brand_id();
+      if ($this->brand === false) {
+        $this->template->message('Kunne ikke finne merke med id ' . $this->brand_id);
+        $this->print_select_brand_table();
+        return;
+      }
+      if ($this->report_type !== null) {
+        // if brand and report selected
+        $this->show_report_for_brand();
+        return;
+      }
+      $this->show_report_options_for_brand();
+      return;
+    }
+    $this->print_select_brand_table();
+  }
+
+  private function print_select_brand_table () {
+    $this->title_left = 'Rapport for utvalgt Merkevare';
+    $this->template->title_left_and_right($this->title_left, $this->title_right);
+
+    $query = new QueryReports();
+    $query->all_brands();
+    $hyperlink_row = new HyperLink();
+    $this->database->select_multi_row($query->get());
+    if ($this->database->result) {
+      $this->template->message('Velg merke ved å klikke på listen');
+      $this->template->script_filter_row_button('0', 'Skriv her for å søke ', $auto_focus = true);
+      $this->template->table_full_width_start();
+      foreach ($this->database->result as $row) {
+        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
+        $hyperlink_row->link_redirect('reports/brand/' . $row['brand_id']);
+        $this->template->table_row_start();
+        $this->template->table_row_value($brand, $hyperlink_row->url);
+        $this->template->table_row_end();
+      }
+      $this->template->table_end();
+    }
+  }
+
+  private function show_report_options_for_brand () {
+    $this->title_left = 'Rapport for ' . $this->brand;
+    $this->template->title_left_and_right($this->title_left, $this->title_right);
+    $hyperlink_butn = new HyperLink();
+    $hyperlink_butn->link_redirect('reports/brand');
+    $this->template->hyperlink_button('Tilbake', $hyperlink_butn->url);
+    $this->template->line_break();
+    $this->template->title('Velg rapport');
+    foreach (self::ARR_REPORTS as $name => $alias) {
+      $hyperlink_butn->link_redirect('reports/brand/' . $this->brand_id . '/'. $name);
+      $this->template->hyperlink_button($alias, $hyperlink_butn->url);
+    }
+  }
+
+  private function get_brand_from_brand_id () {
+    $query = new QueryReports();
+    $query->brand_by_brand_id($this->brand_id);
+    $this->database->select_single_row($query->get());
+    if ($this->database->result) {
+      $this->brand = $this->database->result['brand'];
+      $this->brand = CharacterConvert::utf_to_norwegian($this->brand);
+      return;
+    }
+    $this->brand = false;
+  }
+
+  private function show_report_for_brand () {
+    $hyperlink_butn = new HyperLink();
+    $hyperlink_butn->link_redirect('reports/brand/' . $this->brand_id);
+
+    $this->template->title_left_and_right(self::ARR_REPORTS[$this->report_type] . ' ' . $this->brand, $this->title_right);
+    $this->template->hyperlink_button('Tilbake', $hyperlink_butn->url);
+    if ($this->date_type == 'calendar') {
+      $desc = 'Med aktivitet i tidsrommet ' . $_GET['calendar_from_date'] . ' til og med ' . $_GET['calendar_to_date'];
+      $this->template->message($desc);
+    } else {
+      $this->template->message('Inkludere artikler med aktivitet innenfor valgt dato');
+    }
+    $this->template->reports_form_input_date();
+    if ($this->date_type !== 'calendar') {
+      return;
+    }
+    switch ($this->report_type) {
+      case 'summary_total':
+        $this->summary_total();
+        break;
+      case 'sold_out':
+        $this->report_sold_out();
+        break;
+      case 'sales_history':
+        $this->report_sales_history();
+        break;
+      case 'qty_for_recent_sales':
+        $this->qty_for_recent_sales();
+        break;
+      default:
+        $this->report_default();
+    }
+  }
+
+  private function summary_total () {
+    $table_headers = [
+      'Artikkel' => 'seller_name',
+      'På lager' => 'stock_quantity',
+      'Salg' => 'sales_total',
+      'Siste Salg' => 'lastsold',
+      'Varemottak' => 'received_total',
+      'Siste mottak' => 'lastimported',
+      'Korrigering ' => 'manual_adjustment_total',
+      'ABC-kode' => 'abc_code',
+      'Siste Lev. ID' => 'supplyid'
+    ];
+    $spreadsheet_row = array();
+    $this->template->script_filter_row_button('0', 'Skriv her for å søke ', $auto_focus = true);
+    $hyperlink_toggle = new HyperLink();
+    $hyperlink_toggle->add_query('article_status', $this->article_status);
+    $this->template->hyperlink_button($this->article_status_message, $hyperlink_toggle->url);
+    $this->template->hyperlink_button_target_top('Last ned regneark', $this->hyperlink_spreadsheet->url);
+    $this->template->table_full_width_start();
+    $this->template->table_row_start();
+    $hyperlink_header = new HyperLink();
+    foreach ($table_headers as $alias => $name) {
+      array_push($spreadsheet_row, $alias);
+      $hyperlink_header->add_query('sort', $name);
+      $hyperlink_header->add_query('order', $this->order);
+      if ($name == $this->sort_by) {
+        $alias .= $this->arrow_symbol;
+      }
+      $this->template->table_row_header($alias, $hyperlink_header->url);
+    }
+    $this->template->table_row_end();
+    array_push($this->spreadsheet_data, $spreadsheet_row);
+    $query = new QueryReports();
+    $query->brand_full_overview($this->brand_id);
+    // $query->print();
+    $this->database->select_multi_row($query->get());
+    if ($this->database->result) {
+      $hyperlink_row = new HyperLink();
+      foreach ($this->database->result as $row) {
+        $article_id = $row['article_id'];
+        $article_name = CharacterConvert::utf_to_norwegian($row['article_name']);
+        $stock_quantity = $row['stock_quantity'];
+        $manual_adjustment_total = $row['manual_adjustment_total'];
+        $sales_total = $row['sales_total'];
+        $lastsold = $row['lastsold'];
+        $received_total = $row['received_total'];
+        $lastimported = $row['lastimported'];
+        $abc_code = $row['abc_code'];
+        $supplyid = $row['supplyid'];
+        $hyperlink_row->link_redirect_query('find/articlemovement', 'article_id',  $article_id);
+        $this->template->table_row_start();
+        $this->template->table_row_value($article_name, $hyperlink_row->url);
+        $this->template->table_row_value($stock_quantity);
+        $this->template->table_row_value($sales_total);
+        $this->template->table_row_value($lastsold);
+        $this->template->table_row_value($received_total);
+        $this->template->table_row_value($lastimported);
+        $this->template->table_row_value($manual_adjustment_total);
+        $this->template->table_row_value($abc_code);
+        $this->template->table_row_value($supplyid);
+        $this->template->table_row_end();
+        array_push($this->spreadsheet_data, [$article_name, intval($stock_quantity), intval($sales_total), intval($lastsold), intval($received_total), $lastimported, intval($manual_adjustment_total), $abc_code, $supplyid]);
+      }
+    }
+    $this->template->table_end();
+  }
+
+  private function report_sold_out () {
+    $this->template->message('report_sold_out');
+  }
+
+  private function report_sales_history () {
+    $this->template->message('report_sales_history');
+  }
+
+  private function qty_for_recent_sales () {
+    $this->template->message('qty_for_recent_sales');
+  }
+  private function report_default () {
+    $this->template->message('default');
   }
 
 }
