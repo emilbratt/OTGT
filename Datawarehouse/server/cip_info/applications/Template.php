@@ -621,17 +621,31 @@ class Template {
     EOT;
   }
 
-  public function script_filter_row_button ($col_index = '1', $placeholder = 'Filtrer Resultat') {
+  public function script_filter_row_button ($col_index = '1', $placeholder = 'Filtrer Resultat', $auto_focus = false) {
     // filter (remove rows) from a html table by searching string in this box
-    $this->html .= <<<EOT
-    <input
-      style="width: 30%;"
-      type="text"
-      id="filter_row"
-      onkeyup="filter_row()"
-      placeholder="$placeholder"
-      title="novalue">\n
-    EOT;
+    if ($auto_focus) {
+      $this->html .= <<<EOT
+      <input
+        style="width: 30%;"
+        type="text"
+        id="filter_row"
+        autofocus="autofocus" onfocus="this.select()"
+        onkeyup="filter_row()"
+        placeholder="$placeholder"
+        title="novalue">\n
+      EOT;
+    }
+    else {
+      $this->html .= <<<EOT
+      <input
+        style="width: 30%;"
+        type="text"
+        id="filter_row"
+        onkeyup="filter_row()"
+        placeholder="$placeholder"
+        title="novalue">\n
+      EOT;
+    }
 
     $this->script .= <<<EOT
     <script>
