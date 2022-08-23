@@ -1,2 +1,2 @@
 ## About
-shared assets like images etc. for applications 
+static (non user generated) assets like images etc. for applications 
