@@ -99,7 +99,7 @@ class QueryReports extends QueryRetail {
 
   }
 
-  private function add_order_bye_sort () {
+  private function add_order_by_sort () {
     if(isset($_GET['sort'])) {
       $this->sort = $_GET['sort'];
     }
@@ -199,7 +199,7 @@ class QueryReports extends QueryRetail {
     $this->add_where_clause_article_status();
     $this->add_where_clause_date('articleStock.lastSold');
     $this->sort = 'lastsold';
-    $this->add_order_bye_sort();
+    $this->add_order_by_sort();
   }
 
   public function imported () {
@@ -249,7 +249,7 @@ class QueryReports extends QueryRetail {
     $this->query .= ")\n";
 
     $this->sort = 'lastimported';
-    $this->add_order_bye_sort();
+    $this->add_order_by_sort();
   }
 
   public function sales_history () {
@@ -289,7 +289,7 @@ class QueryReports extends QueryRetail {
     $this->add_where_clause_date('CustomerSaleHeader.salesDate');
     $this->add_where_clause_article_status();
     $this->sort = 'salesdate';
-    $this->add_order_bye_sort();
+    $this->add_order_by_sort();
 
   }
 
@@ -332,7 +332,7 @@ class QueryReports extends QueryRetail {
       EOT;
     }
     $this->sort = 'lastsold';
-    $this->add_order_bye_sort();
+    $this->add_order_by_sort();
   }
 
   public function sales_per_hour () {
@@ -686,7 +686,7 @@ class QueryReports extends QueryRetail {
     EOT;
     $this->add_where_clause_article_status();
     $this->sort = 'Article.articleName';
-    $this->add_order_bye_sort();
+    $this->add_order_by_sort();
     if ($this->sort !== 'Article.articleName') {
       $this->query .= ',Article.articleName';
     }
