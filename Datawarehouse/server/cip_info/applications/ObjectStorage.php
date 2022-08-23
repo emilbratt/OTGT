@@ -148,11 +148,31 @@ class ObjectStorage {
 
   public function delete_path ($path = '') {
     // WARNING: this will recursively delete everything in that path
-    if ( exec('rm -rf ' . $this->path_current . $path) ) {
-      return true;
+    $_rm_ok = true;
+    function recursive_rmdir($_path) {
+      if ( is_dir($_path) ) {
+        $objects = scandir($_path);
+        foreach ($objects as $object) {
+          $__path = $_path . '/' . $object;
+          if ($object != '.' && $object != '..') {
+            if ( is_dir($_path . '/' . $object) ) {
+              recursive_rmdir($_path . '/' . $object);
+            }
+            else {
+              if ( !(unlink($_path . '/' . $object)) ) {
+                $_rm_ok = false;
+              }
+            }
+            if ( !(rmdir($_path)) ) {
+              $_rm_ok = false;
+            }
+          }
+        }
+      }
     }
-    $this->message_error = 'something wrong when trying to delete ' . $this->path_current . $path;
-    return false;
+    $path = $this->path_current . $path;
+    recursive_rmdir($path);
+    return $_rm_ok;
   }
 
   public function delete_file () {
