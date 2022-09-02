@@ -486,6 +486,10 @@ class QueryReports extends QueryRetail {
       (
         SELECT
           Article.articleId AS mov_sum_article_id,
+
+          /* NOTE:
+           *   aggregate functions ignore NULL, so we have to force NULL = '0'
+           */
           CASE
             WHEN man_minus_qty IS NULL THEN '0'
             ELSE man_minus_qty
