@@ -153,6 +153,7 @@ class Reports {
       if ( $this->environment->developement('show_debug') ) {
         $this->template->message('Error on curl request: ' . curl_error($curl));
         $this->template->print($this->page);
+        exit(1);
       }
     }
     $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -167,9 +168,9 @@ class Reports {
       exit(0);
     }
     else if ($http_status_code == 422) {
-        $m = 'Varsel: For mange rader til å skrive ut regneark<br>';
-        $m .= '..prøv å forminske rader ved å legge til kriterier i rapporten';
-        $_SESSION['message'] = $m;
+      $m = 'Varsel: For mange rader til å skrive ut regneark<br>';
+      $m .= '..reduser antall rader ved å legge til kriterier i rapporten';
+      $_SESSION['message'] = $m;
     }
   }
 
