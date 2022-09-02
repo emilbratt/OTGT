@@ -134,9 +134,9 @@ class Home extends API {
       foreach ($desc as $row ) {
         if ($row['active']) {
           $this->template->table_row_start();
-          $this->template->table_row_value($row['method']);
-          $this->template->table_row_value($row['url']);
-          $this->template->table_row_value($row['info']);
+          $this->template->_table_row_value($row['method']);
+          $this->template->_table_row_value($row['url']);
+          $this->template->_table_row_value($row['info']);
           $this->template->table_row_end();
         }
       }
