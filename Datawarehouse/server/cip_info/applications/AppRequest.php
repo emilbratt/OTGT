@@ -19,31 +19,35 @@ class Apprequest {
   }
 
   public function run () {
-    // this is where the application is loaded and instantiated based on URI
+    // store the URL into an array and use it to send client to correct app
+    $this->url_split = explode('/', strtolower(substr($_SERVER['REDIRECT_URL'], 1)));
+
+    // where the application is loaded by parsing url_split
     $this->load_app_dir();
     require_once "../applications/$this->app_dir/Application.php";
-    // this is where we load the correct page specified as a class
+
+    // where we load the correct class inside appdirectory using url_split
     $this->load_app_class();
-    // this is where the page for the specific application is started
+
+    // where the application is started
     $page = new $this->app_class;
     $page->run();
-    // this is where the application is terminated
+    // application is terminated, au revoir! :)
   }
 
   private function load_app_dir () {
-    // the 1st word in the url = app directory which resides in ../applications
-    // defaults that is changed if specified in URL
+    // set the default app dir and go from there..
+    $this->app_dir = 'home';
+
     if ($_SERVER['REDIRECT_URL'] === '/') {
-      $this->app_dir = 'home';
       return;
     }
 
-    $this->url_split = explode('/', strtolower(substr($_SERVER['REDIRECT_URL'], 1)));
     if ( isset($this->url_split[0]) ) {
       $this->app_dir = $this->url_split[0];
     }
 
-    if (is_dir("../applications/$this->app_dir")) {
+    if ( is_dir("../applications/$this->app_dir") ) {
       return;
     }
 
@@ -54,20 +58,22 @@ class Apprequest {
 
     if ($this->show_errors) {
       echo "Directory: applications/$this->app_dir not found";
+      http_response_code(404);
+      exit(1);
     }
 
-    http_response_code(404);
-    exit(1);
+    // send the client to default app dir
+    $this->app_dir = 'home';
   }
 
   private function load_app_class () {
-    // the 2nd word in the url = app class which is loaded in Application.php
+    // set the default app class and go from there..
+    $this->app_class = 'Home';
+
     if ($_SERVER['REDIRECT_URL'] === '/') {
-      $this->app_class = 'Home';
       return;
     }
 
-    $this->app_class = 'Home';
     if ( isset($this->url_split[1]) ) {
       $this->app_class = ucfirst($this->url_split[1]);
     }
@@ -82,13 +88,15 @@ class Apprequest {
       return;
     }
 
-    // at this point the class was not found
+    // at this point the class (app) was not found
     if ($this->show_errors) {
       echo "Class $this->app_class: " . $_SERVER['HTTP_HOST'] . "/$this->app_dir.php does not exist";
+      http_response_code(404);
+      exit(1);
     }
 
-    http_response_code(404);
-    exit(1);
-    }
+    // send the client to default class
+    $this->app_class = 'Home';
+  }
 
 }
