@@ -11,5 +11,7 @@ OTGT/ -> This is the root directory for this repository
   |
   ├── Kiosk -> single purpose computer client instances for various tasks
   |
+  ├── Nextcloud -> resources, apps, assets and instructions for our Nextcloud instance
+  |
   └── Tools/ -> developement tools such as docker and docker-compose scripts
 </pre>
