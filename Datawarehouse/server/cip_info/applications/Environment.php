@@ -32,8 +32,8 @@ class Environment {
     return $this->env_config['datawarehouse'][$key];
   }
 
-  public function cloudstorage ($key) {
-    return $this->env_config['cloudstorage'][$key];
+  public function nextcloud ($key) {
+    return $this->env_config['nextcloud'][$key];
   }
 
   public function developement ($key) {
