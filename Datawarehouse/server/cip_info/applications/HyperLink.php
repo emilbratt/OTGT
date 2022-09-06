@@ -9,6 +9,7 @@
  * preserves the visitors current url e.g. it adds whatever query
  * string is passed by the button to the visitors current url (see constructor)
  *
+ * builtins for URL decode function https://www.php.net/manual/en/ref.url.php
  */
 
 class HyperLink {
