@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+
+function is_git_installed () {
+  [[ -x "$(command -v git)" ]] && return 0
+  echo 'Make sure to install git before running this script'
+  exit 1
+}
+
+function is_otgt_in_PATH () {
+  [[ -x "$(command -v otgt)" ]] && return 0
+  echo 'make sure this script is in $PATH'
+  exit 1
+}
+
+function set_cwd () {
+  # change working directory to the same as this script
+  cd $(dirname "$0")
+  # if this script is not in CWD, something went wrong
+  [[ -f otgt ]] || return 1
+  return 0
+}
+
+function _update () {
+
+  function _linux () {
+    # package management on Linux
+
+    if [[ -x "$(command -v pihole)" ]]; then
+      echo 'Updating PiHole'
+      pihole -up
+    fi
+
+    if [[ -x "$(command -v apt)" ]]; then
+      echo 'Updating system using APT - Advnaced Package Tool'
+      sudo apt update && sudo apt upgrade
+    fi
+
+    if [[ -x "$(command -v brew)" ]]; then
+      echo 'Updating Applications using Homebrew'
+      brew update && brew upgrade
+    fi
+
+    if [[ -x "$(command -v dnf)" ]]; then
+      echo 'Updating system using DNF'
+      sudo dnf update
+    fi
+
+    if [[ -x "$(command -v pacman)" ]]; then
+      echo 'Updating system using Pacman'
+      sudo pacman -Syu
+      if [ "$?" -ne 0 ]; then
+        ## if not updated in a while it will error on gpg signs, then reload
+        sudo pacman -Sy archlinux-keyring && sudo pacman -Syu && return 0
+      fi
+    fi
+  }
+
+  function _mac () {
+    # package management on MacOS
+
+    if [[ -x "$(command -v brew)" ]]; then
+      echo 'Updating Applications using Homebrew'
+      brew update && brew upgrade
+    fi
+  }
+
+  # due to conflicti with apt also being an unrelated command on mac,
+  # I decided to split flow having one for Linux and one for MacOS
+  if [[ $(uname) == "Linux" ]]; then
+    _linux
+  elif [[ $(uname) == "Darwin" ]]; then
+    _mac
+  fi
+
+  echo 'Updating OTGT repo master to latest'
+  # lastly update this very repo by doing a git pull
+  git pull
+}
+
+function list_options () {
+  echo 'Select by typing number'
+  echo '1. Run Update'
+  echo '2. Open TeamViewer'
+  echo '3. Print Hostname'
+  echo '4. Open Gmail'
+  echo '0. Exit'
+  printf 'Type: '; read _option; clear
+  case $_option in
+    1)
+      _update
+      ;;
+
+    2)
+      teamviewer
+      ;;
+
+    3)
+      printf 'Hostname for this computer: '; hostname; echo ''
+      ;;
+
+    4)
+      xdg-open https://www.gmail.com
+      ;;
+
+    0)
+      exit
+      ;;
+
+    *)
+      ;;
+  esac
+}
+
+function main () {
+  # init
+  is_git_installed
+  is_otgt_in_PATH
+  set_cwd
+
+  # run options
+  list_options
+}
+
+main
