@@ -99,7 +99,7 @@ function list_options () {
       ;;
 
     4)
-      bash xdg-open https://www.gmail.com
+      xdg-open https://www.gmail.com
       ;;
 
     0)
