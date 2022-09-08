@@ -9,6 +9,9 @@
 * clone this repository
 
 * add this specific directory (abs path) to $PATH on boot
+<pre>
+PATH=$PATH:/path/to/OTGT/Clients
+</pre>
 
 * run the app
 <pre>
