@@ -3,15 +3,15 @@
 <pre>
 OTGT/ -> This is the root directory for this repository
   |
-  ├── Datawarehouse/ -> serving the main applications that the rest of the repository depends on
+  ├── Datawarehouse/ -> applications and data storage for retail
   |
-  ├── Floor_Plan/ -> assets regarding floor plan developed with Ink Scape
+  ├── Floor_Plan/ -> floor plan illustration developed with Ink Scape
   |
-  ├── Handhield -> applications for hand hield devices like a battery equipped Raspberry Pi
+  ├── Handhield -> applications for mobile devices and battery equipped Raspberry Pi etc.
   |
-  ├── Kiosk -> web-interface that runs on a special purpose-locked-down device
+  ├── Kiosk -> single purpose computer client instances for various tasks
   |
-  ├── Scripts/ -> mainly used by me for developement convenience
+  ├── Nextcloud -> resources, apps, assets and instructions for our Nextcloud instance
   |
   └── Tools/ -> developement tools such as docker and docker-compose scripts
 </pre>

@@ -30,7 +30,7 @@
   spreadsheet_generator_host = "INSERT"
   spreadsheet_generator_port = "INSERT"
 
-[cloudstorage] ; cloud storage for OTGT
+[nextcloud] ; selfhosted nextcloud server instance
   host = "INSERT"
   user_autoreport = "INSERT"
   password_autoreport = "INSERT"

@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+#────────────────────────────────────────────#
+# Author:
+#   Emil Bratt Børsting
+#────────────────────────────────────────────#
+# Description:
+#   restore the backup of MS SQL database
+#   into the container volume
+#────────────────────────────────────────────#
 
 # SET CORRECT VALUES FOR EACH BEFORE RUNNING
 _CONTAINER=db_retail

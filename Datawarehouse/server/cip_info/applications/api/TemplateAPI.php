@@ -68,7 +68,7 @@ class TemplateAPI extends Template {
     EOT;
   }
 
-  public function table_row_value ($string, $hyperlink = null) {
+  public function _table_row_value ($string, $hyperlink = null) {
     // passing a url as second arg will make it a clickabel button
 
     // if the string has an htttp method, we use this as html object id for css

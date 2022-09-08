@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <!--
+    SPDX-FileCopyrightText: Emil Bratt Børsting <emilbratt@gmail.com>
+    SPDX-License-Identifier: CC0-1.0
+    -->
+    <id>vareinfo</id>
+    <name>VareInfo</name>
+    <summary>URL to Datawarehouse web-resources</summary>
+    <description><![CDATA[URL to the Datawarehouse resources.
+
+Adds shortcuts to the web-site.]]></description>
+    <version>0.0.1</version>
+    <licence>agpl</licence>
+    <author mail="emilbratt@gmail.com" >Emil Bratt Børsting</author>
+    <namespace>VareInfo</namespace>
+    <category>customization</category>
+    <bugs>https://github.com/emilbratt/OTGT/issues</bugs>
+    <dependencies>
+        <nextcloud min-version="24" max-version="24"/>
+    </dependencies>
+    <navigations>
+        <navigation>
+            <name>VareInfo</name>
+            <route>vareinfo.page.index</route>
+        </navigation>
+    </navigations>
+</info>

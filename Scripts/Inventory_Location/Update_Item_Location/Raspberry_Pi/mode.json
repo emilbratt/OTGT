@@ -1,9 +1,0 @@
-{
-  "sql": true,
-  "shutdown": false,
-  "passwordhide": true,
-  "led": false,
-  "showcred": true,
-  "usb": false,
-  "live": true
-}
