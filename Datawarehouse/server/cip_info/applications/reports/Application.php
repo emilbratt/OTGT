@@ -486,7 +486,7 @@ class SalesHistory extends Reports {
         $this->template->table_row_value($salesdate);
         $this->template->table_row_value($sold_price);
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$seller_name, $brand, $article, intval($soldqty), $salesdate, floatval($sold_price)]);
+        array_push($this->spreadsheet_data, [$seller_name, $brand, $article, intval($soldqty), $location, $salesdate, floatval($sold_price)]);
       }
     }
     catch(Exception $e)  {
