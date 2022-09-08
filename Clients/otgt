@@ -72,9 +72,9 @@ function _update () {
     _mac
   fi
 
+  # lastly update this very repo by doing a git pull
   REPO_DIR=$(cd ..; pwd)
   echo "Pulling latest for repository in $REPO_DIR"
-  # lastly update this very repo by doing a git pull
   git pull
 }
 
