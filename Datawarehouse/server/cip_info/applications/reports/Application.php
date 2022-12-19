@@ -918,7 +918,7 @@ class Brand extends Reports {
         $this->template->table_row_value($abc_code);
         $this->template->table_row_value($supplyid);
         $this->template->table_row_end();
-        array_push($this->spreadsheet_data, [$article_name, intval($stock_quantity), intval($sales_total), intval($lastsold), intval($received_total), $lastimported, intval($manual_adjustment_total), $abc_code, $supplyid]);
+        array_push($this->spreadsheet_data, [$article_name, intval($stock_quantity), intval($sales_total), $lastsold, intval($received_total), $lastimported, intval($manual_adjustment_total), $abc_code, $supplyid]);
       }
     }
     $this->template->table_end();
