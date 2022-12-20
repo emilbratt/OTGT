@@ -1,0 +1,12 @@
+exec chromium-browser  \
+--window-position=0,0 \
+--start-fullscreen \
+--kiosk \
+--noerrdialogs \
+--disable-translate \
+--no-first-run \
+--disable-infobars \
+--disable-features=TranslateUI \
+--disk-cache-dir=/dev/null \
+--overscroll-history-navigation=0 \
+--disable-pinch \

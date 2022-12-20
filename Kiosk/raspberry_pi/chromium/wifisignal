@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+ip a
+
+printf 'write the name of the wifi device'; read WIFI_DEVICE
+
+clear
+
+sudo iwlist $WIFI_DEVICE scan | egrep "Cell|ESSID|Signal|Rates"
