@@ -3,6 +3,8 @@
 <pre>
 OTGT/ -> This is the root directory for this repository
   |
+  ├── Clients/ -> the "otgt" commandline tool for shell-scripting on client pc's
+  |
   ├── Datawarehouse/ -> applications and data storage for retail
   |
   ├── Floor_Plan/ -> floor plan illustration developed with Ink Scape
