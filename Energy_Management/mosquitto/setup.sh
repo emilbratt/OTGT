@@ -41,8 +41,8 @@ function _generate_config () {
 
   mkdir -p $HOST_BIND_MOUNT_DIRECTORY
   mkdir -p $host_config_directory
-  rm $host_config_file && touch $host_config_file
-  rm $host_password_file && touch $host_password_file
+  rm -f $host_config_file && touch $host_config_file
+  rm -f $host_password_file && touch $host_password_file
 
   _shout_out 'Unless you know what you are doing, use the defaults'
 
