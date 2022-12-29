@@ -7,6 +7,8 @@ OTGT/ -> This is the root directory for this repository
   |
   ├── Datawarehouse/ -> applications and data storage for retail
   |
+  ├── Energy_Management/ -> all things IoT including smart control of air, heat, lighting etc.
+  |
   ├── Floor_Plan/ -> floor plan illustration developed with Ink Scape
   |
   ├── Handhield -> applications for mobile devices and battery equipped Raspberry Pi etc.

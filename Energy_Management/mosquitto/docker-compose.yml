@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    user: 1000:1000
+    environment:
+      UID: 1000
+      GID: 1000
+
+    # restart policy
+    restart: unless-stopped
+
+    # bind mounts
+    volumes:
+      - ./bindmount/config:/mosquitto/config
+      - ./bindmount/data:/mosquitto/data
+      - ./bindmount/log:/mosquitto/log
+
+    # port 1883 -> mqtt
+    # port 9001 -> websockets
+    ports:
+      - 1883:1883
+      - 9001:9001

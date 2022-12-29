@@ -9,3 +9,8 @@ data.sqlite
 
 # swap files used for recovery by Kate Editor
 *.kate-swp
+
+# Energy_Management
+Energy_Management/elprice/bindmount
+Energy_Management/homeassistant/bindmount
+Energy_Management/mosquitto/bindmount

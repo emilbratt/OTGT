@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+
+    # network is set to host (acts if not inside a container)
+    network_mode: host
+
+    # OS environment
+    environment:
+      TZ: Europe/Oslo
+    # define volumes
+    volumes:
+      - ./bindmount/config:/config
+
+    # restart policy
+    restart: unless-stopped
+
+    # privileged mode might be needed for HA to play nicely with some USB devices etc.
+    privileged: false
+
+    # map USB - example for use with a conbee II USB-stick
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0

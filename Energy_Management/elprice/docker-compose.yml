@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  elprice_daemon:
+    build: ./daemon
+    container_name: elprice_daemon
+    user: "elprice"
+    environment:
+      DUMMY_VAR: 'dumdum'
+    env_file:
+      - elprice.env
+    volumes:
+      - ./daemon/app:/app
+      - ./bindmount:/data
+    restart: unless-stopped
+
+  elprice_web:
+    container_name: elprice_web
+    build: ./web
+    user: "elprice"
+    environment:
+      WEB_PORT: '8082'
+    env_file:
+      - elprice.env
+    volumes:
+      - ./web/app:/app
+      - ./bindmount:/data
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
