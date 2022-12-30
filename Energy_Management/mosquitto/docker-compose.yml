@@ -1,5 +1,6 @@
 version: '3'
 
+# NOTE: for use inside this repo do not run this file directly, run setup.sh !!
 services:
   mosquitto:
     image: eclipse-mosquitto

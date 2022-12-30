@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
 
 # Description:
-#   this script will prepare the basic configuration needed
-#   before you can run the docker-compose.yml file
+#   run the script from the same directory e.g. $ ./setup.sh
 #
-#   on completion this script will run the docker-compose.yml file
+#   this script will prepare the basic configuration needed
+#   for the docker-compose.yml file to work properly
+#
+#   it is meant to be used as a developement instance to
+#   spin up the container from inside this repo without hassle
 
 # for bind-mount
 HOST_BIND_MOUNT_DIRECTORY=./bindmount
+mkdir -p $HOST_BIND_MOUNT_DIRECTORY
 
 # default configurations (these will be possible to change during run-time)
 PORT=1883
 DATA_PERSISTANCE=true
-PERSISTENCE_LOCATION=/mosquitto/data/
+PERSISTENCE_LOCATION=/mosquitto/data
 LOG_FILE=/mosquitto/log/mosquitto.log
 ALLOW_ANONYMOUS=false
 PASSWORD_FILE=/mosquitto/config/password.txt
@@ -37,12 +41,21 @@ function _generate_config () {
   host_config_file=${HOST_BIND_MOUNT_DIRECTORY}/config/mosquitto.conf
   host_password_file=${HOST_BIND_MOUNT_DIRECTORY}/config/password.txt
 
+  host_log_directory=${HOST_BIND_MOUNT_DIRECTORY}/log
+
+  host_data_directory=${HOST_BIND_MOUNT_DIRECTORY}/data
+
   _shout_out 'IMPORTANT! This setup will over-write existing configs and password (CTRL-C to exit)'
 
-  mkdir -p $HOST_BIND_MOUNT_DIRECTORY
   mkdir -p $host_config_directory
   rm -f $host_config_file && touch $host_config_file
   rm -f $host_password_file && touch $host_password_file
+
+  mkdir -p $host_log_directory
+  chmod 777 $host_log_directory || exit 1
+
+  mkdir -p $host_data_directory
+  chmod 777 $host_data_directory || exit 1
 
   _shout_out 'Unless you know what you are doing, use the defaults'
 

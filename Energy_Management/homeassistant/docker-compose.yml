@@ -18,9 +18,9 @@ services:
     # restart policy
     restart: unless-stopped
 
-    # privileged mode might be needed for HA to play nicely with some USB devices etc.
+    # might be needed for HA to play nicely with some USB devices etc.
     privileged: false
 
-    # map USB - example for use with a conbee II USB-stick
-    devices:
-      - /dev/ttyACM0:/dev/ttyACM0
+    # map USB device - if for example you wanna use with a conbee II USB-stick..
+    # devices:
+    #   - /dev/ttyACM0:/dev/ttyACM0
