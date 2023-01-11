@@ -15,7 +15,7 @@ su
 ```
 install basic components
 ```
-apt update && apt upgrade -y && apt-get install sudo gnupg -y
+apt update && apt upgrade -y && apt-get install sudo gnupg git -y
 ```
 
 give your user sudo privileges (swap out <user> and match yours)
