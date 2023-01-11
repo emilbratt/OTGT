@@ -13,7 +13,7 @@ example line to use in e.g. .bashrc
 PATH=$PATH:/path/to/OTGT/Clients
 ```
 
-* after reboot or shell-refresh, we are able to run the app with this command
+after reboot or shell-refresh, we are able to run the app with this command
 ```
 otgt
 ```
