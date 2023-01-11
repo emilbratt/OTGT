@@ -84,6 +84,7 @@ function list_options () {
   echo '2. Open TeamViewer'
   echo '3. Print Hostname'
   echo '4. Open Gmail'
+  echo '5. Do a reboot'
   echo '0. Exit'
   printf 'Type: '; read _option; clear
   case $_option in
@@ -101,6 +102,10 @@ function list_options () {
 
     4)
       xdg-open https://www.gmail.com
+      ;;
+
+    5)
+      sudo reboot
       ;;
 
     0)
