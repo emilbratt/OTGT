@@ -76,7 +76,7 @@ function _update () {
   REPO_DIR=$(cd ..; pwd)
   echo "Pulling latest for repository in $REPO_DIR"
   # we only want to mirror upstream changes, so rebase is a sane action
-  git pull --rebase
+  LC_ALL=C git pull --rebase
 }
 
 function list_options () {
