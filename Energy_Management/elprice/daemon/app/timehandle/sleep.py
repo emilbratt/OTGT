@@ -13,5 +13,4 @@ def until_next_hour() -> int:
         minutes_until_new_hour = 60 - datetime.now().minute
         sleep_seconds = minutes_until_new_hour * 60
         sleep(sleep_seconds)
-        if (datetime.now().hour == hour) or (hour == -1):
-            return datetime.now().hour
+        return datetime.now().hour
