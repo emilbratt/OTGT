@@ -87,7 +87,7 @@ function list_options () {
   echo '4. Open Gmail'
   echo '5. Do a reboot'
   echo '0. Exit'
-  printf 'Type: '; read _option; clear
+  printf 'Type: '; read _option
   case $_option in
     1)
       _update
@@ -119,12 +119,15 @@ function list_options () {
 }
 
 function main () {
+  # start a blank screen
+  clear
+
   # init
   is_git_installed
   is_otgt_in_PATH
   set_cwd
 
-  # run options
+  # run otgt cli tool
   list_options
 }
 
