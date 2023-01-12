@@ -15,7 +15,7 @@ su
 ```
 install basic components
 ```
-apt update && apt upgrade -y && apt-get install sudo gnupg git -y
+apt update && apt upgrade -y && apt-get install sudo gnupg git rfkill -y
 ```
 
 give your user sudo privileges (swap out <user> and match yours)
