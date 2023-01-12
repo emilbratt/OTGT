@@ -7,10 +7,7 @@ def until_next_hour() -> int:
         e.g. if time is 14:25, this function will sleep for 35 minutes
         until time is 15:00
     '''
-
-
-    while True:
-        minutes_until_new_hour = 60 - datetime.now().minute
-        sleep_seconds = minutes_until_new_hour * 60
-        sleep(sleep_seconds)
-        return datetime.now().hour
+    minutes_until_new_hour = 60 - datetime.now().minute
+    sleep_seconds = minutes_until_new_hour * 60
+    sleep(sleep_seconds)
+    return datetime.now().hour
