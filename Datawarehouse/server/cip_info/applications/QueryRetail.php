@@ -248,7 +248,7 @@ class QueryRetail {
       case 'brand':
         $this->query .= 'ORDER BY Brands.brandLabel';
         break;
-      case 'quantity':
+      case 'stock_quantity':
         $this->query .= 'ORDER BY stockQty';
         break;
       case 'location':
