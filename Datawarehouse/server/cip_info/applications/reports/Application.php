@@ -859,7 +859,7 @@ class Brand extends Reports {
 
   private function summary_total () {
     $table_headers = [
-      'Artikkel' => 'seller_name',
+      'Artikkel' => 'article',
       'På lager' => 'stock_quantity',
       'Salg' => 'sales_total',
       'Siste Salg' => 'lastsold',

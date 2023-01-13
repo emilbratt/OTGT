@@ -155,6 +155,12 @@ class QueryReports extends QueryRetail {
       case 'sales_total':
         $string_sort = 'sales_total';
         break;
+      case 'received_total':
+        $string_sort = 'received_total';
+        break;
+      case 'manual_adjustment_total':
+        $string_sort = 'manual_adjustment_total';
+        break;
     }
     switch ($this->order) {
       case 'ascending':
@@ -691,8 +697,20 @@ class QueryReports extends QueryRetail {
     $this->add_where_clause_article_status();
     $this->sort = 'Article.articleName';
     $this->add_order_by_sort();
-    if ($this->sort !== 'Article.articleName') {
-      $this->query .= ',Article.articleName';
+
+    // if ordered by e.g. quantity, we still want to have the article names sorted
+    // and so we try to match Article.articleName and article (both pointing to article name)
+    switch ($this->sort) {
+      case 'Article.articleName':
+        $this->query .= '';
+        break;
+      case 'article':
+        $this->query .= '';
+        break;
+      // if no matchesm we assume ordered by something else
+      // thus it is safe to add article name to the ORDRE BY clause
+      default:
+        $this->query .= ',Article.articleName';
     }
   }
 
