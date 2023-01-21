@@ -2,7 +2,7 @@
 
 * they communicate with each other via rest api
 
-* they are also available to browser from external sources
+* they are also available from external sources
 
 ### directory overview
 
