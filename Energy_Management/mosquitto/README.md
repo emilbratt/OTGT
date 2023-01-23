@@ -1,29 +1,28 @@
-# The Mosquitto MQTT broker
-* connecting smart controllers to smart devices (switches, lights, relays etc.)
+# mosquitto and an mqtt client
 
-NOTE: the "./bindmount" directory should be in the gitignore list and thus
-created when running setup.sh
 
-## Setup
+### preparing and running mosquitto container
 1. cd into this directory
 
-2. run setup.sh
-```
-./setup.sh
-```
+2. run setup.sh (will eventually run docker-compose up -d)
 
-## ekstra options for administrating mosquitto
-Start mosquitto
+## handy commands for configuring mosquitto
+Start services
 ```
 docker-compose up -d
 ```
 
-add user and password
+start only mosquitto
+```
+docker-compose up -d mqtt_mosquitto
+```
+
+add user and password for mosquitto
 ```
 docker-compose exec mosquitto mosquitto_passwd -b /mosquitto/config/password.txt <user> <password>
 ```
 
-delete user
+delete user for mosquitto
 ```
 docker-compose exec mosquitto mosquitto_passwd -D /mosquitto/config/password.txt <username>
 ```
