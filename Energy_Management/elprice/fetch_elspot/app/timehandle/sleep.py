@@ -23,7 +23,7 @@ def until_next_hour() -> int:
 def until_next_half_hour() -> int:
     '''
         pause script until next half hour (13:00, 13:30, 14:00, 14:30 e.g.)
-        e.g. if time is 14:05 then sleep for 10 minutes -> 14:15
+        e.g. if time is 14:05 then sleep for 25 minutes -> 14:30
 
         returns the current minute as int 0-59
     '''
