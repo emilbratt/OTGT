@@ -85,42 +85,43 @@ class Handle:
             } # keep key-names like so, otherwise they will not match dataset
             region = row['Name']
             regions[region] = arr_scaffold
+        try:
+            for row_number,row in enumerate(self.data_raw['data']['Rows']):
+                start_hour = row['StartTime'].split('T')[1][:2]
+                end_hour   = row['EndTime'].split('T')[1][:2]
+                title_name = row['Name'] # avg, min or html special char for hour
+                for col in self.data_raw['data']['Rows'][row_number]['Columns']:
+                    region = col['Name']
+                    value = col['Value']
+                    if self.reshape_unit == 'ore/kWh':
+                        value = value.replace(' ', '')
+                        value = value.replace(',', '.')
+                        try:
+                            value = float(value)
+                            value = round(value*0.1)
+                        except ValueError:
+                            pass
+                    if row['IsExtraRow']:
+                        regions[region][title_name.lower()] = value
+                    else:
+                        # here is also where the increase in resolution happens (hour 4x -> quarters)
+                        for j in range(4):
+                            # work out timestamp for each 15 minutes
+                            start = str(start_hour) + ':' + str(j * 15).zfill(2)
+                            if j == 3:
+                                end = str(end_hour) + ':00'
+                            else:
+                                end = str(start_hour) + ':' + str((j+1) * 15).zfill(2)
 
-        for row_number,row in enumerate(self.data_raw['data']['Rows']):
-            start_hour = row['StartTime'].split('T')[1][:2]
-            end_hour   = row['EndTime'].split('T')[1][:2]
-            title_name = row['Name'] # avg, min or html special char for hour
-            for col in self.data_raw['data']['Rows'][row_number]['Columns']:
-                region = col['Name']
-                value = col['Value']
-                if self.reshape_unit == 'ore/kWh':
-                    value = value.replace(' ', '')
-                    value = value.replace(',', '.')
-                    try:
-                        value = float(value)
-                        value = round(value*0.1)
-                    except ValueError:
-                        pass
-                if row['IsExtraRow']:
-                    regions[region][title_name.lower()] = value
-                else:
-                    # here is also where the increase in resolution happens (hour 4x -> quarters)
-                    for j in range(4):
-                        # work out timestamp for each 15 minutes
-                        start = str(start_hour) + ':' + str(j * 15).zfill(2)
-                        if j == 3:
-                            end = str(end_hour) + ':00'
-                        else:
-                            end = str(start_hour) + ':' + str((j+1) * 15).zfill(2)
-
-                        quarter_row_number = int((row_number*4) + j)
-                        price = {
-                            'index': quarter_row_number,
-                            'time_start': str(start),
-                            'time_end': str(end),
-                            'value': value
-                        }
-                        regions[region]['quarters'].append(price)
-
-        self.data_reshaped = regions
-        return True
+                            quarter_row_number = int((row_number*4) + j)
+                            price = {
+                                'index': quarter_row_number,
+                                'time_start': str(start),
+                                'time_end': str(end),
+                                'value': value
+                            }
+                            regions[region]['quarters'].append(price)
+            self.data_reshaped = regions
+            return True
+        except:
+            return False
