@@ -56,6 +56,7 @@ class Handle:
                         'Max':     '280',
                         'Min':     '143',
                         'Average': '197',
+                        'resolution': 96,
                         'quarters': [
                             {'index': 0, 'time_start': '00:00', 'time_end': '00:15', 'value': '210'},
                             {'index': 1, 'time_start': '00:15', 'time_end': '00:30', 'value': '210'},
@@ -81,6 +82,7 @@ class Handle:
                 'max': False,
                 'min': False,
                 'average': False,
+                'resolution': 0,
                 'quarters': []
             } # keep key-names like so, otherwise they will not match dataset
             region = row['Name']
@@ -114,12 +116,13 @@ class Handle:
                                 end = str(start_hour) + ':' + str((j+1) * 15).zfill(2)
 
                             quarter_row_number = int((row_number*4) + j)
-                            price = {
+                             price = {
                                 'index': quarter_row_number,
                                 'time_start': str(start),
                                 'time_end': str(end),
                                 'value': value
                             }
+                            regions[region]['resolution'] += 1
                             regions[region]['quarters'].append(price)
             self.data_reshaped = regions
             return True
