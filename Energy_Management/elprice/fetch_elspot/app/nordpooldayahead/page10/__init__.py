@@ -116,7 +116,7 @@ class Handle:
                                 end = str(start_hour) + ':' + str((j+1) * 15).zfill(2)
 
                             quarter_row_number = int((row_number*4) + j)
-                             price = {
+                            price = {
                                 'index': quarter_row_number,
                                 'time_start': str(start),
                                 'time_end': str(end),
