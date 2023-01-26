@@ -20,18 +20,21 @@ services:
       - ./fetch_elspot/app:/app
     restart: unless-stopped
 
-  # web_datastore:
-  #   container_name: web_datastore
-  #   build: ./web_datastore
-  #   environment:
-  #     TZ: Europe/Oslo
-  #     WEB_PORT: '8085'
-  #   volumes:
-  #     - ./web_datastore/app:/app
-  #     - ./bindmount:/data
-  #   ports:
-  #     - "8085:8085"
-  #   restart: unless-stopped
+  web_datastore:
+    container_name: web_datastore
+    build: ./web_datastore
+    environment:
+      TZ: Europe/Oslo
+      WEB_PORT: '8085'
+      HOST_ALLOW_UPLOAD_ELSPOT: 'fetch_elspot'
+      HOST_ALLOW_UPLOAD_PLOT: 'generate_plot'
+      HOST_ALLOW_UPLOAD_SENSOR: 'generate_sensor'
+    volumes:
+      - ./web_datastore/app:/app
+      # - ./bindmount:/data
+    ports:
+      - "8085:8085"
+    restart: unless-stopped
 
   # generate_plot:
   #   container_name: generate_plot
