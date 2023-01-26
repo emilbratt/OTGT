@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse, Response
 
-from envars     import envar_get
+from envars import envar_get
 
 POST_TEST_RESPONSE = 'test OK'
 
