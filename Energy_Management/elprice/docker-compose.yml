@@ -11,6 +11,7 @@ services:
       NORDPOOL_UNIT: 'NOK/MWh'
       NORDPOOL_RESHAPE_UNIT: 'ore/kWh' # 'NOK/kW', 'ore/kWh' e.g.
       NORDPOOL_FETCH_HOUR: '13' # wait until this hour to try fetching
+      NORDPOOL_FETCH_MINUTE: '15' # wait until this minute
       WEB_DATASTORE_API_VERSION: '0' # we might change  api in the future
       WEB_DATASTORE_URL: 'web_datastore:8085' # to web_datastore
       TZ: Europe/Oslo
