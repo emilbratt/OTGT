@@ -40,10 +40,14 @@ class Application:
             if one task fails, we halt for a bit and depending on task,
             we keep re-trying a designated previous task; or error out
         '''
-        last_step = self.step # store the current step in another var
-        print('---Step ' + str(self.step) + '---')
-        print(self.STEP_DESC[self.step])
-        match self.step:
+
+        current_step = self.step
+
+        print('Round starttime', isodate.today_minutes())
+        print('---Step ' + str(current_step) + '---')
+        print(self.STEP_DESC[current_step])
+
+        match current_step:
             case 1:
                 sleep.until_time_of_day(hour=self.fetch_hour, minute=self.fetch_minute)
                 self.step = 2
@@ -53,7 +57,8 @@ class Application:
                 else:
                     self.re_try = True; self.step = 2
             case 3:
-                if self.nordpool.confirm_date(isodate.today_plus_days(-3)):
+                # if self.nordpool.confirm_date(isodate.today_plus_days(-3)):
+                if self.nordpool.confirm_date('2023-01-23'):
                     self.step = 4
                 else:
                     self.re_try = True; self.step = 2
@@ -92,13 +97,13 @@ class Application:
 
         # after x fresh restarts, exit -> this service needs attention/update
         if self.fresh_restarts > 5:
-            print('to many fresh restarts, current step', last_step)
+            print('to many fresh restarts, current step', current_step)
             print('Exit application')
             exit(1)
 
         # if a step has taken multiple re-tries, error out and start fresh
         if self.re_try_counter > 5:
-            print('ERROR: starting fresh because step', last_step,'failed')
+            print('ERROR: starting fresh because step', current_step,'failed')
             self.step = 1
             self.re_try_counter = 0
             self.fresh_restarts += 1
@@ -106,7 +111,7 @@ class Application:
 
         # if a step needs a re-try, halt until next 15 minute mark
         if self.re_try:
-            print('step', last_step,'failed')
+            print('step', current_step,'failed')
             print('halting for 15 minutes, then re-trying from step', self.step)
             sleep.until_next_quarter_hour()
             self.re_try = False
