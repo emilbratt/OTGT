@@ -1,8 +1,14 @@
 FROM python:3
 MAINTAINER Emil <emilbratt@mail.com>
 
+RUN useradd -ms /bin/bash elprice
+USER elprice
+USER 1000:1000
+
+# will not be able to start uvicorn unless we add this to PATH
+ENV PATH /home/elprice/.local/bin:${PATH}
 COPY ./requirements.txt /requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /requirements.txt
+RUN pip install --user --no-cache-dir --upgrade -r /requirements.txt
 WORKDIR /app
 
 # un-comment accordingly based on dev or prod env.

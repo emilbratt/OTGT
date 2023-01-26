@@ -31,7 +31,7 @@ services:
       HOST_ALLOW_UPLOAD_SENSOR: 'generate_sensor'
     volumes:
       - ./web_datastore/app:/app
-      # - ./bindmount:/data
+      - ./bindmount:/data
     ports:
       - "8085:8085"
     restart: unless-stopped
