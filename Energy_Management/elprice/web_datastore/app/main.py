@@ -24,15 +24,15 @@ def test_get():
 # getting ENVARS
 @app.get('/envar/HOST_ALLOW_UPLOAD_ELSPOT')
 def envar_HOST_ALLOW_UPLOAD_ELSPOT():
-    return {'time today': envar_get('HOST_ALLOW_UPLOAD_ELSPOT')}
+    return {'HOST_ALLOW_UPLOAD_ELSPOT': envar_get('HOST_ALLOW_UPLOAD_ELSPOT')}
 
 @app.get('/envar/HOST_ALLOW_UPLOAD_PLOT')
 def envar_HOST_ALLOW_UPLOAD_PLOT():
-    return {'time today': envar_get('HOST_ALLOW_UPLOAD_PLOT')}
+    return {'HOST_ALLOW_UPLOAD_ELSPOT': envar_get('HOST_ALLOW_UPLOAD_PLOT')}
 
 @app.get('/envar/HOST_ALLOW_UPLOAD_SENSOR')
 def envar_HOST_ALLOW_UPLOAD_SENSOR():
-    return {'time today': envar_get('HOST_ALLOW_UPLOAD_SENSOR')}
+    return {'HOST_ALLOW_UPLOAD_ELSPOT': envar_get('HOST_ALLOW_UPLOAD_SENSOR')}
 
 @app.post("/test/post")
 def test_post(item: TestModel):
