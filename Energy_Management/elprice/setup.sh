@@ -30,7 +30,7 @@ function _docker_compose_down () {
 
 function _docker_compose_up () {
   _shout_out 'Starting services with "docker-compose up"'
-  docker-compose up --no-deps --build || exit 1
+  docker-compose up -d --no-deps --build || exit 1
 }
 
 function _show_container_info () {
