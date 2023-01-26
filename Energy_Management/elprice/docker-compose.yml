@@ -29,6 +29,7 @@ services:
       HOST_ALLOW_UPLOAD_ELSPOT: 'fetch_elspot'
       HOST_ALLOW_UPLOAD_PLOT: 'generate_plot'
       HOST_ALLOW_UPLOAD_SENSOR: 'generate_sensor'
+      DIR_DATA: '/data'
     volumes:
       - ./web_datastore/app:/app
       - ./bindmount:/data
