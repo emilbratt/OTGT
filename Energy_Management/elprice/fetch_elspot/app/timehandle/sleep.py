@@ -75,7 +75,7 @@ def until_next_minute() -> int:
 def until_time_of_day(hour: int, minute: int) -> tuple:
     '''
         sleep until a specified time (24h format)
-        first param = hour, second param = minutes
+        first param = hour (0-23), second param = minute (0-59)
         returns current time as int stored in a tuple (hour, minute)
     '''
     # convert to total seconds passed for this day
