@@ -82,7 +82,7 @@ def until_time_of_day(hour: int, minute: int) -> tuple:
     t = datetime.now()
     seconds_now = (t.now().hour*3600) + (t.now().minute*60) + (t.now().second)
     seconds_target = (hour*3600) + (minute*60)
-    is_next_day = (seconds_now > seconds_target)
+    is_next_day = (seconds_now >= seconds_target)
     sleep_seconds = (is_next_day * 86400) + seconds_target - seconds_now
     sleep(sleep_seconds)
     return (datetime.now().hour, datetime.now().minute)
