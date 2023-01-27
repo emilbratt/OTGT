@@ -1,7 +1,6 @@
-from timehandle import sleep, timeofday, isodate
-from envars     import envar_get
-
-from httpdatastore   import httpdatastoreinit
+from timehandle       import sleep, timeofday, isodate
+from envars           import envar_get
+from httpdatastore    import httpdatastoreinit
 from nordpooldayahead import nordpooldayaheadinit
 
 class Application:
@@ -28,10 +27,11 @@ class Application:
 
         self.fetch_hour = int(envar_get('NORDPOOL_FETCH_HOUR'))
         self.fetch_minute = int(envar_get('NORDPOOL_FETCH_MINUTE'))
-        self.step = 1
+
         if timeofday.is_passed_time(hour=self.fetch_hour, minute=self.fetch_minute):
-            # skip sleep step if we are passed fetch_hour time today
             self.step = 2
+        else:
+            self.step = 1
 
     def run(self) -> bool:
         '''
