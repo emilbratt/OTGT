@@ -2,9 +2,12 @@ version: '3'
 
 services:
   fetch_elspot:
+    depends_on:
+      - web_datastore
     build: ./fetch_elspot
     container_name: fetch_elspot
     user: "elprice"
+    hostname: fetch_elspot
     environment:
       NORDPOOL_API_PAGE: '10' # currently in use
       NORDPOOL_CURRENCY: 'NOK' # EUR, NOK, SEK, ..
@@ -13,7 +16,7 @@ services:
       NORDPOOL_FETCH_HOUR: '13' # wait until this hour to try fetching
       NORDPOOL_FETCH_MINUTE: '15' # wait until this minute
       WEB_DATASTORE_API_VERSION: '0' # we might change  api in the future
-      WEB_DATASTORE_URL: 'web_datastore:8085' # to web_datastore
+      WEB_DATASTORE_URL: 'http://web_datastore:8085' # to web_datastore
       TZ: Europe/Oslo
     restart: unless-stopped
     volumes:
@@ -26,10 +29,10 @@ services:
     environment:
       TZ: Europe/Oslo
       WEB_PORT: '8085'
-      HOST_ALLOW_UPLOAD_ELSPOT: 'fetch_elspot'
-      HOST_ALLOW_UPLOAD_PLOT: 'generate_plot'
-      HOST_ALLOW_UPLOAD_SENSOR: 'generate_sensor'
-      DIR_DATA: '/data'
+      HOST_ELSPOT: 'fetch_elspot'
+      HOST_PLOT: 'generate_plot'
+      HOST_SENSOR: 'generate_sensor'
+      DIR_DATABASE: '/data'
     volumes:
       - ./web_datastore/app:/app
       - ./bindmount:/data
