@@ -18,14 +18,12 @@ def httpdatastoreinit(envar_get: object) -> object:
          return Handle()
 
       case None:
-         print('Error: set an api page via envar WEB_DATASTORE_API_VERSION')
-         print('..then re-run script')
+         print('Error: missing envar')
+         print('..set an api page via envar WEB_DATASTORE_API_VERSION')
 
       case _:
-         print('Error: envar WEB_DATASTORE_API_VERSION is set to:', API_VERSION)
-         print('this is not a valid page')
+         print('Error: invalid envar:', API_VERSION)
 
-   # if function did not return any value, we have an error (see above)
    print('namespace:', __name__+ '.Handle()')
    print('script:', __file__)
    exit(1)

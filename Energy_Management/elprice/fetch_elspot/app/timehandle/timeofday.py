@@ -38,6 +38,17 @@ def is_passed_time(hour: int, minute: int) -> bool:
   '''
   if datetime.now().hour > hour:
     return True
-  if datetime.now().hour == hour and datetime.now().minute > minute:
+  if datetime.now().hour == hour and datetime.now().minute >= minute:
+    return True
+  return False
+
+def is_before_time(hour: int, minute: int) -> bool:
+  '''
+    pass hour (0-23) and minute (0-59)
+    returns True if current time of day is before, False if not
+  '''
+  if datetime.now().hour < hour:
+    return True
+  if datetime.now().hour == hour and datetime.now().minute < minute:
     return True
   return False

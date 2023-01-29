@@ -1,46 +1,71 @@
-from requests import get as http_GET
+from requests import get
 
 URL = 'https://www.nordpoolgroup.com/api/marketdata/page/10'
 
 # just for testing (trying to be kind to the official api)
-# REMEMBER TO REMOVE
-URL = 'http://192.168.0.207:8082/download/hourly/2023-01-23.json'
+# URL = 'http://192.168.0.207:8082/download/hourly/2023-01-23.json'
 
 
 class Handle:
 
     def __init__(self, envar_get: object):
+        self.log = False
         self.data_raw = False
         self.data_reshaped = False
         self.currency = envar_get('NORDPOOL_CURRENCY')
         self.unit = envar_get('NORDPOOL_UNIT')
         self.reshape_unit = envar_get('NORDPOOL_RESHAPE_UNIT')
 
-    def fetch(self) -> int:
-        params = { 'currency': self.currency }
-        res = http_GET(URL, params=params, timeout=None)
-        self.status_code = res.status_code
+    def fetch_data(self, isodate: str) -> bool:
+        '''
+            isodate in format YYYY-MM-DD e.g. '2023-01-30'
+        '''
+        self.isodate = isodate
+        params = {
+            'currency': self.currency,
+            'endDate': isodate
+        }
+        r = get(URL, params=params, timeout=None)
+        self.status_code = r.status_code
         if self.status_code == 200:
-            self.data_raw = res.json()
+            self.data_raw = r.json()
             return True
+        self.log = {
+            'request_method': 'POST',
+            'request_url': URL,
+            'response_code': r.status_code,
+            'response_header': r.request.headers,
+        }
         return False
 
-    def confirm_date(self, isodate: str) -> bool:
+    def confirm_date(self) -> bool:
         # expects tomorrows isodate in format 'YYYY-MM-DD'
-        if isodate == self.data_raw['data']['DataStartdate'].split('T')[0]:
+        if self.isodate == self.data_raw['data']['DataStartdate'].split('T')[0]:
             return True
+        self.log = {
+            'isodate': self.isodate,
+            'date on received data': self.data_raw['data']['DataStartdate'].split('T')[0],
+        }
         return False
 
     def confirm_currency(self) -> bool:
         # expects currency as "NOK" e.g.
         if self.currency == self.data_raw['currency']:
             return True
+        self.log = {
+            'currency': self.currency,
+            'currency on received data': self.data_raw['currency'],
+        }
         return False
 
     def confirm_unit(self) -> bool:
         # expects unit as "NOK/MWh" e.g.
         if self.unit == self.data_raw['data']['Units'][0]:
             return True
+        self.log = {
+            'unit': self.unit,
+            'unit on received data': self.data_raw['data']['Units'][0],
+        }
         return False
 
     def reshape_data(self) -> bool:
@@ -127,4 +152,8 @@ class Handle:
             self.data_reshaped = regions
             return True
         except:
+            self.log = {
+                'received data': self.data_raw,
+                'error': 'maybe invalid data structure on received data',
+            }
             return False
