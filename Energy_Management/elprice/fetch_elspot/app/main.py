@@ -25,16 +25,16 @@ class Application:
         self.re_try_counter = 0
         self.fresh_restarts = 0
 
-        self.fetch_hour = int(envar_get('NORDPOOL_FETCH_HOUR'))
-        self.fetch_minute = int(envar_get('NORDPOOL_FETCH_MINUTE'))
+        self.FETCH_HOUR = int(envar_get('NORDPOOL_FETCH_HOUR'))
+        self.FETCH_MINUTE = int(envar_get('NORDPOOL_FETCH_MINUTE'))
 
-        a = self.http.raw_exists_on_datastore(isodate.today_plus_days(1))
-        b = self.http.reshaped_exists_on_datastore(isodate.today_plus_days(1))
-        c = timeofday.is_passed_time(hour=self.fetch_hour, minute=self.fetch_minute)
-        if a and b and c:
-            self.step = 1
-        else:
-            self.step = 2
+        self.step = 1
+        if timeofday.is_passed_time(self.FETCH_HOUR, self.FETCH_MINUTE):
+            raw_sent = self.http.raw_exists_on_datastore(isodate.today_plus_days(1))
+            reshaped_sent = self.http.reshaped_exists_on_datastore(isodate.today_plus_days(1))
+            if not raw_sent or not reshaped_sent:
+                self.step = 2
+
         print('Application starttime:', isodate.today_minutes())
         print('Starting from step ' + str(self.step))
 
@@ -56,7 +56,7 @@ class Application:
 
         match current_step:
             case 1:
-                sleep.until_time_of_day(hour=self.fetch_hour, minute=self.fetch_minute)
+                sleep.until_time_of_day(hour=self.FETCH_HOUR, minute=self.FETCH_MINUTE)
                 self.step = 2
             case 2:
                 if self.nordpool.fetch_data(isodate.today_plus_days(1)):
