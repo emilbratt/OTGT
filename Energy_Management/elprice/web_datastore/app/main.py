@@ -159,4 +159,3 @@ def get_plot_byhour_v0(the_region: str, the_date: str, the_index: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
         return Response(content=res, media_type='image/svg+xml')
-@app.head('/plot/byhour/v0/{the_region}/{the_date}/{the_index}', status_code=status.HTTP_200_OK)
