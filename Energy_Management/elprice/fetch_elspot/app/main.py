@@ -18,8 +18,8 @@ class Application:
 
     def __init__(self):
         self.log = False
-        self.nordpool = nordpooldayaheadinit(envar_get)
-        self.http = httpdatastoreinit(envar_get)
+        self.nordpool = nordpooldayaheadinit(envar_get, isodate=isodate)
+        self.http = httpdatastoreinit(envar_get=envar_get)
 
         self.re_try = False
         self.re_try_counter = 0
@@ -59,7 +59,7 @@ class Application:
                 sleep.until_time_of_day(hour=self.FETCH_HOUR, minute=self.FETCH_MINUTE)
                 self.step = 2
             case 2:
-                if self.nordpool.fetch_data(isodate.today_plus_days(1)):
+                if self.nordpool.fetch_data():
                     self.step = 3
                 else:
                     self.re_try = True; self.step = 2
@@ -84,12 +84,12 @@ class Application:
                 else:
                     self.re_try = True; self.step = 2; self.log = self.nordpool.log
             case 7:
-                if self.http.send_raw(self.nordpool.data_raw):
+                if self.http.send_raw(data_raw=self.nordpool.data_raw):
                     self.step = 8
                 else:
                     self.re_try = True; self.step = 7; self.log = self.http.log
             case 8:
-                if self.http.send_reshaped(self.nordpool.data_reshaped):
+                if self.http.send_reshaped(data_reshaped=self.nordpool.data_reshaped):
                     self.step = 1
                 else:
                     self.re_try = True; self.step = 8; self.log = self.http.log
