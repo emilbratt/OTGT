@@ -2,20 +2,18 @@ version: '3'
 
 services:
   fetch_elspot:
-    depends_on:
-      - web_datastore
     build: ./fetch_elspot
     container_name: fetch_elspot
     user: "elprice"
     hostname: fetch_elspot
     environment:
-      NORDPOOL_API_PAGE: '10' # currently in use
+      NORDPOOLDAYAHEAD_API_VERSION: '1' # currently in use
       NORDPOOL_CURRENCY: 'NOK' # EUR, NOK, SEK, ..
       NORDPOOL_UNIT: 'NOK/MWh'
       NORDPOOL_RESHAPE_UNIT: 'ore/kWh' # 'NOK/kW', 'ore/kWh' e.g.
       NORDPOOL_FETCH_HOUR: '13' # wait until this hour to try fetching
       NORDPOOL_FETCH_MINUTE: '15' # wait until this minute
-      WEB_DATASTORE_API_VERSION: '0' # we might change  api in the future
+      HTTPDATASTORE_API_VERSION: '1' # we might change  api in the future
       WEB_DATASTORE_URL: 'http://web_datastore:8085' # to web_datastore
       TZ: Europe/Oslo
     restart: unless-stopped
@@ -29,10 +27,20 @@ services:
     environment:
       TZ: Europe/Oslo
       WEB_PORT: '8085'
+      DIR_DATABASE: '/data'
       HOST_ELSPOT: 'fetch_elspot'
       HOST_PLOT: 'generate_plot'
       HOST_SENSOR: 'generate_sensor'
-      DIR_DATABASE: '/data'
+      HOST_MQTT: '192.168.0.207'
+      MQTT_USER: 'myuser'
+      MQTT_PW: 'mypassword'
+      MQTT_TOPIC_ELPRICE_ELSPOT_RAW: 'elprice/elspot/raw'
+      MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED: 'elprice/elspot/reshaped'
+      MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_DAILY: 'elprice/elspot/plot/daily'
+      MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_HOURLY: 'elprice/elspot/plot/hourly'
+      MQTT_TOPIC_ELPRICE_ELSPOT_SENSOR: 'elprice/elspot/sensor'
+      MQTT_CLIENT_ID_WEB_DATASTORE: 'elprice_web_datastore'
+
     volumes:
       - ./web_datastore/app:/app
       - ./bindmount:/data
@@ -40,14 +48,30 @@ services:
       - "8085:8085"
     restart: unless-stopped
 
-  # generate_plot:
-  #   container_name: generate_plot
-  #   build: ./generate_plot
-  #   environment:
-  #     TZ: Europe/Oslo
-  #   volumes:
-  #     - ./generate_plot/app:/app
-  #   restart: unless-stopped
+  generate_plot:
+    container_name: generate_plot
+    build: ./generate_plot
+    environment:
+      TZ: Europe/Oslo
+      HTTPDATASTORE_API_VERSION: '0' # we might change  api in the future
+      WEB_DATASTORE_URL: 'http://web_datastore:8085' # to web_datastore
+      PLOT_GENERATOR_API_VERSION: '0'
+      PLOT_Y_TICK_START: '0'
+      PLOT_Y_TICK_END: '800'
+      PLOT_Y_TICK_STEP: '50'
+      HOST_MQTT: '192.168.0.207'
+      MQTT_USER: 'myuser'
+      MQTT_PW: 'mypassword'
+      MQTT_KEEP_ALIVE_SEC: '60'
+      MQTT_TOPIC_ELPRICE_ELSPOT_RAW: 'elprice/elspot/raw'
+      MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED: 'elprice/elspot/reshaped'
+      MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_DAILY: 'elprice/elspot/plot/daily'
+      MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_HOURLY: 'elprice/elspot/plot/hourly'
+      MQTT_TOPIC_ELPRICE_ELSPOT_SENSOR: 'elprice/elspot/sensor'
+      MQTT_CLIENT_ID_GENERATE_PLOT: 'elprice_generate_plot'
+    volumes:
+      - ./generate_plot/app:/app
+    restart: unless-stopped
 
   # generate_sensor:
   #   container_name: generate_sensor
@@ -58,9 +82,9 @@ services:
   #     - ./generate_sensor/app:/app
   #   restart: unless-stopped
 
-  # mqtt_client:
-  #   container_name: mqtt_client
-  #   build: ./mqtt_client
+  # mqtt_task_coordinator:
+  #   container_name: mqtt_task_coordinator
+  #   build: ./mqtt_task_coordinator
   #   environment:
   #     TZ: Europe/Oslo
   #   user: 1000:1000
