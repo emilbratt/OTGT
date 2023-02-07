@@ -1,22 +1,17 @@
-def sqldatabaseinit(envar_get: object) -> object:
+from os import path
+
+def sqldatabasecrud(envar_get: object) -> object:
     '''
-        create database if not exists, or just validate it
-        then return Entities
+        crud operations
     '''
-    from os import path
+    from .crud import Tables
     databasefile = path.join(envar_get('DIR_DATABASE'), 'data.sqlite')
+    return Tables(databasefile)
 
-    # for first ever run, the database must be created, and tables too..
-    if not path.exists(databasefile):
-        import sqlite3
-        from .tablegenerate import TABLE_MAP
-        cnxn = sqlite3.connect(databasefile)
-        cursor = cnxn.cursor()
-        for table in TABLE_MAP:
-            create_table = TABLE_MAP[table]['create']
-            cursor.execute(create_table)
-            cnxn.commit()
-        cnxn.close()
-
-    from .entities import Entities
-    return Entities(databasefile)
+def sqldatabasemanage(envar_get: object) -> object:
+    '''
+        create/delete database, tables, etc
+    '''
+    from .manage import Tables
+    databasefile = path.join(envar_get('DIR_DATABASE'), 'data.sqlite')
+    return Tables(databasefile)
