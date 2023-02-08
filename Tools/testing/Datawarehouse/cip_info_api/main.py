@@ -6,7 +6,7 @@ import configparser
 import os
 import json
 
-ENVIRONMENT_FILE = '../../../environment.ini'
+ENVIRONMENT_FILE = '../../../../environment.ini'
 if not os.path.isfile(ENVIRONMENT_FILE):
     exit('could not locate environment.ini stored in var ENVIRONMENT_FILE')
 

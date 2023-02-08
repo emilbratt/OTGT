@@ -7,7 +7,7 @@ import os
 import json
 
 # declare global variables
-ENVIRONMENT_FILE = '../../../environment.ini'
+ENVIRONMENT_FILE = '../../../../environment.ini'
 URL = False # base url to api which is loaded from environment.ini
 PORT = False # for testing against developement environment
 QUERY = False # value after url, for example: api/test/v01/hello
