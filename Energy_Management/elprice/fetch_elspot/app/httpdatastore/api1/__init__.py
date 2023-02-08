@@ -18,6 +18,7 @@ class Handle:
                 'data': data_raw,
                 'date': data_raw['endDate'],
             }
+            print('POST request', self.URL_RAW)
             r = self.requests.post(self.URL_RAW, json=payload)
             self.log = {
                 'date': data_raw['endDate'],
@@ -42,6 +43,7 @@ class Handle:
                 False if it doesnt
         '''
         url = self.URL_RAW + '/' + isodate
+        print('HEAD request', url)
         r = self.requests.head(url)
         self.log = {
             'request_method': 'HEAD',
@@ -57,6 +59,7 @@ class Handle:
                 'data': data_reshaped,
                 'date': data_reshaped[0]['date'],
             }
+            print('POST request', self.URL_RESHAPED)
             r = self.requests.post(self.URL_RESHAPED, json=payload)
             self.log = {
                 'date': data_reshaped[0]['date'],
@@ -81,6 +84,7 @@ class Handle:
                 False if it doesnt
         '''
         url = self.URL_RESHAPED + '/' + isodate
+        print('HEAD request', url)
         r = self.requests.head(url)
         self.log = {
             'request_method': 'HEAD',
