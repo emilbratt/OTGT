@@ -1,5 +1,5 @@
 from time          import sleep
-from mqttsubscribe import mqttinit
+from mqttsubscribe import mqttsubscribeinit
 from plotgenerator import plotinit
 from httpdatastore import httpdatastoreinit
 from envars        import envar_get
@@ -8,10 +8,9 @@ import json
 class Application:
     def __init__(self):
         self.http = httpdatastoreinit(envar_get=envar_get)
-        self.client = mqttinit(envar_get=envar_get,
-                               client_id='generate_plot',
-                               on_connect=self.on_connect,
-                               on_message=self.on_message)
+        self.client = mqttsubscribeinit(envar_get=envar_get,
+                                        on_connect=self.on_connect,
+                                        on_message=self.on_message)
 
     def loop_forever(self):
         self.client.loop_forever()

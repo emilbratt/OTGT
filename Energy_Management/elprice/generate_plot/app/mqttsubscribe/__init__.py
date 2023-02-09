@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+import configparser
 
 # about "clean_session" and durable/non-durable clients
 #   True:
@@ -15,15 +16,21 @@ import paho.mqtt.client as mqtt
 #     ..use retain=True like below
 #       client.publish(topic=topic, payload=payload, qos=1, retain=True)
 
-def mqttinit(envar_get: object,
-             client_id: str,
-             on_connect: object,
-             on_message: object) -> object:
-    port = 1883
-    seconds_keepalive = 60
-    client = mqtt.Client(client_id=envar_get('MQTT_CLIENT_ID_GENERATE_PLOT'), clean_session=False)
-    client.username_pw_set(envar_get('MQTT_USER'), envar_get('MQTT_PW'))
+
+def mqttsubscribeinit(envar_get: object, on_connect: object, on_message: object) -> object:
+    MQTT_CLIENT_ID = envar_get('MQTT_CLIENT_ID')
+    config = configparser.ConfigParser()
+    config.sections()
+    config.read(envar_get('ENVIRONMENT_INI_FILE'))
+    section = config['mqtt']
+    MQTT_HOST = section['host'].strip('"')
+    MQTT_PORT = int(section['port'].strip('"'))
+    MQTT_USER = section['user'].strip('"')
+    MQTT_PW   = section['password'].strip('"')
+
+    client = mqtt.Client(client_id=MQTT_CLIENT_ID, clean_session=False)
+    client.username_pw_set(MQTT_USER, MQTT_PW)
     client.on_connect = on_connect
     client.on_message = on_message
-    client.connect(envar_get('HOST_MQTT'), port, int(envar_get('MQTT_KEEP_ALIVE_SEC')))
+    client.connect(MQTT_HOST, MQTT_PORT)
     return client

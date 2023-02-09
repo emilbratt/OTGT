@@ -35,9 +35,6 @@ services:
       MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_DAILY: 'elprice/elspot/plot/daily'
       MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_HOURLY: 'elprice/elspot/plot/hourly'
       MQTT_TOPIC_ELPRICE_ELSPOT_SENSOR: 'elprice/elspot/sensor'
-      # HOST_ELSPOT: 'fetch_elspot'
-      # HOST_PLOT: 'generate_plot'
-      # HOST_SENSOR: 'generate_sensor'
     volumes:
       - ../../:/OTGT
     ports:
@@ -56,15 +53,12 @@ services:
       PLOT_Y_TICK_END: '800'
       PLOT_Y_TICK_STEP: '50'
       WEB_DATASTORE_URL: 'http://web_datastore:8085' # to web_datastore
-      HOST_MQTT: '192.168.0.207'
-      MQTT_USER: 'myuser'
-      MQTT_PW: 'mypassword'
-      MQTT_KEEP_ALIVE_SEC: '60'
+      ENVIRONMENT_INI_FILE: '/OTGT/environment.ini'
+      MQTT_CLIENT_ID: 'elprice_generate_plot'
       MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED: 'elprice/elspot/reshaped'
       MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_DAILY: 'elprice/elspot/plot/daily'
       MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_HOURLY: 'elprice/elspot/plot/hourly'
       MQTT_TOPIC_ELPRICE_ELSPOT_SENSOR: 'elprice/elspot/sensor'
-      MQTT_CLIENT_ID_GENERATE_PLOT: 'elprice_generate_plot'
     volumes:
       - ../../:/OTGT
     restart: unless-stopped
