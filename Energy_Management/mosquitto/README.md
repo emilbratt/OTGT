@@ -94,7 +94,17 @@ for subscribing to everything
 mosquitto_sub --host <host> --username <user> --pw <pw> --topic "#"
 ```
 
-the mqtt broker reports health status, read these by subscribing to the sys topics
+the mqtt broker reports convenient info in the $SYS topic
 ```
 mosquitto_sub --host <host> --username <user> --pw <pw> --topic "$SYS/#"
+```
+
+get number of persisted messages
+```
+mosquitto_sub --host <host> --username <user> --pw <pw> --topic "$SYS/broker/store/messages/count"
+```
+
+get number of persisted bytes
+```
+mosquitto_sub --host <host> --username <user> --pw <pw> --topic "$SYS/broker/store/messages/bytes"
 ```
