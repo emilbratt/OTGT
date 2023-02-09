@@ -1,20 +1,13 @@
 from fastapi import FastAPI, File, Request, status, HTTPException
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse, Response
-import io
-### imports for the future if needed
-# from typing import Optional
-# from io import BytesIO
-# from fastapi.staticfiles import StaticFiles
-
 from envars       import envar_get
 from urldatamodel import datamodelelspot, datamodelplot
 from allowedhosts import HostFilter
 from sqldatabase  import sqldatabasecrud
-from mqttpublish  import mqttmessage
+from mqttpublish  import mqttpublishinit
 
-
+mqtt_pub = mqttpublishinit(envar_get)
 app = FastAPI()
-
 
 ### testing ###
 @app.get('/test/get')
@@ -87,7 +80,7 @@ def post_elspot_reshaped_v1(request: Request, datamodel: datamodelelspot.Reshape
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Data was not saved to database')
     else:
         topic = envar_get('MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED')
-        mqttmessage(envar_get=envar_get, topic=topic, datamodel=datamodel, qos=1)
+        mqtt_pub.single(topic=topic, payload=datamodel.get_json_data(), qos=1)
         return { 'date': datamodel.date, 'action': action }
 
 @app.head('/elspot/reshaped/v1/{the_date}', status_code=status.HTTP_200_OK)
