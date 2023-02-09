@@ -16,3 +16,8 @@ OTGT/Energy_Management/elprice
   |
   └── web_datastore/ -> middleware receiving, storing and serving data to and from all services
 ```
+
+### configuration
+1. this application depends on the mosquitto service (mqtt broker) in /OTGT/Energy_Management/mosquitto
+2. before starting the containers, copy /OTGT/environment.ini.template -> /OTGT/environment.ini
+3. then add config under section "mqtt" that points to a running instance of mosquitto
