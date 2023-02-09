@@ -6,6 +6,7 @@
 2. run setup.sh (will eventually run docker-compose up -d)
 
 ## handy commands for configuring mosquitto
+* read more about the mosquitto.conf here: https://mosquitto.org/man/mosquitto-conf-5.html
 Start services
 ```
 docker-compose up -d
