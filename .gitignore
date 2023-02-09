@@ -11,6 +11,5 @@ data.sqlite
 *.kate-swp
 
 # Energy_Management
-Energy_Management/elprice/bindmount
 Energy_Management/homeassistant/bindmount
 Energy_Management/mosquitto/bindmount
