@@ -18,7 +18,7 @@ services:
       TZ: Europe/Oslo
     restart: unless-stopped
     volumes:
-      - ./fetch_elspot/app:/app
+      - ../../:/OTGT
     restart: unless-stopped
 
   web_datastore:
@@ -27,7 +27,7 @@ services:
     environment:
       TZ: Europe/Oslo
       WEB_PORT: '8085'
-      DIR_DATABASE: '/data'
+      DATABASE_FILE: '/OTGT/Energy_Management/elprice/web_datastore/data.sqlite' # "data.sqlite" should be in gitignore list
       HOST_ELSPOT: 'fetch_elspot'
       HOST_PLOT: 'generate_plot'
       HOST_SENSOR: 'generate_sensor'
@@ -40,10 +40,8 @@ services:
       MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_HOURLY: 'elprice/elspot/plot/hourly'
       MQTT_TOPIC_ELPRICE_ELSPOT_SENSOR: 'elprice/elspot/sensor'
       MQTT_CLIENT_ID_WEB_DATASTORE: 'elprice_web_datastore'
-
     volumes:
-      - ./web_datastore/app:/app
-      - ./bindmount:/data
+      - ../../:/OTGT
     ports:
       - "8085:8085"
     restart: unless-stopped
@@ -53,7 +51,7 @@ services:
     build: ./generate_plot
     environment:
       TZ: Europe/Oslo
-      HTTPDATASTORE_API_VERSION: '0' # we might change  api in the future
+      HTTPDATASTORE_API_VERSION: '0' # we might change api in the future
       WEB_DATASTORE_URL: 'http://web_datastore:8085' # to web_datastore
       PLOT_GENERATOR_API_VERSION: '0'
       PLOT_Y_TICK_START: '0'
@@ -70,7 +68,7 @@ services:
       MQTT_TOPIC_ELPRICE_ELSPOT_SENSOR: 'elprice/elspot/sensor'
       MQTT_CLIENT_ID_GENERATE_PLOT: 'elprice_generate_plot'
     volumes:
-      - ./generate_plot/app:/app
+      - ../../:/OTGT
     restart: unless-stopped
 
   # generate_sensor:
@@ -79,7 +77,7 @@ services:
   #   environment:
   #     TZ: Europe/Oslo
   #   volumes:
-  #     - ./generate_sensor/app:/app
+  #     - ../../:/OTGT
   #   restart: unless-stopped
 
   # mqtt_task_coordinator:
@@ -87,8 +85,6 @@ services:
   #   build: ./mqtt_task_coordinator
   #   environment:
   #     TZ: Europe/Oslo
-  #   user: 1000:1000
-  #   environment:
-  #     UID: 1000
-  #     GID: 1000
+  #   volumes:
+  #     - ../../:/OTGT
   #   restart: unless-stopped

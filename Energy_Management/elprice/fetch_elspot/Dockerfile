@@ -6,10 +6,11 @@ USER elprice
 USER 1000:1000
 COPY ./requirements.txt /requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /requirements.txt
-WORKDIR /app
+WORKDIR /OTGT/Energy_Management/elprice/fetch_elspot/app
 
 # init production
 #CMD ["python3", "main.py"]
 # init dev
 # unbuffered output (-u) to use if nothing is shown in tty (will not wait until x lines are printed)
 CMD ["python3", "-u", "main.py"]
+#CMD ["sleep", "10000"]

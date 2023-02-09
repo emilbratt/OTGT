@@ -9,7 +9,8 @@ USER 1000:1000
 ENV PATH /home/elprice/.local/bin:${PATH}
 COPY ./requirements.txt /requirements.txt
 RUN pip install --user --no-cache-dir --upgrade -r /requirements.txt
-WORKDIR /app
+WORKDIR /OTGT/Energy_Management/elprice/web_datastore/app
+
 
 # un-comment accordingly based on dev or prod env.
 # for developement we want reload on file changes
