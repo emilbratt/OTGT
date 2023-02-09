@@ -1,5 +1,3 @@
-from paho.mqtt import publish
-
 def mqttpublishinit(envar_get: object) -> object:
 
     api_version = envar_get('MQTT_PUBLISH_API_VERSION')
