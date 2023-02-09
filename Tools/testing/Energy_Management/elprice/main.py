@@ -56,7 +56,16 @@ def HEAD(URL):
 
 def main(test: int):
 
+    '''
+        pass a number when calling this script,
+        whatever the number, the match/case block will run
+    '''
+
     url = URL_WEB_DATASTORE
+    if len(sys.argv) == 1:
+        test = 1
+    else:
+        test = int(sys.argv[1])
 
     match test:
         case 1:
