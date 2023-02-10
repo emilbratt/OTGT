@@ -35,7 +35,6 @@ class Application:
             if not raw_sent or not reshaped_sent:
                 self.step = 2
 
-        print('Application starttime:', isodate.today_minutes())
         print('Starting from step ' + str(self.step))
 
     def run(self) -> bool:
@@ -128,6 +127,7 @@ class Application:
 
 
 def mainloop():
+    print('Application starttime:', isodate.today_minutes())
     sleep.seconds(3) # just to give the other services a head start
     app = Application()
     while 'I`m waiting for coffee':

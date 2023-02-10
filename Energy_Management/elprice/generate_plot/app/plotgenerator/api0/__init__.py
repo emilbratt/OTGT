@@ -59,8 +59,8 @@ class Plot:
             return False
 
         plt.style.use(self.style)
-        _title = data['region'] + ' ' + data['date']
-        plt.title(_title, y=1.0, pad=3, fontsize=14)
+        title = data['region'] + ' ' + data['date']
+        plt.title(title, y=1.0, pad=3, fontsize=14)
         plt.tight_layout()
         bars = plt.bar(value_index, plot_values, align='edge')
         for value in value_index:
@@ -86,12 +86,9 @@ class Plot:
         ax.set_xticks(x_ticks)
         ax.set_xticklabels(hour_labels)
 
-        # plot_save_path = self.base_dir + '/bar/daily/' + data['date'] + '_' + data['region'] + '.svg'
-        # Path(plot_save_path).parent.mkdir(parents=True, exist_ok=True) 
-        # plt.savefig(plot_save_path, dpi=200)
-
         string_buffer = io.StringIO()
         plt.savefig(string_buffer, format='svg')
+        string_buffer.write('<!--title: ' + title + '-->' + '\n')
         string_buffer.seek(0)
         self.payload = { 
             'region': data['region'],
@@ -114,32 +111,31 @@ class Plot:
             # likely dataset without prices, for some regions this occur
             return False
 
-        # we are dealing with 24(23-25) hours, so the data must match
-        value_index = [x for x in range(data['resolution']//4)] # -> [0, 1, 2,..., 23(22-24)]
+        # create index for each value doing floor division by 4 (96 quarters == 24 hours)
+        value_index = [x for x in range( data['resolution']//4 )]
         hour_labels = [int(x['time_start'][0:2]) for x in data['prices'] if x['time_start'][3:] == '00']
-
 
         # generate a total of 24(23-25 if daylight saving) plots, one for each hour of the day
         for index in value_index:
-            title = data['region'] + ' ' + data['date'] + ' kl.' + str(hour_labels[index])
             plt.style.use(self.style)
+            title = data['region'] + ' ' + data['date']
             plt.title(title, y=1.0, pad=3, fontsize=14)
             plt.tight_layout()
 
-            bars = plt.bar(value_index, plot_values, color=self.bar_default_colour, align='edge', width=0.9)
-            bars[index].set_color(self.bar_select_colour)
+            bars = plt.bar(value_index, plot_values, align='edge', width=0.9)
+            for j in value_index:
+                if j == index:
+                    bars[j].set_color(self.bar_select_colour)
+                else:
+                    bars[j].set_color(self.bar_default_colour)
 
             plt.yticks(self.y_ticks)
             plt.xticks(fontsize=7, rotation=0)
             plt.xticks(hour_labels)
             plt.grid(axis='y', alpha=0.3)
-
-            # plot_save_path = self.base_dir + '/bar/hourly/' + data['region'] + '/' + data['date'] + '/' + 'index_' + str(hour_labels[index]) + '.svg'
-            # Path(plot_save_path).parent.mkdir(parents=True, exist_ok=True) 
-            # plt.savefig(plot_save_path, dpi=72)
-
             string_buffer = io.StringIO()
             plt.savefig(string_buffer, format='svg')
+            string_buffer.write('<!--title: ' + title + '-->' + '\n' + '<!--index: ' + str(index) + '-->' + '\n')
             string_buffer.seek(0)
             self.payload.append({
                 'region': data['region'],
@@ -166,6 +162,7 @@ class Plot:
         except:
             # likely dataset without prices, for some regions this occur
             return False
+
         plt.style.use(self.style)
         plt.tight_layout()
         plt.title(title, y=1.0, pad=3, fontsize=14)
@@ -181,10 +178,6 @@ class Plot:
         ax = plt.gca()
         ax.set_xticks(x_ticks)
         ax.set_xticklabels(hour_labels)
-
-        # plot_save_path = self.base_dir + '/line/daily/' + region + '.' + date + '.svg'
-        # Path(plot_save_path).parent.mkdir(parents=True, exist_ok=True) 
-        # plt.savefig(plot_save_path, dpi=200)
 
         string_buffer = io.StringIO()
         plt.savefig(string_buffer, format='svg')

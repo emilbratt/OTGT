@@ -1,4 +1,4 @@
-from time          import sleep
+from timehandle    import sleep, timeofday, isodate
 from mqttsubscribe import mqttsubscribeinit
 from plotgenerator import plotinit
 from httpdatastore import httpdatastoreinit
@@ -21,23 +21,28 @@ class Application:
             self.client.loop_stop()
             print('round ' + str(n))
             n -= 1
-            sleep(2)
+            sleep.seconds(2)
 
     def dummy_daemon(self):
         while True:
             print('just sleeping')
-            sleep(3600)
+            sleep.seconds(3600)
 
     # callback function for when we receive a CONNACK from broker
     def on_connect(self, client, userdata, flags, rc):
-        print('Connected with result code', str(rc))
-        print('client id', client._client_id.decode('utf8'))
-        print('flags', flags)
-        client.subscribe(topic=envar_get('MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED'), qos=1)
+        print('Time:', isodate.today_seconds())
+        print('MQTT Connected')
+        print('RC:', str(rc))
+        print('Client ID:', client._client_id.decode('utf8'))
+        print('Flags:', flags)
+        topic=envar_get('MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED')
+        client.subscribe(topic=topic, qos=1)
+        print('Subscribed (topic):', topic)
 
     # callback function for when we receive a message from broker
     def on_message(self, client, userdata, msg):
-        print('MQTT message received for topic', msg.topic)
+        print('Time:', isodate.today_seconds())
+        print('MQTT Message')
         try:
             data = msg.payload.decode('utf-8')
             data = json.loads(data)
@@ -71,6 +76,7 @@ class Application:
         print('done')
 
 def mainloop():
-    Application().loop_forever()
+    print('Application starttime:', isodate.today_minutes())
+    Application().loop_n_times(5)
 
 mainloop()
