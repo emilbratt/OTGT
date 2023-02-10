@@ -7,6 +7,7 @@ import json
 
 class Application:
     def __init__(self):
+        self.plot = plotinit(envar_get=envar_get)
         self.http = httpdatastoreinit(envar_get=envar_get)
         self.client = mqttsubscribeinit(envar_get=envar_get,
                                         on_connect=self.on_connect,
@@ -31,7 +32,7 @@ class Application:
     # callback function for when we receive a CONNACK from broker
     def on_connect(self, client, userdata, flags, rc):
         print('Time:', isodate.today_seconds())
-        print('MQTT Connected')
+        print('MQTT Connection established')
         print('RC:', str(rc))
         print('Client ID:', client._client_id.decode('utf8'))
         print('Flags:', flags)
@@ -42,7 +43,7 @@ class Application:
     # callback function for when we receive a message from broker
     def on_message(self, client, userdata, msg):
         print('Time:', isodate.today_seconds())
-        print('MQTT Message')
+        print('MQTT Message Received')
         try:
             data = msg.payload.decode('utf-8')
             data = json.loads(data)
@@ -55,19 +56,18 @@ class Application:
                 print('the data received could not be processed')
             return False
 
-        plot = plotinit(envar_get=envar_get)
         for region_data in data:
             print('generating day plot for', region_data['region'])
-            if plot.generate_bar_chart_bydate(region_data):
-                res = self.http.send_bydate(plot.payload)
+            if self.plot.generate_bar_chart_bydate(region_data):
+                res = self.http.send_bydate(self.plot.payload)
                 if not res:
                     print(self.http.log)
             else:
                 print(region_data['region'], 'invalid data')
 
             print('generating hourly plots for', region_data['region'])
-            if plot.generate_bar_chart_byhour(region_data):
-                for payload in plot.payload:
+            if self.plot.generate_bar_chart_byhour(region_data):
+                for payload in self.plot.payload:
                     res = self.http.send_byhour(payload)
                     if not res:
                         print(self.http.log)
@@ -77,6 +77,6 @@ class Application:
 
 def mainloop():
     print('Application starttime:', isodate.today_minutes())
-    Application().dummy_daemon()
+    Application().loop_forever()
 
 mainloop()
