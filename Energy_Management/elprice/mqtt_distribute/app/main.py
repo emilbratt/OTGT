@@ -28,8 +28,8 @@ class Application:
             case _:
                 print('time is', now)
 
-        print('sleeping 60 seconds')
-        sleep.seconds(60)
+        print('sleeping for 60 minutes')
+        sleep.seconds(3600)
 
 
 def mainloop():
