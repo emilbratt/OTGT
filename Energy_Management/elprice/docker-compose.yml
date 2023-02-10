@@ -57,20 +57,20 @@ services:
       - ../../:/OTGT
     restart: unless-stopped
 
-  # generate_states:
-  #   container_name: generate_states
-  #   build: ./generate_states
-  #   environment:
-  #     TZ: Europe/Oslo
-  #     HTTPDATASTORE_API_VERSION: '0'
-  #     STATE_GENERATOR_API_VERSION: '0'
-  #     WEB_DATASTORE_URL: 'http://web_datastore:8085'
-  #     ENVIRONMENT_INI_FILE: '/OTGT/environment.ini'
-  #     MQTT_CLIENT_ID: 'elprice_generate_states'
-  #     MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED: 'elprice/elspot/reshaped'
-  #   volumes:
-  #     - ../../:/OTGT
-  #   restart: unless-stopped
+  generate_states:
+    container_name: generate_states
+    build: ./generate_states
+    environment:
+      TZ: Europe/Oslo
+      HTTPDATASTORE_API_VERSION: '0'
+      STATE_GENERATOR_API_VERSION: '0'
+      WEB_DATASTORE_URL: 'http://web_datastore:8085'
+      ENVIRONMENT_INI_FILE: '/OTGT/environment.ini'
+      MQTT_CLIENT_ID: 'elprice_generate_states'
+      MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED: 'elprice/elspot/reshaped'
+    volumes:
+      - ../../:/OTGT
+    restart: unless-stopped
 
   mqtt_distribute:
     container_name: mqtt_distribute
