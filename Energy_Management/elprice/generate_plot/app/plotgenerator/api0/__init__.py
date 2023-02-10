@@ -1,10 +1,7 @@
 from pathlib import Path
 import matplotlib.pyplot as plt
-#import matplotlib.ticker as mticker
 import numpy as np
-import io
-#from io import StringIO
-
+from io import StringIO
 
 class Plot:
     def __init__(self, envar_get: object):
@@ -46,8 +43,6 @@ class Plot:
         self.bar_first_in_step_colour = '#65B565'
 
         self.line_colour = '#559955'
-        self.base_dir = '/home/elprice/bindmount/plots'
-
 
     def generate_bar_chart_bydate(self, data: dict) -> bool:
         self.payload = {}
@@ -86,7 +81,7 @@ class Plot:
         ax.set_xticks(x_ticks)
         ax.set_xticklabels(hour_labels)
 
-        string_buffer = io.StringIO()
+        string_buffer = StringIO()
         plt.savefig(string_buffer, format='svg')
         string_buffer.write('<!--title: ' + title + '-->' + '\n')
         string_buffer.seek(0)
@@ -133,7 +128,7 @@ class Plot:
             plt.xticks(fontsize=7, rotation=0)
             plt.xticks(hour_labels)
             plt.grid(axis='y', alpha=0.3)
-            string_buffer = io.StringIO()
+            string_buffer = StringIO()
             plt.savefig(string_buffer, format='svg')
             string_buffer.write('<!--title: ' + title + '-->' + '\n' + '<!--index: ' + str(index) + '-->' + '\n')
             string_buffer.seek(0)
@@ -179,7 +174,7 @@ class Plot:
         ax.set_xticks(x_ticks)
         ax.set_xticklabels(hour_labels)
 
-        string_buffer = io.StringIO()
+        string_buffer = StringIO()
         plt.savefig(string_buffer, format='svg')
         string_buffer.seek(0)
         self.payload = { 
