@@ -6,7 +6,7 @@ USER elprice
 USER 1000:1000
 COPY ./requirements.txt /requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /requirements.txt
-WORKDIR /OTGT/Energy_Management/elprice/generate_sensor/app
+WORKDIR /OTGT/Energy_Management/elprice/generate_states/app
 
 # init production
 #CMD ["python3", "main.py"]

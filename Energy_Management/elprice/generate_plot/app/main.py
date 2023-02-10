@@ -77,6 +77,6 @@ class Application:
 
 def mainloop():
     print('Application starttime:', isodate.today_minutes())
-    Application().loop_n_times(5)
+    Application().dummy_daemon()
 
 mainloop()

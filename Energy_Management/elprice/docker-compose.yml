@@ -63,20 +63,20 @@ services:
       - ../../:/OTGT
     restart: unless-stopped
 
-  # generate_sensor:
-  #   container_name: generate_sensor
-  #   build: ./generate_sensor
+  # generate_states:
+  #   container_name: generate_states
+  #   build: ./generate_states
   #   environment:
   #     TZ: Europe/Oslo
   #   volumes:
   #     - ../../:/OTGT
   #   restart: unless-stopped
 
-  # mqtt_task_coordinator:
-  #   container_name: mqtt_task_coordinator
-  #   build: ./mqtt_task_coordinator
-  #   environment:
-  #     TZ: Europe/Oslo
-  #   volumes:
-  #     - ../../:/OTGT
-  #   restart: unless-stopped
+  mqtt_distribute:
+    container_name: mqtt_distribute
+    build: ./mqtt_distribute
+    environment:
+      TZ: Europe/Oslo
+    volumes:
+      - ../../:/OTGT
+    restart: unless-stopped
