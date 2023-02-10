@@ -22,7 +22,7 @@ class Handle:
         '''
         self.log = {}
         try:
-            print('POST', self.URL_BYDATE)
+            print('POST request', self.URL_BYDATE)
             print('Region', payload['region'], 'Date', payload['date'])
             r = self.requests.post(self.URL_BYDATE, json=payload)
             self.log['date'] = payload['date']
@@ -51,7 +51,7 @@ class Handle:
         '''
         self.log = {}
         try:
-            print('POST', self.URL_BYHOUR)
+            print('POST request', self.URL_BYHOUR)
             print('Region', payload['region'], 'Date', payload['date'], 'Index', payload['index'])
             r = self.requests.post(self.URL_BYHOUR, json=payload)
             self.log['date'] = payload['date']
