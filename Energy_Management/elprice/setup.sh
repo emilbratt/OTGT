@@ -9,10 +9,6 @@
 #   it is meant to be used as a developement instance to
 #   spin up the container from inside this repo without hassle
 
-# for bind-mount
-HOST_BIND_MOUNT_DIRECTORY=./bindmount
-mkdir -p $HOST_BIND_MOUNT_DIRECTORY
-
 function _shout_out () {
   echo ''
   echo '###'
