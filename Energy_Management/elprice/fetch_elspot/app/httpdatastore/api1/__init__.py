@@ -42,16 +42,23 @@ class Handle:
                 True if raw data already exist in web datastore
                 False if it doesnt
         '''
-        url = self.URL_RAW + '/' + isodate
-        print('HEAD request', url)
-        r = self.requests.head(url)
-        self.log = {
-            'request_method': 'HEAD',
-            'request_url': url,
-            'response_code': r.status_code,
-            'response_header': r.request.headers,
-        }
-        return (r.status_code in self.EXPECTED_STATUS_CODES)
+        try:
+            url = self.URL_RAW + '/' + isodate
+            print('HEAD request', url)
+            r = self.requests.head(url)
+            self.log = {
+                'request_method': 'HEAD',
+                'request_url': url,
+                'response_code': r.status_code,
+                'response_header': r.request.headers,
+            }
+            return (r.status_code in self.EXPECTED_STATUS_CODES)
+        except requests.exceptions.ConnectionError:
+            self.log = {
+                'namespace': 'httpdatastore.api1.raw_exists_on_datastore()',
+                'error': 'requests.exceptions.ConnectionError',
+            }
+        return False
 
     def send_reshaped(self, data_reshaped: list) -> bool:
         try:
@@ -83,13 +90,20 @@ class Handle:
                 True if raw data already exist in web datastore
                 False if it doesnt
         '''
-        url = self.URL_RESHAPED + '/' + isodate
-        print('HEAD request', url)
-        r = self.requests.head(url)
-        self.log = {
-            'request_method': 'HEAD',
-            'request_url': url,
-            'response_code': r.status_code,
-            'response_header': r.request.headers,
-        }
-        return (r.status_code in self.EXPECTED_STATUS_CODES)
+        try:
+            url = self.URL_RESHAPED + '/' + isodate
+            print('HEAD request', url)
+            r = self.requests.head(url)
+            self.log = {
+                'request_method': 'HEAD',
+                'request_url': url,
+                'response_code': r.status_code,
+                'response_header': r.request.headers,
+            }
+            return (r.status_code in self.EXPECTED_STATUS_CODES)
+        except requests.exceptions.ConnectionError:
+            self.log = {
+                'namespace': 'httpdatastore.api1.reshaped_exists_on_datastore()',
+                'error': 'requests.exceptions.ConnectionError',
+            }
+        return False

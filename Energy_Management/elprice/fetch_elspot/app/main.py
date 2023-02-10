@@ -14,6 +14,7 @@ class Application:
         6: 'Reshaping raw data to our format',
         7: 'Sending raw data',
         8: 'Sending reshaped data',
+        9: 'Finish, setting counters back to 0',
     }
 
     def __init__(self):
@@ -89,9 +90,13 @@ class Application:
                     self.re_try = True; self.step = 7; self.log = self.http.log
             case 8:
                 if self.http.send_reshaped(data_reshaped=self.nordpool.data_reshaped):
-                    self.step = 1
+                    self.step = 9
                 else:
                     self.re_try = True; self.step = 8; self.log = self.http.log
+            case 9:
+                self.re_try_counter = 0
+                self.fresh_restarts = 0
+                self.step = 1
             case _:
                 print('some weird behavior occured, value for current_step =', current_step)
                 exit(1)
@@ -112,6 +117,7 @@ class Application:
             self.step = 1
             self.re_try_counter = 0
             self.fresh_restarts += 1
+            sleep.until_next_quarter_hour()
             return False
 
         # if a step needs a re-try, halt until next 15 minute mark
@@ -120,15 +126,15 @@ class Application:
             print('---log---')
             print(self.log)
             print('App: halting for 15 minutes, then re-trying from step', self.step)
-            sleep.until_next_quarter_hour()
             self.re_try = False
             self.re_try_counter += 1
+            sleep.seconds(self.re_try_counter)
             return False
 
 
 def mainloop():
     print('Application starttime:', isodate.today_minutes())
-    sleep.seconds(3) # just to give the other services a head start
+    sleep.seconds(3) # just to give web_datastore a head start
     app = Application()
     while 'I`m waiting for coffee':
         app.run()
