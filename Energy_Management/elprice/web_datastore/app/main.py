@@ -3,9 +3,10 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse, Res
 from envars       import envar_get
 from urldatamodel import datamodelelspot, datamodelplot
 from allowedhosts import HostFilter
-from sqldatabase  import sqldatabasecrud
+from sqldatabase  import sqldatabasecrud, sqldatabasemanage
 from mqttpublish  import mqttpublishinit
 
+sqldatabasemanage(envar_get).create_database()
 mqtt_pub = mqttpublishinit(envar_get)
 app = FastAPI()
 
@@ -29,9 +30,8 @@ def test_get():
 # manage database tables via browser using GET requests
 @app.get('/dev/database/{table}/{operation}', status_code=status.HTTP_200_OK)
 def dev_database(table: str, operation: str):
-    from sqldatabase import sqldatabasemanage
     databasehandle = sqldatabasemanage(envar_get)
-    return databasehandle.run(table=table, operation=operation)
+    return databasehandle.manage(table=table, operation=operation)
 
 
 ### production ###

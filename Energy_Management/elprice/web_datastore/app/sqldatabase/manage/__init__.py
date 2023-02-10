@@ -129,7 +129,12 @@ class Tables:
     def __init__(self, databasefile: str):
          self.databasefile = databasefile
 
-    def run(self, table: str, operation: str) -> dict:
+    def create_database(self) -> bool:
+        # calls the method below to create all tables
+        for table in self.TABLE_MAP:
+            self.manage(table=table, operation='create')
+
+    def manage(self, table: str, operation: str) -> dict:
         namespace = __file__ + '.Tables'
         result = { 'table': table, 'operation': operation }
         cnxn = sqlite3.connect(self.databasefile)
