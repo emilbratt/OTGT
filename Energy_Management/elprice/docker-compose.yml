@@ -32,9 +32,6 @@ services:
       ENVIRONMENT_INI_FILE: '/OTGT/environment.ini'
       MQTT_CLIENT_ID: 'elprice_web_datastore'
       MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED: 'elprice/elspot/reshaped'
-      MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_DAILY: 'elprice/elspot/plot/daily'
-      MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_HOURLY: 'elprice/elspot/plot/hourly'
-      MQTT_TOPIC_ELPRICE_ELSPOT_SENSOR: 'elprice/elspot/sensor'
     volumes:
       - ../../:/OTGT
     ports:
@@ -52,13 +49,10 @@ services:
       PLOT_Y_TICK_START: '0'
       PLOT_Y_TICK_END: '800'
       PLOT_Y_TICK_STEP: '50'
-      WEB_DATASTORE_URL: 'http://web_datastore:8085' # to web_datastore
+      WEB_DATASTORE_URL: 'http://web_datastore:8085'
       ENVIRONMENT_INI_FILE: '/OTGT/environment.ini'
       MQTT_CLIENT_ID: 'elprice_generate_plot'
       MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED: 'elprice/elspot/reshaped'
-      MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_DAILY: 'elprice/elspot/plot/daily'
-      MQTT_TOPIC_ELPRICE_ELSPOT_PLOT_HOURLY: 'elprice/elspot/plot/hourly'
-      MQTT_TOPIC_ELPRICE_ELSPOT_SENSOR: 'elprice/elspot/sensor'
     volumes:
       - ../../:/OTGT
     restart: unless-stopped
@@ -68,6 +62,12 @@ services:
   #   build: ./generate_states
   #   environment:
   #     TZ: Europe/Oslo
+  #     HTTPDATASTORE_API_VERSION: '0'
+  #     STATE_GENERATOR_API_VERSION: '0'
+  #     WEB_DATASTORE_URL: 'http://web_datastore:8085'
+  #     ENVIRONMENT_INI_FILE: '/OTGT/environment.ini'
+  #     MQTT_CLIENT_ID: 'elprice_generate_states'
+  #     MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED: 'elprice/elspot/reshaped'
   #   volumes:
   #     - ../../:/OTGT
   #   restart: unless-stopped
@@ -77,6 +77,10 @@ services:
     build: ./mqtt_distribute
     environment:
       TZ: Europe/Oslo
+      WEB_DATASTORE_URL: 'http://web_datastore:8085' # to web_datastore
+      ENVIRONMENT_INI_FILE: '/OTGT/environment.ini'
+      MQTT_CLIENT_ID: 'elprice_mqtt_distribute'
+      MQTT_TOPIC_ELPRICE_ELSPOT_RESHAPED: 'elprice/elspot/reshaped'
     volumes:
       - ../../:/OTGT
     restart: unless-stopped
