@@ -17,6 +17,8 @@ ELSPOT_RAW = path.join(DIR_TEST_DATA, 'elspot', 'raw_2023-01-23.json')
 ELSPOT_RESHAPED = path.join(DIR_TEST_DATA, 'elspot', 'reshaped_2023-01-23.json')
 PLOT_BYDATE_OSLO = path.join(DIR_TEST_DATA, 'plot', 'bydate_Oslo_2023-01-23.svg')
 PLOT_BYHOUR_OSLO = path.join(DIR_TEST_DATA, 'plot', 'byhour_Oslo_2023-01-23_3.svg')
+STATES_BYDATE_OSLO = path.join(DIR_TEST_DATA, 'states', 'bydate_Oslo_2023-01-23.json')
+
 
 def print_response(r: object, r_type: str):
     print('HTTP REQUEST')
@@ -92,7 +94,6 @@ def main(test: int):
         case 4:
             url = URL_WEB_DATASTORE + '/plot/bydate/v0'
             with open(PLOT_BYDATE_OSLO, 'r') as my_file:
-                my_file = open(PLOT_BYDATE_OSLO, 'r', encoding='utf-8')
                 svg_text = my_file.read()
                 postdata = {}
                 postdata['date'] = '2023-01-23'
@@ -101,8 +102,7 @@ def main(test: int):
                 POST(url, postdata)
         case 5:
             url = URL_WEB_DATASTORE + '/plot/byhour/v0'
-            with open(PLOT_BYDATE_OSLO, 'r') as my_file:
-                my_file = open(PLOT_BYHOUR_OSLO, 'r', encoding='utf-8')
+            with open(PLOT_BYHOUR_OSLO, 'r') as my_file:
                 svg_text = my_file.read()
                 postdata = {}
                 postdata['date'] = '2023-01-23'
@@ -111,5 +111,13 @@ def main(test: int):
                 postdata['hour'] = 3
                 postdata['data'] = svg_text
                 POST(url, postdata)
-
+        case 6:
+            url = URL_WEB_DATASTORE + '/states/bydate/v0'
+            with open(STATES_BYDATE_OSLO, 'r') as my_file:
+                the_json = json.load(my_file)
+                postdata = {}
+                postdata['date'] = '2023-01-23'
+                postdata['region'] = 'Oslo'
+                postdata['data'] = the_json
+                POST(url, postdata)
 main(test=5)
