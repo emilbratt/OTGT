@@ -6,6 +6,8 @@ __pycache__/
 
 # use this as database name if any application need to store tabular data in sqlite
 data.sqlite
+# for the sqlite temp files
+data.sqlite*
 
 # swap files used for recovery by Kate Editor
 *.kate-swp

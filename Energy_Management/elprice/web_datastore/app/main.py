@@ -3,12 +3,21 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse, Res
 from envars       import envar_get
 from urldatamodel import datamodelelspot, datamodelplot
 from allowedhosts import HostFilter
-from sqldatabase  import sqldatabasecrud, sqldatabasemanage
+from sqldatabase  import sqldatabasecrud, sqldatabaseschema
 from mqttpublish  import mqttpublishinit
 
-sqldatabasemanage(envar_get).create_database()
+
+### init ###
+# create database
+db_schema = sqldatabaseschema(envar_get)
+db_schema.create_database()
+# load crud object
+db_crud = sqldatabasecrud(envar_get)
+# load mqtt publish object
 mqtt_pub = mqttpublishinit(envar_get)
+# load fastapi "app" object for the uvicorn ASGI web server implementation for Python
 app = FastAPI()
+
 
 ### testing ###
 @app.get('/test/get')
@@ -30,9 +39,7 @@ def test_get():
 # manage database tables via browser using GET requests
 @app.get('/dev/database/{table}/{operation}', status_code=status.HTTP_200_OK)
 def dev_database(table: str, operation: str):
-    databasehandle = sqldatabasemanage(envar_get)
-    return databasehandle.manage(table=table, operation=operation)
-
+    return db_schema.manage(table=table, operation=operation)
 
 ### production ###
 
@@ -40,12 +47,11 @@ def dev_database(table: str, operation: str):
 @app.post('/elspot/raw/v0', status_code=status.HTTP_201_CREATED)
 def post_elspot_raw_v0(request: Request, datamodel: datamodelelspot.Raw_v0):
     allowed_host = HostFilter(envar_get)
-    databasehandle = sqldatabasecrud(envar_get)
     # if not allowed_host.elspot(request.client.host):
     #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Unauthorized')
     if not datamodel.check(envar_get):
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail='Invalid data')
-    action = databasehandle.elspot().insert().raw_v0(datamodel)
+    action = db_crud.elspot().insert().raw_v0(datamodel)
     if action == None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Data was not saved to database')
     else:
@@ -53,13 +59,13 @@ def post_elspot_raw_v0(request: Request, datamodel: datamodelelspot.Raw_v0):
 
 @app.head('/elspot/raw/v0/{the_date}', status_code=status.HTTP_200_OK)
 def head_elspot_raw_v0(the_date: str):
-    res = sqldatabasecrud(envar_get).elspot().select().raw_exists_v0(the_date)
+    res = db_crud.elspot().select().raw_exists_v0(the_date)
     if not res:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 @app.get('/elspot/raw/v0/{the_date}', status_code=status.HTTP_200_OK)
 def get_elspot_raw_v0(the_date: str):
-    res = sqldatabasecrud(envar_get).elspot().select().raw_v0(the_date)
+    res = db_crud.elspot().select().raw_v0(the_date)
     if res == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='no data for date ' + the_date)
     else:
@@ -70,12 +76,11 @@ def get_elspot_raw_v0(the_date: str):
 @app.post('/elspot/reshaped/v1', status_code=status.HTTP_201_CREATED)
 def post_elspot_reshaped_v1(request: Request, datamodel: datamodelelspot.Reshaped_v1):
     allowed_host = HostFilter(envar_get)
-    databasehandle = sqldatabasecrud(envar_get)
     # if not allowed_host.elspot(request.client.host):
     #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Unauthorized')
     if not datamodel.check(envar_get):
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail='Invalid data')
-    action = databasehandle.elspot().insert().reshaped_v1(datamodel)
+    action = db_crud.elspot().insert().reshaped_v1(datamodel)
     if action == None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Data was not saved to database')
     else:
@@ -85,13 +90,13 @@ def post_elspot_reshaped_v1(request: Request, datamodel: datamodelelspot.Reshape
 
 @app.head('/elspot/reshaped/v1/{the_date}', status_code=status.HTTP_200_OK)
 def head_elspot_reshaped_v1(the_date: str):
-    res = sqldatabasecrud(envar_get).elspot().select().reshaped_exists_v1(the_date)
+    res = db_crud.elspot().select().reshaped_exists_v1(the_date)
     if not res:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 @app.get('/elspot/reshaped/v1/{the_date}', status_code=status.HTTP_200_OK)
 def get_elspot_reshaped_v1(the_date: str):
-    res = sqldatabasecrud(envar_get).elspot().select().reshaped_v1(the_date)
+    res = db_crud.elspot().select().reshaped_v1(the_date)
     if res == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
@@ -102,10 +107,9 @@ def get_elspot_reshaped_v1(the_date: str):
 @app.post('/plot/bydate/v0', status_code=status.HTTP_201_CREATED)
 def post_plot_bydate_v0(request: Request, datamodel: datamodelplot.ByDate_v0):
     allowed_host = HostFilter(envar_get)
-    databasehandle = sqldatabasecrud(envar_get)
     # if not allowed_host.elspot(request.client.host):
     #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Unauthorized')
-    action = databasehandle.plot().insert().bydate_v0(datamodel)
+    action = db_crud.plot().insert().bydate_v0(datamodel)
     if action == None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     else:
@@ -113,13 +117,13 @@ def post_plot_bydate_v0(request: Request, datamodel: datamodelplot.ByDate_v0):
 
 @app.head('/plot/bydate/v0/{the_region}/{the_date}', status_code=status.HTTP_200_OK)
 def head_plot_bydate_v0(the_region: str, the_date: str):
-    res = sqldatabasecrud(envar_get).plot().select().bydate_v0(the_region, the_date)
+    res = db_crud.plot().select().bydate_v0(the_region, the_date)
     if not res:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 @app.get('/plot/bydate/v0/{the_region}/{the_date}', status_code=status.HTTP_200_OK)
 def get_plot_bydate_v0(the_region: str, the_date: str):
-    res = sqldatabasecrud(envar_get).plot().select().bydate_v0(the_region, the_date)
+    res = db_crud.plot().select().bydate_v0(the_region, the_date)
     if res == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
@@ -130,10 +134,9 @@ def get_plot_bydate_v0(the_region: str, the_date: str):
 @app.post('/plot/byhour/v0', status_code=status.HTTP_201_CREATED)
 def post_plot_byhour_v0(request: Request, datamodel: datamodelplot.ByHour_v0):
     allowed_host = HostFilter(envar_get)
-    databasehandle = sqldatabasecrud(envar_get)
     # if not allowed_host.elspot(request.client.host):
     #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Unauthorized')
-    action = databasehandle.plot().insert().byhour_v0(datamodel)
+    action = db_crud.plot().insert().byhour_v0(datamodel)
     if action == None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
     else:
@@ -141,13 +144,13 @@ def post_plot_byhour_v0(request: Request, datamodel: datamodelplot.ByHour_v0):
 
 @app.head('/plot/byhour/v0/{the_region}/{the_date}/{the_index}', status_code=status.HTTP_200_OK)
 def head_plot_byhour_v0(the_region: str, the_date: str, the_index: str):
-    res = sqldatabasecrud(envar_get).plot().select().byhour_v0(the_region, the_date, the_index)
+    res = db_crud.plot().select().byhour_v0(the_region, the_date, the_index)
     if not res:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
 @app.get('/plot/byhour/v0/{the_region}/{the_date}/{the_index}', status_code=status.HTTP_200_OK)
 def get_plot_byhour_v0(the_region: str, the_date: str, the_index: str):
-    res = sqldatabasecrud(envar_get).plot().select().byhour_v0(the_region, the_date, the_index)
+    res = db_crud.plot().select().byhour_v0(the_region, the_date, the_index)
     if res == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:

@@ -1,17 +1,15 @@
 from os import path
 
+def sqldatabaseschema(envar_get: object) -> object:
+    '''
+        manage database tables
+    '''
+    from .schema import Tables
+    return Tables(envar_get('DATABASE_FILE'))
+
 def sqldatabasecrud(envar_get: object) -> object:
     '''
-        crud operations
+        database crud operations
     '''
     from .crud import Tables
-    databasefile = envar_get('DATABASE_FILE')
-    return Tables(databasefile)
-
-def sqldatabasemanage(envar_get: object) -> object:
-    '''
-        create/delete database, tables, etc
-    '''
-    from .manage import Tables
-    databasefile = envar_get('DATABASE_FILE')
-    return Tables(databasefile)
+    return Tables(envar_get('DATABASE_FILE'))
