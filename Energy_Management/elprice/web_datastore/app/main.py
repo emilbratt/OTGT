@@ -1,7 +1,7 @@
 from fastapi import FastAPI, File, Request, status, HTTPException
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse, Response
 from envars       import envar_get
-from urldatamodel import datamodelelspot, datamodelplot
+from urldatamodel import datamodelelspot, datamodelplot, datamodelstates
 from allowedhosts import HostFilter
 from sqldatabase  import sqldatabasecrud, sqldatabaseschema
 from mqttpublish  import mqttpublishinit
@@ -155,3 +155,27 @@ def get_plot_byhour_v0(the_region: str, the_date: str, the_index: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     else:
         return Response(content=res, media_type='image/svg+xml')
+
+
+# power states
+@app.post('/states/bydate/v0', status_code=status.HTTP_201_CREATED)
+def post_states_bydate_v0(request: Request, datamodel: datamodelstates.ByDate_v0):
+    action = db_crud.states().insert().bydate_v0(datamodel)
+    if action == None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+    else:
+        return { 'date': datamodel.date, 'region': datamodel.region, 'action': action }
+
+@app.head('/states/bydate/v0/{the_region}/{the_date}', status_code=status.HTTP_200_OK)
+def head_states_bydate_v0(the_region: str, the_date: str):
+    res = db_crud.states().select().bydate_v0(the_region, the_date)
+    if not res:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
+@app.get('/states/bydate/v0/{the_region}/{the_date}', status_code=status.HTTP_200_OK)
+def get_states_bydate_v0(the_region: str, the_date: str):
+    res = db_crud.states().select().bydate_v0(the_region, the_date)
+    if res == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    else:
+        return res
