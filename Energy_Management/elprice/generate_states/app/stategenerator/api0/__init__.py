@@ -25,9 +25,10 @@ class State:
         }
         '''
         self.envar_get = envar_get
+        self.log = False
 
 
-    def generate_states(self, data: dict) -> bool:
+    def generate(self, data: dict) -> bool:
         self.payload = {}
         prices_index = [x['index'] for x in data['prices']]
         try:

@@ -58,8 +58,15 @@ class Application:
 
         for region_data in data:
             print('generating power states for', region_data['region'])
-            self.states.generate_states(region_data)
-        print('done')
+            is_generated = self.states.generate(region_data)
+            if is_generated:
+                is_sent = self.http.send(self.states.payload)
+                if is_sent:
+                    print('OK')
+                else:
+                    print(self.http.log)
+            else:
+                print(self.states.log)
 
 def mainloop():
     print('Application starttime:', isodate.today_minutes())
