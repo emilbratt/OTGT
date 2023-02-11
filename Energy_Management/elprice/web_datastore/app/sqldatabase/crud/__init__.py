@@ -13,3 +13,8 @@ class Tables:
         cnxn = sqlite3.connect(self.databasefile)
         from .plot import Operation
         return Operation(cnxn)
+
+    def states(self):
+        cnxn = sqlite3.connect(self.databasefile)
+        from .states import Operation
+        return Operation(cnxn)

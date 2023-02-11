@@ -160,6 +160,8 @@ def get_plot_byhour_v0(the_region: str, the_date: str, the_index: str):
 # power states
 @app.post('/states/bydate/v0', status_code=status.HTTP_201_CREATED)
 def post_states_bydate_v0(request: Request, datamodel: datamodelstates.ByDate_v0):
+    if not datamodel.check(envar_get):
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail='Invalid data')
     action = db_crud.states().insert().bydate_v0(datamodel)
     if action == None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)

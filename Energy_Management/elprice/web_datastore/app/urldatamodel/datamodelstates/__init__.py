@@ -10,11 +10,11 @@ class ByDate_v0(BaseModel):
         CHECKS = [
             'region',
             'date',
+            'region',
         ]
         for key in CHECKS:
-            for region_data in self.data:
-                if key not in region_data.keys():
-                    return False
+            if key not in self.data.keys():
+                return False
         return True
 
     def get_json_data(self) -> object:
