@@ -7,7 +7,7 @@ import json
 
 class Application:
     def __init__(self):
-        self.state = stateinit(envar_get=envar_get)
+        self.states = stateinit(envar_get=envar_get)
         self.http = httpdatastoreinit(envar_get=envar_get)
         self.client = mqttsubscribeinit(envar_get=envar_get,
                                         on_connect=self.on_connect,
@@ -58,7 +58,7 @@ class Application:
 
         for region_data in data:
             print('generating power states for', region_data['region'])
-            self.state.generate_states(region_data)
+            self.states.generate_states(region_data)
         print('done')
 
 def mainloop():
