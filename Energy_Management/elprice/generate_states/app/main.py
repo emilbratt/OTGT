@@ -59,6 +59,7 @@ class Application:
         for region_data in data:
             print('generating power states for', region_data['region'])
             self.state.generate_states(region_data)
+        print('done')
 
 def mainloop():
     print('Application starttime:', isodate.today_minutes())
