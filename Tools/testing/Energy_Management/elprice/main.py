@@ -10,7 +10,6 @@ import requests
 import configparser
 from os import path
 import json
-import io
 
 URL_WEB_DATASTORE = 'http://localhost:8085'
 DIR_TEST_DATA = './test_data'
