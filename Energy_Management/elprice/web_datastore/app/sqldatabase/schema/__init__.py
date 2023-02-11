@@ -91,10 +91,10 @@ class Tables:
             'drop': 'DROP TABLE IF EXISTS plot_by_hour_v0;',
         },
 
-        'sensor_by_date_v0':
+        'states_by_date_v0':
         {
             'create': '''
-                CREATE TABLE IF NOT EXISTS sensor_by_date_v0 (
+                CREATE TABLE IF NOT EXISTS states_by_date_v0 (
                     the_region    NOT NULL,
                     the_date      NOT NULL,
                     the_json JSON NOT NULL,
@@ -103,9 +103,9 @@ class Tables:
             ''',
             'check': '''
                 SELECT COUNT(name) FROM sqlite_master
-                WHERE type='table' AND name='sensor_by_date_v0';
+                WHERE type='table' AND name='states_by_date_v0';
             ''',
-            'drop': 'DROP TABLE IF EXISTS sensor_by_date_v0;',
+            'drop': 'DROP TABLE IF EXISTS states_by_date_v0;',
         },
 
         'test':
