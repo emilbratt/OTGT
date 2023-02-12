@@ -1,4 +1,4 @@
-import numpy as np
+from .process import percent, check
 
 class State:
     def __init__(self, envar_get: object):
@@ -30,13 +30,19 @@ class State:
 
     def generate(self, data: dict) -> bool:
         self.payload = {}
-        prices_index = [x['index'] for x in data['prices']]
-        try:
-            prices_value = [int(x['value']) for x in data['prices']]
-        except:
-            # likely dataset without prices, for some regions this occur
+        if not check(data):
+            self.log = 'price values not valid'
             return False
 
+        prices_index = [x['index'] for x in data['prices']]
+        prices_value = [int(x['value']) for x in data['prices']]
+
+        data = percent(data)
+        print(data['region'])
+        print(data['prices'][0]['percent'])
+        print('OK')
+
+        return True
         for index in prices_index:
             price = int(data['prices'][index]['value'])
             if price == int(data['max']):
