@@ -8,20 +8,27 @@ def check(data: dict):
         return False
 
 def percent(data: dict):
-    # this function adds the "precent" key to the prices list
-    # ranging from 0 to 100 where 100 = max price, 0 = lowest price
     '''
-    from
+        lower percentage = better
+        min price = 0%
+        max price = 100%
 
-        'prices': [
-            {'index': 0,  'time_start': '00:00', 'time_end': '00:15', 'value': '210'},
+        all other prices will have a value between 0% and 100%
 
-    to
-        'prices': [
-            {'index': 0,  'time_start': '00:00', 'time_end': '00:15', 'value': '210', 'percent': 30},
+        if we have many prices < 50%
+            this means we have price spikes in the higher range (pyramid curve)
+            results in a longer period of below average prices and few very hight prices
+
+        if we have many prices > 50%
+            this means we have price spikes in the lower range (valley curve)
+            results in a longer period of above average prices and few very low prices
+
+        if we have many prices split apart (e.g. < 30% and > 70%)
+            this means that prices vary alot throughout the day
+            results in higher fluctuation between high and low prices
     '''
     for index in range(data['resolution']):
         price = data['prices'][index]['value']
-        percent = ( (price-data['min']) * (100 / (data['max']-data['min'])) )
+        percent = (price-data['min']) * (100 / (data['max']-data['min']))
         data['prices'][index]['percent'] = int(percent)
     return data
