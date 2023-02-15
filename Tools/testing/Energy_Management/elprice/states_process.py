@@ -60,6 +60,20 @@ def weight(data: dict):
         max price = 0
 
         the further from 0 (approaching 1) the more inclined you would be to turn on device
+        if weight = 0
+            this means that the price is 1/1 of max price
+        if weight = 0.25
+            this means that the price is 3/4 of max price
+        if weight = 0.33
+            this means that the price is 2/3 of max price
+        if weight = 0.5
+            this means that the price is 2/4 of max price
+        if weight = 0.66
+            this means that the price is 1/3 of max price
+        if weight = 0.75
+            this means that the price is 1/4 of max price
+
+        ..basically as weight appriaches 1, the price is further away from max price
     '''
     for index in range(data['resolution']):
         price = data['prices'][index]['value']
@@ -75,7 +89,7 @@ if __name__ == '__main__':
     with open('./test_data/elspot/reshaped_2023-01-23.json', 'r') as my_file:
         for region in json.load(my_file):
             data = region
-            if data['region'] == 'SE1':
+            if data['region'] == 'Molde':
                 if check(data):
                     data = percent(data)
                     data = diff_factor(data)
