@@ -190,7 +190,7 @@ def weight(data: dict) -> dict:
         the further the price weight is from 0 the better it is and
         the more inclined you would be to turn ON a power-hungry device
 
-        or for the opposite situation, closer to 0 means more saving if leaving device OFF
+        or for the opposite situation, closer to 0 means more power saved leaving device OFF
 
         a high fluctuation scenario
             -> yields weights around 0 to 0.6+
@@ -213,6 +213,50 @@ def weight(data: dict) -> dict:
             data['prices'][index]['states']['weight'] = round( (1 - price/data['max']), 2)
         except ZeroDivisionError:
             data['prices'][index]['states']['weight'] = 0
+    return data
+
+
+def spike_level(data: dict) -> dict:
+    '''
+        high fluctuation and difference between low and max
+        with few in-between will increase the spike level
+
+        leels
+            level 1 -> no spike
+            level 2 -> small spike
+            level 3 -> noticable spike
+            level 4 -> serious spike
+            level 5 -> critical spike
+        ]
+    '''
+    spike_levels = [
+        {'step': 0, 'level': 1},
+        {'step': 80, 'level': 2},
+        {'step': 100, 'level': 3},
+        {'step': 120, 'level': 4},
+        {'step': 150, 'level': 5},
+    ]
+    percent = 0
+    weight = 0
+    diff_factor = 0
+    for index in range(data['resolution']):
+        percent += data['prices'][index]['states']['percent']
+        weight +=  data['prices'][index]['states']['weight']
+        diff_factor += data['prices'][index]['states']['diff_factor']
+    percent = int(percent/data['resolution'])
+    weight  = int((weight/data['resolution'] * 200))
+    diff_factor = int((diff_factor/data['resolution']) * 10)
+    spike_level = percent + weight + diff_factor
+
+    # print('percent', percent)
+    # print('weight', weight)
+    # print('diff_factor', diff_factor)
+    # print('spike_level', spike_level)
+    # exit()
+    data['states']['spike_level'] = spike_level
+    for row in spike_levels:
+        if spike_level > row['step']:
+            data['states']['spike_level'] = row['level']
     return data
 
 
@@ -239,18 +283,24 @@ def print_result_after_states(data):
             'weight', row['states']['weight']
         )
     print(COLOURS['default'] + '--')
-
+    print('spike_level', data['states']['spike_level'])
 if __name__ == '__main__':
 
     dum = DummyData()
-    data = dum.generate_prices(val_from=50, val_to=150, fluctuate=False, high_spike=False, low_spike=False, sort_prices=True, sort_offset_factor=5)
+    data = dum.generate_prices(val_from=-40, val_to=250, fluctuate=True, high_spike=True, low_spike=False, sort_prices=True, sort_offset_factor=5)
+    data = dum.generate_prices(val_from=40, val_to=150, fluctuate=True, high_spike=False, low_spike=True, sort_prices=True, sort_offset_factor=5)
+    data = dum.generate_prices(val_from=40, val_to=150, fluctuate=True, high_spike=True, low_spike=False, sort_prices=True, sort_offset_factor=5)
+    data = dum.generate_prices(val_from=80, val_to=150, fluctuate=False, high_spike=True, low_spike=False, sort_prices=True, sort_offset_factor=5)
+    #data = dum.generate_prices(val_from=120, val_to=150, fluctuate=False, high_spike=False, low_spike=False, sort_prices=True, sort_offset_factor=5)
     dum.print_prices()
+    data['states'] = {}
     for index in range(data['resolution']):
         data['prices'][index]['states'] = {}
     print('.')
     data = percent(data)
     data = diff_factor(data)
     data = weight(data)
+    data = spike_level(data)
     print_result_after_states(data)
 
     exit()
