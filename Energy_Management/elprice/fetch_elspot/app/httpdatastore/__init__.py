@@ -24,6 +24,6 @@ def httpdatastoreinit(envar_get: object) -> object:
       case _:
          print('Error: invalid envar:', API_VERSION)
 
-   print('namespace:', __name__+ '.Handle()')
+   print('namespace:', __name__)
    print('script:', __file__)
    exit(1)
