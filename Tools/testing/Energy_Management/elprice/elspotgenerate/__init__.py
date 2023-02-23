@@ -126,7 +126,6 @@ class Generate:
                     new_price = price // 2
                 else:
                     new_price = price + (to_val - price) // 2
-                # will always evaluate to one if fluctuate_level is 1
                 if random.randint(0, fluctuate_level) == 1:
                     new_price = price
                 temp_prices.append(new_price)
@@ -158,6 +157,8 @@ class Generate:
                 temp_prices.append(new_price)
             prices = temp_prices
 
+
+
         if not self.parameters['sort_prices']:
             random.shuffle(prices)
 
@@ -175,13 +176,12 @@ class Generate:
                 offset_list.append(prices[j])
             prices = offset_list
 
+        # finally, add prices to the final data structure
+        self.data['max']     = max(prices)
+        self.data['min']     = min(prices)
+        self.data['average'] = round(mean(prices))
         for index in range(self.data['resolution']):
             self.data['prices'][index]['value'] = prices[index]
-        # create a quick list to do calculations for avg, min and max
-        price_list = [x['value'] for x in self.data['prices']]
-        self.data['max']     = max(price_list)
-        self.data['min']     = min(price_list)
-        self.data['average'] = round(mean(price_list))
         return self.data
 
     def print_data(self):
