@@ -42,6 +42,7 @@ class Generate:
             'sort_offset_factor' : 1,
         }
         self.is_initialized = False
+        self.is_generated = False
 
     def set_date(self, isodate: str):
         self.date_object = datetime.fromisoformat(isodate)
@@ -84,6 +85,8 @@ class Generate:
         self.parameters['sort_offset_factor'] = n
 
     def initialize(self):
+        # empty prices (might have been populated by a previous run)
+        self.data['prices'] = []
         minute_mark = 60 // (self.data['resolution'] // 24)
         minutes_splits = [f*minute_mark for f in range((self.data['resolution'] // 24))]
         index = 0
@@ -139,8 +142,8 @@ class Generate:
                 new_price = price
                 if price > middle:
                     new_price = random.randint(from_val, middle) 
-                if random.randint(0, spike_level) == 1:
-                    new_price = price
+                    if random.randint(0, spike_level) == 1:
+                        new_price = price
                 temp_prices.append(new_price)
             prices = temp_prices
 
@@ -152,12 +155,10 @@ class Generate:
                 new_price = price
                 if price <= middle:
                     new_price = random.randint(middle, to_val) 
-                if random.randint(0, dip_level) == 1:
-                    new_price = price
+                    if random.randint(0, dip_level) == 1:
+                        new_price = price
                 temp_prices.append(new_price)
             prices = temp_prices
-
-
 
         if not self.parameters['sort_prices']:
             random.shuffle(prices)
@@ -176,15 +177,24 @@ class Generate:
                 offset_list.append(prices[j])
             prices = offset_list
 
+        self.price_list = prices
+
         # finally, add prices to the final data structure
         self.data['max']     = max(prices)
         self.data['min']     = min(prices)
         self.data['average'] = round(mean(prices))
         for index in range(self.data['resolution']):
             self.data['prices'][index]['value'] = prices[index]
+        self.is_generated = True
         return self.data
 
+    def get_price_list(self):
+        return self.price_list
+
     def print_data(self):
+        if not self.is_generated:
+            print('run method generate_prices() first')
+            exit(1)
         print('Region:'.ljust(13),str(self.data['region']))
         print('Date:'.ljust(13),str(self.data['date']))
         print('Currency:'.ljust(13),str(self.data['currency']))
@@ -195,16 +205,17 @@ class Generate:
         print('Resolution:'.ljust(13),str(self.data['resolution']))
         print('Fluctuat_level:'.ljust(13),str(self.parameters['fluctuate_level']))
         print('Prices from', str(self.parameters['from_val']), 'to', str(self.parameters['to_val']))
-        prices = [x['value'] for x in self.data['prices']]
         for hour in range(24):
             s = hour * self.parameters['split_hours']
             e = hour * self.parameters['split_hours'] + self.parameters['split_hours']
-            batch = prices[s:e]
+            batch = self.price_list[s:e]
             print('hour', str(hour).ljust(2), '->', batch)
 
     def print_vertical_price_curve(self):
-        price_list = [x['value'] for x in self.data['prices']]
-        for price in price_list:
+        if not self.is_generated:
+            print('run method generate_prices() first')
+            exit(1)
+        for price in self.price_list:
             percent = round( (price-self.data['min']) * (100 / (self.data['max']-self.data['min'])) )
             if percent > 80:
                 colour = self.COLOURS['aqua']
@@ -225,10 +236,12 @@ class Generate:
             print(bar)
 
     def print_horizontal_price_curve(self):
-        price_list = [x['value'] for x in self.data['prices']]
+        if not self.is_generated:
+            print('run method generate_prices() first')
+            exit(1)
         percentages = []
         price_diff = self.data['max']-self.data['min']
-        for price in price_list:
+        for price in self.price_list:
             p = round( (price-self.data['min']) * (100 / price_diff) )
             percentages.append(p)
 
@@ -278,6 +291,7 @@ if __name__ == '__main__':
     # generate prices
     gnrt.initialize() # must be called before generating
     data = gnrt.generate_prices() # generates the data, do whatever you want with it
+    price_list = gnrt.get_price_list() # returns only the the prices as an array
 
     # print out info
     gnrt.print_data() # prints metadata
