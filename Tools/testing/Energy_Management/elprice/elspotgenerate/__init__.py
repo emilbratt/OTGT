@@ -17,6 +17,7 @@ class Generate:
     }
 
     def __init__(self):
+        # data object for calculating dates and times etc.
         self.date_object = datetime.fromisoformat('1999-01-01T00:00:00')
         # the structure of the data
         self.data = {
@@ -162,8 +163,7 @@ class Generate:
 
         if not self.parameters['sort_prices']:
             random.shuffle(prices)
-
-        if self.parameters['sort_prices']:
+        elif self.parameters['sort_prices']:
             prices.sort()
             sort_offset_factor = self.parameters['sort_offset_factor']
             offset_factor = 5
@@ -178,8 +178,6 @@ class Generate:
             prices = offset_list
 
         self.price_list = prices
-
-        # finally, add prices to the final data structure
         self.data['max']     = max(prices)
         self.data['min']     = min(prices)
         self.data['average'] = round(mean(prices))
@@ -291,7 +289,7 @@ if __name__ == '__main__':
     # generate prices
     gnrt.initialize() # must be called before generating
     data = gnrt.generate_prices() # generates the data, do whatever you want with it
-    price_list = gnrt.get_price_list() # returns only the the prices as an array
+    price_list = gnrt.get_price_list() # returns only the prices as an array
 
     # print out info
     gnrt.print_data() # prints metadata
