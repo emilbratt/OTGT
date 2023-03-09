@@ -1,5 +1,5 @@
 # Overview for cocuvida
-### THIS DIRECTORY IS STILL UNDER DEVELOPEMENT
+THIS DIRECTORY IS STILL UNDER DEVELOPEMENT
 
 ## developing and using cocuvida
 ### start application
