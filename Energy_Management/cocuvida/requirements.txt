@@ -1,0 +1,5 @@
+streaming-form-data
+uvicorn
+aiofiles
+paho-mqtt
+pyyaml
