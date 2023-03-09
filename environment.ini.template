@@ -66,7 +66,7 @@
   ssid = "INSERT"
   passphrase = "INSERT"
 
-[mqtt]; host to connect to broker, credentials/auth, pub/sub topics and more
+[mqtt] ; mqtt broker
   host = "INSERT"
   port = "1883"
   user = "INSERT"
