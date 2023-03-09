@@ -71,3 +71,8 @@
   port = "1883"
   user = "INSERT"
   password = "INSERT"
+
+[cocuvida] ; for use within cocuvida and for connecting to cocuvida
+  host = "INSERT"
+  port = "8087"
+  secret = "INSERT"
