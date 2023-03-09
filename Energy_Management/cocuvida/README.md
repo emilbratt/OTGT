@@ -1,8 +1,8 @@
 # Overview for cocuvida
-###THIS DIRECTORY IS STILL UNDER DEVELOPEMENT
+### THIS DIRECTORY IS STILL UNDER DEVELOPEMENT
 
 ## developing and using cocuvida
-###start application
+### start application
 run normally
 cd to OTGT/Energy_Management/cocuvida/app
 ```
@@ -14,7 +14,7 @@ cd to OTGT/Energy_Management/cocuvida
 docker-compose up cocuvida_prod
 ```
 
-###testing
+### testing
 run normally
 cd to OTGT/Energy_Management/cocuvida/app
 ```
@@ -26,7 +26,7 @@ cd to OTGT/Energy_Management/cocuvida
 docker-compose up cocuvida_test
 ```
 
-###developing the web component (start web server)
+### developing the web component (start web server)
 run normally
 cd into OTGT/Energy_Management/cocuvida/app
 ```
