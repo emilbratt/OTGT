@@ -24,7 +24,7 @@ services:
     container_name: cocuvida_web
     hostname: cocuvida_web
     user: cocuvida
-    command: 'uvicorn --lifespan on --port 8087 --host 0.0.0.0 --reload cocuvida.web:app'
+    command: 'uvicorn --lifespan on --log-level debug --use-colors --loop uvloop --port 8087 --host 0.0.0.0 --reload cocuvida.web:app'
     environment:
       TZ: Europe/Oslo
     restart: unless-stopped

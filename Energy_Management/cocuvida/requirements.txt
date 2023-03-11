@@ -3,3 +3,4 @@ uvicorn
 aiofiles
 paho-mqtt
 pyyaml
+uvloop
