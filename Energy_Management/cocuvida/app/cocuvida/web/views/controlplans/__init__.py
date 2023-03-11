@@ -7,7 +7,7 @@ class View:
       <form method="POST" enctype="multipart/form-data">
       <div>
         <label for="controlplan">YAML:</label><br>
-        <input type="file" id="controlplan" name="controlplan" accept=".yml,.yaml" />
+        <input type="file" id="controlplan" name="controlplan" accept=".yml,.yaml" required />
       </div>
 
       <div>
@@ -41,6 +41,24 @@ class View:
         self.template += '''
         <p>invalid yaml file</p>
         '''
+
+    def db_action(self, action:str):
+        self.http_code = 201
+        match action:
+            case 'insert':
+                self.template += '''
+                <p>Inserted new plan</p>
+                '''
+            case 'update':
+                self.template += '''
+                <p>Updated plan</p>
+                '''
+            case _:
+                self.http_code = 500
+                self.template += '''
+                <p>Error</p>
+                '''
+
 
     async def send(self, send: object):
 

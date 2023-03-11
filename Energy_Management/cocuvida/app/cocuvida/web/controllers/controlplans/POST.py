@@ -1,6 +1,5 @@
-import os
-
 from cocuvida.authorize import check_secret
+from cocuvida.sqldatabase.controlplans import insert_control_plan
 from cocuvida.web.views.controlplans import View
 from cocuvida.web.formdata import FormDataParser
 
@@ -13,9 +12,14 @@ async def controller(scope: dict, receive: object):
     authorized = check_secret(secret)
     if not authorized:
         view.un_authorized()
+        return view
 
     yaml_to_dict = await form_obj.load_yaml('controlplan')
     if yaml_to_dict == None:
         view.invalid_yaml()
+        return view
+
+    action = await insert_control_plan(yaml_to_dict)
+    view.db_action(action)
 
     return view

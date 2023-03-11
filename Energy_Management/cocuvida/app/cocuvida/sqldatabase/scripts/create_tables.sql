@@ -8,6 +8,5 @@ CREATE TABLE IF NOT EXISTS elspot_raw (
 CREATE TABLE IF NOT EXISTS switch_control_plans (
   plan_name     TEXT NOT NULL PRIMARY KEY,
   plan_data     JSON NOT NULL,
-  created_date  DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  UNIQUE (plan_data)
+  created_date  DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
