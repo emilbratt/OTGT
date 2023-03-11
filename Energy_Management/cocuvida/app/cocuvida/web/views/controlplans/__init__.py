@@ -5,20 +5,12 @@ class View:
     <html>
     <body>
       <form method="POST" enctype="multipart/form-data">
-      <div>
         <label for="controlplan">YAML:</label><br>
-        <input type="file" id="controlplan" name="controlplan" accept=".yml,.yaml" required />
-      </div>
-
-      <div>
-        <label for="pwd">Secret:</label><br>
-        <input type="password" id="secret" name="secret" required />
-      </div>
-
-      <div>
-        <input type="submit" value="SUBMIT" />
-      </div>
-    </form>
+        <input type="file" id="controlplan" name="controlplan" accept=".yml,.yaml" required /><br>
+        <label for="secret">Secret:</label><br>
+        <input type="password" id="secret" name="secret" required /><br>
+        <input type="submit" value="SUBMIT" /><br>
+      </form>
     '''
 
     TEMPLATE_END = '''
