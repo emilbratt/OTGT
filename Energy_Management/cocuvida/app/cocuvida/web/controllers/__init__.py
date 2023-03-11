@@ -1,4 +1,4 @@
-async def method_not_allowed(scope: dict, receive: object, send: object):
+async def method_not_allowed(send: object):
 
     await send({
         'type': 'http.response.start',
@@ -13,7 +13,7 @@ async def method_not_allowed(scope: dict, receive: object, send: object):
 
     })
 
-async def page_not_found(scope: dict, receive: object, send: object):
+async def page_not_found(send: object):
     await send({
         'type': 'http.response.start',
         'status': 404,

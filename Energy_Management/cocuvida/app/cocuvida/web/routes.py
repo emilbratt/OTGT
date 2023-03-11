@@ -16,13 +16,13 @@ async def route(scope: dict, receive: object, send: object) -> None:
         case '/plot':
             from .controllers.plot import loader
         case _:
-            await page_not_found(scope, receive)
+            await page_not_found(send)
             return None
 
     # REQUEST METHOD NOT ALLOWED
     controller = await loader(scope['method'])
     if controller == None:
-        await method_not_allowed(scope, receive)
+        await method_not_allowed(send)
         return None
 
     # IF REACHED THIS POINT, RUN REQEUST-METHOD FOR REQUEST
