@@ -6,6 +6,7 @@ from cocuvida.web.formdata import FormDataParser
 
 async def controller(scope: dict, receive: object):
     view = View()
+    view.form_upload_control_plan()
 
     form_obj = FormDataParser(scope, receive)
     secret = await form_obj.load_string('secret')
@@ -14,12 +15,12 @@ async def controller(scope: dict, receive: object):
         view.un_authorized()
         return view
 
-    yaml_to_dict = await form_obj.load_yaml('controlplan')
-    if yaml_to_dict == None:
+    control_plan = await form_obj.load_yaml('controlplan')
+    if control_plan == None:
         view.invalid_yaml()
         return view
 
-    action = await insert_control_plan(yaml_to_dict)
+    action = await insert_control_plan(control_plan)
     view.db_action(action)
 
     return view

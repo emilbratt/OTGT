@@ -4,13 +4,6 @@ class View:
     <!DOCTYPE html>
     <html>
     <body>
-      <form method="POST" enctype="multipart/form-data">
-        <label for="controlplan">YAML:</label><br>
-        <input type="file" id="controlplan" name="controlplan" accept=".yml,.yaml" required /><br>
-        <label for="secret">Secret:</label><br>
-        <input type="password" id="secret" name="secret" required /><br>
-        <input type="submit" value="SUBMIT" /><br>
-      </form>
     '''
 
     TEMPLATE_END = '''
@@ -21,6 +14,17 @@ class View:
     def __init__(self):
         self.template = ''
         self.http_code = 200
+
+    def form_upload_control_plan(self):
+        self.template += '''
+        <form method="POST" enctype="multipart/form-data">
+            <label for="controlplan">YAML:</label><br>
+            <input type="file" id="controlplan" name="controlplan" accept=".yml,.yaml" required /><br>
+            <label for="secret">Secret:</label><br>
+            <input type="password" id="secret" name="secret" required /><br>
+            <input type="submit" value="SUBMIT" /><br>
+        </form>
+        '''
 
     def un_authorized(self):
         self.http_code = 401
