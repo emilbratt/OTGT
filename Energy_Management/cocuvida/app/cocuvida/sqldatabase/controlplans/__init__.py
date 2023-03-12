@@ -21,10 +21,14 @@ async def insert_control_plan(control_plan: dict):
     cnxn = connect()
     cursor = cnxn.cursor()
     action = None
+
+    # insert control_plan
     try:
         cursor.execute(QUERIES['insert'], [plan_name, plan_data])
         cnxn.commit()
         action = 'insert'
+    
+    # if record with plan_name exist, update the plan_data instead
     except sqlite3.IntegrityError:
         cursor.execute(QUERIES['update'], [plan_data, plan_name])
         cnxn.commit()

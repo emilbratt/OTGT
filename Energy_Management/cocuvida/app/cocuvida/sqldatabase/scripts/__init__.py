@@ -3,6 +3,7 @@ from os import path
 
 from cocuvida.sqldatabase import DATABASE_FILE
 
+
 def run(script: str):
     sciript_dir = path.dirname(path.realpath(__file__))
     transaction_ok = None
