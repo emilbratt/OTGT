@@ -4,18 +4,18 @@ class View:
 
     def __init__(self):
         with open(self.FAVICON_ICO, 'rb', buffering=0) as f:
-            self.template = f.read()
+            self.favicon = f.read()
 
-    async def send(self, send: object):
-
-            await send({
-                'type': 'http.response.start',
-                'status': 200,
-                'headers': [
-                    [b'content-type', b'image/x-icon'],
-                ]
-            })
-            await send({
-                'type': 'http.response.body',
-                'body': self.template,
-            })
+    async def send(self, send: object) -> None:
+        await send({
+            'type': 'http.response.start',
+            'status': 200,
+            'headers': [
+                [b'content-type', b'image/x-icon'],
+            ]
+        })
+        await send({
+            'type': 'http.response.body',
+            'body': self.favicon,
+        })
+        return None
