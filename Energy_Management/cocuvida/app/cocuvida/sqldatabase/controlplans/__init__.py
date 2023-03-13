@@ -25,9 +25,7 @@ async def list_plan_names() -> list:
 
 async def insert_control_plan(control_plan: dict) -> str:
     plan_data = yaml_safe_load(control_plan)
-
     plan_name = plan_data['name']
-    print(plan_data)
     cnxn = connect()
     cursor = cnxn.cursor()
     action = ''
@@ -44,7 +42,7 @@ async def insert_control_plan(control_plan: dict) -> str:
         cnxn.close()
         return action
 
-async def select_control_plan_dict(plan_name: str) -> dict:
+async def select_control_plan(plan_name: str) -> dict:
     cnxn = connect()
     cursor = cnxn.cursor()
     cursor.execute(QUERIES['show_control_plan'], [plan_name])
