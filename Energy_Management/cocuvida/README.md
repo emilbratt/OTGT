@@ -8,6 +8,10 @@ cd to OTGT/Energy_Management/cocuvida/app
 ```
 python -m cocuvida
 ```
+#### run single service (example runs controlplans daemon)
+```
+python -m cocuvida controlplans
+```
 
 ### Running cocuvida inside docker
 cd to OTGT/Energy_Management/cocuvida
