@@ -29,6 +29,12 @@ class SQLDatabase(unittest.TestCase):
         from tests.sqldatabase_test import create_database
         create_database(self)
 
+class ControlPlan(unittest.TestCase):
+
+    # check if we can write the database file data.sqlite etc.
+    def test_example_controlplan(self):
+        from tests.controlplan_test import example_controlplan
+        example_controlplan(self)
 
 if __name__ == '__main__':
     unittest.main()

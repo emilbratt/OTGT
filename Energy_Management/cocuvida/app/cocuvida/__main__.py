@@ -3,7 +3,7 @@ import threading
 
 from cocuvida.sqldatabase import scripts
 from cocuvida.web import run_web
-from cocuvida.controlplans import run_controlplans
+from cocuvida.controlplan import run_controlplan
 
 
 def init():
@@ -20,10 +20,10 @@ def main() -> int:
         case 'web':
             run_web()
         case 'controlplans':
-            run_controlplans()
+            run_controlplan()
         case _:
             uvc = threading.Thread(target=run_web, daemon=True)
-            cpl = threading.Thread(target=run_controlplans, daemon=True)
+            cpl = threading.Thread(target=run_controlplan, daemon=True)
             uvc.start()
             cpl.start()
             uvc.join()

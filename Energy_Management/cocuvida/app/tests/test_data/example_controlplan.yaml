@@ -1,0 +1,172 @@
+name: 'example_controlplan' # used as the plan id and alias for other entries such as mqtt topic
+plan_version: 1 # if the structure changes, we implement a version 2 and so on
+
+
+# SET DEVICES TO BE CONTROLLED -> include at least one of the sub entries
+target:
+ 
+  # entry 1. shelly devices
+  shelly:
+    include_entry: true
+    entries:
+      # alias: [host, switch-id]
+      light_a_basement_0: ['192.168.1.144', '0']
+      light_b_basement_0: ['192.168.1.145', '0']
+      light_b_basement_1: ['192.168.1.145', '1']
+
+  # entry 2. MQTT devices that subscribes to "cocuvida/<name>"
+  # topic for this example is set to -> "cocuvida/example_controlplan"
+  mqtt:
+    include_entry: true
+    switch_on:
+      include_entry: true
+      message: 'on'
+    switch_off:
+      include_entry: true
+      # here is an example for yaml multi-line string as well
+      message: >
+        some multi line message
+        that will be sent to
+        turn OFF devices
+
+
+# SET CALENDAR FOR OPERATION -> include at least one of the sub entries
+calendar: # NOTE: lower entry number has higher priority
+
+  # entry 1. exclude these dates (overrides all other entries)
+  exclude_dates:
+    include_entry: false
+    entries: # '--MM-D' for every year | 'YYYY-MM-DD' for specific year
+      - '--05-01'
+      - '2023-06-01'
+
+  # entry 2. include these dates (overrides all other entries except exclude_dates)
+  include_dates: 
+    include_entry: false
+    entries: # '--MM-D' for every year | 'YYYY-MM-DD' for specific year
+      - '--05-17'
+      - '2023-06-17'
+
+  # entry 3. include|exclude / true|false non fixed date holidays (overrides weekdays)
+  holidays:
+    include_entry: false
+    palm_sunday: true
+    maundy_thursday: true # skjeartorsdag
+    good_friday: true # langfredag
+    holy_saturday: true # paaskeaften
+    easter_sunday: true # foerste paaskedag
+    easter_monday: true # andre paaskedag
+
+  # entry 4. include|exclude / true|false fixed weekdays for operation
+  weekdays:
+    include_entry: true
+    monday: true
+    tuesday: true
+    wednesday: true
+    thursday: true
+    saturday: true
+    sunday: false
+
+
+# SET SCHEDULED TIME -> include at least one of the sub entries
+schedule: # NOTE: lower entry number has higher priority
+
+  # NOT IMPLEMENTED YET - entry 1. time controlled (highest priority -> overrides all other entries)
+  time: # can include multiple entries for multiple ON/OFF states during the day
+    include_entry: true
+    switch_on: # times for when switch state ON
+      include_entry: true
+      entries: # entry format: 'HH:MM'
+        - '03:30'
+        - '15:30'
+    switch_off: # times for when switch state OFF
+      include_entry: true
+      entries: # entry format: 'HH:MM'
+        - '05:00'
+        - '17:00'
+
+  # NOT IMPLEMENTED YET - entry 2. astro controlled (overrides all except time controlled)
+  sun: # NOTE: remember to include coordinates
+    include_entry: false
+    latitude: '59.911491'
+    Longitude: '10.757933'
+
+    rise: # X minutes after|before / +|- sunrise
+      include_entry: false
+      switch_on:
+        include_entry: false
+        minutes: 15
+      switch_off:
+        include_entry: false
+        minutes: -15
+
+    set: # minutes after|before +|- X sunset
+      include_entry: false
+      switch_on:
+        include_entry: false
+        minutes: 15
+      switch_off:
+        include_entry: false
+        minutes: -15
+
+    above: # when sun is above altitude (from -90 to 90)
+      include_entry: false
+      switch_on:
+        include_entry: false
+        altitude: 0
+      switch_off:
+        include_entry: false
+        altitude: 0
+
+    below: # when sun is below altitude (from -90 to 90)
+      include_entry: false
+      switch_on:
+        include_entry: false
+        altitude: -10
+      switch_off:
+        include_entry: false
+        altitude: -10
+
+  # NOT IMPLEMENTED YET - entry 3. elspot price controlled (will not override any other entry)
+  elspot:
+    include_entry: false
+
+    operation_time: # at least X minutes a day
+      include_entry: false
+      switch_on:
+        include_entry: false
+        minutes: 15
+      switch_off:
+        include_entry: false
+        minutes: 15
+
+    operation_time_day_part: # at least X minutes for Y part of the day
+      include_entry: false
+      post_midnight: # from 00 to 06
+        switch_on:
+          include_entry: false
+          minutes: 0
+        switch_off:
+          include_entry: false
+          minutes: 0
+      before_midday: # from 06 to 12
+        switch_on:
+          include_entry: false
+          minutes: 0
+        switch_off:
+          include_entry: false
+          minutes: 0
+      post_midday: # from 12 to 18
+        switch_on:
+          include_entry: false
+          minutes: 0
+        switch_off:
+          include_entry: false
+          minutes: 0
+      before_midnight: # from 18 to 00
+        switch_on:
+          include_entry: false
+          minutes: 0
+        switch_off:
+          include_entry: false
+          minutes: 0
