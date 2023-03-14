@@ -35,22 +35,6 @@ services:
         source: ../../
         target: /OTGT
 
-  cocuvida_controlplans:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: cocuvida_controlplans
-    hostname: cocuvida_controlplans
-    user: cocuvida
-    command: 'python -u -m cocuvida controlplans'
-    environment:
-      TZ: Europe/Oslo
-    restart: unless-stopped
-    volumes:
-      - type: bind
-        source: ../../
-        target: /OTGT
-
   cocuvida_prod:
     build:
       context: .

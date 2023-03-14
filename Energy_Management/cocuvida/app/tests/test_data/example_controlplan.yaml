@@ -14,8 +14,7 @@ target:
       light_b_basement_0: ['192.168.1.145', '0']
       light_b_basement_1: ['192.168.1.145', '1']
 
-  # entry 2. MQTT devices that subscribes to "cocuvida/<name>"
-  # topic for this example is set to -> "cocuvida/example_controlplan"
+  # entry 2. MQTT devices that subscribes to this plan -> "cocuvida/example_controlplan"
   mqtt:
     include_entry: true
     switch_on:

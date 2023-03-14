@@ -8,9 +8,9 @@ cd to OTGT/Energy_Management/cocuvida/app
 ```
 python -m cocuvida
 ```
-#### run single service (example runs controlplans daemon)
+#### run single service (example runs controlplan daemon)
 ```
-python -m cocuvida controlplans
+python -m cocuvida controlplan
 ```
 
 ### Running cocuvida inside docker
@@ -19,7 +19,7 @@ cd to OTGT/Energy_Management/cocuvida
 ```
 docker-compose up cocuvida_prod
 ```
-#### run one service (example starts the web "cocuvida_web" container)
+#### run the web service (example starts the web "cocuvida_web" container)
 ```
 docker-compose up cocuvida_web
 ```

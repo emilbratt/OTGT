@@ -1,7 +1,5 @@
 from cocuvida.authorize import check_secret
-from cocuvida.sqldatabase.controlplans import insert_control_plan
-from cocuvida.sqldatabase.controlplans import delete_control_plan
-from cocuvida.sqldatabase.controlplans import download_control_plan
+from cocuvida.sqldatabase.controlplans import (insert_control_plan, delete_control_plan)
 from cocuvida.web.views.controlplans import View
 from cocuvida.web.formdata import FormDataParser
 
@@ -15,23 +13,26 @@ async def controller(scope: dict, receive: object):
         await view.un_authorized()
         return view
 
-    # HANDLE POST DATA
-    operation =  await form_obj.load_string('submit')
-    match operation:
+    # HANDLE POST FORM-DATA
+    submit_value =  await form_obj.load_string('submit')
+    match submit_value:
         case 'upload':
             control_plan = await form_obj.load_string('control_plan')
-            if control_plan != None:
-                db_action_taken = await insert_control_plan(control_plan)
-                await view.db_action(db_action_taken)
+            if control_plan == None:
+                return view
+            db_action_taken = await insert_control_plan(control_plan)
+            await view.db_action(db_action_taken)
+            print(__file__, 'IMPLEMENT PROCESSING STATES FROM CONTROLPLAN MODULE')
 
-        case 'show' | 'download':
+        case 'show':
             plan_name = await form_obj.load_string('plan_name')
             if plan_name != None:
-                control_plan_file = await download_control_plan(plan_name)
-                if operation == 'show':
-                    await view.show_control_plan_data(control_plan_file)
-                elif operation == 'download':
-                    await view.download_control_plan_data(control_plan_file)
+                await view.show_control_plan_data(plan_name)
+
+        case 'download':
+            plan_name = await form_obj.load_string('plan_name')
+            if plan_name != None:
+                await view.download_control_plan_data(plan_name)
 
         case 'delete':
             plan_name = await form_obj.load_string('plan_name')
