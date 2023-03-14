@@ -35,6 +35,42 @@ services:
         source: ../../
         target: /OTGT
 
+  cocuvida_elspot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cocuvida_elspot
+    hostname: cocuvida_elspot
+    user: cocuvida
+    command: 'python -u -m cocuvida elspot'
+    environment:
+      TZ: Europe/Oslo
+    restart: unless-stopped
+    ports:
+      - 8087:8087
+    volumes:
+      - type: bind
+        source: ../../
+        target: /OTGT
+
+  cocuvida_controlplan:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cocuvida_controlplan
+    hostname: cocuvida_controlplan
+    user: cocuvida
+    command: 'python -u -m cocuvida controlplan'
+    environment:
+      TZ: Europe/Oslo
+    restart: unless-stopped
+    ports:
+      - 8087:8087
+    volumes:
+      - type: bind
+        source: ../../
+        target: /OTGT
+
   cocuvida_prod:
     build:
       context: .

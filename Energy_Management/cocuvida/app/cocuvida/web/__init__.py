@@ -1,5 +1,3 @@
-import uvicorn
-
 from cocuvida.environment import env_ini_get
 
 from .routes import route
@@ -18,6 +16,7 @@ async def app(scope: dict, receive: object, send: object):
 
 # the function to call if starting uvicorn via script (not via cli)
 def run_web():
+    import uvicorn
     print('starting web')
     port = env_ini_get('cocuvida', 'port')
     config = uvicorn.Config(

@@ -19,7 +19,7 @@ cd to OTGT/Energy_Management/cocuvida
 ```
 docker-compose up cocuvida_prod
 ```
-#### run the web service (example starts the web "cocuvida_web" container)
+#### run a specific service (example starts the web "cocuvida_web" container)
 ```
 docker-compose up cocuvida_web
 ```
