@@ -5,7 +5,7 @@ RUN useradd -ms /bin/bash cocuvida
 USER cocuvida
 USER 1000:1000
 
-# uvicorn will not be able to start unless we add this to PATH
+# uvicorn will not be able to start from cli unless we add this to PATH
 ENV PATH /home/cocuvida/.local/bin:${PATH}
 COPY ./requirements.txt /requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /requirements.txt
