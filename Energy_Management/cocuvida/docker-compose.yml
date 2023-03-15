@@ -71,12 +71,12 @@ services:
         source: ../../
         target: /OTGT
 
-  cocuvida_prod:
+  cocuvida_all:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: cocuvida_prod
-    hostname: cocuvida_prod
+    container_name: cocuvida_all
+    hostname: cocuvida_all
     user: cocuvida
     environment:
       TZ: Europe/Oslo
