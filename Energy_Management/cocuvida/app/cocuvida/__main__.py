@@ -23,10 +23,19 @@ def no_arg_provided():
         print(f'arg: {k}\n\t{v}\n')
 
 def main() -> int:
-    init()
-    service = None
+    SERVICES = {
+        'web': 'start uvicorn web backend',
+        'elspot': 'start elspot download and process daempon',
+        'controlplan': 'start controlplan process daemon',
+        'all': 'start all the above',
+    }
+
+
+    service = 
     if len(sys.argv) > 1:
         service = sys.argv[1]
+
+    init()
 
     # run selected service or run all
     match service:
