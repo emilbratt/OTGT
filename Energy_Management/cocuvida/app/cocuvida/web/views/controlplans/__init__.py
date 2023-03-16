@@ -55,8 +55,8 @@ class View:
             <form method="POST" action="" enctype="multipart/form-data">
             <select id="control_plan_options" name="plan_name">
             '''
-            for plan_name in plan_names:
-                self.html_forms += f'<option value="{plan_name[0]}">{plan_name[0]}</option>'.encode()
+            for name in plan_names:
+                self.html_forms += f'<option value="{name}">{name}</option>'.encode()
             self.html_forms += b'''
             </select><br>
             <label for="secret">Secret:</label>
