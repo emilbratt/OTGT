@@ -1,4 +1,4 @@
-from cocuvida.timehandle import isodate, seconds, timeofday
+from cocuvida.timehandle import isodates, seconds, timeofday
 
 from .currency import get as get_region_config
 

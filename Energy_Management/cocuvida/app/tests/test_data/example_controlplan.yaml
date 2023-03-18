@@ -1,54 +1,59 @@
-name: 'example_controlplan' # used as the plan id and alias for other entries such as mqtt topic
-plan_version: 1 # if the structure changes, we implement a version 2 and so on
-
+name: 'example_controlplan' # used as the plan id and alias
 
 # SET DEVICES TO BE CONTROLLED -> include at least one of the sub entries
 target:
- 
-  # entry 1. shelly devices
+  # each target needs to be implemented as its own module/unit in the application
+
+  someintegration: # just for percentage example
+    include_entry: false
+    type: percent # state type -> only states with type percent will affect target
+    entries:
+      # some key: some val
+      knob_1: '192.168.1.134'
+      knob_2: '192.168.1.135'
+
+  # shelly switches
   shelly:
     include_entry: true
+    type: switch # state type -> only states with type switch will affect target
     entries:
       # alias: [host, switch-id]
       light_a_basement_0: ['192.168.1.144', '0']
-      light_b_basement_0: ['192.168.1.145', '0']
+      light_b_basement_0:  ['192.168.1.145', '0']
       light_b_basement_1: ['192.168.1.145', '1']
 
-  # entry 2. MQTT devices that subscribes to this plan -> "cocuvida/example_controlplan"
+  # entry 2. MQTT subscribers
+  # cocuvida application uses the name of this controlplan for topic
+  # e.g. topic for this controlplan will be set to -> "cocuvida/example_controlplan"
   mqtt:
     include_entry: true
-    switch_on:
-      include_entry: true
-      message: 'on'
-    switch_off:
-      include_entry: true
-      # here is an example for yaml multi-line string as well
-      message: >
-        some multi line message
-        that will be sent to
-        turn OFF devices
+    type: message # state type -> only states with type message will affect target
+    entries:
+      # ref key: message being sent -> ref the value as the state so message for that state is sent
+      msgrefa: this is a message for message ref a
+      msgrefb: >
+        this is a multi line message that
+        will be sent for message ref b
 
-
-# SET CALENDAR FOR OPERATION -> include at least one of the sub entries
+# SET CALENDAR FOR OPERATION -> include none means it will opearate every day
 calendar: # NOTE: lower entry number has higher priority
 
   # entry 1. exclude these dates (overrides all other entries)
   exclude_dates:
-    include_entry: false
-    entries: # '--MM-D' for every year | 'YYYY-MM-DD' for specific year
-      - '--05-01'
-      - '2023-06-01'
+    include_entry: true
+    entries: # '--MM-DD' for every year | 'YYYY-MM-DD' for specific year
+      - '2022-06-01'
 
   # entry 2. include these dates (overrides all other entries except exclude_dates)
   include_dates: 
     include_entry: false
     entries: # '--MM-D' for every year | 'YYYY-MM-DD' for specific year
-      - '--05-17'
+      - '--03-17'
       - '2023-06-17'
 
-  # entry 3. include|exclude / true|false non fixed date holidays (overrides weekdays)
+  # NOT IMPLEMENTED YET - entry 3. include|exclude / true|false non fixed date holidays (overrides weekdays)
   holidays:
-    include_entry: false
+    include_entry: true
     palm_sunday: true
     maundy_thursday: true # skjeartorsdag
     good_friday: true # langfredag
@@ -59,113 +64,99 @@ calendar: # NOTE: lower entry number has higher priority
   # entry 4. include|exclude / true|false fixed weekdays for operation
   weekdays:
     include_entry: true
-    monday: true
-    tuesday: true
-    wednesday: true
-    thursday: true
-    saturday: true
-    sunday: false
+    Monday: true
+    Tuesday: true
+    Wednesday: true
+    Thursday: true
+    Saturday: true
+    Sunday: false
 
 
-# SET SCHEDULED TIME -> include at least one of the sub entries
+# SET SCHEDULED TIME -> include ONLY one of the main sub entries (time, sun or elspot)
 schedule: # NOTE: lower entry number has higher priority
 
-  # NOT IMPLEMENTED YET - entry 1. time controlled (highest priority -> overrides all other entries)
+  # entry 1. time dependent
   time: # can include multiple entries for multiple ON/OFF states during the day
     include_entry: true
-    switch_on: # times for when switch state ON
-      include_entry: true
-      entries: # entry format: 'HH:MM'
-        - '03:30'
-        - '15:30'
-    switch_off: # times for when switch state OFF
-      include_entry: true
-      entries: # entry format: 'HH:MM'
-        - '05:00'
-        - '17:00'
+    entries:
+      # [time, type, state]
+      - ['03:30', 'switch', 'on']
+      - ['12:00', 'percent', '60']
+      - ['12:00', 'message', 'msgrefa']
+      - ['13:00', 'message', 'msgrefb']
+      - ['17:30', 'switch', 'off']
 
-  # NOT IMPLEMENTED YET - entry 2. astro controlled (overrides all except time controlled)
+  # entry 2. astro (sun) dependent
   sun: # NOTE: remember to include coordinates
     include_entry: false
     latitude: '59.911491'
     Longitude: '10.757933'
 
-    rise: # X minutes after|before / +|- sunrise
+    rise: # X minutes after|before sunrise
       include_entry: false
-      switch_on:
-        include_entry: false
-        minutes: 15
-      switch_off:
-        include_entry: false
-        minutes: -15
+      entries:
+        # [minutes+-, type, state]
+        - ['15', 'switch', 'off']
+        - ['-15', 'switch', 'on']
 
-    set: # minutes after|before +|- X sunset
+    set: # X minutes after|before sunset
       include_entry: false
-      switch_on:
-        include_entry: false
-        minutes: 15
-      switch_off:
-        include_entry: false
-        minutes: -15
+      entries:
+        # [minutes+-, type, state]
+        - ['15', 'message', 'sleep']
+        - ['-15', 'message', 'tight']
 
     above: # when sun is above altitude (from -90 to 90)
       include_entry: false
-      switch_on:
-        include_entry: false
-        altitude: 0
-      switch_off:
-        include_entry: false
-        altitude: 0
+      entries:
+        # [altitude +-, type, state]
+        - ['10', 'percent', '40']
+        - ['-10', 'percent', '30']
 
     below: # when sun is below altitude (from -90 to 90)
       include_entry: false
-      switch_on:
-        include_entry: false
-        altitude: -10
-      switch_off:
-        include_entry: false
-        altitude: -10
+      entries:
+        # [altitude +-, type, state]
+        - ['10', 'percent', '40']
+        - ['-10', 'percent', '30']
 
-  # NOT IMPLEMENTED YET - entry 3. elspot price controlled (will not override any other entry)
+  # entry 3. elspot price dependent
   elspot:
     include_entry: false
 
-    operation_time: # at least X minutes a day
+    fixed_operation_time: # will always run at this time
       include_entry: false
-      switch_on:
-        include_entry: false
-        minutes: 15
-      switch_off:
-        include_entry: false
-        minutes: 15
+      entries:
+        # [time, type, state]
+        - ['03:30', 'switch', 'on']
+        - ['17:30', 'switch', 'off']
 
-    operation_time_day_part: # at least X minutes for Y part of the day
+    minimum_operation_time: # at least X minutes a day
+      include_entry: false
+      entries:
+        # [minutes, type, state]
+        - ['120', 'switch', 'on'] # will set switch OFF after 120 minutes
+        - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
+
+    minimum_operation_time_day_part: # at least X minutes for Y part of the day
       include_entry: false
       post_midnight: # from 00 to 06
-        switch_on:
-          include_entry: false
-          minutes: 0
-        switch_off:
-          include_entry: false
-          minutes: 0
+        include_entry: false
+        entries:
+          # [minutes, type, state]
+          - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
       before_midday: # from 06 to 12
-        switch_on:
-          include_entry: false
-          minutes: 0
-        switch_off:
-          include_entry: false
-          minutes: 0
+        include_entry: false
+        entries:
+          # [minutes, type, state]
+          - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
       post_midday: # from 12 to 18
-        switch_on:
-          include_entry: false
-          minutes: 0
-        switch_off:
-          include_entry: false
-          minutes: 0
+        include_entry: false
+        entries:
+          # [minutes, type, state]
+          - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
       before_midnight: # from 18 to 00
-        switch_on:
-          include_entry: false
-          minutes: 0
-        switch_off:
-          include_entry: false
-          minutes: 0
+        include_entry: false
+        entries:
+          # [minutes, type, state]
+          - ['45', 'percent', '30'] # will set percent 0 after 45 minutes

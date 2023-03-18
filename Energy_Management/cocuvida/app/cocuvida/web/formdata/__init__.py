@@ -28,7 +28,7 @@ class FormDataParser:
             print('ERROR: NO FORM DATA FOUND')
 
 
-    # we load the body one time during first call to one of the async methods
+    # load the request body
     async def _load_body(self):
         # load request body into byte string
         self.body = b''

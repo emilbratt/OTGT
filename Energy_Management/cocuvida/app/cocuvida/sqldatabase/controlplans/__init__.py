@@ -2,8 +2,10 @@ from yaml import dump as yaml_dump
 from yaml import safe_load as yaml_safe_load
 from io import StringIO
 
-from cocuvida.sqldatabase import connect
+from cocuvida.controlplan.controlplanparser import ControlplanParser
 
+from cocuvida.timehandle import isodates
+from cocuvida.sqldatabase import connect
 
 QUERIES = {
     'insert_control_plan': 'INSERT INTO control_plans (plan_name, plan_data) VALUES (?, ?)',
@@ -13,6 +15,7 @@ QUERIES = {
     'delete_control_plan': 'DELETE FROM control_plans WHERE plan_name = ?',
     'list_plan_names': 'SELECT plan_name FROM control_plans',
 }
+
 
 async def list_plan_names() -> list:
     cnxn = connect()
@@ -24,26 +27,33 @@ async def list_plan_names() -> list:
     cnxn.close()
     return plan_names
 
-async def insert_control_plan(control_plan: dict) -> str:
+async def insert_control_plan(control_plan: str) -> str:
+    '''
+        insert new controlplan
+        will also generate send controlplan to state generator
+        so states are generated for today
+    '''
     action = str()
     try:
         # load name and (at the same time) check if parasble before inserting
-        plan_data = yaml_safe_load(control_plan)
+        cp = ControlplanParser(control_plan)
+        plan_name = await cp.get_name()
     except Exception as e:
-        action = f'ERROR: {__file__} {type(e)} {e}'
+        action = f'ERROR: {__file__} MSG: Invalid yaml DESC: {type(e)} {e}'
         return action
-    plan_name = plan_data['name']
     cnxn = connect()
     cursor = cnxn.cursor()
     try:
         cursor.execute(QUERIES['insert_control_plan'], [plan_name, control_plan])
         cnxn.commit()
+        #await generate_states(control_plan, isodate.today())
         action = 'insert'
     except:
         try:
             # if insert failed, most likely constraint -> update table instead
             cursor.execute(QUERIES['update_control_plan'], [control_plan, plan_name])
             cnxn.commit()
+            #await generate_states(control_plan, isodate.today())
             action = 'update'
         except Exception as e:
             action = f'ERROR: {__file__} {type(e)} {e}'

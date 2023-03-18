@@ -1,15 +1,12 @@
 from time import sleep
 import asyncio
-from .workers import generate_states, publish_states
 
+from . import workers
 
 
 async def app():
-    asyncio.ensure_future(generate_states())
-    asyncio.ensure_future(publish_states())
-
-    # await generate_states()
-    # await publish_states()
+    asyncio.ensure_future(workers.generate_states())
+    asyncio.ensure_future(workers.publish_states())
 
 def run_controlplan() -> None:
     print('starting controlplan')
@@ -22,5 +19,3 @@ def run_controlplan() -> None:
     finally:
         print('Closing Loop')
         loop.close()
-
-    #asyncio.run(app())
