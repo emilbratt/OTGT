@@ -1,21 +1,19 @@
 name: 'example_controlplan' # used as the plan id and alias
 
-# SET DEVICES TO BE CONTROLLED -> include at least one of the sub entries
+# TARGET DEVICES TO BE OPERATED -> include at least one of the sub entries
 target:
   # each target needs to be implemented as its own module/unit in the application
 
-  someintegration: # just for percentage example
-    include_entry: false
-    type: percent # state type -> only states with type percent will affect target
+  someintegration: # example target that takes values 0-100 (%)
+    include_entry: false # enable/disable entry
     entries:
       # some key: some val
       knob_1: '192.168.1.134'
       knob_2: '192.168.1.135'
 
   # shelly switches
-  shelly:
-    include_entry: true
-    type: switch # state type -> only states with type switch will affect target
+  shelly: # valid states are on, off or toggle
+    include_entry: true # enable/disable entry
     entries:
       # alias: [host, switch-id]
       light_a_basement_0: ['192.168.1.144', '0']
@@ -26,8 +24,7 @@ target:
   # cocuvida application uses the name of this controlplan for topic
   # e.g. topic for this controlplan will be set to -> "cocuvida/example_controlplan"
   mqtt:
-    include_entry: true
-    type: message # state type -> only states with type message will affect target
+    include_entry: false # enable/disable entry
     entries:
       # ref key: message being sent -> ref the value as the state so message for that state is sent
       msgrefa: this is a message for message ref a
@@ -35,8 +32,8 @@ target:
         this is a multi line message that
         will be sent for message ref b
 
-# SET CALENDAR FOR OPERATION -> include none means it will opearate every day
-calendar: # NOTE: lower entry number has higher priority
+# CALENDAR FOR OPERATION -> include none means it will opearate every day
+calendar:
 
   # entry 1. exclude these dates (overrides all other entries)
   exclude_dates:
@@ -51,7 +48,7 @@ calendar: # NOTE: lower entry number has higher priority
       - '--03-17'
       - '2023-06-17'
 
-  # NOT IMPLEMENTED YET - entry 3. include|exclude / true|false non fixed date holidays (overrides weekdays)
+  # NOT IMPLEMENTED YET - entry 3. include|exclude non fixed date holidays (overrides weekdays)
   holidays:
     include_entry: true
     palm_sunday: true
@@ -61,7 +58,7 @@ calendar: # NOTE: lower entry number has higher priority
     easter_sunday: true # foerste paaskedag
     easter_monday: true # andre paaskedag
 
-  # entry 4. include|exclude / true|false fixed weekdays for operation
+  # entry 4. include|exclude fixed weekdays for operation
   weekdays:
     include_entry: true
     Monday: true
@@ -72,19 +69,19 @@ calendar: # NOTE: lower entry number has higher priority
     Sunday: false
 
 
-# SET SCHEDULED TIME -> include ONLY one of the main sub entries (time, sun or elspot)
-schedule: # NOTE: lower entry number has higher priority
+# SCHEDULE FOR OPERATION -> include ONLY one of the main sub entries (time, sun or elspot)
+schedule: # this is where we define what target and what state values to include and when they apply
 
   # entry 1. time dependent
   time: # can include multiple entries for multiple ON/OFF states during the day
     include_entry: true
     entries:
-      # [time, type, state]
-      - ['03:30', 'switch', 'on']
-      - ['12:00', 'percent', '60']
-      - ['12:00', 'message', 'msgrefa']
-      - ['13:00', 'message', 'msgrefb']
-      - ['17:30', 'switch', 'off']
+      # [ time, target, state/value ]
+      - ['03:30', 'shelly', 'on']
+      - ['12:00', 'someintegration', '60']
+      - ['12:00', 'mqtt', 'msgrefa']
+      - ['13:00', 'mqtt', 'msgrefb']
+      - ['17:30', 'shelly', 'off']
 
   # entry 2. astro (sun) dependent
   sun: # NOTE: remember to include coordinates
@@ -95,30 +92,30 @@ schedule: # NOTE: lower entry number has higher priority
     rise: # X minutes after|before sunrise
       include_entry: false
       entries:
-        # [minutes+-, type, state]
-        - ['15', 'switch', 'off']
-        - ['-15', 'switch', 'on']
+        # [ minutes (+|-), target, state/value ]
+        - ['15', 'shelly', 'off']
+        - ['-15', 'shelly', 'on']
 
     set: # X minutes after|before sunset
       include_entry: false
       entries:
-        # [minutes+-, type, state]
-        - ['15', 'message', 'sleep']
-        - ['-15', 'message', 'tight']
+        # [ minutes (+|-), target, state/value ]
+        - ['15', 'mqtt', 'sleep']
+        - ['-15', 'mqtt', 'tight']
 
     above: # when sun is above altitude (from -90 to 90)
       include_entry: false
       entries:
-        # [altitude +-, type, state]
-        - ['10', 'percent', '40']
-        - ['-10', 'percent', '30']
+        # [ altitude (+|-), target, state/value ]
+        - ['10', 'someintegration', '40']
+        - ['-10', 'someintegration', '30']
 
     below: # when sun is below altitude (from -90 to 90)
       include_entry: false
       entries:
-        # [altitude +-, type, state]
-        - ['10', 'percent', '40']
-        - ['-10', 'percent', '30']
+        # [ altitude (+|-), target, state/value ]
+        - ['10', 'someintegration', '40']
+        - ['-10', 'someintegration', '30']
 
   # entry 3. elspot price dependent
   elspot:
@@ -127,15 +124,15 @@ schedule: # NOTE: lower entry number has higher priority
     fixed_operation_time: # will always run at this time
       include_entry: false
       entries:
-        # [time, type, state]
-        - ['03:30', 'switch', 'on']
-        - ['17:30', 'switch', 'off']
+        # [ time, target, state/value ]
+        - ['03:30', 'shelly', 'on']
+        - ['17:30', 'shelly', 'off']
 
     minimum_operation_time: # at least X minutes a day
       include_entry: false
       entries:
-        # [minutes, type, state]
-        - ['120', 'switch', 'on'] # will set switch OFF after 120 minutes
+        # [ minutes, target, state/value ]
+        - ['120', 'shelly', 'on'] # will set switch OFF after 120 minutes
         - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
 
     minimum_operation_time_day_part: # at least X minutes for Y part of the day
@@ -143,20 +140,20 @@ schedule: # NOTE: lower entry number has higher priority
       post_midnight: # from 00 to 06
         include_entry: false
         entries:
-          # [minutes, type, state]
+          # [ minutes, target, state/value ]
           - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
       before_midday: # from 06 to 12
         include_entry: false
         entries:
-          # [minutes, type, state]
+          # [ minutes, target, state/value ]
           - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
       post_midday: # from 12 to 18
         include_entry: false
         entries:
-          # [minutes, type, state]
+          # [ minutes, target, state/value ]
           - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
       before_midnight: # from 18 to 00
         include_entry: false
         entries:
-          # [minutes, type, state]
+          # [ minutes, target, state/value ]
           - ['45', 'percent', '30'] # will set percent 0 after 45 minutes

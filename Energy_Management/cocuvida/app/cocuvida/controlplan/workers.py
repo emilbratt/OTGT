@@ -38,10 +38,10 @@ async def publish_states():
             (time is passed 14 OR elspot data exists)
         
     publish states
-        1. load next state_value using state_timestamp from db.state_schedule
+        1. for all device_types, load next state_value using state_timestamp from db.state_schedule
         2. check remaining time until state_timestamp
             if more than 10 minutes to next state
-                jump back to step 1 in 10 minutes (maybe new state are recorded)
+                jump back to step 1 in 10 minutes (maybe new states are recorded)
             else:
                 go to step 3
         3. sleep until time == state_timestamp
