@@ -37,7 +37,7 @@ class ControlplanParser:
     async def generate_states(self, isodate: str) -> list:
         obj = schedule.Entry(self.cp['schedule'])
         states = await obj.generate_states(isodate)
-        # insert the plan name in every record as first colummn
+        # insert the plan name in every record as first colummn (matches db columns)
         for row in states:
             row.insert(0, self.cp['name'])
         return states

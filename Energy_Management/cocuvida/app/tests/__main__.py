@@ -33,9 +33,9 @@ class SQLDatabase(unittest.TestCase):
 class ControlPlan(unittest.IsolatedAsyncioTestCase):
 
     # check if we can generate states from test control_plan
-    async def test_generate_states(self):
-        from tests.controlplan_test import generate_controlplan_states
-        await generate_controlplan_states(self)
+    async def test_example_controlplan(self):
+        from tests.controlplan_test import example_controlplan
+        await example_controlplan(self)
 
 
 

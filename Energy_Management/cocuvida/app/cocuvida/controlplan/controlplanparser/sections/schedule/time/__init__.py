@@ -14,8 +14,9 @@ class Entry:
         states = []
         for row in self.t['entries']:
             # iso_time_stamp evaluates to something like: 2023-06-02T17:30
-            iso_time_stamp = isodate + 'T' + row[0]
-            device_type = row[1]
-            state_val = row[2]
-            states.append([device_type, iso_time_stamp, state_val])
+            timeofday = row[0]
+            state_time = f'{isodate} {timeofday}'
+            target_type = row[1]
+            state_value = row[2]
+            states.append([target_type, state_value, state_time])
         return states

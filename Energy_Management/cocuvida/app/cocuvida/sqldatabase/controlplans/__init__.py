@@ -1,4 +1,3 @@
-from yaml import dump as yaml_dump
 from yaml import safe_load as yaml_safe_load
 from io import StringIO
 

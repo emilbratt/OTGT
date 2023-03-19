@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS control_plans (
 -- STORE FUTURE (GENERATED) AND PAST (HISTORY) STATE VALUES
 CREATE TABLE IF NOT EXISTS state_schedule (
   plan_name       TEXT NOT NULL,
-  device_type     TEXT NOT NULL, -- switch | message | percent ..
+  target_type     TEXT NOT NULL, -- shelly | mqtt  ..
   state_value     TEXT NOT NULL, -- ON | OFF | HIGH | LOW | 50% | 10c | 3kW/h ...
-  state_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  UNIQUE (plan_name, device_type, state_value, state_timestamp)
+  state_time      TEXT NOT NULL, -- iso timestamp YYYY-MM-DDTHH:MM
+  UNIQUE (plan_name, target_type, state_value, state_time)
 );
