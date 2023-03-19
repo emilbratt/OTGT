@@ -65,7 +65,7 @@ def get_holiday_name(isodate: str) -> bool:
 
 def date_object_from_isodate(isodate: str) -> datetime:
     '''
-        pass dates as
+        pass timestamp as
             '--MM-DD' -> date for every year
             'YYYY-MM-DD' -> date for specific year
     '''
@@ -75,13 +75,12 @@ def date_object_from_isodate(isodate: str) -> datetime:
         return datetime.fromisoformat(isodate)
     return datetime.fromisoformat(isodate)
 
-def date_object_from_isodate_and_time(isodate: str, isotime: str):
-
-    
-    datetime.now().replace(hour=17,minute=0,second=0,microsecond=0)
-    # dd/mm/YY H:M:S
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    return datetime.fromisoformat(isodate).strftime('%A')
+def date_object_from_isodate_and_time(timestamp: str):
+    '''
+        pass timestamp as
+            'YYYY-MM-DD HH:MM'
+    '''
+    return datetime.fromisoformat(timestamp)
 
 
 

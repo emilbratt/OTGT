@@ -28,7 +28,7 @@ class Entry:
     async def date_is_included_weekday(self, isodate: str) -> bool:
         weekday = isodates.weekday_name_from_isodate(isodate)
         if self.c['weekdays']['include_entry']:
-            if self.c['weekdays'][weekday]:
+            if self.c['weekdays'][weekday.lower()]:
                 return True
         return False
 

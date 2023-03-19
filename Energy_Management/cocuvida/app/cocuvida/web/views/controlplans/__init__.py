@@ -1,5 +1,5 @@
 from cocuvida.sqldatabase.controlplans import list_plan_names
-from cocuvida.sqldatabase.controlplans import get_stringio_control_plan
+from cocuvida.sqldatabase.controlplans import get_stringio_control_plan_by_name
 
 
 class View:
@@ -75,11 +75,11 @@ class View:
             '''
 
     async def show_control_plan_data(self, plan_name: str):
-        plan_data = await get_stringio_control_plan(plan_name)
+        plan_data = await get_stringio_control_plan_by_name(plan_name)
         self.html_control_plan += b'<p>Control Plan</p><pre>' + plan_data + b'</pre><hr>'
 
     async def download_control_plan_data(self, plan_name: str):
-        self.file_control_plan = await get_stringio_control_plan(plan_name)
+        self.file_control_plan = await get_stringio_control_plan_by_name(plan_name)
         self.headers[b'content-type'] = b'application/x-yaml'
 
     async def un_authorized(self):

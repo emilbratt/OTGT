@@ -43,7 +43,7 @@ calendar:
 
   # entry 2. include these dates (overrides all other entries except exclude_dates)
   include_dates: 
-    include_entry: false
+    include_entry: true
     entries: # '--MM-D' for every year | 'YYYY-MM-DD' for specific year
       - '--03-17'
       - '2023-06-17'
@@ -61,12 +61,12 @@ calendar:
   # entry 4. include|exclude fixed weekdays for operation
   weekdays:
     include_entry: true
-    Monday: true
-    Tuesday: true
-    Wednesday: true
-    Thursday: true
-    Saturday: true
-    Sunday: false
+    monday: true
+    tuesday: true
+    wednesday: true
+    thursday: true
+    saturday: true
+    sunday: true
 
 
 # SCHEDULE FOR OPERATION -> include ONLY one of the main sub entries (time, sun or elspot)
