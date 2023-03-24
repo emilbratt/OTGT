@@ -39,8 +39,6 @@ class ControlplanParser:
 
         obj = schedule.Entry(self.cp[plan_name]['schedule'])
         states = await obj.generate_states(isodate)
-        # insert the plan name in every record as first colummn and state_status as last (matches db columns)
-        # changes makes each row look like this: [plan_name, target_type, state_value, state_time, state_status]
         for row in states:
             target_type = row[0]
             if self.cp[plan_name]['target'][target_type]['include_entry']:

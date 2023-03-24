@@ -16,5 +16,5 @@ class ControlplanTargets:
     def publish_states_to_shelly_target(self):
         asyncio.run(self.cpparser.load_controlplan(self.controlplan))
         shelly = ShellyEntry(self.controlplan['target']['shelly'])
-        asyncio.run(shelly.publish_state('HALLO'))
+        asyncio.run(shelly.publish_state('off'))
         return True
