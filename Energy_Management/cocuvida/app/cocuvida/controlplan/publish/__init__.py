@@ -7,7 +7,7 @@ from cocuvida.sqldatabase import (controlplans as sql_controlplans,
 from cocuvida.timehandle import isodates, timeofday
 
 
-class WorkerPublish:
+class PublishStates:
     '''
         load states from SQL table state_schedule and publish
     '''

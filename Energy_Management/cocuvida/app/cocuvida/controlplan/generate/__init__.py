@@ -6,36 +6,37 @@ from cocuvida.sqldatabase import (controlplans as sql_controlplans,
 from cocuvida.timehandle import isodates, timeofday
 
 
-class WorkerGenerate:
+class GenerateStates:
     '''
         generate states and insert into SQL table state_schedule
     '''
     def __init__(self):
         self.init_time = isodates.timestamp_now()
         self.on_startup_ok = False
+        self.cpparser = None
         self.generate_for_next_day_check = None
         self.last_updated_controlplan_timestamp = None
 
     async def on_startup(self) -> None:
+        self.cpparser = ControlplanParser()
         self.generate_for_next_day_check = False
         self.last_updated_controlplan_timestamp = await sql_controlplans.select_latest_modification_time()
         self.on_startup_ok = True
 
-    async def generate_for_all_controlplans(self, isodate: str) -> None:
+    async def generate_states_for_all_controlplans(self, isodate: str) -> None:
         if not self.on_startup_ok:
             raise Exception('OnStartupError: run WorkerGenerate.on_startup() before anything else')
 
-        print(f'generating for all controlplans with date {isodate}')
-        cp = ControlplanParser()
+        print(f'generating states for all controlplans with date {isodate}')
         controlplans = await sql_controlplans.select_all_control_plans()
         for plan_name, plan_data in controlplans.items():
-            await cp.load_controlplan(plan_data)
+            await self.cpparser.load_controlplan(plan_data)
             await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate)
-            if await cp.date_is_operating_date(plan_name, isodate):
-                states = await cp.generate_states(plan_name, isodate)
+            if await self.cpparser.date_is_operating_date(plan_name, isodate):
+                states = await self.cpparser.generate_states(plan_name, isodate)
                 await sql_stateschedule.insert_states_from_generator(states)
 
-    async def generate_for_new_controlplans(self) -> None:
+    async def generate_states_for_new_controlplans(self) -> None:
         '''
             on startup, we conserved the latest update timestamp for controlplan
             we stored the timestamp in self.last_updated_controlplan_timestamp
@@ -50,24 +51,25 @@ class WorkerGenerate:
         if res == []:
             return
         self.last_updated_controlplan_timestamp = await sql_controlplans.select_latest_modification_time()
-        cp = ControlplanParser()
         isodate_today = isodates.today()
         isodate_tomorrow = isodates.today_plus_days(1)
         is_passed_that_time = timeofday.is_passed_time(14, 0)
         for plan_name in res:
-            print(f'generating for new controlplan {plan_name} with date {isodate_today}')
+            print(f'generating states for new controlplan {plan_name} with date {isodate_today}')
             plan_data = await sql_controlplans.select_control_plan_by_plan_name(plan_name)
-            await cp.load_controlplan(plan_data)
+            await self.cpparser.load_controlplan(plan_data)
             await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate_today)
-            if await cp.date_is_operating_date(plan_name, isodate_today):
-                states = await cp.generate_states(plan_name, isodate_today)
+            if await self.cpparser.date_is_operating_date(plan_name, isodate_today):
+                states = await self.cpparser.generate_states(plan_name, isodate_today)
                 await sql_stateschedule.insert_states_from_generator(states)
 
             if is_passed_that_time:
-                print(f'generating for new controlplan {plan_name} with date {isodate_tomorrow}')
+                print(f'generating states for new controlplan {plan_name} with date {isodate_tomorrow}')
                 await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate_tomorrow)
-                if await cp.date_is_operating_date(plan_name, isodate_tomorrow):
-                    states = await cp.generate_states(plan_name, isodate_tomorrow)
+                #if await cp.date_is_operating_date(plan_name, isodate_tomorrow):
+                if await self.cpparser.date_is_operating_date(plan_name, isodate_tomorrow):
+                    #states = await cp.generate_states(plan_name, isodate_tomorrow)
+                    states = await self.cpparser.generate_states(plan_name, isodate_tomorrow)
                     await sql_stateschedule.insert_states_from_generator(states)
 
     async def is_ready_to_generate_for_tomorrow(self) -> bool:

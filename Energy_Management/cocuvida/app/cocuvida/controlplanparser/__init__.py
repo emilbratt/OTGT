@@ -10,7 +10,8 @@ class ControlplanParser:
         self.info = str()
 
     async def load_controlplan(self, controlplan: dict) -> None:
-        self.cp[controlplan['name']] = controlplan
+        plan_name = controlplan['name']
+        self.cp[plan_name] = controlplan
 
     async def valid_state_types(self, states: list) -> bool:
         raise Exception('MethodNotImplemented')
