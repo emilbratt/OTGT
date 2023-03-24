@@ -7,7 +7,7 @@ from cocuvida.timehandle import isodates
 from cocuvida.sqldatabase import connect, select_all
 
 QUERIES = {
-    'insert_control_plan': 'INSERT INTO control_plans (plan_name, plan_data) VALUES (?, ?)',
+    'insert_control_plan': 'INSERT INTO control_plans (plan_name, plan_data, last_updated) VALUES (?, ?, ?)',
     'update_control_plan': 'UPDATE control_plans  SET plan_data = ?, last_updated = ?  WHERE plan_name = ?',
     'select_control_plan_by_plan_name': 'SELECT plan_data FROM control_plans WHERE plan_name = ?',
     'select_all_control_plans': 'SELECT plan_data FROM control_plans',
@@ -40,6 +40,7 @@ async def list_plan_names_greater_than_timestamp(timestamp: str) -> list:
 
 async def insert_control_plan(control_plan: str) -> str:
     action = str()
+    timestamp = isodates.timestamp_now_round('second')
     try:
         # load name and at the same time check if YAML parasble before inserting
         plan_name = yaml_safe_load(control_plan)['name']
@@ -49,12 +50,11 @@ async def insert_control_plan(control_plan: str) -> str:
     cnxn = connect()
     cursor = cnxn.cursor()
     try:
-        cursor.execute(QUERIES['insert_control_plan'], [plan_name, control_plan])
+        cursor.execute(QUERIES['insert_control_plan'], [plan_name, control_plan, timestamp])
         cnxn.commit()
         action = 'insert'
     except:
         try:
-            timestamp = isodates.timestamp_now_round('second')
             # if insert failed, most likely constraint -> update table instead
             cursor.execute(QUERIES['update_control_plan'], [control_plan, timestamp, plan_name])
             cnxn.commit()
