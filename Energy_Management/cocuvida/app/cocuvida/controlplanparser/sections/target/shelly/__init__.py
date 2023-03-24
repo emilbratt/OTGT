@@ -1,4 +1,6 @@
+import aiohttp
 import json
+
 
 class Entry:
     def __init__(self, shelly: dict):
@@ -8,6 +10,8 @@ class Entry:
         for alias, arr in self.target['entries'].items():
             shelly_url = f'http://{arr[0]}/rpc'
             payload = {'id': arr[1], state_value: True}
-            payload = json.dumps(payload)
-            print('alias:', alias, 'url:', shelly_url, 'payload', payload)
-        return True
+            #payload = json.dumps(payload)
+            #print('alias:', alias, 'url:', shelly_url, 'payload', payload)
+            async with aiohttp.ClientSession() as session:
+                return True
+                #await session.post(shelly_url, json=payload)
