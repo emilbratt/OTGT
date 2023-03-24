@@ -4,8 +4,8 @@ name: 'example_controlplan' # used as the plan id and alias
 target:
   # each target needs to be implemented as its own module/unit in the application
 
-  someintegration: # example target that takes values 0-100 (%)
-    include_entry: false # enable/disable entry
+  exampletarget: # example target that takes values 0-100 (%)
+    include_entry: true # enable/disable entry
     entries:
       # some key: some val
       knob_1: '192.168.1.134'
@@ -17,20 +17,20 @@ target:
     entries:
       # alias: [host, switch-id]
       light_a_basement_0: ['192.168.1.144', '0']
-      light_b_basement_0:  ['192.168.1.145', '0']
+      light_b_basement_0: ['192.168.1.145', '0']
       light_b_basement_1: ['192.168.1.145', '1']
 
   # entry 2. MQTT subscribers
   # cocuvida application uses the name of this controlplan for topic
   # e.g. topic for this controlplan will be set to -> "cocuvida/example_controlplan"
   mqtt:
-    include_entry: false # enable/disable entry
+    include_entry: true # enable/disable entry
     entries:
       # ref key: message being sent -> ref the value as the state so message for that state is sent
-      msgrefa: this is a message for message ref a
+      msgrefa: this is a message being sent for message ref msgrefa
       msgrefb: >
         this is a multi line message that
-        will be sent for message ref b
+        will be sent for message ref msgrefb
 
 # CALENDAR FOR OPERATION -> include none means it will opearate every day
 calendar:
@@ -65,6 +65,7 @@ calendar:
     tuesday: true
     wednesday: true
     thursday: true
+    friday: true
     saturday: true
     sunday: true
 
@@ -78,7 +79,7 @@ schedule: # this is where we define what target and what state values to include
     entries:
       # [ time, target, state/value ]
       - ['03:30', 'shelly', 'on']
-      - ['12:00', 'someintegration', '60']
+      - ['12:00', 'exampletarget', '60']
       - ['12:00', 'mqtt', 'msgrefa']
       - ['13:00', 'mqtt', 'msgrefb']
       - ['17:30', 'shelly', 'off']
@@ -107,15 +108,15 @@ schedule: # this is where we define what target and what state values to include
       include_entry: false
       entries:
         # [ altitude (+|-), target, state/value ]
-        - ['10', 'someintegration', '40']
-        - ['-10', 'someintegration', '30']
+        - ['10', 'exampletarget', '40']
+        - ['-10', 'exampletarget', '30']
 
     below: # when sun is below altitude (from -90 to 90)
       include_entry: false
       entries:
         # [ altitude (+|-), target, state/value ]
-        - ['10', 'someintegration', '40']
-        - ['-10', 'someintegration', '30']
+        - ['10', 'exampletarget', '40']
+        - ['-10', 'exampletarget', '30']
 
   # entry 3. elspot price dependent
   elspot:

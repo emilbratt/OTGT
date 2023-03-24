@@ -12,6 +12,7 @@ def run(script: str):
         try:
             cursor = cnxn.cursor()
             cursor.executescript(f.read())
+            cnxn.commit()
             action = 'OK'
         except Exception as e:
             action = f'ERROR: {__file__} {type(e)} {e}'

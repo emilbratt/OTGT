@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 def until_next_minute() -> int:
     '''
         return seconds until next full minute
@@ -44,8 +45,10 @@ def until_next_hour() -> int:
     return minutes_until_new_hour * 60
 
 
-def until_time_of_day(hour: int, minute: int) -> int:
+def until_time_of_day(timeofday: str) -> int:
     '''
+        pass string in format 'HH:MM'
+
         returns seconds until specified time of day (24h format)
         first param = hour (0-23), second param = minute (0-59)
         if input time <= current time, then sleep to input time for next day
@@ -58,3 +61,19 @@ def until_time_of_day(hour: int, minute: int) -> int:
     seconds_target = (hour*3600) + (minute*60)
     bool_val = (seconds_now >= seconds_target)
     return (bool_val * 86400) + seconds_target - seconds_now
+
+def until_timestamp(timestamp: str) -> int:
+    '''
+        pass string in format 'YYYY-MM-DD HH:MM'
+
+        returns seconds until specified time of day (24h format)
+        first param = hour (0-23), second param = minute (0-59)
+        if input time <= current time, then sleep to input time for next day
+        if input time  > current time, then sleep to input time for today
+        returns current time as int stored in a tuple (hour, minute)
+    '''
+    # isodate = datetime.now().strftime('%Y-%m-%d')
+    # f = datetime.fromisoformat(f'{isodate} {timeofday}')
+    f = datetime.fromisoformat(timestamp)
+    t = datetime.now()
+    return (f - t).seconds

@@ -30,12 +30,13 @@ class SQLDatabase(unittest.TestCase):
         create_database(self)
 
 
-class ControlPlan(unittest.IsolatedAsyncioTestCase):
+#class ControlPlan(unittest.IsolatedAsyncioTestCase):
+class ControlPlan(unittest.TestCase):
 
     # check if we can generate states from test control_plan
-    async def test_example_controlplan(self):
+    def test_example_controlplan(self):
         from tests.controlplan_test import example_controlplan
-        await example_controlplan(self)
+        example_controlplan(self)
 
 
 

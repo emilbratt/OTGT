@@ -4,11 +4,11 @@ from io import StringIO
 from cocuvida.controlplanparser import ControlplanParser
 
 from cocuvida.timehandle import isodates
-from cocuvida.sqldatabase import connect
+from cocuvida.sqldatabase import connect, select_all
 
 QUERIES = {
     'insert_control_plan': 'INSERT INTO control_plans (plan_name, plan_data) VALUES (?, ?)',
-    'update_control_plan': 'UPDATE control_plans  SET plan_data = ?  WHERE plan_name = ?',
+    'update_control_plan': 'UPDATE control_plans  SET plan_data = ?, last_updated = ?  WHERE plan_name = ?',
     'select_control_plan_by_plan_name': 'SELECT plan_data FROM control_plans WHERE plan_name = ?',
     'select_all_control_plans': 'SELECT plan_data FROM control_plans',
     'delete_control_plan': 'DELETE FROM control_plans WHERE plan_name = ?',
@@ -54,8 +54,9 @@ async def insert_control_plan(control_plan: str) -> str:
         action = 'insert'
     except:
         try:
+            timestamp = isodates.timestamp_now_round('second')
             # if insert failed, most likely constraint -> update table instead
-            cursor.execute(QUERIES['update_control_plan'], [control_plan, plan_name])
+            cursor.execute(QUERIES['update_control_plan'], [control_plan, timestamp, plan_name])
             cnxn.commit()
             action = 'update'
         except Exception as e:

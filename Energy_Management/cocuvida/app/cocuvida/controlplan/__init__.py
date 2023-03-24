@@ -6,7 +6,7 @@ from . import workers
 
 async def app():
     asyncio.ensure_future(workers.generate_states())
-    #asyncio.ensure_future(workers.publish_states())
+    asyncio.ensure_future(workers.publish_states())
 
 def run_controlplan() -> None:
     print('starting controlplan')

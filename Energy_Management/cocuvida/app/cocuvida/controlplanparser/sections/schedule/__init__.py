@@ -16,7 +16,7 @@ class Entry:
             case 'time':
                 from .time import Entry
             case None:
-                raise Exception('MissingIncludedEntryInSchedule')
+                raise Exception('MissingEntryInSchedule')
             case _:
                 raise Exception('UnknownEntryInSchedule', included_entry)
         obj = Entry(self.s[included_entry])

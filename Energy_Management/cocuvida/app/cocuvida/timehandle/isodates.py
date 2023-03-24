@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+
 def today() -> str:
     '''
         returns datetime as iso format e.g. '2023-01-22'
@@ -18,9 +19,24 @@ def today_plus_days(days: int) -> str:
 
 def timestamp_now() -> str:
     '''
-        returns datetime as iso format down to seconds e.g. '2023-01-22T15:37:13'
+        returns datetime as iso format down to seconds e.g. '2023-01-22 15:37:13'
     '''
-    return datetime.now().isoformat(timespec='seconds')
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+def timestamp_now_round(val: str) -> str:
+    '''
+        returns datetime as iso format  '2023-01-22 15:37:13'
+        takes input as second, minute or hour
+    '''
+    match val:
+        case 'second':
+            return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        case 'minute':
+            return datetime.now().strftime('%Y-%m-%d %H:%M')
+        case 'hour':
+            return datetime.now().strftime('%Y-%m-%d %H') 
+        case _:
+            raise Exception(f'InvalidParameter: {val}')
 
 def weekday_number_today() -> int:
     '''

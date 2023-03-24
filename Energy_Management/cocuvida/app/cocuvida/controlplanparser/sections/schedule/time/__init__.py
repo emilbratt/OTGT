@@ -4,7 +4,7 @@ from cocuvida.timehandle import isodates
 class Entry:
     '''
         entry for processing sub entries found below in controlplan
-        schedule -> time -> include_entry: true
+        schedule -> time
     '''
 
     def __init__(self, time: dict):
