@@ -1,6 +1,6 @@
 name: 'example_controlplan' # used as the plan id and alias
 
-# TARGET DEVICES TO BE OPERATED -> include at least one of the sub entries
+# MAIN ENTRY 1. TARGET DEVICES TO BE OPERATED -> include one or more sub-entries
 target:
   # each target needs to be implemented as its own module/unit in the application
 
@@ -32,7 +32,7 @@ target:
         this is a multi line message that
         will be sent for message ref msgrefb
 
-# CALENDAR FOR OPERATION -> include none means it will opearate every day
+# MAIN ENTRY 2. CALENDAR FOR OPERATION -> include one or more sub-entries
 calendar:
 
   # entry 1. exclude these dates (overrides all other entries)
@@ -70,15 +70,15 @@ calendar:
     sunday: true
 
 
-# SCHEDULE FOR OPERATION -> include ONLY one of the main sub entries (time, sun or elspot)
-schedule: # this is where we define what target and what state values to include and when they apply
+# MAIN ENTRY 3. SCHEDULE FOR OPERATION -> include ONLY one sub-entry (time, sun or elspot)
+schedule: # this is where we define different states for each target and the time of the state
 
   # entry 1. time dependent
   time: # can include multiple entries for multiple ON/OFF states during the day
     include_entry: true
     entries:
       # [ time, target, state/value ]
-      - ['03:30', 'shelly', 'on']
+      - ['12:00', 'shelly', 'on']
       - ['12:00', 'exampletarget', '60']
       - ['12:00', 'mqtt', 'msgrefa']
       - ['13:00', 'mqtt', 'msgrefb']

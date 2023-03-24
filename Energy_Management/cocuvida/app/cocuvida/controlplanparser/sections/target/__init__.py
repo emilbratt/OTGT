@@ -14,5 +14,5 @@ class Entry:
                 raise Exception('UnknownEntryInTarget', target_type)
 
         obj = Entry(self.target_entry)
-        res = await obj.publish_states(state_value)
+        res = await obj.publish_state(state_value)
         return res

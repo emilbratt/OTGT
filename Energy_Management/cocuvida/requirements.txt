@@ -1,6 +1,7 @@
-streaming-form-data
-uvicorn
 aiofiles
 paho-mqtt
+requests
+streaming-form-data
 pyyaml
+uvicorn
 uvloop

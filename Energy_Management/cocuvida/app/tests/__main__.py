@@ -30,7 +30,6 @@ class SQLDatabase(unittest.TestCase):
         create_database(self)
 
 
-#class ControlPlan(unittest.IsolatedAsyncioTestCase):
 class ControlPlan(unittest.TestCase):
 
     # check if we can generate states from test control_plan
@@ -39,6 +38,13 @@ class ControlPlan(unittest.TestCase):
         example_controlplan(self)
 
 
+class ControlplanTargets(unittest.TestCase):
+
+    # check if we can generate states from test control_plan
+    def test_publish_states_to_shelly_target(self):
+        from tests.controlplantargets_test import ControlplanTargets
+        ct = ControlplanTargets()
+        ct.publish_states_to_shelly_target()
 
 if __name__ == '__main__':
     unittest.main()
