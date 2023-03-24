@@ -1,6 +1,6 @@
 aiofiles
+aiohttp
 paho-mqtt
-requests
 streaming-form-data
 pyyaml
 uvicorn
