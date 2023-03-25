@@ -96,6 +96,14 @@ class Handle:
             {..},
             {..},
         ]
+
+        NOTE: about daylight saving time
+            if normal day (24 hours):
+                extra row happens on index 24
+            if swithcing to winter time (25 hours)
+                extra row happens on index 25
+            if switching to summer time (23 hours)
+                row index 2 has no values
         '''
         # extract all regions, as this is needed as first step
         regions = {}
@@ -136,10 +144,13 @@ class Handle:
                             value = float(value)
                             value = round(value*0.1)
                         except ValueError:
-                            pass
+                            if start_hour == '02':
+                                # if this happens -> likely means moving from winter-time to summer-time at 2 AM
+                                # ..and that means there wont be any values between 02:00 and 03:00 as this hour is skipped
+                                continue
                     if row['IsExtraRow']:
                         regions[region][title_name.lower()] = value
-                    else:
+                    elif not row['IsExtraRow']:
                         # here is also where the increase in resolution happens (hour 4x -> quarters)
                         for j in range(4):
                             # work out timestamp for each 15 minutes
@@ -149,9 +160,10 @@ class Handle:
                             else:
                                 end = str(start_hour) + ':' + str((j+1) * 15).zfill(2)
 
-                            quarter_row_number = int((row_number*4) + j)
+                            # the current resolution value (incr. +1 each time, can be appended as index)
+                            index = regions[region]['resolution']
                             price = {
-                                'index': quarter_row_number,
+                                'index': index,
                                 'time_start': str(start),
                                 'time_end': str(end),
                                 'value': value
@@ -162,8 +174,7 @@ class Handle:
             # convert the data structure to the final one where each region (dict) is a list object
             self.data_reshaped = []
             for region in regions:
-                item = regions[region]
-                self.data_reshaped.append(item)
+                self.data_reshaped.append( regions[region] )
             return True
         except:
             self.log = {

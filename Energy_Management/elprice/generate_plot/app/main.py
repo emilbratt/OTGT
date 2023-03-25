@@ -56,7 +56,6 @@ class Application:
                 print('the data received could not be processed')
             return False
 
-        return True
         for region_data in data:
             print('generating day plot for', region_data['region'])
             if self.plot.generate_bar_chart_bydate(region_data):
