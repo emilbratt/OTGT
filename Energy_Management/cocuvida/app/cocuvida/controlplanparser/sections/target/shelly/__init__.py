@@ -20,8 +20,7 @@ class Entry:
                 case _:
                     raise Exception('UnsupportedState:', state_value)
 
-            print('PUIBLISH STATE')
-            print('alias:', alias, 'url:', shelly_url, 'payload', payload)
+            # FIXME: make session operate for all entries in the target entry
             async with aiohttp.ClientSession() as session:
                 res = await session.post(shelly_url, json=payload)
                 print(res)
