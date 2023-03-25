@@ -46,8 +46,6 @@ services:
     environment:
       TZ: Europe/Oslo
     restart: unless-stopped
-    ports:
-      - 8087:8087
     volumes:
       - type: bind
         source: ../../
@@ -64,8 +62,6 @@ services:
     environment:
       TZ: Europe/Oslo
     restart: unless-stopped
-    ports:
-      - 8087:8087
     volumes:
       - type: bind
         source: ../../
