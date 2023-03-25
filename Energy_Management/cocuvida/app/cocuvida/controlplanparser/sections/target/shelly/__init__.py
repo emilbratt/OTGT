@@ -8,10 +8,20 @@ class Entry:
 
     async def publish_state(self, state_value: str) -> bool:
         for alias, arr in self.target['entries'].items():
-            shelly_url = f'http://{arr[0]}/rpc'
-            payload = {'id': arr[1], state_value: True}
-            #payload = json.dumps(payload)
-            #print('alias:', alias, 'url:', shelly_url, 'payload', payload)
+            target_ip = arr[0]
+            shelly_url = f'http://{target_ip}/rpc/Switch.Set'
+
+            target_id = arr[1]
+            match state_value:
+                case 'on':
+                    payload = {'id': target_id, 'on': True}
+                case 'off':
+                    payload = {'id': target_id, 'on': False}
+                case _:
+                    raise Exception('UnsupportedState:', state_value)
+
+            print('PUIBLISH STATE')
+            print('alias:', alias, 'url:', shelly_url, 'payload', payload)
             async with aiohttp.ClientSession() as session:
-                return True
-                #await session.post(shelly_url, json=payload)
+                res = await session.post(shelly_url, json=payload)
+                print(res)
