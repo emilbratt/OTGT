@@ -23,7 +23,7 @@ class View:
     '''
 
     OVERVIEW_URLS = [
-        # [title, path]
+        # [path, title]
         ['/controlplans', 'Controlplans'],
     ]
 
