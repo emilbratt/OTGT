@@ -9,6 +9,8 @@ async def route(scope: dict, receive: object, send: object) -> None:
     #   if switch case block grows to big (dont think the app will be that big)
     #   ..then I might implement dynamic import by name during runtime instead
     match route:
+        case '/':
+            from .controllers.home import loader
         case '/favicon.ico':
             from .controllers.favicon import loader
         case '/controlplans':
