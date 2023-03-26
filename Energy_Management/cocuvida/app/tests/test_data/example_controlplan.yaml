@@ -78,7 +78,7 @@ schedule: # this is where we define different states for each target and the tim
     include_entry: true
     entries:
       # [ time, target, state/value ]
-      - ['12:00', 'shelly', 'on']
+      - ['11:00', 'shelly', 'on']
       - ['12:00', 'exampletarget', '60']
       - ['12:00', 'mqtt', 'msgrefa']
       - ['13:00', 'mqtt', 'msgrefb']
