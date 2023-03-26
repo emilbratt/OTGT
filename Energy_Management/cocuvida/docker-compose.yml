@@ -45,7 +45,7 @@ services:
     command: 'python -u -m cocuvida elspot'
     environment:
       TZ: Europe/Oslo
-    restart: unless-stopped
+    restart: 'no'
     volumes:
       - type: bind
         source: ../../
@@ -61,7 +61,7 @@ services:
     command: 'python -u -m cocuvida controlplan'
     environment:
       TZ: Europe/Oslo
-    restart: unless-stopped
+    restart: 'no'
     volumes:
       - type: bind
         source: ../../
