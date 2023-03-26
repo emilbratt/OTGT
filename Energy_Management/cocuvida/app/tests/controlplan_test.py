@@ -17,7 +17,7 @@ GENERATED_STATES = [
 
 
 def example_controlplan(self):
-    with open('tests/test_data/example_controlplan.yaml') as f:
+    with open('tests/test_data/controlplan/example_controlplan.yaml') as f:
         raw_content = f.read()
 
         # if no records, still OK

@@ -12,7 +12,7 @@ class Elspot:
     def __init__(self):
         self.region_config = get_region_config()
         print(self.region_config)
-        print(isodate.today())
+        print(isodates.today())
 
 async def app():
     el = Elspot()

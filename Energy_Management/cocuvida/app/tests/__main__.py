@@ -38,5 +38,13 @@ class ControlPlan(unittest.TestCase):
         example_controlplan(self)
 
 
+class ElspotTest(unittest.TestCase):
+
+    # check if we can generate states from test control_plan
+    def test_elspot_test_data(self):
+        from tests.elspot_test import elspot_test_data
+        elspot_test_data(self)
+
+
 if __name__ == '__main__':
     unittest.main()
