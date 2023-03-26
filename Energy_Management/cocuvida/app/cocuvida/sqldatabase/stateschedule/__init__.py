@@ -104,7 +104,6 @@ async def select_unpublished_for_timestamp(timestamp: str) -> list:
         AND STRFTIME('%Y-%m-%d %H:%M', state_time) = STRFTIME('%Y-%m-%d %H:%M', ?)
         ORDER BY state_time ASC
     '''
-    #return select_all(query, [isodates.timestamp_now()])
     return select_all(query, [timestamp])
 
 async def update_state_status_by_rowid(rowid: int, state_status: int) -> bool:
