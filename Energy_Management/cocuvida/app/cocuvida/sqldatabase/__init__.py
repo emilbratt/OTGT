@@ -12,9 +12,17 @@ def connect():
 def insert_one(query: str, row: list) -> None:
     cnxn = sqlite3.connect(DATABASE_FILE)
     cursor = cnxn.cursor()
-    cursor.execute(query, row)
-    cnxn.commit()
-    cnxn.close()
+    try:
+        cursor.execute(query, row)
+        cnxn.commit()
+        res = 'insert'
+    except sqlite3.IntegrityError:
+        res = 'IntegrityError'
+    except Exception as e:
+        res = f'ERROR: {__file__} {type(e)} {e}'
+    finally:
+        cnxn.close()
+        return res
 
 def insert_many(query: str, rows: list) -> None:
     cnxn = sqlite3.connect(DATABASE_FILE)
@@ -22,6 +30,19 @@ def insert_many(query: str, rows: list) -> None:
     cursor.executemany(query, rows)
     cnxn.commit()
     cnxn.close()
+
+def update(query: str, row: list) -> None:
+    cnxn = sqlite3.connect(DATABASE_FILE)
+    cursor = cnxn.cursor()
+    try:
+        cursor.execute(query, row)
+        cnxn.commit()
+        res = 'update'
+    except Exception as e:
+        res = f'ERROR: {__file__} {type(e)} {e}'
+    finally:
+        cnxn.close()
+        return res
 
 def select_one(query: str, param: list) -> list:
     cnxn = sqlite3.connect(DATABASE_FILE)

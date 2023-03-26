@@ -22,7 +22,7 @@ target:
 
   # entry 2. MQTT subscribers
   # cocuvida application uses the name of this controlplan for topic
-  # e.g. topic for this controlplan will be set to -> "cocuvida/example_controlplan"
+  # e.g. topic for this controlplan will be set to -> "cocuvida/controlplan/example_controlplan"
   mqtt:
     include_entry: true # enable/disable entry
     entries:

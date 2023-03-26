@@ -2,20 +2,20 @@ import asyncio
 
 from cocuvida.timehandle import timeofday, isodates, seconds
 
-from .currency import get as get_region_config
-
-
-class Elspot:
-
-    URL = 'https://www.nordpoolgroup.com/api/marketdata/page/10'
-
-    def __init__(self):
-        self.region_config = get_region_config()
-        print(self.region_config)
-        print(isodates.today())
+from cocuvida.elspot import nordpooldayahead
 
 async def app():
-    el = Elspot()
+    from cocuvida.sqldatabase import elspot as sql_elspot
+    res = await sql_elspot.elspot_raw_exists_for_date(isodates.today_plus_days(1))
+    # while True:
+    #     sleep_time = seconds.until_next_minute()
+    #     await asyncio.sleep(sleep_time)
+
+    app = nordpooldayahead.Application()
+    if await app.elspot_is_published():
+        if await app.download():
+            pass
+            
 
 def run_elspot() -> None:
     asyncio.run(app())

@@ -41,9 +41,9 @@ class ControlPlan(unittest.TestCase):
 class ElspotTest(unittest.TestCase):
 
     # check if we can generate states from test control_plan
-    def test_elspot_test_data(self):
-        from tests.elspot_test import elspot_test_data
-        elspot_test_data(self)
+    def test_daylight_saving_case(self):
+        from tests.elspot_test import daylight_saving_case
+        daylight_saving_case(self)
 
 
 if __name__ == '__main__':
