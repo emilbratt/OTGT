@@ -1,4 +1,3 @@
-from time import sleep
 import asyncio
 
 from cocuvida.timehandle import timeofday, isodates, seconds

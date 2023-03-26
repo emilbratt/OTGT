@@ -1,4 +1,6 @@
-from cocuvida.timehandle import isodates, seconds, timeofday
+import asyncio
+
+from cocuvida.timehandle import timeofday, isodates, seconds
 
 from .currency import get as get_region_config
 
@@ -12,6 +14,8 @@ class Elspot:
         print(self.region_config)
         print(isodate.today())
 
+async def app():
+    el = Elspot()
 
-def run_elspot():
-    app = Elspot()
+def run_elspot() -> None:
+    asyncio.run(app())
