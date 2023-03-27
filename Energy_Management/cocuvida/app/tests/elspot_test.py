@@ -22,28 +22,28 @@ def process_elspot(self):
     '''
     with open(FILES['23']) as f:
         raw_elspot = f.read()
-        reshaped_elspot = asyncio.run(process.reshape(raw_elspot))
-        self.assertTrue(reshaped_elspot[0]['resolution'] == 92)
+        processed_elspot = asyncio.run(process.reshape(raw_elspot))
+        self.assertTrue(processed_elspot[0]['resolution'] == 92)
         asyncio.run(sql_elspot.insert_raw_elspot(raw_elspot))
-        for region in reshaped_elspot:
+        for region in processed_elspot:
             res = asyncio.run(sql_elspot.insert_processed_elspot(region))
             self.assertTrue(res)
 
     with open(FILES['24']) as f:
         raw_elspot = f.read()
-        reshaped_elspot = asyncio.run(process.reshape(raw_elspot))
-        self.assertTrue(reshaped_elspot[0]['resolution'] == 96)
+        processed_elspot = asyncio.run(process.reshape(raw_elspot))
+        self.assertTrue(processed_elspot[0]['resolution'] == 96)
         asyncio.run(sql_elspot.insert_raw_elspot(raw_elspot))
-        for region in reshaped_elspot:
+        for region in processed_elspot:
             res = asyncio.run(sql_elspot.insert_processed_elspot(region))
             self.assertTrue(res)
 
     with open(FILES['25']) as f:
         raw_elspot = f.read()
-        reshaped_elspot = asyncio.run(process.reshape(raw_elspot))
-        self.assertTrue(reshaped_elspot[0]['resolution'] == 100)
+        processed_elspot = asyncio.run(process.reshape(raw_elspot))
+        self.assertTrue(processed_elspot[0]['resolution'] == 100)
         asyncio.run(sql_elspot.insert_raw_elspot(raw_elspot))
-        for region in reshaped_elspot:
+        for region in processed_elspot:
             res = asyncio.run(sql_elspot.insert_processed_elspot(region))
             self.assertTrue(res)
 
