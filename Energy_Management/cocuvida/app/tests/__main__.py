@@ -41,9 +41,9 @@ class ControlPlan(unittest.TestCase):
 class ElspotTest(unittest.TestCase):
 
     # check if we can reshape elspot prices for 23, 24 and 25 hour days (dst)
-    def test_process_reshape_elspot(self):
-        from tests.elspot_test import process_reshape_elspot
-        process_reshape_elspot(self)
+    def test_processelspot(self):
+        from tests.elspot_test import process_elspot
+        process_elspot(self)
 
 
 if __name__ == '__main__':

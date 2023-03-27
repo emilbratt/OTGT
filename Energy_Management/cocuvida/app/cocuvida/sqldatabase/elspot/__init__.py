@@ -40,7 +40,7 @@ async def elspot_raw_exists_for_date(isodate: str):
     res = select_one(query, [isodate])
     return (res[0] == 1)
 
-async def insert_reshaped_elspot(elspot_data: dict):
+async def insert_processed_elspot(elspot_data: dict):
     '''
         pass dict in this format
         {
@@ -61,13 +61,13 @@ async def insert_reshaped_elspot(elspot_data: dict):
         },
     '''
     insert_query = '''
-        INSERT INTO elspot_reshaped
+        INSERT INTO elspot_processed
             (elspot_data, elspot_date, elspot_region)
         VALUES
             (?, ?, ?)
     '''
     update_query = '''
-        UPDATE elspot_reshaped
+        UPDATE elspot_processed
         SET elspot_data = ?
         WHERE elspot_date = ? AND elspot_region = ?
     '''

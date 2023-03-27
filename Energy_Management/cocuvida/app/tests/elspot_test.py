@@ -11,7 +11,7 @@ FILES = {
 }
 
 
-def process_reshape_elspot(self):
+def process_elspot(self):
     '''
         The entire year except for 2 days, we have 24 hours during the day
         For the remaining 2, we have either 23 or 25 depending on wether we are
@@ -26,7 +26,7 @@ def process_reshape_elspot(self):
         self.assertTrue(reshaped_elspot[0]['resolution'] == 92)
         asyncio.run(sql_elspot.insert_raw_elspot(raw_elspot))
         for region in reshaped_elspot:
-            res = asyncio.run(sql_elspot.insert_reshaped_elspot(region))
+            res = asyncio.run(sql_elspot.insert_processed_elspot(region))
             self.assertTrue(res)
 
     with open(FILES['24']) as f:
@@ -35,7 +35,7 @@ def process_reshape_elspot(self):
         self.assertTrue(reshaped_elspot[0]['resolution'] == 96)
         asyncio.run(sql_elspot.insert_raw_elspot(raw_elspot))
         for region in reshaped_elspot:
-            res = asyncio.run(sql_elspot.insert_reshaped_elspot(region))
+            res = asyncio.run(sql_elspot.insert_processed_elspot(region))
             self.assertTrue(res)
 
     with open(FILES['25']) as f:
@@ -44,6 +44,6 @@ def process_reshape_elspot(self):
         self.assertTrue(reshaped_elspot[0]['resolution'] == 100)
         asyncio.run(sql_elspot.insert_raw_elspot(raw_elspot))
         for region in reshaped_elspot:
-            res = asyncio.run(sql_elspot.insert_reshaped_elspot(region))
+            res = asyncio.run(sql_elspot.insert_processed_elspot(region))
             self.assertTrue(res)
 
