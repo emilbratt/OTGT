@@ -1,10 +1,17 @@
 /*
   - ELSPOT TABLES
 */
--- DOWNLOADED ELSPOT DATA FROM NORDPOOL
+-- RAW ELSPOT DATA FROM NORDPOOL
 CREATE TABLE IF NOT EXISTS elspot_raw (
   elspot_date DATETIME NOT NULL PRIMARY KEY,
   elspot_data JSON NOT NULL
+);
+-- RESHAPED DATA FROM RAW ELSPOT DATA
+CREATE TABLE IF NOT EXISTS elspot_reshaped (
+  elspot_date   DATETIME NOT NULL PRIMARY KEY,
+  elspot_data   JSON NOT NULL,
+  elspot_region TEXT NOT NULL,
+  UNIQUE (elspot_date, elspot_data, elspot_region)
 );
 
 /*
