@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS elspot_raw (
 );
 -- RESHAPED DATA FROM RAW ELSPOT DATA
 CREATE TABLE IF NOT EXISTS elspot_reshaped (
-  elspot_date   DATETIME NOT NULL PRIMARY KEY,
+  elspot_date   DATETIME NOT NULL,
   elspot_data   JSON NOT NULL,
   elspot_region TEXT NOT NULL,
   UNIQUE (elspot_date, elspot_data, elspot_region)

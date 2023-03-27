@@ -41,9 +41,9 @@ class ControlPlan(unittest.TestCase):
 class ElspotTest(unittest.TestCase):
 
     # check if we can reshape elspot prices for 23, 24 and 25 hour days (dst)
-    def test_daylight_saving_case(self):
-        from tests.elspot_test import daylight_saving_case
-        daylight_saving_case(self)
+    def test_process_reshape_elspot(self):
+        from tests.elspot_test import process_reshape_elspot
+        process_reshape_elspot(self)
 
 
 if __name__ == '__main__':
