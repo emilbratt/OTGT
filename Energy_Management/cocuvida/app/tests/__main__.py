@@ -4,12 +4,12 @@ import unittest
 class Environment(unittest.TestCase):
 
     # testing if we have forgotten to configure cocuvida
-    def test_cocuvida(self):
+    def test_environment_cocuvida(self):
         from tests.environment_test import cocuvida
         cocuvida(self)
 
     # testing if we have forgotten to configure cocuvida
-    def test_mqtt(self):
+    def test_environment_mqtt(self):
         from tests.environment_test import mqtt
         mqtt(self)
 
@@ -17,7 +17,7 @@ class Environment(unittest.TestCase):
 class Requirements(unittest.TestCase):
 
     # check if needed python modules are installed
-    def test_requirements(self):
+    def test_import_requirements(self):
         from tests.requirements_test import check_modules
         check_modules(self)
 
@@ -40,7 +40,7 @@ class ControlPlan(unittest.TestCase):
 
 class ElspotTest(unittest.TestCase):
 
-    # check if we can generate states from test control_plan
+    # check if we can reshape elspot prices for 23, 24 and 25 hour days (dst)
     def test_daylight_saving_case(self):
         from tests.elspot_test import daylight_saving_case
         daylight_saving_case(self)

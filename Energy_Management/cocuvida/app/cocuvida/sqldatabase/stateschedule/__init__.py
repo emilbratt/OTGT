@@ -96,7 +96,7 @@ async def select_unpublished_for_timestamp(timestamp: str) -> list:
     '''
         returns all within the window of whole minute (X mark) -> YYYY-MM-DD HH:MM:XX 
     '''
-    # uses SQL function STRFTIME() to extract 'YYYY-MM-DD HH' (excluding minutes) from date
+    # uses SQL function STRFTIME() to extract 'YYYY-MM-DD HH:MM' (excluding seconds) from date
     query = '''
         SELECT plan_name, target_type, state_value, state_time, rowid
         FROM state_schedule
