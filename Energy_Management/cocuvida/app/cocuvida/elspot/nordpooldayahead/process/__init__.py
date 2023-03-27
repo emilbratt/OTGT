@@ -8,9 +8,9 @@ from . import NOK
 async def reshape(elspot_raw: str):
     '''
     pass the serialised json as the elspot_raw parameter
-    if reshape success, returns a dictionary that looks like this
-    if failed, returns empty list []
+    if reshape success -> returns a list with dicts that looks like this
     [
+        {..},
         {
             'region': 'Molde,
             'currency': 'NOK',
@@ -30,6 +30,7 @@ async def reshape(elspot_raw: str):
         {..},
         {..},
     ]
+    if reshape fails -> returns empty list []
 
     NOTE: about daylight saving time
         if normal day (24 hours):
