@@ -18,7 +18,7 @@ class Application:
 
     async def elspot_is_published(self) -> bool:
         '''
-            returns True one time the first time we run this method after 13:30
+            returns True the first time we run this method after 13:30
             returns False in all other cases
         '''
         # if time now before 13:30

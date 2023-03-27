@@ -15,6 +15,7 @@ class View:
 
     HTML_BODY_START = b'''
     <body>
+    <button onclick="window.location.href='/';">Home</button>
     '''
 
     HTML_BODY_END = b'''

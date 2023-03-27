@@ -18,6 +18,7 @@ class View:
 
     HTML_BODY_START = b'''
     <body>
+    <button onclick="window.location.href='/';">Home</button>
     '''
 
     HTML_BODY_END = b'''
@@ -26,14 +27,13 @@ class View:
     '''
 
     SHORTCUTS = [
-        ['/controlplans', 'Controlplans'],
-        ['/elspot', 'Elspot'],
+        ['/elspot/prices', 'Prices'],
     ]
 
     def __init__(self):
         self.html_head = bytes()
         self.headers = {b'content-type': b'text/html'}
-        self.html_title = b'<p>Cocuvida Home</p><hr>'
+        self.html_title = b'<p>Elspot</p><hr>'
         self.html_buttons = bytes()
         self.http_code = 200
 
