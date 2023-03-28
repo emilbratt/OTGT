@@ -4,7 +4,7 @@ from os import path
 from cocuvida.sqldatabase import DATABASE_FILE
 
 
-def run(script: str):
+def run(script: str) -> str:
     sciript_dir = path.dirname(path.realpath(__file__))
     action = str()
     with open(path.join(sciript_dir, script), 'r') as f:

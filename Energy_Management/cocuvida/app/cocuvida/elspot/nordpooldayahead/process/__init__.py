@@ -16,9 +16,9 @@ async def reshape(elspot_raw: str):
             'currency': 'NOK',
             'date':    'YYYY-MM-DD',
             'unit':    'ore/kWh',
-            'Max':     '280',
-            'Min':     '143',
-            'Average': '197',
+            'max':     '280',
+            'min':     '143',
+            'average': '197',
             'resolution': 96, # (92 for 23 hours, 100 for 25 hours)
             'prices': [
                 {'index': 0, 'time_start': '00:00', 'time_end': '00:15', 'value': '210'},

@@ -9,7 +9,7 @@ def connect():
     cnxn = sqlite3.connect(DATABASE_FILE)
     return cnxn
 
-def insert_one(query: str, row: list) -> None:
+def insert_one(query: str, row: list) -> str:
     cnxn = sqlite3.connect(DATABASE_FILE)
     cursor = cnxn.cursor()
     try:
@@ -31,7 +31,7 @@ def insert_many(query: str, rows: list) -> None:
     cnxn.commit()
     cnxn.close()
 
-def update(query: str, row: list) -> None:
+def update(query: str, row: list) -> str:
     cnxn = sqlite3.connect(DATABASE_FILE)
     cursor = cnxn.cursor()
     try:
@@ -57,6 +57,15 @@ def select_all(query: str, param: list) -> list:
     cnxn = sqlite3.connect(DATABASE_FILE)
     cursor = cnxn.cursor()
     cursor.execute(query, param)
+    cnxn.commit()
+    res = cursor.fetchall()
+    cnxn.close()
+    return res
+
+def select_all_no_param(query: str) -> list:
+    cnxn = sqlite3.connect(DATABASE_FILE)
+    cursor = cnxn.cursor()
+    cursor.execute(query)
     cnxn.commit()
     res = cursor.fetchall()
     cnxn.close()

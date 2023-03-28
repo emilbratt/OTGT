@@ -10,6 +10,7 @@ class View:
     HTML_START = b'''<!DOCTYPE html>
     <html>
     <head>
+    <meta charset="UTF-8">
     '''
 
     HTML_HEAD_END = b'''

@@ -1,10 +1,32 @@
 import json
 
-from cocuvida.sqldatabase import connect, select_one, insert_one, update
+from cocuvida.sqldatabase import connect, select_one, select_all_no_param, insert_one, update
 from cocuvida.timehandle import isodates
 
 
-async def insert_raw_elspot(json_string: str) -> str:
+async def list_elspot_regions() -> list:
+    query = 'SELECT DISTINCT elspot_region FROM elspot_processed;'
+    res = select_all_no_param(query)
+    if res == None:
+        return []
+    res = [r[0] for r in res]
+    return res
+
+async def select_region_elspot_data_for_date_window(region: str, time_from: str, time_to: str):
+    pass
+
+async def select_region_elspot_data_for_date(region: str, isodate: str) -> list:
+    query = '''
+        SELECT elspot_data
+        FROM elspot_processed
+        WHERE elspot_region = ? AND elspot_date = ?;
+    '''
+    res = select_one(query, [region, isodate])
+    if res == None:
+        return []
+    return json.loads(res[0])
+
+async def insert_raw_elspot(json_string: str) -> bool:
     '''
         only pass the raw data, the date is extracted from it
     '''
@@ -31,7 +53,7 @@ async def insert_raw_elspot(json_string: str) -> str:
             return True
     return False
 
-async def elspot_raw_exists_for_date(isodate: str):
+async def elspot_raw_exists_for_date(isodate: str) -> bool:
     query = '''
         SELECT COUNT(elspot_data)
         FROM elspot_raw
@@ -40,7 +62,7 @@ async def elspot_raw_exists_for_date(isodate: str):
     res = select_one(query, [isodate])
     return (res[0] == 1)
 
-async def insert_processed_elspot(elspot_data: dict):
+async def insert_processed_elspot(elspot_data: dict) -> bool:
     '''
         pass dict in this format
         {
@@ -48,9 +70,9 @@ async def insert_processed_elspot(elspot_data: dict):
             'currency': 'NOK',
             'date':    'YYYY-MM-DD',
             'unit':    'ore/kWh',
-            'Max':     '280',
-            'Min':     '143',
-            'Average': '197',
+            'max':     '280',
+            'min':     '143',
+            'average': '197',
             'resolution': 96, # (92 for 23 hours, 100 for 25 hours)
             'prices': [
                 {'index': 0, 'time_start': '00:00', 'time_end': '00:15', 'value': '210'},

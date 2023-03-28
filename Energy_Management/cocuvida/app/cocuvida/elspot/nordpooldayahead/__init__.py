@@ -1,6 +1,7 @@
 import aiohttp
 
 from cocuvida.timehandle import timeofday, isodates
+from cocuvida.sqldatabase import elspot as sql_elspot
 
 from . import process
 from .api import API
@@ -36,5 +37,11 @@ class Application:
         api = API()
         if await api.download():
             self.reshaped_data = await process.reshape(api.response_body)
+            for region in self.reshaped_data:
+                # INSERT INTO elspot_processed
+                res = await sql_elspot.insert_processed_elspot(region)
+                if not res:
+                    raise Exception('InsertError: table: elspot_processed', region['name'])
+
             return True
         return False
