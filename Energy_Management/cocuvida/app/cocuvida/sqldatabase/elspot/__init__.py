@@ -5,7 +5,7 @@ from cocuvida.timehandle import isodates
 
 
 async def list_elspot_regions() -> list:
-    query = 'SELECT DISTINCT elspot_region FROM elspot_processed;'
+    query = 'SELECT DISTINCT elspot_region FROM elspot_processed'
     res = select_all_no_param(query)
     if res == None:
         return []
@@ -19,7 +19,7 @@ async def select_region_elspot_data_for_date(region: str, isodate: str) -> list:
     query = '''
         SELECT elspot_data
         FROM elspot_processed
-        WHERE elspot_region = ? AND elspot_date = ?;
+        WHERE elspot_region = ? AND elspot_date = ?
     '''
     res = select_one(query, [region, isodate])
     if res == None:
