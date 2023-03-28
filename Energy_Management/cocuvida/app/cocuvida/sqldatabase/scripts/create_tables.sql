@@ -1,27 +1,36 @@
 /*
-  - ELSPOT TABLES
+  - ELSPOT TABLES -
 */
 -- RAW ELSPOT DATA FROM NORDPOOL
 CREATE TABLE IF NOT EXISTS elspot_raw (
   elspot_date DATETIME NOT NULL PRIMARY KEY,
   elspot_data JSON NOT NULL
 );
--- PROCESSED DATA FROM RAW ELSPOT DATA
+-- PROCESSED ELSPOT DATA FROM RAW ELSPOT DATA
 CREATE TABLE IF NOT EXISTS elspot_processed (
   elspot_date   DATETIME NOT NULL,
   elspot_data   JSON NOT NULL,
   elspot_region TEXT NOT NULL,
-  UNIQUE (elspot_date, elspot_data, elspot_region)
+  last_updated  TIMESTAMP DEFAULT (DATETIME('now', 'localtime')) NOT NULL, -- iso timestamp YYYY-MM-DDTHH:MM
+  UNIQUE (elspot_date, elspot_region)
+);
+-- PLOT PRICES FOR SPECIFIC DATE FROM PROCESSED ELSPOT DATA
+CREATE TABLE IF NOT EXISTS elspot_plot_date (
+  plot_date    DATETIME NOT NULL,
+  plot_data    TEXT NOT NULL, -- RAW SVG STRING
+  plot_region  TEXT NOT NULL,
+  last_updated TIMESTAMP DEFAULT (DATETIME('now', 'localtime')) NOT NULL, -- iso timestamp YYYY-MM-DDTHH:MM
+  UNIQUE (plot_date, plot_region)
 );
 
 /*
-  - CONTROL-PLAN TABLES
+  - CONTROL-PLAN TABLES -
 */
 -- HOLDS THE USER CONFIGURED CONTROL-PLANS FOR SETTING THE STATE OF IoT-DEVICES
 CREATE TABLE IF NOT EXISTS control_plans (
   plan_name    TEXT NOT NULL PRIMARY KEY,
   plan_data    TEXT NOT NULL, -- HOLDS RAW YAML STRING
-  last_updated DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
+  last_updated TIMESTAMP DEFAULT (DATETIME('now', 'localtime')) NOT NULL -- iso timestamp YYYY-MM-DDTHH:MM
 );
 -- STORE FUTURE (GENERATED) AND PAST (HISTORY) STATE VALUES
 CREATE TABLE IF NOT EXISTS state_schedule (

@@ -5,3 +5,5 @@ streaming-form-data
 pyyaml
 uvicorn
 uvloop
+matplotlib
+numpy

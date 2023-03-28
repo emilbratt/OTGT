@@ -70,3 +70,16 @@ def select_all_no_param(query: str) -> list:
     res = cursor.fetchall()
     cnxn.close()
     return res
+
+def delete(query: str, param: list) -> list:
+    cnxn = connect()
+    cursor = cnxn.cursor()
+    try:
+        cursor.execute(query, param)
+        cnxn.commit()
+        action = 'delete'
+    except Exception as e:
+        action = f'ERROR: {__file__} {type(e)} {e}'
+    finally:
+        cnxn.close()
+        return action

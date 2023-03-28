@@ -2,10 +2,10 @@ import json
 
 from cocuvida.environment import env_ini_get
 
-from . import NOK
+from . import NOK, plot
 
 
-async def reshape(elspot_raw: str):
+async def reshape(elspot_raw: str) -> list:
     '''
     pass the serialised json as the elspot_raw parameter
     if reshape success -> returns a list with dicts that looks like this
@@ -49,3 +49,14 @@ async def reshape(elspot_raw: str):
         case _:
             raise Exception('InvalidCurrency', currency)
     return data
+
+async def plot_date(elspot_data: str) -> dict:
+    payload = {
+        'region': elspot_data['region'],
+        'date': elspot_data['date'],
+    }
+    payload['plot'] = await plot.plot_date(elspot_data) 
+    return payload
+
+async def plot_hour(elspot_data: str):
+    pass

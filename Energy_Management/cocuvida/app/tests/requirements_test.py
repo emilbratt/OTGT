@@ -9,3 +9,5 @@ def check_modules(self):
     self.assertIsNotNone(importlib.util.find_spec('uvicorn'))
     self.assertIsNotNone(importlib.util.find_spec('uvloop'))
     self.assertIsNotNone(importlib.util.find_spec('yaml'))
+    self.assertIsNotNone(importlib.util.find_spec('matplotlib'))
+    self.assertIsNotNone(importlib.util.find_spec('numpy'))

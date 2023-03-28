@@ -22,14 +22,6 @@ class Requirements(unittest.TestCase):
         check_modules(self)
 
 
-class SQLDatabase(unittest.TestCase):
-
-    # check if we can write the database file data.sqlite etc.
-    def test_create_database(self):
-        from tests.sqldatabase_test import create_database
-        create_database(self)
-
-
 class ControlPlan(unittest.TestCase):
 
     # check if we can generate states from test control_plan
@@ -43,8 +35,16 @@ class ElspotTest(unittest.TestCase):
     # check if we can reshape elspot prices for 23, 24 and 25 hour days (dst)
     def test_processelspot(self):
         from tests.elspot_test import process_elspot
-        process_elspot(self)
+        process_elspot(self, hour=23, expected_resolution=92)
+        process_elspot(self, hour=24, expected_resolution=96)
+        process_elspot(self, hour=25, expected_resolution=100)
 
 
 if __name__ == '__main__':
+    from cocuvida.sqldatabase import scripts
+    # first: create database and tables if not exist
+    res = scripts.run('create_tables.sql')
+    if not res:
+        exit(1)
+    # second: run all tests
     unittest.main()

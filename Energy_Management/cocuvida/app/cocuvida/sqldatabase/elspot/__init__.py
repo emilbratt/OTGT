@@ -1,11 +1,11 @@
 import json
 
-from cocuvida.sqldatabase import connect, select_one, select_all_no_param, insert_one, update
+from cocuvida.sqldatabase import connect, select_one, select_all_no_param, insert_one, update, delete
 from cocuvida.timehandle import isodates
 
 
 async def list_elspot_regions() -> list:
-    query = 'SELECT DISTINCT elspot_region FROM elspot_processed'
+    query = 'SELECT DISTINCT elspot_region FROM elspot_processed ORDER BY elspot_region'
     res = select_all_no_param(query)
     if res == None:
         return []
@@ -101,6 +101,33 @@ async def insert_processed_elspot(elspot_data: dict) -> bool:
         return True
     if res == 'IntegrityError':
         res = update(update_query, [elspot_data, elspot_date, elspot_region])
+        if res == 'update':
+            return True
+    return False
+
+async def insert_plot_date(data: dict) -> bool:
+    insert_query = '''
+        INSERT INTO elspot_plot_date
+            (plot_data, last_updated, plot_date, plot_region)
+        VALUES
+            (?, ?, ?, ?)
+    '''
+    update_query = '''
+        UPDATE elspot_plot_date
+        SET plot_data = ?, last_updated = ?
+        WHERE plot_date = ? AND plot_region = ?
+    '''
+
+    plot_data = data['plot']
+    last_updated = isodates.timestamp_now_round('second')
+    plot_date = data['date']
+    plot_region = data['region']
+
+    res = insert_one(insert_query, [plot_data, last_updated, plot_date, plot_region])
+    if res == 'insert':
+        return True
+    if res == 'IntegrityError':
+        res = update(update_query, [plot_data, last_updated, plot_date, plot_region])
         if res == 'update':
             return True
     return False
