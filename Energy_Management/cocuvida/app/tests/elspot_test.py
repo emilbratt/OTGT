@@ -13,8 +13,8 @@ FILES = {
 
 def process_elspot(self, hour: int, expected_resolution: int):
     '''
-        The entire year except for 2 days, we have 24 hours during the day
-        For the remaining 2, we have either 23 or 25 depending on wether we are
+        The entire year except for 2 days consists of 24 hours.
+        For the remaining 2 we have either 23 or 25 depending on wether we are
         moving from summer to winter-time or from winter to summer-time.
 
         This test uses elspot data fetched from nordpool.
@@ -46,5 +46,5 @@ def process_elspot(self, hour: int, expected_resolution: int):
                     res = asyncio.run(sql_elspot.insert_plot_date(payload))
                     self.assertTrue(res)
         # this checks if the match block ran the 4 expected entries
-        for k in check_set:
-            self.assertTrue(check_set[k])
+        for region in check_set:
+            self.assertTrue(check_set[region])
