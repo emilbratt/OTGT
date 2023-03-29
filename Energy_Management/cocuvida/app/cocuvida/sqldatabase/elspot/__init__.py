@@ -12,7 +12,7 @@ async def list_elspot_regions() -> list:
     res = [r[0] for r in res]
     return res
 
-async def select_processed_elspot_data_for_date(region: str, isodate: str) -> list:
+async def select_processed_elspot_data_for_date(region: str, isodate: str) -> dict:
     query = '''
         SELECT elspot_data
         FROM elspot_processed
@@ -20,7 +20,7 @@ async def select_processed_elspot_data_for_date(region: str, isodate: str) -> li
     '''
     res = select_one(query, [region, isodate])
     if res == None:
-        return []
+        return {}
     return json.loads(res[0])
 
 async def select_elspot_raw_data_for_date(isodate: str) -> str:

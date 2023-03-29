@@ -1,5 +1,3 @@
-import aiohttp
-
 from cocuvida.timehandle import timeofday, isodates
 from cocuvida.sqldatabase import elspot as sql_elspot
 
@@ -8,12 +6,8 @@ from . import processelspot
 
 
 class Application:
-    URL = 'https://www.nordpoolgroup.com/api/marketdata/page/10'
 
     def __init__(self):
-        self.url = self.URL
-        self.status = None
-        self.raw_data = None
         self.elspot_is_published_check = False
 
     async def on_startup(self):
@@ -36,8 +30,9 @@ class Application:
         for region in res:
             # PLOT LIVE MARKER
             res = await sql_elspot.select_processed_elspot_data_for_date(region, isodates.today())
-            payload = await processelspot.plot_axvline_mark(res)
-            res = await sql_elspot.insert_plot_live(payload)
+            if res != {}:
+                payload = await processelspot.plot_axvline_mark(res)
+                res = await sql_elspot.insert_plot_live(payload)
 
     async def elspot_is_published(self) -> bool:
         '''
