@@ -1,7 +1,7 @@
 import asyncio
 
 from cocuvida.timehandle import seconds, timeofday
-from cocuvida.elspot import nordpooldayahead
+from cocuvida import nordpooldayahead
 
 
 async def app():

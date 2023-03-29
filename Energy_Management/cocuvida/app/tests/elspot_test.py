@@ -1,7 +1,7 @@
 import asyncio
 import json
 
-from cocuvida.elspot.nordpooldayahead import processelspot
+from cocuvida.nordpooldayahead import processelspot
 from cocuvida.sqldatabase import elspot as sql_elspot
 
 FILES = {
