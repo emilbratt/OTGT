@@ -1,6 +1,6 @@
 import json
 
-from cocuvida.sqldatabase import connect, select_one, select_all_no_param, insert_one, update, delete
+from cocuvida.sqldatabase import connect, select_one, select_all, select_all_no_param, insert_one, update, delete
 from cocuvida.timehandle import isodates
 
 
@@ -12,10 +12,7 @@ async def list_elspot_regions() -> list:
     res = [r[0] for r in res]
     return res
 
-async def select_region_elspot_data_for_date_window(region: str, time_from: str, time_to: str):
-    pass
-
-async def select_region_elspot_data_for_date(region: str, isodate: str) -> list:
+async def select_processed_elspot_data_for_date(region: str, isodate: str) -> list:
     query = '''
         SELECT elspot_data
         FROM elspot_processed
@@ -25,6 +22,17 @@ async def select_region_elspot_data_for_date(region: str, isodate: str) -> list:
     if res == None:
         return []
     return json.loads(res[0])
+
+async def select_elspot_raw_data_for_date(isodate: str) -> str:
+    query = '''
+        SELECT elspot_data
+        FROM elspot_raw
+        WHERE elspot_date = ?
+    '''
+    res = select_one(query, [isodate])
+    if res == None:
+        return ''
+    return res[0]
 
 async def insert_raw_elspot(json_string: str) -> bool:
     '''
@@ -66,13 +74,13 @@ async def insert_processed_elspot(elspot_data: dict) -> bool:
     '''
         pass dict in this format
         {
-            'region': 'Molde,
-            'currency': 'NOK',
-            'date':    'YYYY-MM-DD',
-            'unit':    'ore/kWh',
-            'max':     '280',
-            'min':     '143',
-            'average': '197',
+            'region':    'Molde,
+            'currency':  'NOK',
+            'date':      'YYYY-MM-DD',
+            'unit':      'ore/kWh',
+            'max':       '280',
+            'min':       '143',
+            'average':   '197',
             'resolution': 96, # (92 for 23 hours, 100 for 25 hours)
             'prices': [
                 {'index': 0, 'time_start': '00:00', 'time_end': '00:15', 'value': '210'},
@@ -80,7 +88,7 @@ async def insert_processed_elspot(elspot_data: dict) -> bool:
                 ..,
                 {'index': 95, 'time_start': '23:45', 'time_end': '00:00', 'value': '247'}
             ]
-        },
+        }
     '''
     insert_query = '''
         INSERT INTO elspot_processed
@@ -106,6 +114,15 @@ async def insert_processed_elspot(elspot_data: dict) -> bool:
     return False
 
 async def insert_plot_date(data: dict) -> bool:
+    '''
+        pass dict in this format
+        {
+            'region': 'Molde,
+            'date':   'YYYY-MM-DD',
+            'plot':   '<?xml ..'
+        }
+    '''
+
     insert_query = '''
         INSERT INTO elspot_plot_date
             (plot_data, last_updated, plot_date, plot_region)
@@ -131,3 +148,56 @@ async def insert_plot_date(data: dict) -> bool:
         if res == 'update':
             return True
     return False
+
+async def select_plot_for_date_and_region(region: str, isodate: str) -> str:
+    query = '''
+    SELECT plot_data FROM elspot_plot_date
+    WHERE plot_region = ? AND plot_date = ?
+    '''
+    res = select_one(query, [region, isodate])
+    if res == None:
+        return ''
+    return res[0]
+
+async def insert_plot_live(data: dict) -> bool:
+    '''
+        pass dict in this format
+        {
+            'region': 'Molde,
+            'plot':   '<?xml ..'
+        }
+    '''
+
+    insert_query = '''
+        INSERT INTO elspot_plot_live
+            (plot_data, last_updated, plot_region)
+        VALUES
+            (?, ?, ?)
+    '''
+    update_query = '''
+        UPDATE elspot_plot_live
+        SET plot_data = ?, last_updated = ?
+        WHERE plot_region = ?
+    '''
+
+    plot_data = data['plot']
+    last_updated = isodates.timestamp_now_round('second')
+    plot_region = data['region']
+    res = insert_one(insert_query, [plot_data, last_updated, plot_region])
+    if res == 'insert':
+        return True
+    if res == 'IntegrityError':
+        res = update(update_query, [plot_data, last_updated, plot_region])
+        if res == 'update':
+            return True
+    return False
+
+async def select_plot_live_for_region(region: str) -> str:
+    query = '''
+    SELECT plot_data FROM elspot_plot_live
+    WHERE plot_region = ?
+    '''
+    res = select_one(query, [region])
+    if res == None:
+        return ''
+    return res[0]

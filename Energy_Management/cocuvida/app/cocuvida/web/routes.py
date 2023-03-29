@@ -13,8 +13,6 @@ async def route(scope: dict, receive: object, send: object) -> None:
             from .controllers.home import loader
         case '/elspot':
             from .controllers.elspot import loader
-        case '/elspot/prices':
-            from .controllers.elspot.prices import loader
         case '/favicon.ico':
             from .controllers.favicon import loader
         case '/controlplans':

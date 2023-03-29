@@ -1,21 +1,20 @@
 import asyncio
 
-from cocuvida.timehandle import timeofday, isodates, seconds
-
+from cocuvida.timehandle import seconds, timeofday
 from cocuvida.elspot import nordpooldayahead
 
-async def app():
-    from cocuvida.sqldatabase import elspot as sql_elspot
-    res = await sql_elspot.elspot_raw_exists_for_date(isodates.today_plus_days(1))
-    # while True:
-    #     sleep_time = seconds.until_next_minute()
-    #     await asyncio.sleep(sleep_time)
 
+async def app():
+    print('ELSPOT START')
     app = nordpooldayahead.Application()
-    if await app.elspot_is_published():
-        if await app.download():
-            pass
-            
+    await app.on_startup()
+    while True:
+        if await app.elspot_is_published():
+            await app.process_tomorrows_elspot()
+        await app.on_every_quarter()
+        sleep_time = seconds.until_next_quarter_hour()
+        print('ELSPOT: sleep seconds', sleep_time, 'time now', timeofday.now())
+        await asyncio.sleep(sleep_time)
 
 def run_elspot() -> None:
     asyncio.run(app())

@@ -2,7 +2,7 @@ import json
 
 from cocuvida.environment import env_ini_get
 
-from . import NOK, plot
+from . import reshapes, plots
 
 
 async def reshape(elspot_raw: str) -> list:
@@ -45,18 +45,29 @@ async def reshape(elspot_raw: str) -> list:
 
     match currency:
         case 'NOK':
-            data = await NOK.reshape(elspot_raw)
+            data = await reshapes.reshape_nok(elspot_raw)
         case _:
             raise Exception('InvalidCurrency', currency)
     return data
 
 async def plot_date(elspot_data: str) -> dict:
+    '''
+        generate plots for a full day
+    '''
     payload = {
         'region': elspot_data['region'],
         'date': elspot_data['date'],
     }
-    payload['plot'] = await plot.plot_date(elspot_data) 
+    payload['plot'] = await plots.plot_date(elspot_data) 
     return payload
 
-async def plot_hour(elspot_data: str):
-    pass
+async def plot_axvline_mark(elspot_data: str):
+    '''
+        generate plots for a full day with highlighted current time
+    '''
+    payload = {
+        'region': elspot_data['region'],
+        'date': elspot_data['date'],
+    }
+    payload['plot'] = await plots.plot_axvline_mark(elspot_data) 
+    return payload

@@ -1,6 +1,8 @@
 # Overview for cocuvida
 THIS DIRECTORY IS STILL UNDER DEVELOPEMENT
 
+### Dependencies
+All external Python dependencies are listed in requirements.txt
 
 ### Running cocuvida on host machine
 cd to OTGT/Energy_Management/cocuvida/app
@@ -17,7 +19,7 @@ python -m cocuvida controlplan
 cd to OTGT/Energy_Management/cocuvida
 #### run all services
 ```
-docker-compose up cocuvida_prod
+docker-compose up cocuvida
 ```
 #### run a specific service (example starts the web "cocuvida_web" container)
 ```

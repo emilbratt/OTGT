@@ -17,7 +17,7 @@ async def app(scope: dict, receive: object, send: object):
 # the function to call if starting uvicorn via script (not via cli)
 def run_web():
     import uvicorn
-    print('starting web')
+    print('WEB START')
     port = env_ini_get('cocuvida', 'port')
     config = uvicorn.Config(
         'cocuvida.web:app',

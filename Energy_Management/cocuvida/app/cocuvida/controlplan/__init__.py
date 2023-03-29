@@ -7,7 +7,7 @@ from .publish import PublishStates
 
 
 async def app():
-    print('starting controlplan')
+    print('CONTROLPLAN START')
     genstates = GenerateStates()
     pubstates = PublishStates()
 
@@ -18,8 +18,6 @@ async def app():
     await genstates.generate_states_for_all_controlplans(isodates.today())
 
     while True:
-        print(f'loop start: {timeofday.now()}')
-
         # if new controlplan was added or old one was updated -> generate states
         await genstates.generate_states_for_new_controlplans()
         # generate states for tomorrow if certain condition is met
@@ -32,6 +30,7 @@ async def app():
         await pubstates.publish_current_states()
 
         sleep_time = seconds.until_next_minute()
+        print('CONTROLPLAN: sleep seconds', sleep_time, 'time now', timeofday.now())
         await asyncio.sleep(sleep_time)
 
 def run_controlplan() -> None:

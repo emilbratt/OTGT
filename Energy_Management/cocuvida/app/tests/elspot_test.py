@@ -1,7 +1,7 @@
 import asyncio
 import json
 
-from cocuvida.elspot.nordpooldayahead import process
+from cocuvida.elspot.nordpooldayahead import processelspot
 from cocuvida.sqldatabase import elspot as sql_elspot
 
 FILES = {
@@ -28,7 +28,7 @@ def process_elspot(self, hour: int, expected_resolution: int):
     '''
     with open(FILES[hour]) as f:
         raw_elspot = f.read()
-        processed_elspot = asyncio.run(process.reshape(raw_elspot))
+        processed_elspot = asyncio.run(processelspot.reshape(raw_elspot))
         # check if resoultion checks out
         self.assertTrue(processed_elspot[0]['resolution'] == expected_resolution)
         # insert raw into database
@@ -42,7 +42,7 @@ def process_elspot(self, hour: int, expected_resolution: int):
                     res = asyncio.run(sql_elspot.insert_processed_elspot(region))
                     self.assertTrue(res)
                     # generate plot from the reshaped version
-                    payload = asyncio.run(process.plot_date(region))
+                    payload = asyncio.run(processelspot.plot_date(region))
                     res = asyncio.run(sql_elspot.insert_plot_date(payload))
                     self.assertTrue(res)
         # this checks if the match block ran the 4 expected entries

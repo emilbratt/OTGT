@@ -1,7 +1,6 @@
 
-async def reshape(elspot_raw: dict) -> list:
-    # takes the raw data and reshapes it into a json like list
-    # with associated arrays described graphically below
+async def reshape_nok(elspot_raw: dict) -> list:
+    # takes the raw data and reshapes it into a json like list of associative arrays
 
     # extract all regions, as this is needed as first step
     regions = {}
