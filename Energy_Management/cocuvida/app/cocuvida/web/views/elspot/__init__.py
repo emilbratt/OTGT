@@ -15,10 +15,16 @@ class View:
     <meta charset="UTF-8">
     <style>
     table, th, td {
+        /* border: 1px solid white; */
         border: 1px solid black;
         border-collapse: collapse;
         text-align: center;
+        /* color: green; */
     }
+    /*
+    body {background-color: black;}
+    p    {color: green;}
+    */
     </style>
     '''
 
@@ -60,12 +66,12 @@ class View:
         self.html_prices += await tables.elspot_processed(elspot_data)
 
     async def show_plot(self, region: str):
-        res = await sql_elspot.select_plot_live_for_region(region)
-        if res != '':
-            self.html_plot += await plots.elspot(res)
-        res = await sql_elspot.select_plot_for_date_and_region(region, isodates.today_plus_days(1))
-        if res != '':
-            self.html_plot += await plots.elspot(res)
+        plot_svg = await sql_elspot.select_plot_live_for_region(region)
+        if plot_svg != '':
+            self.html_plot += await plots.elspot(plot_svg)
+        plot_svg = await sql_elspot.select_plot_for_date_and_region(region, isodates.today_plus_days(1))
+        if plot_svg != '':
+            self.html_plot += await plots.elspot(plot_svg)
 
     async def show_prices_for_time_window(self, region: str, time_from: str, time_to: str):
         raise Exception('MethodNotImplemented')

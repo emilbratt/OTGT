@@ -16,13 +16,15 @@ class Application:
             return
         res = await processelspot.reshape(res)
         for region in res:
+            # ADD METADATA
+            region_with_metadata = await processelspot.add_metadata(region)
             # INSERT INTO elspot_processed
-            res = await sql_elspot.insert_processed_elspot(region)
-            # PLOT BY DATE
-            payload = await processelspot.plot_date(region)
+            res = await sql_elspot.insert_processed_elspot(region_with_metadata)
+            # GENERATE PLOT BY DATE
+            payload = await processelspot.plot_date(region_with_metadata)
             res = await sql_elspot.insert_plot_date(payload)
-            # PLOT LIVE MARKER
-            payload = await processelspot.plot_axvline_mark(region)
+            # GENERATE PLOT WITH TIME MARKER
+            payload = await processelspot.plot_axvline_mark(region_with_metadata)
             res = await sql_elspot.insert_plot_live(payload)
 
     async def on_every_quarter(self):
@@ -52,21 +54,25 @@ class Application:
 
     async def process_tomorrows_elspot(self) -> bool:
         '''
-            download and convert elspot prices to reshaped and plots
+            download and process tomorrows elspot prices
         '''
         api = API()
-        if await api.download():
-            res = await processelspot.reshape(api.response_body)
-            for region in res:
-                payload = await processelspot.plot_date(region)
-                res = await sql_elspot.insert_plot_date(payload)
-                if not res:
-                    self.elspot_is_published_check = False
-                    return False
-                # INSERT INTO elspot_processed
-                res = await sql_elspot.insert_processed_elspot(region)
-                if not res:
-                    raise Exception('InsertError: table: elspot_processed', region['name'])
+        is_downloaded = await api.download()
+        if not is_downloaded:
+            self.elspot_is_published_check = False
+            return False
+        res = await processelspot.reshape(api.response_body)
+        for region in res:
+            # ADD METADATA
+            region_with_metadata = await processelspot.add_metadata(region)
+            payload = await processelspot.plot_date(region_with_metadata)
+            res = await sql_elspot.insert_plot_date(payload)
+            if not res:
+                self.elspot_is_published_check = False
+                return False
+            # INSERT INTO elspot_processed
+            res = await sql_elspot.insert_processed_elspot(region_with_metadata)
+            if not res:
+                raise Exception('InsertError: table: elspot_processed', region['name'])
 
-            return True
-        self.elspot_is_published_check = False
+        return True

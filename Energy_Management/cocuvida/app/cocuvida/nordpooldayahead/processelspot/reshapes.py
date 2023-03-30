@@ -1,6 +1,6 @@
 
 async def reshape_nok(elspot_raw: dict) -> list:
-    # takes the raw data and reshapes it into a json like list of associative arrays
+    # takes the raw elspot data and reshapes it into a list of each reaagion as key val arrays
 
     # extract all regions, as this is needed as first step
     regions = {}
@@ -65,8 +65,11 @@ async def reshape_nok(elspot_raw: dict) -> list:
 
         # convert the data structure to the final one where each region (dict) is a list object
         data_reshaped = []
-        for region in regions:
-            data_reshaped.append( regions[region] )
+        for name in regions:
+            # only append regions with values
+            check_price = regions[name]['prices'][0]['value']
+            if check_price != '-':
+                data_reshaped.append( regions[name] )
         return data_reshaped
     except:
         return []

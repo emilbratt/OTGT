@@ -2,7 +2,7 @@ import json
 
 from cocuvida.environment import env_ini_get
 
-from . import reshapes, plots
+from . import reshapes, plots, metadata
 
 
 async def reshape(elspot_raw: str) -> list:
@@ -50,6 +50,14 @@ async def reshape(elspot_raw: str) -> list:
             raise Exception('InvalidCurrency', currency)
     return data
 
+async def add_metadata(elspot_data: str):
+    elspot_data = await metadata.percent(elspot_data)
+    elspot_data = await metadata.diff_factor(elspot_data)
+    elspot_data = await metadata.weight(elspot_data)
+    elspot_data['slope'] = await metadata.slope(elspot_data)
+    elspot_data['spike'] = await metadata.spike(elspot_data)
+    return elspot_data
+
 async def plot_date(elspot_data: str) -> dict:
     '''
         generate plots for a full day
@@ -61,7 +69,7 @@ async def plot_date(elspot_data: str) -> dict:
     payload['plot'] = await plots.plot_date(elspot_data) 
     return payload
 
-async def plot_axvline_mark(elspot_data: str):
+async def plot_axvline_mark(elspot_data: str) -> dict:
     '''
         generate plots for a full day with highlighted current time
     '''
