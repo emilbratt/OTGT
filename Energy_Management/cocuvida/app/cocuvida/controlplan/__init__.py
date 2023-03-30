@@ -30,7 +30,6 @@ async def app():
         await pubstates.publish_current_states()
 
         sleep_time = seconds.until_next_minute()
-        print('CONTROLPLAN: sleep seconds', sleep_time, 'time now', timeofday.now())
         await asyncio.sleep(sleep_time)
 
 def run_controlplan() -> None:

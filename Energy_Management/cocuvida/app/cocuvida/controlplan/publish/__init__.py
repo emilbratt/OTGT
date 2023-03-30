@@ -49,7 +49,7 @@ class PublishStates:
             state_value = row[2]
             state_time = row[3]
             rowid = row[4]
-            print('Publish:', plan_name, target_type, state_value)
+            print(f'CONTROLPLAN: Publish  {plan_name} {target_type} {state_value}')
             res = await self.cpparser.publish_state(plan_name, target_type, state_value)
             if res:
                 # publish OK

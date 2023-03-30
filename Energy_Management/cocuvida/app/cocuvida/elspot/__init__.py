@@ -13,7 +13,6 @@ async def app():
             await app.process_tomorrows_elspot()
         await app.on_every_quarter()
         sleep_time = seconds.until_next_quarter_hour()
-        print('ELSPOT: sleep seconds', sleep_time, 'time now', timeofday.now())
         await asyncio.sleep(sleep_time)
 
 def run_elspot() -> None:

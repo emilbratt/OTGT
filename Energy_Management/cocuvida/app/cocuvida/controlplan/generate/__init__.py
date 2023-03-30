@@ -27,7 +27,7 @@ class GenerateStates:
         if not self.on_startup_ok:
             raise Exception('OnStartupError: run WorkerGenerate.on_startup() before anything else')
 
-        print(f'generating states for all controlplans with date {isodate}')
+        print(f'CONTROLPLAN: generating states for all controlplans with date {isodate}')
         controlplans = await sql_controlplans.select_all_control_plans()
         for plan_name, plan_data in controlplans.items():
             await self.cpparser.load_controlplan(plan_data)
@@ -55,7 +55,7 @@ class GenerateStates:
         isodate_tomorrow = isodates.today_plus_days(1)
         is_passed_that_time = timeofday.is_passed_time(14, 0)
         for plan_name in res:
-            print(f'generating states for new controlplan {plan_name} with date {isodate_today}')
+            print(f'CONTROLPLAN: generating states for new controlplan {plan_name} with date {isodate_today}')
             plan_data = await sql_controlplans.select_control_plan_by_plan_name(plan_name)
             await self.cpparser.load_controlplan(plan_data)
             await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate_today)
@@ -64,7 +64,7 @@ class GenerateStates:
                 await sql_stateschedule.insert_states_from_generator(states)
 
             if is_passed_that_time:
-                print(f'generating states for new controlplan {plan_name} with date {isodate_tomorrow}')
+                print(f'CONTROLPLAN: generating states for new controlplan {plan_name} with date {isodate_tomorrow}')
                 await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate_tomorrow)
                 #if await cp.date_is_operating_date(plan_name, isodate_tomorrow):
                 if await self.cpparser.date_is_operating_date(plan_name, isodate_tomorrow):

@@ -1,8 +1,6 @@
 from yaml import safe_load as yaml_safe_load
 from io import StringIO
 
-from cocuvida.controlplanparser import ControlplanParser
-
 from cocuvida.timehandle import isodates
 from cocuvida.sqldatabase import connect, select_all
 
