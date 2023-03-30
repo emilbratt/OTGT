@@ -131,3 +131,15 @@ async def update_state_status_by_rowid(rowid: int, state_status: int) -> bool:
     finally:
         cnxn.close()
         return action
+
+
+async def select_states_today_for_plan_name(plan_name: str) -> list:
+    query = '''
+        SELECT plan_name, target_type, state_value, state_time, state_status
+        FROM state_schedule
+        WHERE plan_name = ?
+        AND STRFTIME('%Y-%m-%d', state_time) >= STRFTIME('%Y-%m-%d', ?)
+        ORDER BY target_type, state_time ASC
+    '''
+    timestamp = isodates.today()
+    return select_all(query, [plan_name, timestamp])

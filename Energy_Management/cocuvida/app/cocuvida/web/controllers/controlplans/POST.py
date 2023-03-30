@@ -22,7 +22,6 @@ async def controller(scope: dict, receive: object):
                 return view
             db_action_taken = await insert_control_plan(control_plan)
             await view.db_action(db_action_taken)
-            print(__file__, 'IMPLEMENT PROCESSING STATES FROM CONTROLPLAN MODULE')
 
         case 'show':
             plan_name = await form_obj.load_string('plan_name')
@@ -39,6 +38,11 @@ async def controller(scope: dict, receive: object):
             if plan_name != None:
                 db_action_taken = await delete_control_plan(plan_name)
                 await view.db_action(db_action_taken)
+
+        case 'schedule':
+            plan_name = await form_obj.load_string('plan_name')
+            if plan_name != None:
+                await view.show_state_schedule(plan_name)
 
     await view.form_upload()
     await view.form_options()

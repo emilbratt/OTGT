@@ -1,5 +1,7 @@
-from cocuvida.sqldatabase.controlplans import list_plan_names
 from cocuvida.sqldatabase.controlplans import get_stringio_control_plan_by_name
+from cocuvida.sqldatabase.stateschedule import select_states_today_for_plan_name
+
+from cocuvida.web.templates import forms, tables
 
 
 class View:
@@ -8,6 +10,19 @@ class View:
     <html>
     <head>
     <meta charset="UTF-8">
+    <style>
+    table, th, td {
+        /* border: 1px solid white; */
+        border: 1px solid black;
+        border-collapse: collapse;
+        text-align: center;
+        /* color: green; */
+    }
+    /*
+    body {background-color: black;}
+    p    {color: green;}
+    */
+    </style>
     '''
 
     HTML_HEAD_END = b'''
@@ -32,53 +47,25 @@ class View:
         self.html_forms = bytes()
         self.html_un_authorized = bytes()
         self.html_control_plan = bytes()
+        self.html_state_schedule = bytes()
         self.file_control_plan = bytes()
         self.db_message = bytes()
         self.http_code = 200
 
     async def form_upload(self):
-        self.html_forms += b'''
-        <p>Upload</p>
-        <form method="POST" action="" enctype="multipart/form-data">
-            <input type="file" id="upload_control_plan"
-                   name="control_plan" accept=".yml,.yaml" required /><br>
-            <label for="secret">Secret:</label>
-            <input type="password" id="secret" name="secret" required />
-            <button type="submit" name="submit" value="upload">Upload</button>
-        </form>
-        <hr>
-        '''
+        self.html_forms += await forms.controlplan_upload()
 
     async def form_options(self):
-        plan_names = await list_plan_names()
-        if len(plan_names) > 0:
-            self.html_forms += b'''
-            <p>Options</p>
-            <form method="POST" action="" enctype="multipart/form-data">
-            <select id="control_plan_options" name="plan_name">
-            '''
-            for name in plan_names:
-                self.html_forms += f'<option value="{name}">{name}</option>'.encode()
-            self.html_forms += b'''
-            </select><br>
-            <label for="secret">Secret:</label>
-            <input type="password" id="secret" name="secret" required />
-            <button type="submit" name="submit" value="show">
-                Show
-            </button>
-            <button type="submit" name="submit" value="download">
-                Download
-            </button>
-            <button type="submit" name="submit" onclick="return confirm('Confirm deletion');" value="delete">
-                Delete
-            </button>
-            </form>
-            <hr>
-            '''
+        self.html_forms += await forms.controlplan_options()
 
     async def show_control_plan_data(self, plan_name: str):
         plan_data = await get_stringio_control_plan_by_name(plan_name)
         self.html_control_plan += b'<p>Control Plan</p><pre>' + plan_data + b'</pre><hr>'
+
+    async def show_state_schedule(self, plan_name: str):
+        res = await select_states_today_for_plan_name(plan_name)
+        self.html_state_schedule += await tables.state_schedule(res)
+        #self.html_state_schedule += b'<p>Control Plan</p><pre>' + plan_data + b'</pre><hr>'
 
     async def download_control_plan_data(self, plan_name: str):
         self.file_control_plan = await get_stringio_control_plan_by_name(plan_name)
@@ -142,7 +129,8 @@ class View:
                 'more_body': True
             })
             html_body_parts = [self.html_title, self.html_forms, self.html_control_plan,
-                               self.db_message, self.html_un_authorized, self.html_invalid_yaml,]
+                               self.db_message, self.html_un_authorized, self.html_invalid_yaml,
+                               self.html_state_schedule]
             for body in html_body_parts:
                 await send({
                     'type': 'http.response.body',
