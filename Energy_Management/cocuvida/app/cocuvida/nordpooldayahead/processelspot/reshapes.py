@@ -10,7 +10,7 @@ async def reshape_nok(elspot_raw: dict) -> list:
                 'region': row['Name'],
                 'date': elspot_raw['data']['DataStartdate'].split('T')[0],
                 'currency': elspot_raw['currency'],
-                'unit': 'ore/kWh',
+                'unit': 'øre/kWh',
                 'max': False,
                 'min': False,
                 'average': False,

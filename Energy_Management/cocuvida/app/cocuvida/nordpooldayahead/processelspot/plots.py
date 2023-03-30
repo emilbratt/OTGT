@@ -29,7 +29,7 @@ async def plot_date(elspot_data) -> str:
         return plot
 
     plt.style.use(PLOT_STYLE)
-    title = elspot_data['region'] + ' ' + elspot_data['date']
+    title = elspot_data['region'] + ' ' + elspot_data['date'] + ' ' + elspot_data['unit']
     plt.title(title, y=1.0, pad=3, fontsize=14)
     plt.tight_layout()
     bars = plt.bar(value_index, plot_values, align='edge')
@@ -78,7 +78,7 @@ async def plot_axvline_mark(elspot_data) -> str:
         return plot
 
     plt.style.use(PLOT_STYLE)
-    title = elspot_data['region'] + ' ' + elspot_data['date']
+    title = elspot_data['region'] + ' Now: ' + elspot_data['date'] + ' ' + elspot_data['unit']
     plt.title(title, y=1.0, pad=3, fontsize=14)
     plt.tight_layout()
     bars = plt.bar(value_index, plot_values, align='edge')
