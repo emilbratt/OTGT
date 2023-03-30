@@ -54,8 +54,10 @@ async def state_schedule(state_schedule: list) -> bytes:
     html += '<table style="width:75%">'
     html += html_header
     for row in state_schedule:
+        # the list is sorted by target_type, so when a new one appears, we insert header row in-between
         if target != row[1]:
             html += html_header
+
         target = row[1]
         state = row[2]
         time = row[3]
