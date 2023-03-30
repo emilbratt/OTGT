@@ -1,6 +1,6 @@
-async def elspot_processed(elspot_data: list) -> bytes:
+async def elspot_processed(elspot_data: dict) -> bytes:
     # only show full hour prices for now (not quarterly) -> see if element['index'] % 4 == 0:
-    if elspot_data == []:
+    if elspot_data == {}:
         return b'N/A'
     html = str()
     region = elspot_data['region']
