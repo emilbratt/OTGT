@@ -1,6 +1,6 @@
 from statistics import mean
 
-# these methods expects the processed elspot for the region as shown below
+# these methods expects the processed elspot data structure for a single region as shown below
 '''
     {
         'region': 'Molde,

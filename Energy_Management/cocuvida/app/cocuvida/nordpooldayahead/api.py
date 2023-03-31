@@ -16,7 +16,6 @@ class API:
         session = aiohttp.ClientSession()
         params = {
             'currency': env_ini_get(section='cocuvida', key='elspot_currency'),
-            'endDate': isodates.today_plus_days(1),
         }
         res = False
         async with session.get(URL, params=params) as resp:
