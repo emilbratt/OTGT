@@ -80,16 +80,14 @@ class View:
         self.html_invalid_yaml += b'<p>invalid yaml file</p>'
 
     async def db_action(self, action: str):
+        msg = b'OK'
         match action:
             case 'insert':
                 self.http_code = 201
-                msg = b'inserted control plan'
             case 'update':
                 self.http_code = 201
-                msg = b'updated control plan'
             case 'delete':
                 self.http_code = 200
-                msg = b'deleted control plan'
             case _:
                 self.http_code = 500
                 msg = action.encode()

@@ -1,5 +1,6 @@
 from cocuvida.authorize import check_secret
 from cocuvida.sqldatabase.controlplans import (insert_control_plan, delete_control_plan)
+from cocuvida.sqldatabase.stateschedule import delete_states_for_plan_name
 from cocuvida.web.views.controlplans import View
 from cocuvida.web.formdata import FormDataParser
 
@@ -36,7 +37,11 @@ async def controller(scope: dict, receive: object):
         case 'delete':
             plan_name = await form_obj.load_string('plan_name')
             if plan_name != None:
+                # DELETE CONTROLPLAN
                 db_action_taken = await delete_control_plan(plan_name)
+                if db_action_taken == 'delete':
+                    # DELETE STATE SCHEDULES
+                    db_action_taken = await delete_states_for_plan_name(plan_name)
                 await view.db_action(db_action_taken)
 
         case 'schedule':
