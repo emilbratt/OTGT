@@ -61,8 +61,10 @@ class View:
         self.html_buttons = await buttons.horizontal(rows)
         self.html_buttons += b'<hr>'
 
-    async def show_prices_for_today(self, region: str):
+    async def show_prices(self, region: str):
         elspot_data = await sql_elspot.select_processed_elspot_data_for_date(region, isodates.today())
+        self.html_prices += await tables.elspot_processed(elspot_data)
+        elspot_data = await sql_elspot.select_processed_elspot_data_for_date(region, isodates.today_plus_days(1))
         self.html_prices += await tables.elspot_processed(elspot_data)
 
     async def show_plot(self, region: str):

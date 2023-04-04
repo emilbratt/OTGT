@@ -22,7 +22,7 @@ async def controller(scope: dict, receive: object):
     if region == None:
         return view
     if time_from == None or time_to == None:
-        await view.show_prices_for_today(region)
+        await view.show_prices(region)
         await view.show_plot(region)
         return view
     return view
