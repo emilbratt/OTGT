@@ -195,9 +195,9 @@ async def insert_plot_live(data: dict) -> bool:
 async def select_plot_live_for_region(region: str) -> str:
     query = '''
     SELECT plot_data FROM elspot_plot_live
-    WHERE plot_region = ?
+    WHERE plot_region = ? AND DATE(last_updated) = ?
     '''
-    res = select_one(query, [region])
+    res = select_one(query, [region, isodates.today()])
     if res == None:
         return ''
     return res[0]
