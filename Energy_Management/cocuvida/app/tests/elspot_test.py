@@ -17,14 +17,17 @@ def process_elspot(self, hour: int, expected_resolution: int):
         For the remaining 2 we have either 23 or 25 depending on wether we are
         moving from summer to winter-time or from winter to summer-time.
 
-        This test uses elspot data fetched from nordpool.
+        This test uses elspot data fetched from https://www.nordpoolgroup.com/api/marketdata/page/10.
         One version for each of the 3 cases (23, 24 and 25 hours).
 
+        By future-proofing we also split each hour up into 4 quarters.
+        We are moving from hourly to quarterly resolution e.g. 15 minutes metering.
+        See https://www.statnett.no/en/for-stakeholders-in-the-power-industry/system-operation/the-power-market/quarterly-resolution-and-the-energy-markets/
         The resolution (total N quarters) for the 3 different cases are as follows:
-            23 = 92  ( 23 x 4 )
-            24 = 96  ( 24 x 4 )
-            25 = 100 ( 25 x 4 )
-            .. we test this by passing the excpeted resolution as a parameter
+            23h = 92 indexes  -> 23 x 4
+            24h = 96 indexes  -> 24 x 4
+            25h = 100 indexes -> 25 x 4
+            .. we also test the resolution by passing the number "expected_resolution" as a parameter
     '''
     with open(FILES[hour]) as f:
         raw_elspot = f.read()
