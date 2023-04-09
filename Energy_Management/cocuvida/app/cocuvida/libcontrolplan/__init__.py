@@ -3,7 +3,7 @@ from cocuvida.timehandle import isodates
 from .sections import calendar, schedule, target
 
 
-class ControlplanParser:
+class ControlPlan:
 
     def __init__(self):
         self.cp = dict()

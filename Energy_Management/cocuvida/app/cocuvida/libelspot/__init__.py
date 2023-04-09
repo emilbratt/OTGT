@@ -5,7 +5,7 @@ from .api import API
 from . import processelspot
 
 
-class Application:
+class Elspot:
 
     def __init__(self):
         self.elspot_tomorrow_check = False
@@ -15,7 +15,7 @@ class Application:
         downloaded_todays = False
         downloaded_tomorrows = False
         api = API()
-        is_downloaded = await api.download()
+        is_downloaded = await api.download_elspot()
         if is_downloaded:
             res = await processelspot.reshape(api.response_body)
             # grab date from inside the first region in the reshaped elspot data
@@ -97,7 +97,7 @@ class Application:
             download and process tomorrows elspot prices
         '''
         api = API()
-        is_downloaded = await api.download()
+        is_downloaded = await api.download_elspot()
         if not is_downloaded:
             self.elspot_tomorrow_check = False
             return False

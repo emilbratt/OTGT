@@ -1,17 +1,17 @@
 import asyncio
 
 from cocuvida.timehandle import seconds, timeofday
-from cocuvida import nordpooldayahead
+from cocuvida import libelspot
 
 
 async def app():
     print('ELSPOT START')
-    app = nordpooldayahead.Application()
-    await app.on_startup()
+    elspot = libelspot.Elspot()
+    await elspot.on_startup()
     while True:
-        if await app.elspot_is_published():
-            await app.process_tomorrows_elspot()
-        await app.on_every_quarter()
+        if await elspot.elspot_is_published():
+            await elspot.process_tomorrows_elspot()
+        await elspot.on_every_quarter()
         sleep_time = seconds.until_next_quarter_hour()
         await asyncio.sleep(sleep_time)
 

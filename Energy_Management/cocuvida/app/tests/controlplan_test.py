@@ -1,7 +1,7 @@
 import asyncio
 import yaml
 
-from cocuvida.controlplanparser import ControlplanParser
+from cocuvida.libcontrolplan import ControlPlan
 from cocuvida.sqldatabase import (controlplans as sql_controlplans,
                                   stateschedule as sql_stateschedule)
 
@@ -34,7 +34,7 @@ def example_controlplan(self):
         res = asyncio.run(sql_controlplans.insert_control_plan(raw_content))
         self.assertTrue(res == 'insert')
 
-        cp = ControlplanParser()
+        cp = ControlPlan()
         controlplan = yaml.safe_load(raw_content)
         asyncio.run(cp.load_controlplan(controlplan))
 

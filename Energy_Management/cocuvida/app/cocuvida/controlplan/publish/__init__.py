@@ -1,7 +1,7 @@
 import asyncio
 from datetime import datetime
 
-from cocuvida.controlplanparser import ControlplanParser
+from cocuvida.libcontrolplan import ControlPlan
 from cocuvida.sqldatabase import (controlplans as sql_controlplans,
                                   stateschedule as sql_stateschedule)
 from cocuvida.timehandle import isodates, timeofday
@@ -18,7 +18,7 @@ class PublishStates:
         self.last_updated_controlplan_timestamp = None
 
     async def on_startup(self) -> None:
-        self.cpparser = ControlplanParser()
+        self.cpparser = ControlPlan()
         self.last_updated_controlplan_timestamp = await sql_controlplans.select_latest_modification_time()
         res = await sql_controlplans.select_all_control_plans()
         for plan_data in res.values():
@@ -31,7 +31,7 @@ class PublishStates:
         res = await sql_controlplans.list_plan_names_greater_than_timestamp(self.last_updated_controlplan_timestamp)
         self.last_updated_controlplan_timestamp = await sql_controlplans.select_latest_modification_time()
         for plan_name in res:
-            # this will update (or add new) controlplans to the ControlplanParser (if any rows)
+            # this will update or add new controlplans if res is not an empty list
             plan_data = await sql_controlplans.select_control_plan_by_plan_name(plan_name)
             await self.cpparser.load_controlplan(plan_data)
 

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from cocuvida.controlplanparser import ControlplanParser
+from cocuvida.libcontrolplan import ControlPlan
 from cocuvida.sqldatabase import (controlplans as sql_controlplans,
                                   stateschedule as sql_stateschedule)
 from cocuvida.timehandle import isodates, timeofday
@@ -18,7 +18,7 @@ class GenerateStates:
         self.last_updated_controlplan_timestamp = None
 
     async def on_startup(self) -> None:
-        self.cpparser = ControlplanParser()
+        self.cpparser = ControlPlan()
         self.generate_for_next_day_check = False
         self.last_updated_controlplan_timestamp = await sql_controlplans.select_latest_modification_time()
         self.on_startup_ok = True
