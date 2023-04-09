@@ -35,9 +35,10 @@ class ElspotTest(unittest.TestCase):
     # check if we can process elspot prices for 23, 24 and 25 hour days (dst)
     def test_processelspot(self):
         from tests.elspot_test import process_elspot
-        process_elspot(self, hour=23, expected_resolution=92)
-        process_elspot(self, hour=24, expected_resolution=96)
-        process_elspot(self, hour=25, expected_resolution=100)
+        process_elspot(self, file_ref='23', expected_resolution=92)
+        process_elspot(self, file_ref='25', expected_resolution=100)
+        process_elspot(self, file_ref='normal', expected_resolution=96)
+        process_elspot(self, file_ref='negative', expected_resolution=96)
 
 
 if __name__ == '__main__':

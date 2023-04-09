@@ -5,13 +5,19 @@ from cocuvida.nordpooldayahead import processelspot
 from cocuvida.sqldatabase import elspot as sql_elspot
 
 FILES = {
-    23: 'tests/test_data/elspot/23/2023-03-26.json',
-    24: 'tests/test_data/elspot/24/2022-12-01.json',
-    25: 'tests/test_data/elspot/25/2022-10-30.json',
+    # this is the most "normal" case of elspot prices (nothing out of the ordinary here..)
+    'normal': 'tests/test_data/elspot/normal/2022-12-01.json',
+
+    # these files contains elsopt prices for non-24 hour days (for dailight savings time cases)
+    '23': 'tests/test_data/elspot/23/2023-03-26.json',
+    '25': 'tests/test_data/elspot/25/2022-10-30.json',
+
+    # this file contains elspot prices that are below zero
+    'negative': 'tests/test_data/elspot/negative/2023-04-10.json',
 }
 
 
-def process_elspot(self, hour: int, expected_resolution: int):
+def process_elspot(self, file_ref: str, expected_resolution: int):
     '''
         The entire year except for 2 days consists of 24 hours.
         For the remaining 2 we have either 23 or 25 depending on wether we are
@@ -29,7 +35,7 @@ def process_elspot(self, hour: int, expected_resolution: int):
             25h = 100 indexes -> 25 x 4
             .. we also test the resolution by passing the number "expected_resolution" as a parameter
     '''
-    with open(FILES[hour]) as f:
+    with open(FILES[file_ref]) as f:
         raw_elspot = f.read()
         # insert raw into database
         asyncio.run(sql_elspot.insert_raw_elspot(raw_elspot))

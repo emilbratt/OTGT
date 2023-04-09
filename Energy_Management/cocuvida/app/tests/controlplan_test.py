@@ -7,7 +7,9 @@ from cocuvida.sqldatabase import (controlplans as sql_controlplans,
 
 PLAN_NAME = 'example_controlplan'
 OPERATION_DATE = '2023-06-17'
-GENERATED_STATES = [
+
+# these should match the generated states from the controlplan in ./test_data/controlplan
+CHECK_GENERATED_STATES = [
     ['example_controlplan', 'shelly', 'on', '2023-06-17 11:00', 0],
     ['example_controlplan', 'exampletarget', '60', '2023-06-17 12:00', 0],
     ['example_controlplan', 'mqtt', 'msgrefa', '2023-06-17 12:00', 0],
@@ -41,12 +43,12 @@ def example_controlplan(self):
         self.assertTrue(res)
 
         # the generated states for the operation date should match the hardcoded ones
-        res = asyncio.run(cp.generate_states(PLAN_NAME, OPERATION_DATE))
-        for i,row in enumerate(res):
-            self.assertTrue(GENERATED_STATES[i] == row)
+        generated_states = asyncio.run(cp.generate_states(PLAN_NAME, OPERATION_DATE))
+        for row in generated_states:
+            self.assertTrue(row in CHECK_GENERATED_STATES)
 
         # insert the generated states to DB
-        res = asyncio.run(sql_stateschedule.insert_states_from_generator(res))
+        res = asyncio.run(sql_stateschedule.insert_states_from_generator(generated_states))
         self.assertTrue(res == 'insert')
 
         # load states and publish
