@@ -6,7 +6,7 @@ from .sections import calendar, schedule, target
 class ControlplanParser:
 
     def __init__(self):
-        self.cp = {}
+        self.cp = dict()
         self.info = str()
 
     async def load_controlplan(self, controlplan: dict) -> None:
@@ -20,7 +20,7 @@ class ControlplanParser:
         raise Exception('MethodNotImplemented')
 
     async def date_is_operating_date(self, plan_name: str, isodate) -> bool:
-        if self.cp == None:
+        if self.cp == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 
         c = calendar.Entry(self.cp[plan_name]['calendar'])
@@ -34,7 +34,7 @@ class ControlplanParser:
         return False
 
     async def generate_states(self, plan_name: str, isodate: str) -> list:
-        if self.cp == None:
+        if self.cp == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 
         obj = schedule.Entry(self.cp[plan_name]['schedule'])
@@ -50,7 +50,7 @@ class ControlplanParser:
         return states
 
     async def publish_state(self, plan_name: str, target_type: str, state_value: str,) -> bool:
-        if self.cp == None:
+        if self.cp == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 
         target_entry = self.cp[plan_name]['target'][target_type]
