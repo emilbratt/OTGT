@@ -67,7 +67,7 @@ class Elspot:
                 payload = await processelspot.plot_axvline_mark(region_with_metadata)
                 res = await sql_elspot.insert_plot_live(payload)
 
-    async def on_every_quarter(self):
+    async def generate_live_plots(self):
         res = await sql_elspot.list_elspot_regions()
         for region in res:
             # PLOT LIVE MARKER

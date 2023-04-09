@@ -11,7 +11,7 @@ async def app():
     while True:
         if await elspot.elspot_is_published():
             await elspot.process_tomorrows_elspot()
-        await elspot.on_every_quarter()
+        await elspot.generate_live_plots()
         sleep_time = seconds.until_next_quarter_hour()
         await asyncio.sleep(sleep_time)
 
