@@ -104,6 +104,7 @@ async def weight(data: dict) -> dict:
     if _min_ < 1:
         while _min_ < 1:
             add_val += 1
+            _min_ += 1
     _max_ += add_val
     _min_ += add_val
     for entry in data['prices']:
