@@ -1,13 +1,13 @@
 from cocuvida.timehandle import isodates
 
-from .sections import calendar, schedule, target
+from . import calendar, schedule, target
 
 
 class ControlPlan:
 
     def __init__(self):
+        # controlplans go in this dictionary
         self.cp = dict()
-        self.info = str()
 
     async def load_controlplan(self, controlplan: dict) -> None:
         plan_name = controlplan['name']
