@@ -1,4 +1,4 @@
-class Entry:
+class Schedule:
 
     def __init__(self, schedule: dict):
         self.s = schedule

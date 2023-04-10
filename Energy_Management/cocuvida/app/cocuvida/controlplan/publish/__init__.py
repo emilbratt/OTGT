@@ -45,7 +45,7 @@ class PublishStates:
         tasks = []
         for row in res:
             plan_name = row[0]
-            target_type = row [1]
+            target_type = row[1]
             state_value = row[2]
             state_time = row[3]
             rowid = row[4]

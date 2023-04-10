@@ -1,7 +1,7 @@
 from cocuvida.timehandle import isodates
 
 
-class Entry:
+class Calendar:
     def __init__(self, calendar: dict):
         self.c = calendar
 

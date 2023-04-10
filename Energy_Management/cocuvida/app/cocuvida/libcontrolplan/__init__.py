@@ -1,6 +1,8 @@
 from cocuvida.timehandle import isodates
 
-from . import calendar, schedule, target
+from .calendar import Calendar
+from .schedule import Schedule
+from .target import Target
 
 
 class ControlPlan:
@@ -8,6 +10,8 @@ class ControlPlan:
     def __init__(self):
         # controlplans go in this dictionary
         self.cp = dict()
+        self.aiohttp_session = None
+        self.mqtt = None
 
     async def load_controlplan(self, controlplan: dict) -> None:
         plan_name = controlplan['name']
@@ -23,7 +27,7 @@ class ControlPlan:
         if self.cp == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 
-        cal = calendar.Entry(self.cp[plan_name]['calendar'])
+        cal = Calendar(self.cp[plan_name]['calendar'])
         # from highest priority (excluded dates) -> to lowest priority (weekdays)
         if await cal.is_excluded_date(isodate):
             return False
@@ -37,7 +41,7 @@ class ControlPlan:
         if self.cp == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 
-        schdl = schedule.Entry(self.cp[plan_name]['schedule'])
+        schdl = Schedule(self.cp[plan_name]['schedule'])
         states = await schdl.generate_states(isodate)
         for row in states:
             target_type = row[0]
@@ -53,6 +57,6 @@ class ControlPlan:
         if self.cp == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 
-        trgt = target.Entry(self.cp[plan_name]['target'][target_type])
+        trgt = Target(self.cp[plan_name]['target'][target_type])
         res = await trgt.publish_state(target_type, state_value)
         return res
