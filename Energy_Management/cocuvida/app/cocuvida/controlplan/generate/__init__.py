@@ -13,12 +13,12 @@ class GenerateStates:
     def __init__(self):
         self.init_time = isodates.timestamp_now()
         self.on_startup_ok = False
-        self.cpparser = None
+        self.cp = None
         self.generate_for_next_day_check = None
         self.last_updated_controlplan_timestamp = None
 
     async def on_startup(self) -> None:
-        self.cpparser = ControlPlan()
+        self.cp = ControlPlan()
         self.generate_for_next_day_check = False
         self.last_updated_controlplan_timestamp = await sql_controlplans.select_latest_modification_time()
         self.on_startup_ok = True
@@ -30,10 +30,10 @@ class GenerateStates:
         print(f'CONTROLPLAN: generating states for all controlplans with date {isodate}')
         controlplans = await sql_controlplans.select_all_control_plans()
         for plan_name, plan_data in controlplans.items():
-            await self.cpparser.load_controlplan(plan_data)
+            await self.cp.load_controlplan(plan_data)
             await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate)
-            if await self.cpparser.date_is_operating_date(plan_name, isodate):
-                states = await self.cpparser.generate_states(plan_name, isodate)
+            if await self.cp.date_is_operating_date(plan_name, isodate):
+                states = await self.cp.generate_states(plan_name, isodate)
                 await sql_stateschedule.insert_states_from_generator(states)
 
     async def generate_states_for_new_controlplans(self) -> None:
@@ -57,19 +57,19 @@ class GenerateStates:
         for plan_name in res:
             print(f'CONTROLPLAN: generating states for new controlplan {plan_name} with date {isodate_today}')
             plan_data = await sql_controlplans.select_control_plan_by_plan_name(plan_name)
-            await self.cpparser.load_controlplan(plan_data)
+            await self.cp.load_controlplan(plan_data)
             await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate_today)
-            if await self.cpparser.date_is_operating_date(plan_name, isodate_today):
-                states = await self.cpparser.generate_states(plan_name, isodate_today)
+            if await self.cp.date_is_operating_date(plan_name, isodate_today):
+                states = await self.cp.generate_states(plan_name, isodate_today)
                 await sql_stateschedule.insert_states_from_generator(states)
 
             if is_passed_that_time:
                 print(f'CONTROLPLAN: generating states for new controlplan {plan_name} with date {isodate_tomorrow}')
                 await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate_tomorrow)
                 #if await cp.date_is_operating_date(plan_name, isodate_tomorrow):
-                if await self.cpparser.date_is_operating_date(plan_name, isodate_tomorrow):
+                if await self.cp.date_is_operating_date(plan_name, isodate_tomorrow):
                     #states = await cp.generate_states(plan_name, isodate_tomorrow)
-                    states = await self.cpparser.generate_states(plan_name, isodate_tomorrow)
+                    states = await self.cp.generate_states(plan_name, isodate_tomorrow)
                     await sql_stateschedule.insert_states_from_generator(states)
 
     async def is_ready_to_generate_for_tomorrow(self) -> bool:

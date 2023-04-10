@@ -13,16 +13,16 @@ class PublishStates:
     '''
     def __init__(self):
         self.init_time = isodates.timestamp_now()
-        self.cpparser = None
+        self.cp = None
         self.on_startup_ok = False
         self.last_updated_controlplan_timestamp = None
 
     async def on_startup(self) -> None:
-        self.cpparser = ControlPlan()
+        self.cp = ControlPlan()
         self.last_updated_controlplan_timestamp = await sql_controlplans.select_latest_modification_time()
         res = await sql_controlplans.select_all_control_plans()
         for plan_data in res.values():
-            await self.cpparser.load_controlplan(plan_data)
+            await self.cp.load_controlplan(plan_data)
         self.on_startup_ok = True
 
     async def update_controlplans(self):
@@ -33,7 +33,7 @@ class PublishStates:
         for plan_name in res:
             # this will update or add new controlplans if res is not an empty list
             plan_data = await sql_controlplans.select_control_plan_by_plan_name(plan_name)
-            await self.cpparser.load_controlplan(plan_data)
+            await self.cp.load_controlplan(plan_data)
 
     async def publish_current_states(self) -> None:
         if not self.on_startup_ok:
@@ -50,7 +50,7 @@ class PublishStates:
             state_time = row[3]
             rowid = row[4]
             print(f'CONTROLPLAN: Publish  {plan_name} {target_type} {state_value}')
-            res = await self.cpparser.publish_state(plan_name, target_type, state_value)
+            res = await self.cp.publish_state(plan_name, target_type, state_value)
             if res:
                 # publish OK
                 state_status = 1

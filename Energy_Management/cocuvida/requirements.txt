@@ -1,9 +1,9 @@
 aiofiles
 aiohttp
-paho-mqtt
-streaming-form-data
-pyyaml
-uvicorn
-uvloop
 matplotlib
 numpy
+paho-mqtt
+pyyaml
+streaming-form-data
+uvicorn
+uvloop
