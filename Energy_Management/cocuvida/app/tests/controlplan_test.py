@@ -39,7 +39,7 @@ def example_controlplan(self):
         asyncio.run(cp.load_controlplan(controlplan))
 
         # this should be an operating day
-        res = asyncio.run(cp.date_is_operating_date(PLAN_NAME, OPERATION_DATE))
+        res = asyncio.run(cp.is_operating_date(PLAN_NAME, OPERATION_DATE))
         self.assertTrue(res)
 
         # the generated states for the operation date should match the hardcoded ones

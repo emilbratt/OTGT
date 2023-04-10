@@ -19,17 +19,17 @@ class ControlPlan:
     async def validate_controlplan(self) -> bool:
         raise Exception('MethodNotImplemented')
 
-    async def date_is_operating_date(self, plan_name: str, isodate) -> bool:
+    async def is_operating_date(self, plan_name: str, isodate) -> bool:
         if self.cp == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 
-        c = calendar.Entry(self.cp[plan_name]['calendar'])
+        cal = calendar.Entry(self.cp[plan_name]['calendar'])
         # from highest priority (excluded dates) -> to lowest priority (weekdays)
-        if await c.date_is_excluded_date(isodate):
+        if await cal.is_excluded_date(isodate):
             return False
-        if await c.date_is_included_date(isodate):
+        if await cal.is_included_date(isodate):
             return True
-        if await c.date_is_included_weekday(isodate):
+        if await cal.is_included_weekday(isodate):
             return True
         return False
 
@@ -37,8 +37,8 @@ class ControlPlan:
         if self.cp == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 
-        obj = schedule.Entry(self.cp[plan_name]['schedule'])
-        states = await obj.generate_states(isodate)
+        schdl = schedule.Entry(self.cp[plan_name]['schedule'])
+        states = await schdl.generate_states(isodate)
         for row in states:
             target_type = row[0]
             if self.cp[plan_name]['target'][target_type]['include_entry']:
@@ -53,7 +53,6 @@ class ControlPlan:
         if self.cp == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 
-        target_entry = self.cp[plan_name]['target'][target_type]
-        target_entry_obj = target.Entry(target_entry)
-        res = await target_entry_obj.publish_state(target_type, state_value)
+        trgt = target.Entry(self.cp[plan_name]['target'][target_type])
+        res = await trgt.publish_state(target_type, state_value)
         return res

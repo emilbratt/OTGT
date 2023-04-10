@@ -32,7 +32,7 @@ class GenerateStates:
         for plan_name, plan_data in controlplans.items():
             await self.cp.load_controlplan(plan_data)
             await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate)
-            if await self.cp.date_is_operating_date(plan_name, isodate):
+            if await self.cp.is_operating_date(plan_name, isodate):
                 states = await self.cp.generate_states(plan_name, isodate)
                 await sql_stateschedule.insert_states_from_generator(states)
 
@@ -59,15 +59,15 @@ class GenerateStates:
             plan_data = await sql_controlplans.select_control_plan_by_plan_name(plan_name)
             await self.cp.load_controlplan(plan_data)
             await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate_today)
-            if await self.cp.date_is_operating_date(plan_name, isodate_today):
+            if await self.cp.is_operating_date(plan_name, isodate_today):
                 states = await self.cp.generate_states(plan_name, isodate_today)
                 await sql_stateschedule.insert_states_from_generator(states)
 
             if is_passed_that_time:
                 print(f'CONTROLPLAN: generating states for new controlplan {plan_name} with date {isodate_tomorrow}')
                 await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate_tomorrow)
-                #if await cp.date_is_operating_date(plan_name, isodate_tomorrow):
-                if await self.cp.date_is_operating_date(plan_name, isodate_tomorrow):
+                #if await cp.is_operating_date(plan_name, isodate_tomorrow):
+                if await self.cp.is_operating_date(plan_name, isodate_tomorrow):
                     #states = await cp.generate_states(plan_name, isodate_tomorrow)
                     states = await self.cp.generate_states(plan_name, isodate_tomorrow)
                     await sql_stateschedule.insert_states_from_generator(states)
