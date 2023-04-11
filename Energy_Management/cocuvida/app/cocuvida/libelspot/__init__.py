@@ -5,6 +5,7 @@ from .api import API
 from . import processelspot
 
 
+# FIXME: remove all SQL related code (simple decoupling) and put SQL related code into the Elspot service instead
 class Elspot:
 
     def __init__(self):
