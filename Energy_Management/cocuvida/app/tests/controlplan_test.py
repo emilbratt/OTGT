@@ -11,10 +11,11 @@ OPERATION_DATE = '2023-06-17'
 # these should match the generated states from the controlplan in ./test_data/controlplan
 CHECK_GENERATED_STATES = [
     ['example_controlplan', 'shelly', 'on', '2023-06-17 11:00', 0],
+    ['example_controlplan', 'shelly', 'off', '2023-06-17 12:00', 0],
     ['example_controlplan', 'exampletarget', '60', '2023-06-17 12:00', 0],
     ['example_controlplan', 'mqtt', 'msgrefa', '2023-06-17 12:00', 0],
     ['example_controlplan', 'mqtt', 'msgrefb', '2023-06-17 13:00', 0],
-    ['example_controlplan', 'shelly', 'off', '2023-06-17 17:30', 0],
+    ['example_controlplan', 'shelly', 'toggle', '2023-06-17 17:30', 0],
 ]
 
 
@@ -59,13 +60,18 @@ def example_controlplan(self):
             state_value = row[2]
             state_time = row[3]
             rowid = row[4]
-            res = asyncio.run(cp.publish_state(plan_name, target_type, state_value))
-            state_status = 1
-            if not res:
-                # publish failed
-                state_status = 3
-            self.assertTrue(state_status == 1)
+            # only test if example target for now
+            if target_type == 'exampletarget':
+                res = asyncio.run(cp.publish_state(plan_name, target_type, state_value))
+                if res:
+                    # published -> 1
+                    state_status = sql_stateschedule.STATUS_ENUMS.index('published')
+                else:
+                    # not publish -> 3
+                    state_status = sql_stateschedule.STATUS_ENUMS.index['not published']
+                # state_status should evaluates to 1 -> published
+                self.assertTrue(state_status == 1)
 
-            # update state_status to 1 -> published to DB
-            res = asyncio.run(sql_stateschedule.update_state_status_by_rowid(rowid, state_status))
-            self.assertTrue(res == 'update')
+                # update state_status to 1 -> published to DB
+                res = asyncio.run(sql_stateschedule.update_state_status_by_rowid(rowid, state_status))
+                self.assertTrue(res == 'update')

@@ -65,7 +65,6 @@ class View:
     async def show_state_schedule(self, plan_name: str):
         res = await select_states_today_for_plan_name(plan_name)
         self.html_state_schedule += await tables.state_schedule(res)
-        #self.html_state_schedule += b'<p>Control Plan</p><pre>' + plan_data + b'</pre><hr>'
 
     async def download_control_plan_data(self, plan_name: str):
         self.file_control_plan = await get_stringio_control_plan_by_name(plan_name)

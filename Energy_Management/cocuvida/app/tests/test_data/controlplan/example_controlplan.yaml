@@ -14,11 +14,15 @@ target:
   # shelly switches
   shelly: # valid states are on, off or toggle
     include_entry: true # enable/disable entry
+    # http auth (it is required, for security reasons.. so please set this on all shelly devices)
+    user: admin
+    password: password
+    # shelly devices to control
     entries:
-      # alias: [host, switch-id]
-      light_a_basement_0: ['192.168.1.144', '0']
-      light_b_basement_0: ['192.168.1.145', '0']
-      light_b_basement_1: ['192.168.1.145', '1']
+      # alias: shelly-http-relay-path
+      light_a_basement_0: 'http://192.168.1.144/relay/0'
+      light_b_basement_0: 'http://192.168.1.145/relay/0'
+      light_b_basement_1: 'http://192.168.1.145/relay/1'
 
   # entry 2. MQTT subscribers
   # cocuvida application uses the name of this controlplan for topic
@@ -79,10 +83,11 @@ schedule: # this is where we define different states for each target and the tim
     entries:
       # [ time, target, state/value ]
       - ['11:00', 'shelly', 'on']
+      - ['12:00', 'shelly', 'off']
       - ['12:00', 'exampletarget', '60']
       - ['12:00', 'mqtt', 'msgrefa']
       - ['13:00', 'mqtt', 'msgrefb']
-      - ['17:30', 'shelly', 'off']
+      - ['17:30', 'shelly', 'toggle']
 
   # entry 2. astro (sun) dependent
   sun: # NOTE: remember to include coordinates

@@ -1,6 +1,8 @@
 from cocuvida.sqldatabase import connect, select_all
 from cocuvida.timehandle import isodates
 
+STATUS_ENUMS = ['not published', 'published', 'target disabled', 'publish failed']
+
 
 async def insert_states_from_generator(rows: list) -> str:
     '''

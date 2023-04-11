@@ -52,9 +52,7 @@ class PublishStates:
             print(f'CONTROLPLAN: Publish  {plan_name} {target_type} {state_value}')
             res = await self.cp.publish_state(plan_name, target_type, state_value)
             if res:
-                # publish OK
-                state_status = 1
+                state_status = sql_stateschedule.STATUS_ENUMS.index('published')
             else:
-                # publish failed
-                state_status = 3
+                state_status = sql_stateschedule.STATUS_ENUMS.index('publish failed')
             await sql_stateschedule.update_state_status_by_rowid(rowid, state_status)

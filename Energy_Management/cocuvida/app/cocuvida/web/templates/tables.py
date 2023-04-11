@@ -1,6 +1,5 @@
+from cocuvida.sqldatabase.stateschedule import STATUS_ENUMS
 from cocuvida.timehandle import isodates
-
-STATE_ENUMS = ['not published', 'published', 'target disabled', 'publish failed']
 
 
 async def elspot_processed(elspot_data: dict) -> bytes:
@@ -52,7 +51,7 @@ async def state_schedule(state_schedule: list) -> bytes:
     html += '<table style="width:75%">'
     html += html_header
     for row in state_schedule:
-        # the list is sorted by target_type, so when a new one appears, we insert header row in-between
+        # the list is sorted by target_type, so when a new one appears, we insert a header row in-between
         if target != row[1]:
             html += html_header
 
@@ -61,7 +60,7 @@ async def state_schedule(state_schedule: list) -> bytes:
         time = row[3]
         weekday = isodates.weekday_name_from_isodate(time)
         time_val = f'{weekday} - {time}'
-        status = STATE_ENUMS[row[4]]
+        status = STATUS_ENUMS[row[4]]
         html += f'<tr><td>{target}</td><td>{state}</td><td>{status}</td><td>{time_val}</td></tr>'
     html += f'</table>'
     return html.encode()
