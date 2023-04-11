@@ -10,7 +10,7 @@ class Elspot:
     def __init__(self):
         self.elspot_tomorrow_check = False
 
-    async def on_startup(self):
+    async def on_startup(self) -> bool:
         # DOWNLOAD ELSPOT (if startup is before 13:00 we get todays, else we get tomorrows)
         downloaded_todays = False
         downloaded_tomorrows = False
@@ -18,6 +18,9 @@ class Elspot:
         is_downloaded = await api.download_elspot()
         if is_downloaded:
             res = await processelspot.reshape(api.response_body)
+            if res == []:
+                print('ELSPOT: reshape failed')
+                return False
             # grab date from inside the first region in the reshaped elspot data
             downloaded_date = res[0]['date']
             if downloaded_date == isodates.today_plus_days(1):
@@ -53,7 +56,7 @@ class Elspot:
             res = await sql_elspot.select_elspot_raw_data_for_date(isodates.today())
             if res == '':
                 # raw elspot prices does not exist in database, nothing more to do
-                return
+                return True
             res = await processelspot.reshape(res)
             for region in res:
                 # ADD METADATA
@@ -66,6 +69,9 @@ class Elspot:
                 # GENERATE PLOT WITH TIME MARKER
                 payload = await processelspot.plot_axvline_mark(region_with_metadata)
                 res = await sql_elspot.insert_plot_live(payload)
+            return True
+
+        return False
 
     async def generate_live_plots(self):
         res = await sql_elspot.list_elspot_regions()

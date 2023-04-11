@@ -23,11 +23,11 @@ async def reshape_nok(elspot_raw: dict) -> list:
         return []
     # unpack data and assign to its correct region
     try:
-        for row_number,row in enumerate(elspot_raw['data']['Rows']):
+        for row in elspot_raw['data']['Rows']:
             start_hour = row['StartTime'].split('T')[1][:2]
             end_hour   = row['EndTime'].split('T')[1][:2]
             title_name = row['Name'] # avg, min or html special char for hour
-            for col in elspot_raw['data']['Rows'][row_number]['Columns']:
+            for col in row['Columns']:
                 region = col['Name']
                 value = col['Value']
                 value = value.replace(' ', '')
