@@ -1,6 +1,5 @@
 import aiohttp
 import asyncio
-import json
 
 
 VALID_STATES = ['on', 'off', 'toggle']
@@ -15,7 +14,6 @@ async def shelly_publish(target_entry: dict, state_value: str, aiohttp_session: 
     http_user = target_entry['user']
     http_password = target_entry['password']
     http_auth = aiohttp.BasicAuth(http_user, http_password)
-    timeout=aiohttp.ClientTimeout(total=1.0, connect=0.2)
 
     tasks = []
     for alias, http_relay_path in target_entry['entries'].items():
