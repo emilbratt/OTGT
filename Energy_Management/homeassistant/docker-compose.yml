@@ -5,22 +5,23 @@ services:
     container_name: homeassistant
     image: "ghcr.io/home-assistant/home-assistant:stable"
 
-    # network is set to host (acts if not inside a container)
+    # HOST NETWORK MODE
     network_mode: host
 
-    # OS environment
+    # LOCALE
     environment:
       TZ: Europe/Oslo
-    # define volumes
-    volumes:
-      - ./bindmount/config:/config
 
-    # restart policy
+    # CONFIG FILES
+    volumes:
+      - /etc/homeassistant/config:/config
+
+    # RESTART POLICY
     restart: unless-stopped
 
-    # might be needed for HA to play nicely with some USB devices etc.
+    # MIGHT BE NEEDED FOR HA TO PLAY NICELY WITH SOME USB DEVICES ETC.
     privileged: false
 
-    # map USB device - if for example you wanna use with a conbee II USB-stick..
+    # MAP USB DEVICE - IF FOR EXAMPLE YOU WANNA USE WITH A CONBEE II USB-STICK..
     # devices:
     #   - /dev/ttyACM0:/dev/ttyACM0
