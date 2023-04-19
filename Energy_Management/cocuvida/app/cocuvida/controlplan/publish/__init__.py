@@ -31,7 +31,7 @@ class PublishStates:
         res = await sql_controlplans.list_plan_names_greater_than_timestamp(self.last_updated_controlplan_timestamp)
         self.last_updated_controlplan_timestamp = await sql_controlplans.select_latest_modification_time()
         for plan_name in res:
-            # this will update or add new controlplans if res is not an empty list
+            # this will update or add new controlplans if res is not empty
             plan_data = await sql_controlplans.select_control_plan_by_plan_name(plan_name)
             await self.cp.load_controlplan(plan_data)
 
@@ -41,7 +41,7 @@ class PublishStates:
 
         # load unpublished states for this time of day 'HH:MM'
         timestamp = isodates.timestamp_now_round('minute')
-        res = await sql_stateschedule.select_unpublished_for_timestamp(timestamp)
+        res = await sql_stateschedule.select_non_published_states_for_timestamp(timestamp)
         tasks = []
         for row in res:
             plan_name = row[0]

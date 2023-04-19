@@ -53,7 +53,7 @@ def example_controlplan(self):
         self.assertTrue(res == 'insert')
 
         # load states and publish
-        res = asyncio.run(sql_stateschedule.select_unpublished_for_timestamp('2023-06-17 12:00'))
+        res = asyncio.run(sql_stateschedule.select_non_published_states_for_timestamp('2023-06-17 12:00'))
         for row in res:
             plan_name = row[0]
             target_type = row[1]

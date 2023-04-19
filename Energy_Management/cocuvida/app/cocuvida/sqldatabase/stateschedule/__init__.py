@@ -117,7 +117,7 @@ async def select_non_published_states_today() -> list:
     '''
     return select_all(query, [isodates.today()])
 
-async def select_unpublished_for_timestamp(timestamp: str) -> list:
+async def select_non_published_states_for_timestamp(timestamp: str) -> list:
     '''
         returns all within the window of whole minute (X mark) -> YYYY-MM-DD HH:MM:XX 
     '''

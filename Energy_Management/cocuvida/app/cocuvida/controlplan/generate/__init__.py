@@ -66,9 +66,7 @@ class GenerateStates:
             if is_passed_that_time:
                 print(f'CONTROLPLAN: generating states for new controlplan {plan_name} with date {isodate_tomorrow}')
                 await sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodate_tomorrow)
-                #if await cp.is_operating_date(plan_name, isodate_tomorrow):
                 if await self.cp.is_operating_date(plan_name, isodate_tomorrow):
-                    #states = await cp.generate_states(plan_name, isodate_tomorrow)
                     states = await self.cp.generate_states(plan_name, isodate_tomorrow)
                     await sql_stateschedule.insert_states_from_generator(states)
 
