@@ -10,12 +10,12 @@ OPERATION_DATE = '2023-06-17'
 
 # these should match the generated states from the controlplan in ./test_data/controlplan
 CHECK_GENERATED_STATES = [
-    ['example_controlplan', 'shelly', 'on', '2023-06-17 11:00', 0],
-    ['example_controlplan', 'shelly', 'off', '2023-06-17 12:00', 0],
+    ['example_controlplan', 'shelly', 'on', '2023-06-17 11:00', 2],
+    ['example_controlplan', 'shelly', 'off', '2023-06-17 12:00', 2],
     ['example_controlplan', 'exampletarget', '60', '2023-06-17 12:00', 0],
-    ['example_controlplan', 'mqtt', 'msgrefa', '2023-06-17 12:00', 0],
-    ['example_controlplan', 'mqtt', 'msgrefb', '2023-06-17 13:00', 0],
-    ['example_controlplan', 'shelly', 'toggle', '2023-06-17 17:30', 0],
+    ['example_controlplan', 'mqtt', 'msgrefa', '2023-06-17 12:00', 2],
+    ['example_controlplan', 'mqtt', 'msgrefb', '2023-06-17 13:00', 2],
+    ['example_controlplan', 'shelly', 'toggle', '2023-06-17 17:30', 2],
 ]
 
 

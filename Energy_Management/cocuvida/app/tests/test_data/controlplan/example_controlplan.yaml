@@ -13,7 +13,7 @@ target:
 
   # shelly switches
   shelly: # valid states are on, off or toggle
-    include_entry: true # enable/disable entry
+    include_entry: false # enable/disable entry
     # http auth (it is required, for security reasons.. so please set this on all shelly devices)
     user: admin
     password: password
@@ -28,7 +28,7 @@ target:
   # cocuvida application uses the name of this controlplan for topic
   # e.g. topic for this controlplan will be set to -> "cocuvida/controlplan/example_controlplan"
   mqtt:
-    include_entry: true # enable/disable entry
+    include_entry: false # enable/disable entry
     entries:
       # ref key: message being sent -> ref the value as the state so message for that state is sent
       msgrefa: this is a message being sent for message ref msgrefa
