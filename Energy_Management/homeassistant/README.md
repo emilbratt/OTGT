@@ -1,3 +1,10 @@
+
+# Setup
+install docker and docker-compose
+run docker-compose up
+* Homeassistant uses port 8123 as standard
+
+
 # Installation Raspberry Pi (only tested on 3 b+)
 
 Prepare a Raspberry Pi with Raspberry Pi OS Lite
