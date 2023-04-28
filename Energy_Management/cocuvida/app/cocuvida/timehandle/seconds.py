@@ -44,36 +44,35 @@ def until_next_hour() -> int:
     minutes_until_new_hour = 60 - datetime.now().minute
     return minutes_until_new_hour * 60
 
-
 def until_time_of_day(timeofday: str) -> int:
     '''
         pass string in format 'HH:MM'
 
         returns seconds until specified time of day (24h format)
-        first param = hour (0-23), second param = minute (0-59)
-        if input time <= current time, then sleep to input time for next day
-        if input time  > current time, then sleep to input time for today
-        returns current time as int stored in a tuple (hour, minute)
     '''
-    # convert to total seconds passed for this day
+    isodate = datetime.now().strftime('%Y-%m-%d')
+    f = datetime.fromisoformat(f'{isodate} {timeofday}')
     t = datetime.now()
-    seconds_now = (t.now().hour*3600) + (t.now().minute*60) + (t.now().second)
-    seconds_target = (hour*3600) + (minute*60)
-    bool_val = (seconds_now >= seconds_target)
-    return (bool_val * 86400) + seconds_target - seconds_now
+    return (f - t).seconds
 
 def until_timestamp(timestamp: str) -> int:
     '''
         pass string in format 'YYYY-MM-DD HH:MM'
 
-        returns seconds until specified time of day (24h format)
-        first param = hour (0-23), second param = minute (0-59)
-        if input time <= current time, then sleep to input time for next day
-        if input time  > current time, then sleep to input time for today
-        returns current time as int stored in a tuple (hour, minute)
+        returns seconds until specified timestamp
     '''
-    # isodate = datetime.now().strftime('%Y-%m-%d')
-    # f = datetime.fromisoformat(f'{isodate} {timeofday}')
     f = datetime.fromisoformat(timestamp)
     t = datetime.now()
     return (f - t).seconds
+
+def between_timestamps(timestamp_1: str, timestamp_2: str) -> int:
+    '''
+        returns seconds between two iso timestamps
+        pass timestamps as 'YYYY-MM-DD HH:MM:SS'
+    '''
+    f = datetime.fromisoformat(timestamp_1)
+    g = datetime.fromisoformat(timestamp_2)
+    if f < g:
+        return int((g - f).total_seconds())
+    else:
+        return int((f - g).total_seconds())

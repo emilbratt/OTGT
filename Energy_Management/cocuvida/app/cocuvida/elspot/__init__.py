@@ -1,19 +1,25 @@
 import asyncio
 
-from cocuvida.timehandle import seconds, timeofday
-from cocuvida import libelspot
+from cocuvida.timehandle import isodates, seconds, timeofday
+
+from . import download, plot
+
+
+HOUR = 3600
+HALF_HOUR = 1800
+QUARTER = 900
 
 
 async def app():
     print('ELSPOT START')
-    elspot = libelspot.Elspot()
-    await elspot.on_startup()
-    while True:
-        if await elspot.elspot_is_published():
-            await elspot.process_tomorrows_elspot()
-        await elspot.generate_live_plots()
-        sleep_time = seconds.until_next_quarter_hour()
-        await asyncio.sleep(sleep_time)
+    loop = asyncio.get_event_loop()
+    download_dayahead = loop.create_task(download.dayahead())
+    plot_dayahead = loop.create_task(plot.dayahead_date())
+    plot_live = loop.create_task(plot.dayahead_live())
+    await download_dayahead
+    await plot_dayahead
+    await plot_live
+
 
 def run_elspot() -> None:
     asyncio.run(app())

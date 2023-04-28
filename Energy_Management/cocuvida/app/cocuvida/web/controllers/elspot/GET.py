@@ -1,7 +1,7 @@
 from cocuvida.web.views.elspot import View
 from urllib.parse import urlparse, parse_qs, unquote
 
-async def controller(scope: dict, receive: object):
+async def controller(scope: dict, receive: object) -> View:
     region    = None
     time_from = None
     time_to   = None

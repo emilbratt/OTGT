@@ -1,125 +1,62 @@
-from cocuvida.timehandle import timeofday, isodates
-from cocuvida.sqldatabase import elspot as sql_elspot
-
-from .api import API
-from . import processelspot
+from . import download, metadata, reshape, plots
 
 
-# FIXME: remove all SQL related code (simple decoupling) and put SQL related code into the Elspot service instead
 class Elspot:
-
+    '''
+        this is an interface to simplify the interaction for this library
+        you can however import parts of this library and call functions as you see fit
+    '''
     def __init__(self):
-        self.elspot_tomorrow_check = False
-
-    async def on_startup(self) -> bool:
-        # DOWNLOAD ELSPOT (if startup is before 13:00 we get todays, else we get tomorrows)
-        downloaded_todays = False
-        downloaded_tomorrows = False
-        api = API()
-        is_downloaded = await api.download_elspot()
-        if is_downloaded:
-            res = await processelspot.reshape(api.response_body)
-            if res == []:
-                print('ELSPOT: reshape failed')
-                return False
-            # grab date from inside the first region in the reshaped elspot data
-            downloaded_date = res[0]['date']
-            if downloaded_date == isodates.today_plus_days(1):
-                downloaded_tomorrows = True
-                downloaded_todays = False
-            elif downloaded_date == isodates.today():
-                downloaded_todays = True
-                downloaded_tomorrows = False
-            for region in res:
-                # ADD METADATA
-                region_with_metadata = await processelspot.add_metadata(region)
-                # INSERT INTO elspot_processed
-                res = await sql_elspot.insert_processed_elspot(region_with_metadata)
-                if not res:
-                    raise Exception('InsertError: error inserting processed_elspot into SQL table "elspot_processed"')
-                # GENERATE PLOT BY DATE
-                payload = await processelspot.plot_date(region_with_metadata)
-                res = await sql_elspot.insert_plot_date(payload)
-                # extra steps if todays where downloaded
-                if downloaded_todays:
-                    # GENERATE PLOT WITH TIME MARKER
-                    payload = await processelspot.plot_axvline_mark(region_with_metadata)
-                    res = await sql_elspot.insert_plot_live(payload)
-
-        if downloaded_todays:
-            self.elspot_tomorrow_check = False
-            # nothing more to do
-            return True
-        elif downloaded_tomorrows:
-            # set tomorrow check true so that we do not need to do this again when mainloop is entered
-            self.elspot_tomorrow_check = True
-            # hanlde todays elspot prices (if exist in database)
-            res = await sql_elspot.select_elspot_raw_data_for_date(isodates.today())
-            if res == '':
-                # raw elspot prices does not exist in database, nothing more to do
-                return True
-            res = await processelspot.reshape(res)
-            for region in res:
-                # ADD METADATA
-                region_with_metadata = await processelspot.add_metadata(region)
-                # INSERT INTO elspot_processed
-                res = await sql_elspot.insert_processed_elspot(region_with_metadata)
-                # GENERATE PLOT BY DATE
-                payload = await processelspot.plot_date(region_with_metadata)
-                res = await sql_elspot.insert_plot_date(payload)
-                # GENERATE PLOT WITH TIME MARKER
-                payload = await processelspot.plot_axvline_mark(region_with_metadata)
-                res = await sql_elspot.insert_plot_live(payload)
-            return True
-
-        return False
-
-    async def generate_live_plots(self):
-        res = await sql_elspot.list_elspot_regions()
-        for region in res:
-            # PLOT LIVE MARKER
-            res = await sql_elspot.select_processed_elspot_data_for_date(region, isodates.today())
-            if res != {}:
-                payload = await processelspot.plot_axvline_mark(res)
-                res = await sql_elspot.insert_plot_live(payload)
-
-    async def elspot_is_published(self) -> bool:
         '''
-            returns True the first time we run this method after 13:00
-            returns False in all other cases
+            pass the currency you want to work with (EUR, NOK, SEK, ..)
         '''
-        # if time now before 13:00
-        if timeofday.is_before_time(13, 00):
-            self.elspot_tomorrow_check = False
-            return False
-        # if we have already checked and time is after 13:00
-        if self.elspot_tomorrow_check:
-            return False
-        # time is after 13:00 -> set elspot_tomorrow_check = True and return True
-        self.elspot_tomorrow_check = True
-        return True
+        self.download_ok = False
+        self.plot_ok = False
+        self.process_ok = False
 
-    async def process_tomorrows_elspot(self) -> bool:
+    async def download_dayahead(self, currency) -> str:
         '''
-            download and process tomorrows elspot prices
+            returns the raw json received from the nordpool api endpoint
         '''
-        api = API()
-        is_downloaded = await api.download_elspot()
-        if not is_downloaded:
-            self.elspot_tomorrow_check = False
-            return False
-        res = await processelspot.reshape(api.response_body)
-        for region in res:
-            # ADD METADATA
-            region_with_metadata = await processelspot.add_metadata(region)
-            payload = await processelspot.plot_date(region_with_metadata)
-            res = await sql_elspot.insert_plot_date(payload)
-            if not res:
-                self.elspot_tomorrow_check = False
-                return False
-            # INSERT INTO elspot_processed
-            res = await sql_elspot.insert_processed_elspot(region_with_metadata)
-            if not res:
-                raise Exception('InsertError: error inserting processed_elspot into SQL table "elspot_processed"')
+        self.download_ok = False
+        response_text = await download.download_dayahead(currency)
+        if response_text != '':
+            self.download_ok = True
+        return response_text
 
-        return True
+    async def process_dayahead(self, response_text: str) -> dict:
+        '''
+            after downloading, use this method to process the downloaded data
+            it will reshape and add metadata
+        '''
+        self.process_ok = False
+        processed = await reshape.reshape_dayahead(response_text)
+        if processed != {}:
+            for region, data in processed.items():
+                processed[region] = await metadata.metadata_dayahead(data)
+            self.process_ok = True
+        return processed
+
+    async def plot_dayahead_date(self, region_data: dict) -> str:
+        '''
+            pass one region (the whole structure for processed dayahead)
+            on success, returns an SVG string object with the plot
+            on failure, returns empty string
+        '''
+        self.plot_ok = False
+        plot = await plots.plot_dayahead_date(region_data)
+        if plot != '':
+            self.plot_ok = True
+        return plot
+
+    async def plot_dayahead_live(self, region_data: dict) -> str:
+        '''
+            pass one region (the whole structure for processed dayahead)
+            on success, returns an SVG string object with the plot
+            on failure, returns empty string
+        '''
+        self.plot_ok = False
+        plot = await plots.plot_dayahead_live(region_data)
+        if plot != '':
+            self.plot_ok = True
+        return plot

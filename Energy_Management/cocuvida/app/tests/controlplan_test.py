@@ -6,16 +6,16 @@ from cocuvida.sqldatabase import (controlplans as sql_controlplans,
                                   stateschedule as sql_stateschedule)
 
 PLAN_NAME = 'example_controlplan'
-OPERATION_DATE = '2023-06-17'
+OPERATION_DATE = '2022-06-17'
 
 # these should match the generated states from the controlplan in ./test_data/controlplan
 CHECK_GENERATED_STATES = [
-    ['example_controlplan', 'shelly', 'on', '2023-06-17 11:00', 2],
-    ['example_controlplan', 'shelly', 'off', '2023-06-17 12:00', 2],
-    ['example_controlplan', 'exampletarget', '60', '2023-06-17 12:00', 0],
-    ['example_controlplan', 'mqtt', 'msgrefa', '2023-06-17 12:00', 2],
-    ['example_controlplan', 'mqtt', 'msgrefb', '2023-06-17 13:00', 2],
-    ['example_controlplan', 'shelly', 'toggle', '2023-06-17 17:30', 2],
+    ['example_controlplan', 'shelly', 'on', '2022-06-17 11:00', 2],
+    ['example_controlplan', 'shelly', 'off', '2022-06-17 12:00', 2],
+    ['example_controlplan', 'exampletarget', '60', '2022-06-17 12:00', 0],
+    ['example_controlplan', 'mqtt', 'msgrefa', '2022-06-17 12:00', 2],
+    ['example_controlplan', 'mqtt', 'msgrefb', '2022-06-17 13:00', 2],
+    ['example_controlplan', 'shelly', 'toggle', '2022-06-17 17:30', 2],
 ]
 
 
@@ -53,7 +53,7 @@ def example_controlplan(self):
         self.assertTrue(res == 'insert')
 
         # load states and publish
-        res = asyncio.run(sql_stateschedule.select_non_published_states_for_timestamp('2023-06-17 12:00'))
+        res = asyncio.run(sql_stateschedule.select_non_published_states_for_timestamp('2022-06-17 12:00'))
         for row in res:
             plan_name = row[0]
             target_type = row[1]

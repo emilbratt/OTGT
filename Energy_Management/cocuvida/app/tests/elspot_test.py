@@ -1,8 +1,9 @@
 import asyncio
 import json
 
-from cocuvida.libelspot import processelspot
+from cocuvida import libelspot
 from cocuvida.sqldatabase import elspot as sql_elspot
+from cocuvida.timehandle import isodates
 
 FILES = {
     # this is the most "normal" case of elspot prices (nothing out of the ordinary here..)
@@ -41,38 +42,39 @@ def process_elspot(self, file_ref: str, expected_resolution: int):
         asyncio.run(sql_elspot.insert_raw_elspot(raw_elspot))
 
         # RESHAPE ELSPOT
-        reshaped_elspot = asyncio.run(processelspot.reshape(raw_elspot))
+        processed_elspot = asyncio.run(libelspot.reshape.reshape_dayahead(raw_elspot))
         # check if resoultion checks out
-        self.assertTrue(reshaped_elspot[0]['resolution'] == expected_resolution)
+        self.assertTrue(processed_elspot['Molde']['resolution'] == expected_resolution)
 
         # INSERT PROCESSED ELSPOT INTO DATABASE
-        for region in reshaped_elspot:
+        for elspot_data in processed_elspot.values():
             # insert reshaped versions for each region into database
-            res = asyncio.run(sql_elspot.insert_processed_elspot(region))
+            res = asyncio.run(sql_elspot.insert_processed_elspot(elspot_data))
             self.assertTrue(res)
 
         # ADD METADATA TO PROCESSED ELSPOT (IN A NEW LIST AS WELL)
-        metadata_added_elspot = []
-        for region in reshaped_elspot:
-            name = region['region']
-            res = asyncio.run(processelspot.add_metadata(region))
-            metadata_added_elspot.append(res)
+        for elspot_region, elspot_data in processed_elspot.items():
+            processed_elspot[elspot_region] = asyncio.run(libelspot.metadata.metadata_dayahead(elspot_data))
 
         # INSERT PROCESSED ELSPOT (WITH ADDED METADATA) INTO DATABASE
-        for region in metadata_added_elspot:
+        for elspot_data in processed_elspot.values():
             # this will update the previous processed elspot prices
-            res = asyncio.run(sql_elspot.insert_processed_elspot(region))
+            res = asyncio.run(sql_elspot.insert_processed_elspot(elspot_data))
             self.assertTrue(res)
 
-        # GENERATE PLOTS
+        # GENERATE PLOTS (WE ONLY GENERATE FOR 4 SELECT REGIONS AS THIS IS TIME CONSUMING)
         check_set = {'Oslo': False, 'Tr.heim': False, 'DK1': False, 'SE1': False}
-        for region in reshaped_elspot:
-            match region['region']:
+        for elspot_region, elspot_data in processed_elspot.items():
+            match elspot_region:
                 # plot generator takes some time, only do processing for select regions
                 case 'Oslo'|'Tr.heim'|'DK1'|'SE1':
-                    check_set[region['region']] = True
-                    payload = asyncio.run(processelspot.plot_date(region))
-                    res = asyncio.run(sql_elspot.insert_plot_date(payload))
+                    check_set[elspot_region] = True
+                    sql_payload = {}
+                    sql_payload['region'] = elspot_data['region']
+                    sql_payload['date']   = elspot_data['date']
+                    sql_payload['last_updated'] = isodates.timestamp_now_round('second')
+                    sql_payload['plot']   = asyncio.run(libelspot.plots.plot_dayahead_date(elspot_data))
+                    res = asyncio.run(sql_elspot.insert_plot_date(sql_payload))
                     self.assertTrue(res)
         # this checks if select regions actually where processed
         for region in check_set:

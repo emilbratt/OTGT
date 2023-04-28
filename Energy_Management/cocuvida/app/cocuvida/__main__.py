@@ -17,7 +17,7 @@ SERVICES = {
 def init():
     scripts.run('create_tables.sql')
 
-def no_arg_provided():
+def no_service_added():
     print('Pass along the service to run as first argument')
     for k,v in SERVICES.items():
         print(f'arg: {k}\n\t{v}\n')
@@ -48,7 +48,7 @@ def main() -> int:
             cpl.join()
             els.join()
         case _:
-            no_arg_provided()
+            no_service_added()
 
     return 0
 

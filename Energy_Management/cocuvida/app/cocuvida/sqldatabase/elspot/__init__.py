@@ -1,6 +1,6 @@
 import json
 
-from cocuvida.sqldatabase import connect, select_one, select_all, select_all_no_param, insert_one, update, delete
+from cocuvida.sqldatabase import select_one, select_all, select_all_no_param, insert_one, update, delete
 from cocuvida.timehandle import isodates
 
 
@@ -12,7 +12,23 @@ async def list_elspot_regions() -> list:
     res = [r[0] for r in res]
     return res
 
-async def select_processed_elspot_data_for_date(region: str, isodate: str) -> dict:
+async def select_processed_for_date(isodate: str) -> list:
+    query = '''
+        SELECT elspot_data
+        FROM elspot_processed
+        WHERE elspot_date = ?
+    '''
+    res = select_all(query, [isodate])
+    if res == []:
+        return []
+    regions = []
+
+    for region in res:
+        cur = json.loads(region[0])
+        regions.append(cur)
+    return regions
+
+async def select_processed_for_date_and_region(region: str, isodate: str) -> dict:
     query = '''
         SELECT elspot_data
         FROM elspot_processed
@@ -49,9 +65,10 @@ async def insert_raw_elspot(json_string: str) -> bool:
         SET elspot_data = ?
         WHERE elspot_date = ?
     '''
-    time_stamp = json.loads(json_string)['data']['DataStartdate']
-    time_stamp = isodates.date_object_from_isodate_and_time(time_stamp)
-    elspot_date = time_stamp.date()
+    timstmp = json.loads(json_string)['data']['DataStartdate']
+    #elspot_date = isodates.date_from_timestamp(timstmp)
+    date_obj = isodates.date_object_from_timestamp(timstmp)
+    elspot_date = date_obj.date()
     res = insert_one(insert_query, [json_string, elspot_date])
     if res == 'insert':
         return True
@@ -65,7 +82,7 @@ async def elspot_raw_exists_for_date(isodate: str) -> bool:
     query = '''
         SELECT COUNT(elspot_data)
         FROM elspot_raw
-        WHERE elspot_date = ?
+        WHERE elspot_date = ? LIMIT 1
     '''
     res = select_one(query, [isodate])
     return (res[0] == 1)
@@ -101,8 +118,8 @@ async def insert_processed_elspot(elspot_data: dict) -> bool:
         SET elspot_data = ?
         WHERE elspot_date = ? AND elspot_region = ?
     '''
-    elspot_region = elspot_data['region']
     elspot_date = elspot_data['date']
+    elspot_region = elspot_data['region']
     elspot_data = json.dumps(elspot_data)
     res = insert_one(insert_query, [elspot_data, elspot_date, elspot_region])
     if res == 'insert':
@@ -111,9 +128,12 @@ async def insert_processed_elspot(elspot_data: dict) -> bool:
         res = update(update_query, [elspot_data, elspot_date, elspot_region])
         if res == 'update':
             return True
+        elif 'DatabaseError':
+            print(res)
+            exit(1)
     return False
 
-async def insert_plot_date(data: dict) -> bool:
+async def insert_plot_date(payload: dict) -> bool:
     '''
         pass dict in this format
         {
@@ -122,7 +142,6 @@ async def insert_plot_date(data: dict) -> bool:
             'plot':   '<?xml ..'
         }
     '''
-
     insert_query = '''
         INSERT INTO elspot_plot_date
             (plot_data, last_updated, plot_date, plot_region)
@@ -134,12 +153,10 @@ async def insert_plot_date(data: dict) -> bool:
         SET plot_data = ?, last_updated = ?
         WHERE plot_date = ? AND plot_region = ?
     '''
-
-    plot_data = data['plot']
-    last_updated = isodates.timestamp_now_round('second')
-    plot_date = data['date']
-    plot_region = data['region']
-
+    plot_data = payload['plot']
+    last_updated = payload['last_updated']
+    plot_date = payload['date']
+    plot_region = payload['region']
     res = insert_one(insert_query, [plot_data, last_updated, plot_date, plot_region])
     if res == 'insert':
         return True
@@ -159,15 +176,24 @@ async def select_plot_for_date_and_region(region: str, isodate: str) -> str:
         return ''
     return res[0]
 
-async def insert_plot_live(data: dict) -> bool:
+async def plot_for_date_and_region_exist(region: str, isodate: str) -> bool:
+    query = '''
+    SELECT COUNT(plot_data) FROM elspot_plot_date
+    WHERE plot_region = ? AND plot_date = ?
+    LIMIT 1
+    '''
+    res = select_one(query, [region, isodate])
+    return (res[0] == 1)
+
+async def insert_plot_live(payload: dict) -> bool:
     '''
         pass dict in this format
         {
             'region': 'Molde,
+            'timestamp' : 'YYYY-MM-DD HH:MM:SS',
             'plot':   '<?xml ..'
         }
     '''
-
     insert_query = '''
         INSERT INTO elspot_plot_live
             (plot_data, last_updated, plot_region)
@@ -179,10 +205,9 @@ async def insert_plot_live(data: dict) -> bool:
         SET plot_data = ?, last_updated = ?
         WHERE plot_region = ?
     '''
-
-    plot_data = data['plot']
-    last_updated = isodates.timestamp_now_round('second')
-    plot_region = data['region']
+    plot_data = payload['plot']
+    last_updated = payload['last_updated']
+    plot_region = payload['region']
     res = insert_one(insert_query, [plot_data, last_updated, plot_region])
     if res == 'insert':
         return True

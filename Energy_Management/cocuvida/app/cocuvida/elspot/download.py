@@ -1,0 +1,50 @@
+import asyncio
+
+from cocuvida import libelspot
+from cocuvida.environment import env_ini_get
+from cocuvida.sqldatabase import elspot as sql_elspot
+from cocuvida.timehandle import seconds, timeofday
+
+from .validate import dayahead_today_downloaded, dayahead_tomorrow_downloaded
+
+
+async def dayahead():
+    '''
+        step 1.
+            Download raw elspot data if not found in sql-db
+            ..saved to sql-table -> elspot_raw
+        step 2.
+            Processing the raw elspot data
+            ..saved to sql-table -> elspot_processed
+        ..repeat
+    '''
+    currency = env_ini_get(section='cocuvida', key='elspot_currency')
+    elspot_obj = libelspot.Elspot()
+    await asyncio.sleep(10)
+    while True:
+        # todays elspot is served from nordpool until 13:00
+        # tomorrows elspot is served from nordpool after 13:00
+        if timeofday.is_before_time(13, 00):
+            downloaded = await dayahead_today_downloaded()
+        else:
+            downloaded = await dayahead_tomorrow_downloaded()
+
+        if not downloaded:
+            elspot_raw_data = await elspot_obj.download_dayahead(currency)
+            if not elspot_obj.download_ok:
+                print('ERROR: elspot dayahead raw download failed')
+            elif elspot_obj.download_ok:
+                elspot_processed_data = await elspot_obj.process_dayahead(elspot_raw_data)
+                if not elspot_obj.process_ok:
+                    print('ERROR: processing of elspot raw data failed')
+                elif elspot_obj.process_ok:
+                    sql_result = await sql_elspot.insert_raw_elspot(elspot_raw_data)
+                    if not sql_result:
+                        print('ERROR: elspot dayahead raw SQL insert failed')
+                    for region_specific_data in elspot_processed_data.values():
+                        sql_result = await sql_elspot.insert_processed_elspot(region_specific_data)
+                        if not sql_result:
+                            region = region_specific_data['region']
+                            print(f'ERROR: elspot dayahead processed SQL insert failed for {region}')
+
+        await asyncio.sleep(seconds.until_next_hour())

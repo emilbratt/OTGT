@@ -2,7 +2,7 @@ from yaml import safe_load as yaml_safe_load
 from io import StringIO
 
 from cocuvida.timehandle import isodates
-from cocuvida.sqldatabase import connect, select_all
+from cocuvida.sqldatabase import connect, select_all, select_one_no_param
 
 QUERIES = {
     'insert_control_plan': 'INSERT INTO control_plans (plan_name, plan_data, last_updated) VALUES (?, ?, ?)',
@@ -12,7 +12,6 @@ QUERIES = {
     'delete_control_plan': 'DELETE FROM control_plans WHERE plan_name = ?',
     'list_plan_names': 'SELECT plan_name FROM control_plans',
     'list_plan_names_greater_than_timestamp': 'SELECT plan_name FROM control_plans WHERE last_updated > ?',
-    'select_latest_modification_time': 'SELECT last_updated FROM control_plans ORDER BY last_updated DESC LIMIT 1',
 }
 
 
@@ -108,9 +107,10 @@ async def delete_control_plan(plan_name: str) -> str:
         return action
 
 async def select_latest_modification_time() -> str:
-    cnxn = connect()
-    cursor = cnxn.cursor()
-    cursor.execute(QUERIES['select_latest_modification_time'])
-    res = cursor.fetchone()
-    cnxn.close()
-    return res[0]
+    query = 'SELECT last_updated FROM control_plans ORDER BY last_updated DESC LIMIT 1'
+    res = select_one_no_param(query)
+    if res == None:
+        # return timestamp (new controlplans will have a newer timestamp anyway)
+        return isodates.timestamp_now()
+    else:
+        return res[0]

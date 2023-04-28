@@ -23,12 +23,12 @@ def timestamp_now() -> str:
     '''
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-def timestamp_now_round(val: str) -> str:
+def timestamp_now_round(unit: str) -> str:
     '''
         returns datetime as iso format  '2023-01-22 15:37:13'
         takes input as second, minute or hour
     '''
-    match val:
+    match unit:
         case 'second':
             return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         case 'minute':
@@ -36,7 +36,7 @@ def timestamp_now_round(val: str) -> str:
         case 'hour':
             return datetime.now().strftime('%Y-%m-%d %H') 
         case _:
-            raise Exception(f'InvalidParameter: {val}')
+            raise Exception(f'InvalidTimeUnit: {unit}')
 
 def weekday_number_today() -> int:
     '''
@@ -91,12 +91,27 @@ def date_object_from_isodate(isodate: str) -> datetime:
         return datetime.fromisoformat(isodate)
     return datetime.fromisoformat(isodate)
 
-def date_object_from_isodate_and_time(timestamp: str):
+def date_object_from_timestamp(timestamp: str) -> datetime:
     '''
-        pass timestamp as
-            'YYYY-MM-DD HH:MM'
+        pass isotimestamp as 'YYYY-MM-DD HH:MM:SS'
+                          or 'YYYY-MM-DDTHH:MM:SS'
     '''
     return datetime.fromisoformat(timestamp)
 
+def date_from_timestamp(timestamp: str) -> str:
+    '''
+        pass isotimestamp as 'YYYY-MM-DD HH:MM:SS'
+                          or 'YYYY-MM-DDTHH:MM:SS'
+        returns 'YYYY-MM-DD'
+    '''
+    date_obj = datetime.fromisoformat(timestamp)
+    return date_obj.strftime('%Y-%m-%d')
 
-
+def time_from_timestamp(timestamp: str) -> str:
+    '''
+        pass isotimestamp as 'YYYY-MM-DD HH:MM:SS'
+                          or 'YYYY-MM-DDTHH:MM:SS'
+        returns 'HH:MM:SS'
+    '''
+    date_obj = datetime.fromisoformat(timestamp)
+    return date_obj.strftime('%H:%M:%S')

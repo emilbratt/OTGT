@@ -1,7 +1,7 @@
 from cocuvida.environment import env_ini_get
 
 
-VALID_CURRENCY_LIST = ['NOK']
+VALID_CURRENCY_LIST = ('NOK', 'EUR')
 
 # if new configurations are implemented in app
 # ..make sure they are also listed here

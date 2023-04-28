@@ -5,7 +5,7 @@ DATABASE_FILE = 'data.sqlite'
 # use connet() when granularity is of concern
 # use the other functions when simplicity is wanted
 
-def connect():
+def connect() -> object:
     cnxn = sqlite3.connect(DATABASE_FILE)
     return cnxn
 
@@ -48,7 +48,14 @@ def select_one(query: str, param: list) -> list:
     cnxn = sqlite3.connect(DATABASE_FILE)
     cursor = cnxn.cursor()
     cursor.execute(query, param)
-    cnxn.commit()
+    res = cursor.fetchone()
+    cnxn.close()
+    return res
+
+def select_one_no_param(query: str) -> list:
+    cnxn = sqlite3.connect(DATABASE_FILE)
+    cursor = cnxn.cursor()
+    cursor.execute(query)
     res = cursor.fetchone()
     cnxn.close()
     return res
@@ -57,7 +64,6 @@ def select_all(query: str, param: list) -> list:
     cnxn = sqlite3.connect(DATABASE_FILE)
     cursor = cnxn.cursor()
     cursor.execute(query, param)
-    cnxn.commit()
     res = cursor.fetchall()
     cnxn.close()
     return res
@@ -66,7 +72,6 @@ def select_all_no_param(query: str) -> list:
     cnxn = sqlite3.connect(DATABASE_FILE)
     cursor = cnxn.cursor()
     cursor.execute(query)
-    cnxn.commit()
     res = cursor.fetchall()
     cnxn.close()
     return res
