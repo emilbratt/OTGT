@@ -95,8 +95,7 @@ async def dayahead_live():
             must_reload_data = True
 
         if must_reload_data:
-            print('RELOAD DATA')
             elspot_processed = await sql_elspot.select_processed_for_date(date_today)
 
         await _generate(elspot_obj, elspot_processed)
-        await asyncio.sleep(2)
+        await asyncio.sleep(seconds.until_next_quarter_hour())
