@@ -2,13 +2,14 @@
 
 function is_git_installed () {
   [[ -x "$(command -v git)" ]] && return 0
-  echo 'Make sure to install git before running this script'
+  echo 'This script depends on git, install git first'
   exit 1
 }
 
 function is_otgt_in_PATH () {
+  return 0
   [[ -x "$(command -v otgt)" ]] && return 0
-  echo 'make sure this script is in $PATH'
+  echo 'This script depends on being globally accessible, add this script to $PATH'
   exit 1
 }
 
@@ -18,6 +19,18 @@ function set_cwd () {
   # if this script is not in CWD, something went wrong
   [[ -f otgt ]] || return 1
   return 0
+}
+
+function print_hostname () {
+  printf 'Computer: '
+  if [[ -x "$(command -v hostname)" ]]; then
+    hostname
+  elif [[ -f "/etc/hostname" ]]; then
+    cat /etc/hostname
+  else
+    echo 'ERROR could not find hostname for this computer'
+  fi
+    echo ''
 }
 
 function _update () {
@@ -79,11 +92,12 @@ function _update () {
   LC_ALL=C git pull --rebase
 }
 
+
 function list_options () {
   echo 'Select by typing number'
   echo '1. Run Update'
   echo '2. Open TeamViewer'
-  echo '3. Print Hostname'
+  echo '3. Show uptime stats'
   echo '4. Open Gmail'
   echo '5. Do a reboot'
   echo '0. Exit'
@@ -98,7 +112,7 @@ function list_options () {
       ;;
 
     3)
-      printf 'Hostname for this computer: '; hostname; echo ''
+      uptime
       ;;
 
     4)
@@ -126,6 +140,7 @@ function main () {
   is_git_installed
   is_otgt_in_PATH
   set_cwd
+  print_hostname
 
   # run otgt cli tool
   list_options
