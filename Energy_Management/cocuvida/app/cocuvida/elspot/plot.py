@@ -49,18 +49,18 @@ async def dayahead_date():
         yesterday = await sql_elspot.select_processed_for_date(isodates.today_plus_days(-1))
         await _generate(elspot_obj, today)
         await _generate(elspot_obj, yesterday)
-        if timeofday.is_passed_time(13, 00):
+        if timeofday.is_passed_time(13, 02): # 13:02 to allow time for elspot download and processing first at 13:00
             tomorrow = await sql_elspot.select_processed_for_date(isodates.today_plus_days(1))
             await _generate(elspot_obj, tomorrow)
 
-        await asyncio.sleep(seconds.until_next_hour())
+        await asyncio.sleep(seconds.until_next_quarter_hour())
 
 async def dayahead_live():
     '''
         every 15 minute
             1. load todays elspot data
-            2. on new day or if data was empty, re-load todays elspot data
-            3. generate a plot with an vertical line X marker
+            2. on new day or if data was empty, reload todays elspot data
+            3. generate a plot with an vertical line marking current time
     '''
     async def _save(region: str, isodate: str, plot: str) -> None:
         payload = {

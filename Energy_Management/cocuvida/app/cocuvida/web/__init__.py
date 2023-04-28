@@ -13,7 +13,6 @@ async def app(scope: dict, receive: object, send: object):
         return None
     await route(scope, receive, send)
 
-
 # the function to call if starting uvicorn via script (not via cli)
 def run_web():
     import uvicorn
