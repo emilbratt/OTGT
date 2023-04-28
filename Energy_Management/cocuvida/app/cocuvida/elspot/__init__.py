@@ -1,13 +1,6 @@
 import asyncio
 
-from cocuvida.timehandle import isodates, seconds, timeofday
-
 from . import download, plot
-
-
-HOUR = 3600
-HALF_HOUR = 1800
-QUARTER = 900
 
 
 async def app():
