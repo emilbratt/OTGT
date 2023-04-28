@@ -11,11 +11,13 @@ from .validate import dayahead_today_downloaded, dayahead_tomorrow_downloaded
 async def dayahead():
     '''
         step 1.
-            Download raw elspot data if not found in sql-db
-            ..saved to sql-table -> elspot_raw
+            check if elspot is downloaded and if not, download it
         step 2.
-            Processing the raw elspot data
-            ..saved to sql-table -> elspot_processed
+            if downloaded on step 1, process the elspot data
+        step 3.
+            if 2 completes successfully
+                save the downloaded (raw) data to sql-table -> elspot_raw
+                save the processed data to sql-table -> elspot_processed
         ..repeat
     '''
     currency = env_ini_get(section='cocuvida', key='elspot_currency')
