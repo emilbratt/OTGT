@@ -20,6 +20,5 @@ async def app():
     await plot_dayahead
     await plot_live
 
-
 def run_elspot() -> None:
     asyncio.run(app())

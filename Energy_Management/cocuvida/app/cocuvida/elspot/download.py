@@ -20,7 +20,6 @@ async def dayahead():
     '''
     currency = env_ini_get(section='cocuvida', key='elspot_currency')
     elspot_obj = libelspot.Elspot()
-    await asyncio.sleep(10)
     while True:
         # todays elspot is served from nordpool until 13:00
         # tomorrows elspot is served from nordpool after 13:00
