@@ -25,7 +25,7 @@ async def dayahead():
     while True:
         # todays elspot is served from nordpool until 13:00
         # tomorrows elspot is served from nordpool after 13:00
-        if timeofday.is_before_time(13, 00):
+        if timeofday.is_before_time(13, 0):
             downloaded = await dayahead_today_downloaded()
         else:
             downloaded = await dayahead_tomorrow_downloaded()

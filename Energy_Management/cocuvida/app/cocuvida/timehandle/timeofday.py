@@ -30,6 +30,8 @@ def second() -> int:
 def total_seconds_elapsed_today() -> int:
     return (datetime.now().hour*3600) + (datetime.now().minute*60) + (datetime.now().second)
 
+
+# FIXME: change parameter for the two functions below (instead of taking two INTs, take a str with "HH:MM")
 def is_passed_time(hour: int, minute: int) -> bool:
     '''
       pass hour (0-23) and minute (0-59)
