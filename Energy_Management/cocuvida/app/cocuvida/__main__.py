@@ -14,13 +14,14 @@ SERVICES = {
     'all': 'start all the above',
 }
 
-def init():
+def init() -> None :
     scripts.run('create_tables.sql')
 
-def no_service_added():
-    print('Pass along the service to run as first argument')
+def list_services(service: str) -> None:
+    print(f'{service} is not a recognised service')
+    print('Listing valid arguments and the service description')
     for k,v in SERVICES.items():
-        print(f'arg: {k}\n\t{v}\n')
+        print(f'{k}\n\t..{v}\n')
 
 def main() -> int:
     service = 'all'
@@ -48,7 +49,8 @@ def main() -> int:
             cpl.join()
             els.join()
         case _:
-            no_service_added()
+            list_services(service)
+            return 1
 
     return 0
 
