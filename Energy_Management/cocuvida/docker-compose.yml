@@ -11,6 +11,7 @@ services:
     command: 'python -u -m tests'
     environment:
       TZ: Europe/Oslo
+      COCUVIDA_TESTING: true
     restart: 'no'
     volumes:
       - type: bind
@@ -27,6 +28,7 @@ services:
     command: 'uvicorn --lifespan on --log-level debug --use-colors --loop uvloop --port 8087 --host 0.0.0.0 --reload cocuvida.web:app'
     environment:
       TZ: Europe/Oslo
+      COCUVIDA_TESTING: true
     restart: unless-stopped
     ports:
       - 8087:8087
@@ -46,6 +48,7 @@ services:
     command: 'python -u -m cocuvida elspot'
     environment:
       TZ: Europe/Oslo
+      COCUVIDA_TESTING: true
     restart: 'no'
     volumes:
       - type: bind
@@ -63,6 +66,7 @@ services:
     command: 'python -u -m cocuvida controlplan'
     environment:
       TZ: Europe/Oslo
+      COCUVIDA_TESTING: true
     restart: 'no'
     volumes:
       - type: bind

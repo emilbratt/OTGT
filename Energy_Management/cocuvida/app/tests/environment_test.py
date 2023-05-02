@@ -1,4 +1,4 @@
-from cocuvida.environment import env_ini_get
+from cocuvida.environment import env_ini_get, env_var_get
 
 
 VALID_CURRENCY_LIST = ('NOK', 'EUR')
@@ -15,6 +15,9 @@ def cocuvida(self):
     # validate elspot_currency
     currency = env_ini_get(section='cocuvida', key='elspot_currency')
     self.assertTrue(currency in VALID_CURRENCY_LIST)
+
+    # envar COCUVIDA_TESTING should be true (in production it is false)
+    self.assertTrue(env_var_get('COCUVIDA_TESTING'))
 
 def mqtt(self):
     # MQTT configuration

@@ -1,6 +1,4 @@
 from cocuvida.environment import env_ini_get
-from cocuvida.sqldatabase.controlplans import list_plan_names
-from cocuvida.sqldatabase.controlplans import get_stringio_control_plan_by_name
 
 from cocuvida.web.templates import buttons
 
@@ -26,11 +24,6 @@ class View:
     </html>
     '''
 
-    SHORTCUTS = [
-        ['/controlplans', 'Controlplans'],
-        ['/elspot', 'Elspot'],
-    ]
-
     def __init__(self):
         self.html_head = bytes()
         self.headers = {b'content-type': b'text/html'}
@@ -38,8 +31,8 @@ class View:
         self.html_buttons = bytes()
         self.http_code = 200
 
-    async def buttons(self):
-        self.html_buttons += await buttons.vertical(self.SHORTCUTS)
+    async def buttons(self, shortcuts_list: list) -> None:
+        self.html_buttons += await buttons.vertical(shortcuts_list)
         self.html_buttons += b'<hr>'
 
     async def send(self, send: object) -> None:

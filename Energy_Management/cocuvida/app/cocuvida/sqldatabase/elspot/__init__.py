@@ -28,7 +28,7 @@ async def select_processed_for_date(isodate: str) -> list:
         regions.append(cur)
     return regions
 
-async def select_processed_for_date_and_region(region: str, isodate: str) -> dict:
+async def select_processed_for_date_and_region(isodate: str, region: str) -> dict:
     query = '''
         SELECT elspot_data
         FROM elspot_processed
@@ -166,7 +166,7 @@ async def insert_plot_date(payload: dict) -> bool:
             return True
     return False
 
-async def select_plot_for_date_and_region(region: str, isodate: str) -> str:
+async def select_plot_for_date_and_region(isodate: str, region: str) -> str:
     query = '''
     SELECT plot_data FROM elspot_plot_date
     WHERE plot_region = ? AND plot_date = ?

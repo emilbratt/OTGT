@@ -20,8 +20,13 @@ def env_ini_get(section: str, key: str):
 # load values from shell envars
 def env_var_get(envar: str) -> str:
     env = os.getenv(envar)
-    if env == None:
-        print('Error: envar is not set')
-        print(envar)
-        raise KeyError
-    return env
+    match env:
+        case 'false'|'False':
+            return False
+        case 'true'|'True':
+            return True
+        case None:
+            print(f'WARNING: envar {envar} is not set')
+            return None
+        case _:
+            return env

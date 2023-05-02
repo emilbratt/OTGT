@@ -71,9 +71,9 @@ def process_elspot(self, file_ref: str, expected_resolution: int):
                     check_set[elspot_region] = True
                     sql_payload = {}
                     sql_payload['region'] = elspot_data['region']
-                    sql_payload['date']   = elspot_data['date']
+                    sql_payload['date'] = elspot_data['date']
                     sql_payload['last_updated'] = isodates.timestamp_now_round('second')
-                    sql_payload['plot']   = asyncio.run(libelspot.plots.plot_dayahead_date(elspot_data))
+                    sql_payload['plot'] = asyncio.run(libelspot.plots.plot_dayahead_date(elspot_data))
                     res = asyncio.run(sql_elspot.insert_plot_date(sql_payload))
                     self.assertTrue(res)
         # this checks if select regions actually where processed

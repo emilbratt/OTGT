@@ -1,9 +1,4 @@
-from urllib.parse import urlparse, urlencode
-
-from cocuvida.sqldatabase import elspot as sql_elspot
-from cocuvida.timehandle import isodates
-
-from cocuvida.web.templates import buttons, tables, plots
+from cocuvida.web.templates import buttons, tables, plots, tables
 
 
 class View:
@@ -44,38 +39,34 @@ class View:
     def __init__(self):
         self.html_head = bytes()
         self.headers = {b'content-type': b'text/html'}
-        self.html_title = b'<p>Elspot</p><hr>'
+        self.html_title = b'<p>Cocuvida Test Results</p><hr>'
+        self.html_not_testing_env = bytes()
+        self.html_paragraph = bytes()
         self.html_buttons = bytes()
         self.html_prices = bytes()
         self.html_plot = bytes()
+        self.html_state_schedule = bytes()
         self.http_code = 200
 
-    async def list_elspot_regions(self):
-        regions = await sql_elspot.list_elspot_regions()
-        rows = []
-        for region in regions:
-            mapped = {'region': region}
-            qs = urlencode(mapped)
-            rows.append([f'/elspot?{qs}', region])
-        self.html_buttons = await buttons.horizontal(rows)
+    async def not_testing_instance(self) -> None:
+        self.http_code = 404
+        self.html_not_testing_env += b'<p>This is not a testing environment</p>'
+
+    async def buttons(self, shortcuts_list: list) -> None:
+        self.html_buttons += await buttons.horizontal(shortcuts_list)
         self.html_buttons += b'<hr>'
 
-    async def show_prices(self, region: str):
-        elspot_data = await sql_elspot.select_processed_for_date_and_region(isodates.today(), region)
-        self.html_prices += await tables.elspot_processed(elspot_data)
-        elspot_data = await sql_elspot.select_processed_for_date_and_region(isodates.today_plus_days(1), region)
-        self.html_prices += await tables.elspot_processed(elspot_data)
+    async def show_price(self, data: dict) -> None:
+        self.html_prices += await tables.elspot_processed(data)
 
-    async def show_plot(self, region: str):
-        plot_svg = await sql_elspot.select_plot_live_for_region(region)
-        if plot_svg != '':
-            self.html_plot += await plots.elspot(plot_svg)
-        plot_svg = await sql_elspot.select_plot_for_date_and_region(isodates.today_plus_days(1), region)
-        if plot_svg != '':
-            self.html_plot += await plots.elspot(plot_svg)
+    async def show_plot(self, plot_svg: str) -> None:
+        self.html_plot += await plots.elspot(plot_svg)
 
-    async def show_prices_for_time_window(self, region: str, time_from: str, time_to: str):
-        raise Exception('MethodNotImplemented')
+    async def show_state_schedule(self, rows: list) -> None:
+        self.html_state_schedule += await tables.state_schedule(rows)
+
+    async def add_paragraph(self, paragraph: str) -> None:
+        self.html_paragraph += f'<p>{paragraph}</p>'.encode()
 
     async def send(self, send: object) -> None:
         headers = []
@@ -102,7 +93,11 @@ class View:
             'body': self.HTML_BODY_START,
             'more_body': True
         })
-        html_body_parts = [self.html_title, self.html_buttons, self.html_prices, self.html_plot]
+        html_body_parts = [
+            self.html_title, self.html_not_testing_env, self.html_buttons,
+            self.html_paragraph, self.html_prices, self.html_plot,
+            self.html_state_schedule
+        ]
         for body in html_body_parts:
             await send({
                 'type': 'http.response.body',

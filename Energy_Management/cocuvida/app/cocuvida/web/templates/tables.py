@@ -47,7 +47,7 @@ async def state_schedule(state_schedule: list) -> bytes:
     target = state_schedule[0][1]
     html_header = f'<tr><th>Target Type</th><th>State</th><th>Status</th><th>Time</th></tr>'
 
-    html = f'<p>{name} from today -></p>'
+    html = f'<p>Schedule: <strong>{name}</strong></p>'
     html += '<table style="width:75%">'
     html += html_header
     for row in state_schedule:
