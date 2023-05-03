@@ -44,7 +44,10 @@ def second() -> int:
     return datetime.now().second
 
 def total_seconds_elapsed_today() -> int:
-    return (datetime.now().hour*3600) + (datetime.now().minute*60) + (datetime.now().second)
+    time_now = datetime.now()
+    start_of_day = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    subtracted = time_now - start_of_day
+    return subtracted.total_seconds()
 
 
 # FIXME: change parameter for the two functions below (instead of taking two INtime_now, take a str with "HH:MM")
