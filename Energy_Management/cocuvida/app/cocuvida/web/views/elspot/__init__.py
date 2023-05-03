@@ -60,12 +60,6 @@ class View:
         self.html_buttons = await buttons.horizontal(rows)
         self.html_buttons += b'<hr>'
 
-    async def show_prices(self, region: str):
-        elspot_data = await sql_elspot.select_processed_for_date_and_region(isodates.today(), region)
-        self.html_prices += await tables.elspot_processed(elspot_data)
-        elspot_data = await sql_elspot.select_processed_for_date_and_region(isodates.today_plus_days(1), region)
-        self.html_prices += await tables.elspot_processed(elspot_data)
-
     async def show_plot(self, region: str):
         plot_svg = await sql_elspot.select_plot_live_for_region(region)
         if plot_svg != '':
@@ -73,9 +67,6 @@ class View:
         plot_svg = await sql_elspot.select_plot_for_date_and_region(isodates.today_plus_days(1), region)
         if plot_svg != '':
             self.html_plot += await plots.elspot(plot_svg)
-
-    async def show_prices_for_time_window(self, region: str, time_from: str, time_to: str):
-        raise Exception('MethodNotImplemented')
 
     async def send(self, send: object) -> None:
         headers = []

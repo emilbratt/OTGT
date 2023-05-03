@@ -22,7 +22,6 @@ async def controller(scope: dict, receive: object) -> View:
     if region == None:
         return view
     if time_from == None or time_to == None:
-        await view.show_prices(region)
         await view.show_plot(region)
         return view
     return view
