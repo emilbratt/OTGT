@@ -9,14 +9,12 @@ Y_TICK_STEP_VAL  = 50
 Y_TICKS = [n for n in range(Y_TICK_START_VAL, Y_TICK_END_VAL+1, Y_TICK_STEP_VAL)]
 
 PLOT_STYLE = 'dark_background'
-BAR_DEFAULT_COLOUR = '#559955'
-BAR_SELECT_COLOUR = '#85C985'
 
-BAR_MAX_COLOUR = '#FFAAAA'
-BAR_ABOVE_AVERAGE_COLOUR = '#FFCCCC'
-BAR_AVERAGE_AND_BELOW_COLOUR = '#BBFFBB'
-BAR_MIN_COLOUR = '#BBFFFF'
-BAR_FIRST_IN_STEP_COLOUR = '#65B565'
+COLOUR_YELLOW = '#FFFF6B'
+COLOUR_APPLE_RED = '#FFAAAA'
+COLOUR_LIGHT_RED = '#FFCCCC'
+COLOUR_LIGHT_GREEN = '#BBFFBB'
+COLOUR_ICE_BLUE = '#BBFFFF'
 
 
 async def plot_dayahead_date(elspot_region) -> str:
@@ -35,13 +33,13 @@ async def plot_dayahead_date(elspot_region) -> str:
     for index in value_index:
         price = int(elspot_region['prices'][index]['value'])
         if price == int(elspot_region['max']):
-            use_colour = BAR_MAX_COLOUR
+            use_colour = COLOUR_APPLE_RED
         elif price == int(elspot_region['min']):
-            use_colour = BAR_MIN_COLOUR
+            use_colour = COLOUR_ICE_BLUE
         elif price > int(elspot_region['average']):
-            use_colour = BAR_ABOVE_AVERAGE_COLOUR
+            use_colour = COLOUR_LIGHT_RED
         elif price <= int(elspot_region['average']):
-            use_colour = BAR_AVERAGE_AND_BELOW_COLOUR
+            use_colour = COLOUR_LIGHT_GREEN
         bars[index].set_width(0.7)
         bars[index].set_color(use_colour)
 
@@ -84,13 +82,13 @@ async def plot_dayahead_live(elspot_region) -> str:
     for index in value_index:
         price = int(elspot_region['prices'][index]['value'])
         if price == int(elspot_region['max']):
-            use_colour = BAR_MAX_COLOUR
+            use_colour = COLOUR_APPLE_RED
         elif price == int(elspot_region['min']):
-            use_colour = BAR_MIN_COLOUR
+            use_colour = COLOUR_ICE_BLUE
         elif price > int(elspot_region['average']):
-            use_colour = BAR_ABOVE_AVERAGE_COLOUR
+            use_colour = COLOUR_LIGHT_RED
         elif price <= int(elspot_region['average']):
-            use_colour = BAR_AVERAGE_AND_BELOW_COLOUR
+            use_colour = COLOUR_LIGHT_GREEN
         bars[index].set_width(0.7)
         bars[index].set_color(use_colour)
         time_start = elspot_region['prices'][index]['time_start']
@@ -98,7 +96,7 @@ async def plot_dayahead_live(elspot_region) -> str:
         m = int(time_start[3:])
         if timeofday.is_before_time(h,m):
             if not vertical_line_inserted:
-                plt.axvline(x=(index-0.6), color=use_colour, alpha=0.6, lw=0.6)
+                plt.axvline(x=(index-0.6), color=COLOUR_YELLOW, alpha=0.6, lw=0.6)
                 vertical_line_inserted = True
 
     plt.yticks(Y_TICKS)
