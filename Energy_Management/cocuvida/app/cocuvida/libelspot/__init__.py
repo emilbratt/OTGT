@@ -39,7 +39,7 @@ class Elspot:
 
     async def plot_dayahead_date(self, region_data: dict) -> str:
         '''
-            pass one region (the whole structure for processed dayahead)
+            pass one region from processed dayahead
             on success, returns an SVG string object with the plot
             on failure, returns empty string
         '''
@@ -51,7 +51,7 @@ class Elspot:
 
     async def plot_dayahead_live(self, region_data: dict) -> str:
         '''
-            pass one region (the whole structure for processed dayahead)
+            pass one region from processed dayahead
             on success, returns an SVG string object with the plot
             on failure, returns empty string
         '''

@@ -18,6 +18,7 @@ async def results(view: object, query_string: dict):
 
     region = query_string.get('region')[0]
     # test run only generates plots for these regions as of now
+
     for isodate in ELSPOT_TEST_DATES:
         data = await sql_elspot.select_processed_for_date_and_region(isodate, region)
         await view.show_price(data)
@@ -25,5 +26,8 @@ async def results(view: object, query_string: dict):
             plot = await sql_elspot.select_plot_for_date_and_region(isodate, region)
             if plot != '':
                 await view.show_plot(plot)
+    plot = await sql_elspot.select_plot_live_for_region(region)
+    if plot != '':
+        await view.show_plot(plot)
 
     return view

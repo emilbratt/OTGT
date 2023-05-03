@@ -133,15 +133,11 @@ async def insert_processed_elspot(elspot_data: dict) -> bool:
             exit(1)
     return False
 
-async def insert_plot_date(payload: dict) -> bool:
+async def insert_plot_date(region: str, isodate: str, plot: str) -> bool:
     '''
-        pass dict in this format
-        {
-            'region': 'Molde,
-            'date':   'YYYY-MM-DD',
-            'plot':   '<?xml ..'
-        }
+        the 3rd parameter "plot" is a string containing an SVG
     '''
+
     insert_query = '''
         INSERT INTO elspot_plot_date
             (plot_data, last_updated, plot_date, plot_region)
@@ -153,15 +149,12 @@ async def insert_plot_date(payload: dict) -> bool:
         SET plot_data = ?, last_updated = ?
         WHERE plot_date = ? AND plot_region = ?
     '''
-    plot_data = payload['plot']
-    last_updated = payload['last_updated']
-    plot_date = payload['date']
-    plot_region = payload['region']
-    res = insert_one(insert_query, [plot_data, last_updated, plot_date, plot_region])
+    last_updated = isodates.timestamp_now_round('second')
+    res = insert_one(insert_query, [plot, last_updated, isodate, region])
     if res == 'insert':
         return True
     if res == 'IntegrityError':
-        res = update(update_query, [plot_data, last_updated, plot_date, plot_region])
+        res = update(update_query, [plot, last_updated, isodate, region])
         if res == 'update':
             return True
     return False
@@ -185,14 +178,9 @@ async def plot_for_date_and_region_exist(region: str, isodate: str) -> bool:
     res = select_one(query, [region, isodate])
     return (res[0] == 1)
 
-async def insert_plot_live(payload: dict) -> bool:
+async def insert_plot_live(region: str, plot: str) -> bool:
     '''
-        pass dict in this format
-        {
-            'region': 'Molde,
-            'timestamp' : 'YYYY-MM-DD HH:MM:SS',
-            'plot':   '<?xml ..'
-        }
+        the 2nd parameter "plot" is a string containing an SVG
     '''
     insert_query = '''
         INSERT INTO elspot_plot_live
@@ -205,14 +193,12 @@ async def insert_plot_live(payload: dict) -> bool:
         SET plot_data = ?, last_updated = ?
         WHERE plot_region = ?
     '''
-    plot_data = payload['plot']
-    last_updated = payload['last_updated']
-    plot_region = payload['region']
-    res = insert_one(insert_query, [plot_data, last_updated, plot_region])
+    last_updated = isodates.timestamp_now_round('second')
+    res = insert_one(insert_query, [plot, last_updated, region])
     if res == 'insert':
         return True
     if res == 'IntegrityError':
-        res = update(update_query, [plot_data, last_updated, plot_region])
+        res = update(update_query, [plot, last_updated, region])
         if res == 'update':
             return True
     return False
