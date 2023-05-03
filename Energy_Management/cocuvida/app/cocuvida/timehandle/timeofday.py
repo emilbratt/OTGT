@@ -3,11 +3,27 @@ from datetime import datetime
 
 def now() -> str:
     '''
-      returns 24 hour format -> 'HH:MM'
+      returns 24 hour format -> 'HH:MM:SS'
     '''
-    h = datetime.now().hour
-    m = datetime.now().minute
-    return str(h).zfill(2) + ':' + str(m).zfill(2)
+    return datetime.now().strftime('%H:%M:%S')
+
+def now_quarterhour() -> str:
+    '''
+      returns 24 hour format -> 'HH:MM' for the last passed quarter hour
+      if time is 13:32, return 13:30
+    '''
+    time_now = datetime.now()
+    minute = time_now.minute
+    if minute < 15:
+        minute = 0
+    elif minute < 30:
+        minute = 15
+    elif minute < 45:
+        minute = 30
+    else:
+        minute = 45
+    time_now = time_now.replace(minute=minute)
+    return time_now.strftime('%H:%M')
 
 def hour() -> int:
     '''
@@ -31,7 +47,7 @@ def total_seconds_elapsed_today() -> int:
     return (datetime.now().hour*3600) + (datetime.now().minute*60) + (datetime.now().second)
 
 
-# FIXME: change parameter for the two functions below (instead of taking two INTs, take a str with "HH:MM")
+# FIXME: change parameter for the two functions below (instead of taking two INtime_now, take a str with "HH:MM")
 def is_passed_time(hour: int, minute: int) -> bool:
     '''
       pass hour (0-23) and minute (0-59)
