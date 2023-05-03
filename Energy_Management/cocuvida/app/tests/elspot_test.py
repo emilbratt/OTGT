@@ -64,7 +64,6 @@ def process_elspot(self, file_ref: str, expected_resolution: int):
 
         # GENERATE PLOTS (WE ONLY GENERATE FOR 4 SELECT REGIONS AS THIS IS TIME CONSUMING)
         generate_plot_for = {'Oslo': False, 'Tr.heim': False, 'DK1': False, 'SE1': False}
-        only_plot_live_for_date = '2023-04-10'
         for elspot_region, elspot_data in processed_elspot.items():
             match elspot_region:
                 # plot generator takes some time, only do processing for select regions
@@ -77,7 +76,7 @@ def process_elspot(self, file_ref: str, expected_resolution: int):
                     self.assertTrue(res)
 
                     # GENERATE LIVE PLOT (THIS INCLUDES THE TIME OF DAY MARKER)
-                    if elspot_data['date'] == only_plot_live_for_date:
+                    if elspot_data['date'] == '2023-03-26':
                         # only one live plot can be stored at once, so we only generate for one date
                         plot = asyncio.run(libelspot.plots.plot_dayahead_live(elspot_data))
                         res = asyncio.run(sql_elspot.insert_plot_live(elspot_data['region'], plot))

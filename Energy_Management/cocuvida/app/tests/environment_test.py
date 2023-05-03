@@ -1,7 +1,7 @@
 from cocuvida.environment import env_ini_get, env_var_get
 
-
 VALID_CURRENCY_LIST = ('NOK', 'EUR')
+
 
 # if new configurations are implemented in app
 # ..make sure they are also listed here
@@ -10,7 +10,6 @@ def cocuvida(self):
     self.assertFalse(env_ini_get(section='cocuvida', key='host') == "INSERT")
     self.assertFalse(env_ini_get(section='cocuvida', key='port') == "INSERT")
     self.assertFalse(env_ini_get(section='cocuvida', key='secret') == "INSERT")
-    self.assertFalse(env_ini_get(section='cocuvida', key='elspot_currency') == "INSERT")
 
     # validate elspot_currency
     currency = env_ini_get(section='cocuvida', key='elspot_currency')
