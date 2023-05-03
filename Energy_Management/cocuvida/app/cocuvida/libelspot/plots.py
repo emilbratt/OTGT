@@ -14,7 +14,7 @@ BAR_SELECT_COLOUR = '#85C985'
 
 BAR_MAX_COLOUR = '#FFAAAA'
 BAR_ABOVE_AVERAGE_COLOUR = '#FFCCCC'
-BAR_BELOW_AVERAGE_COLOUR = '#BBFFBB'
+BAR_AVERAGE_AND_BELOW_COLOUR = '#BBFFBB'
 BAR_MIN_COLOUR = '#BBFFFF'
 BAR_FIRST_IN_STEP_COLOUR = '#65B565'
 
@@ -38,10 +38,10 @@ async def plot_dayahead_date(elspot_region) -> str:
             use_colour = BAR_MAX_COLOUR
         elif price == int(elspot_region['min']):
             use_colour = BAR_MIN_COLOUR
-        elif price >= int(elspot_region['average']):
+        elif price > int(elspot_region['average']):
             use_colour = BAR_ABOVE_AVERAGE_COLOUR
-        elif price < int(elspot_region['average']):
-            use_colour = BAR_BELOW_AVERAGE_COLOUR
+        elif price <= int(elspot_region['average']):
+            use_colour = BAR_AVERAGE_AND_BELOW_COLOUR
         bars[index].set_width(0.7)
         bars[index].set_color(use_colour)
 
@@ -87,10 +87,10 @@ async def plot_dayahead_live(elspot_region) -> str:
             use_colour = BAR_MAX_COLOUR
         elif price == int(elspot_region['min']):
             use_colour = BAR_MIN_COLOUR
-        elif price >= int(elspot_region['average']):
+        elif price > int(elspot_region['average']):
             use_colour = BAR_ABOVE_AVERAGE_COLOUR
-        elif price < int(elspot_region['average']):
-            use_colour = BAR_BELOW_AVERAGE_COLOUR
+        elif price <= int(elspot_region['average']):
+            use_colour = BAR_AVERAGE_AND_BELOW_COLOUR
         bars[index].set_width(0.7)
         bars[index].set_color(use_colour)
         time_start = elspot_region['prices'][index]['time_start']
