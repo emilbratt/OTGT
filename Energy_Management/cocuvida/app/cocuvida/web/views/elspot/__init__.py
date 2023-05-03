@@ -46,7 +46,6 @@ class View:
         self.headers = {b'content-type': b'text/html'}
         self.html_title = b'<p>Elspot</p><hr>'
         self.html_buttons = bytes()
-        self.html_prices = bytes()
         self.html_plot = bytes()
         self.http_code = 200
 
@@ -93,7 +92,7 @@ class View:
             'body': self.HTML_BODY_START,
             'more_body': True
         })
-        html_body_parts = [self.html_title, self.html_buttons, self.html_prices, self.html_plot]
+        html_body_parts = [self.html_title, self.html_buttons, self.html_plot]
         for body in html_body_parts:
             await send({
                 'type': 'http.response.body',
