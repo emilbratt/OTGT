@@ -76,4 +76,6 @@
   host = "INSERT"
   port = "8087"
   secret = "INSERT"
-  elspot_currency = "INSERT"
+  elspot_currency = "NOK"
+  elspot_plot_y_max = "800"
+  elspot_plot_y_step = "50"

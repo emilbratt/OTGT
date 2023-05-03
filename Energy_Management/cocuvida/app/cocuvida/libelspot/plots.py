@@ -1,11 +1,14 @@
+from io import StringIO
+
 import matplotlib.pyplot as plt
 import numpy as np
-from io import StringIO
+
+from cocuvida.environment import env_ini_get
 from cocuvida.timehandle import timeofday
 
+Y_TICK_END_VAL = int(env_ini_get(section='cocuvida', key='elspot_plot_y_max'))
+Y_TICK_STEP_VAL = int(env_ini_get(section='cocuvida', key='elspot_plot_y_step'))
 Y_TICK_START_VAL = 0
-Y_TICK_END_VAL   = 800
-Y_TICK_STEP_VAL  = 50
 Y_TICKS = [n for n in range(Y_TICK_START_VAL, Y_TICK_END_VAL+1, Y_TICK_STEP_VAL)]
 
 PLOT_STYLE = 'dark_background'
@@ -79,6 +82,7 @@ async def plot_dayahead_live(elspot_region) -> str:
     plt.tight_layout()
     bars = plt.bar(value_index, plot_values, align='edge')
     vertical_line_inserted = False
+    quarter_hour_now = timeofday.now_quarterhour()
     for index in value_index:
         price = int(elspot_region['prices'][index]['value'])
         if price == int(elspot_region['max']):
@@ -92,12 +96,8 @@ async def plot_dayahead_live(elspot_region) -> str:
         bars[index].set_width(0.7)
         bars[index].set_color(use_colour)
         time_start = elspot_region['prices'][index]['time_start']
-        h = int(time_start[:2])
-        m = int(time_start[3:])
-        if timeofday.is_before_time(h,m):
-            if not vertical_line_inserted:
-                plt.axvline(x=(index-0.6), color=COLOUR_YELLOW, alpha=0.6, lw=0.6)
-                vertical_line_inserted = True
+        if time_start == quarter_hour_now:
+            plt.axvline(x=(index+0.41), color=use_colour, alpha=0.6, lw=0.6)
 
     plt.yticks(Y_TICKS)
     plt.xticks(fontsize=7, rotation=0)
