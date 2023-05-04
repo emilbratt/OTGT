@@ -45,10 +45,18 @@ schedule:
   elspot:
     include_entry: true
 
-    minimum_operation_time: # at least X quarterhours a day (1 hour = 4 quarterhours)
+    water_heater:
+      # the water heater entry will run the target during the cheapest hours avoiding to many hours in-between off-states
       include_entry: true
       entries:
-        # [ quarterhours, target, non operation state ]
-        - ['8', 'exampletarget', 'off']
-        - ['8', 'mqtt', 'msgref_OFF']
+        # target [ min operation time per day (min), operation state, non-operation state ]
+        exampletarget: [ '120', 'on', 'off']
+        mqtt: ['240', 'turn_ON', 'msgref_OFF']
 
+
+    below_average_switch:
+      include_entry: false
+      entries:
+        # [ target, min operation time per day (min), operation state, non-operation state ]
+        - ['exampletarget', '120', 'on', 'off']
+        - ['mqtt', '240', 'turn_ON', 'msgref_OFF']

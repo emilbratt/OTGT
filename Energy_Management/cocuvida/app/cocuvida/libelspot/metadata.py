@@ -1,5 +1,6 @@
 from statistics import mean
 
+
 async def metadata_dayahead(elspot_region: dict) -> dict:
 
     # these methods expects the processed elspot data structure for a single region as shown below
@@ -22,7 +23,7 @@ async def metadata_dayahead(elspot_region: dict) -> dict:
     }
     '''
 
-    def _percent(data: dict) -> dict:
+    async def _percent(data: dict) -> dict:
         '''
             min price = 0%
             max price = 100%
@@ -59,7 +60,7 @@ async def metadata_dayahead(elspot_region: dict) -> dict:
             data['prices'][index]['percent'] = int(percent)
         return data
 
-    def _diff_factor(data: dict) -> dict:
+    async def _diff_factor(data: dict) -> dict:
         '''
             higher diff factors means higher fluctuation
             ranges from: 1
@@ -84,7 +85,7 @@ async def metadata_dayahead(elspot_region: dict) -> dict:
             data['prices'][index]['diff_factor'] = diff_factor
         return data
 
-    def _weight(data: dict) -> dict:
+    async def _weight(data: dict) -> dict:
         '''
             max price weight = 10 
             min price weight = 0
@@ -115,7 +116,7 @@ async def metadata_dayahead(elspot_region: dict) -> dict:
             data['prices'][index]['weight'] = weight
         return data
 
-    def _slope(data: dict) -> int:
+    async def _slope(data: dict) -> int:
         '''
             used to move priority towards the lower end
 
@@ -146,9 +147,10 @@ async def metadata_dayahead(elspot_region: dict) -> dict:
             slope = round((_max_ / _mean_), 1)
         except ZeroDivisionError:
             slope = 1.0
-        return float(slope)
+        data['slope'] = float(slope)
+        return data
 
-    def _spike(data: dict) -> int:
+    async def _spike(data: dict) -> int:
         '''
             used to
                 ..reduce priority on the higher values if positive
@@ -187,11 +189,12 @@ async def metadata_dayahead(elspot_region: dict) -> dict:
         except ZeroDivisionError:
             slope = 1.0
         spike = round(spike/slope)
-        return spike
+        data['spike'] = spike
+        return data
 
-    elspot_region = _percent(elspot_region)
-    elspot_region = _diff_factor(elspot_region)
-    elspot_region = _weight(elspot_region)
-    elspot_region['slope'] = _slope(elspot_region)
-    elspot_region['spike'] = _spike(elspot_region)
+    elspot_region = await _percent(elspot_region)
+    elspot_region = await _diff_factor(elspot_region)
+    elspot_region = await _weight(elspot_region)
+    elspot_region = await _slope(elspot_region)
+    elspot_region = await _spike(elspot_region)
     return elspot_region

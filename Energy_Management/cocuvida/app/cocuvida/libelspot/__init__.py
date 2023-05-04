@@ -27,7 +27,7 @@ class Elspot:
     async def process_dayahead(self, response_text: str) -> dict:
         '''
             after downloading, use this method to process the downloaded data
-            it will reshape and add metadata
+            loads response_text (a serialized json) into dict -> reshape -> add metadata
         '''
         self.process_ok = False
         processed = await reshape.reshape_dayahead(response_text)

@@ -40,8 +40,11 @@ async def reshape_dayahead(response_text: str) -> dict:
         if switching to summer time (23 hours)
             row index 2 has no values
     '''
-
-    elspot_raw = json.loads(response_text)
+    try:
+        elspot_raw = json.loads(response_text)
+    except:
+        print('ERROR: failed to load JSON from response_text')
+        return {}
 
     regions = {}
     try:
@@ -82,7 +85,7 @@ async def reshape_dayahead(response_text: str) -> dict:
                 value = value.replace(' ', '')
                 value = value.replace(',', '.')
                 try:
-                    value = float(value) # cast to FLOAT
+                    value = float(value)
                     match unit:
                         case 'øre/kWh'|'E.cent/kWh':
                             value = round(value*0.1)
