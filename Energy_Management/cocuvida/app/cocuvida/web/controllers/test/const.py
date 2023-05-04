@@ -3,7 +3,7 @@ BUTTON_TEST_SITE_HOME = [
     ['/test?testsite=elspot', 'Elspot'],
 ]
 
-ELSPOT_TEST_DATES = [
+TEST_DATES = [
     '2022-10-30', # 25 hour date
     '2022-12-01', # a quite normal one
     '2023-03-26', # 23 hour date
@@ -15,11 +15,12 @@ GENERATED_PLOT_REGIONS = [
     'Oslo',
     'Tr.heim',
     'DK1',
-    'SE1'
+    'SE1',
 ]
 
 BUTTON_TEST_SITE_CONTROLPLAN_PLAN_NAME = [
     ['/test?testsite=controlplans&plan_name=example_controlplan', 'example_controlplan'],
+    ['/test?testsite=controlplans&plan_name=example_elspot', 'example_elspot'],
 ]
 
 BUTTON_TEST_SITE_ELSPOT_REGION = [
@@ -39,5 +40,5 @@ BUTTON_TEST_SITE_ELSPOT_REGION = [
     ['/test?testsite=elspot&region=SE4', 'SE4'],
     ['/test?testsite=elspot&region=SYS', 'SYS'],
     ['/test?testsite=elspot&region=Tr.heim', 'Tr.heim'],
-    ['/test?testsite=elspot&region=Troms%C3%B8', 'Tromsø']
+    ['/test?testsite=elspot&region=Troms%C3%B8', 'Tromsø'],
 ]

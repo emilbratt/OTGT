@@ -41,14 +41,13 @@ class ControlPlan:
         if self.schedule == {} or self.target == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 
-        # schdl = Schedule(self.controlplans[plan_name]['schedule'])
         states = await self.schedule[plan_name].generate_states(isodate)
         for row in states:
             target_type = row[0]
             if await self.target[plan_name].is_included(target_type):
-                state_status = 0 # publishing enabled
+                state_status = 0 # target enabled (state will be published)
             else:
-                state_status = 2 # publishing disabled
+                state_status = 2 # target disabled (state will NOT be published)
             row.insert(0, plan_name)
             row.append(state_status)
         return states

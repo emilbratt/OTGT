@@ -15,7 +15,7 @@ def cocuvida(self):
     currency = env_ini_get(section='cocuvida', key='elspot_currency')
     self.assertTrue(currency in VALID_CURRENCY_LIST)
 
-    # envar COCUVIDA_TESTING should be true (in production it is false)
+    # envar COCUVIDA_TESTING should be true (in production it is false or not set)
     self.assertTrue(env_var_get('COCUVIDA_TESTING'))
 
 def mqtt(self):

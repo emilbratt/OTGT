@@ -3,8 +3,10 @@ from cocuvida.sqldatabase import (
     stateschedule as sql_state_schedule
 )
 
-from .const import BUTTON_TEST_SITE_CONTROLPLAN_PLAN_NAME
-
+from .const import (
+    BUTTON_TEST_SITE_CONTROLPLAN_PLAN_NAME,
+    TEST_DATES
+)
 
 async def results(view: object, query_string: dict):
     await view.buttons(BUTTON_TEST_SITE_CONTROLPLAN_PLAN_NAME)
@@ -12,6 +14,10 @@ async def results(view: object, query_string: dict):
         return view
 
     plan_name = query_string.get('plan_name')[0]
-    rows = await sql_state_schedule.select_states_today_for_plan_name(plan_name)
-    await view.show_state_schedule(rows)
+    all_rows = []
+    for isodate in TEST_DATES:
+        rows = await sql_state_schedule.select_all_states_for_date_and_plan_name(isodate, plan_name)
+        for row in rows:
+            all_rows.append(row)
+    await view.show_state_schedule(all_rows)
     return view

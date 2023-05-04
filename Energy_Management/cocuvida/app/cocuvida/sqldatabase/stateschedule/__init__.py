@@ -27,7 +27,7 @@ async def insert_states_from_generator(rows: list) -> str:
         cnxn.close()
         return action
 
-async def delete_states_for_plan_name(plan_name: str):
+async def delete_states_for_plan_name(plan_name: str) -> str:
     query = '''
         DELETE FROM state_schedule
         WHERE plan_name = ?
@@ -45,7 +45,7 @@ async def delete_states_for_plan_name(plan_name: str):
         cnxn.close()
         return action
 
-async def delete_states_for_plan_name_and_date(plan_name: str, isodate: str):
+async def delete_states_for_plan_name_and_date(plan_name: str, isodate: str) -> str:
     query = '''
         DELETE FROM state_schedule
         WHERE plan_name = ? AND DATE(state_time) = ?
@@ -63,22 +63,7 @@ async def delete_states_for_plan_name_and_date(plan_name: str, isodate: str):
         cnxn.close()
         return action
 
-async def select_current_states() -> list:
-    '''
-        timestamp is in the form '%Y-%m-%d %H:%M' e.g. '2023-06-17 12:00'
-        this means that as long as the date and HH:MM matches (seconds are not counted) we return rows
-        returns empty list if no match is found
-    '''
-    query = '''
-        SELECT plan_name, target_type, state_value, state_time
-        FROM state_schedule
-        WHERE state_time = ?
-    '''
-    ts = isodates.timestamp_now_round('minute')
-    ts = '2023-06-17 12:00'
-    return select_all(query, [ts])
-
-async def select_published_states_for_date(isodate: str) -> list:
+async def select_published_states_for_date(isodate: str) -> list[list]:
     '''
         returns by passed date an ordered list of already published state values (newest first)
     '''
@@ -91,7 +76,7 @@ async def select_published_states_for_date(isodate: str) -> list:
     '''
     return select_all(query, [isodate])
 
-async def select_non_published_states_for_date(isodate: str) -> list:
+async def select_non_published_states_for_date(isodate: str) -> list[list]:
     '''
         returns by passed date an ordered list of non published state values (newest first)
     '''
@@ -104,7 +89,7 @@ async def select_non_published_states_for_date(isodate: str) -> list:
     '''
     return select_all(query, [isodate])
 
-async def select_non_published_states_today() -> list:
+async def select_non_published_states_today() -> list[list]:
     '''
         returns ordered list of todays non published state values (newest first)
     '''
@@ -117,11 +102,11 @@ async def select_non_published_states_today() -> list:
     '''
     return select_all(query, [isodates.today()])
 
-async def select_non_published_states_for_timestamp(timestamp: str) -> list:
+async def select_non_published_states_for_timestamp(timestamp: str) -> list[list]:
     '''
-        returns all within the window of whole minute (X mark) -> YYYY-MM-DD HH:MM:XX 
+        returns all within the window of a minute
+        if date-time is 2022-01-01 13:12:43, returns all within time 2022-01-01 13:12
     '''
-    # uses SQL function STRFTIME() to extract 'YYYY-MM-DD HH:MM' (excluding seconds) from date
     query = '''
         SELECT plan_name, target_type, state_value, state_time, rowid
         FROM state_schedule
@@ -131,7 +116,20 @@ async def select_non_published_states_for_timestamp(timestamp: str) -> list:
     '''
     return select_all(query, [timestamp])
 
-async def update_state_status_by_rowid(rowid: int, state_status: int) -> bool:
+async def select_non_published_states_for_date(isodate: str) -> list[list]:
+    '''
+        returns all rows for that date
+    '''
+    query = '''
+        SELECT plan_name, target_type, state_value, state_time, rowid
+        FROM state_schedule
+        WHERE state_status = 0
+        AND DATE(state_time) = ?
+        ORDER BY state_time ASC
+    '''
+    return select_all(query, [isodate])
+
+async def update_state_status_by_rowid(rowid: int, state_status: int) -> str:
     '''
         0 = not published
         1 = is published
@@ -157,13 +155,23 @@ async def update_state_status_by_rowid(rowid: int, state_status: int) -> bool:
         cnxn.close()
         return action
 
-async def select_states_today_for_plan_name(plan_name: str) -> list:
+async def select_all_states_today_for_plan_name(plan_name: str) -> list[list]:
     query = '''
-        SELECT plan_name, target_type, state_value, state_time, state_status
+        SELECT plan_name, target_type, state_value, state_time, state_status, rowid
         FROM state_schedule
         WHERE plan_name = ?
         AND STRFTIME('%Y-%m-%d', state_time) >= STRFTIME('%Y-%m-%d', ?)
         ORDER BY target_type, state_time ASC
     '''
+    return select_all(query, [plan_name, isodates.today()])
+
+async def select_all_states_for_date_and_plan_name(isodate: str, plan_name: str) -> list[list]:
+    query = '''
+        SELECT plan_name, target_type, state_value, state_time, state_status, rowid
+        FROM state_schedule
+        WHERE plan_name = ?
+        AND STRFTIME('%Y-%m-%d', state_time) = STRFTIME('%Y-%m-%d', ?)
+        ORDER BY target_type, state_time ASC
+    '''
     timestamp = isodates.today()
-    return select_all(query, [plan_name, timestamp])
+    return select_all(query, [plan_name, isodate])

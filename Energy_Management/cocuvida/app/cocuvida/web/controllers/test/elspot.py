@@ -1,7 +1,7 @@
 from cocuvida.sqldatabase import elspot as sql_elspot
 
 from .const import (
-    ELSPOT_TEST_DATES,
+    TEST_DATES,
     GENERATED_PLOT_REGIONS,
     BUTTON_TEST_SITE_ELSPOT_REGION,
 )
@@ -16,10 +16,10 @@ async def results(view: object, query_string: dict):
         paragraph += f'<strong> {region}</strong>'
     await view.add_paragraph(paragraph)
 
-    region = query_string.get('region')[0]
     # test run only generates plots for these regions as of now
-
-    for isodate in ELSPOT_TEST_DATES:
+    region = query_string['region'][0]
+    await view.add_paragraph(f'Test results for <strong>{region}</strong>')
+    for isodate in TEST_DATES:
         data = await sql_elspot.select_processed_for_date_and_region(isodate, region)
         await view.show_price(data)
         if region in GENERATED_PLOT_REGIONS:

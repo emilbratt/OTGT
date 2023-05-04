@@ -1,8 +1,6 @@
 import aiohttp
 
-from .mqtt import mqtt_publish
-from .exampletarget import exampletarget_publish
-from .shelly import shelly_publish
+from . import exampletarget, mqtt, shelly
 
 
 class Target:
@@ -17,13 +15,13 @@ class Target:
         res = False
         match target_type:
             case 'exampletarget':
-                res = await exampletarget_publish(self.target_entry['exampletarget'], state_value)
+                res = await exampletarget.publish(self.target_entry['exampletarget'], state_value)
             case 'mqtt':
-                res = await mqtt_publish(self.target_entry['mqtt'], state_value)
+                res = await mqtt.publish(self.target_entry['mqtt'], state_value)
             case 'shelly':
                 timeout = aiohttp.ClientTimeout(total=5)
                 async with aiohttp.ClientSession(timeout=timeout) as aiohttp_session:
-                    res = await shelly_publish(self.target_entry['shelly'], state_value, aiohttp_session)
+                    res = await shelly.publish(self.target_entry['shelly'], state_value, aiohttp_session)
             case _:
                 raise Exception('UnknownTargetType', target_type)
 

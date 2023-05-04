@@ -3,17 +3,13 @@ from cocuvida.web.templates import buttons, tables, plots, tables
 
 class View:
 
-    HTML_START = b'''<!DOCTYPE html>
-    <html>
-    <head>
+    HTML_START = b'''<!DOCTYPE html>\n<html>\n<head>
     <meta charset="UTF-8">
     <style>
     table, th, td {
-        /* border: 1px solid white; */
         border: 1px solid black;
         border-collapse: collapse;
         text-align: center;
-        /* color: green; */
     }
     /*
     body {background-color: black;}
@@ -22,19 +18,13 @@ class View:
     </style>
     '''
 
-    HTML_HEAD_END = b'''
-    </head>
-    '''
+    HTML_HEAD_END = b'\n</head>'
 
-    HTML_BODY_START = b'''
-    <body>
+    HTML_BODY_START = b'''\n<body>
     <button onclick="window.location.href='/';">Home</button>
     '''
 
-    HTML_BODY_END = b'''
-    </body>
-    </html>
-    '''
+    HTML_BODY_END = b'\n</body>\n</html>\n'
 
     def __init__(self):
         self.html_head = bytes()

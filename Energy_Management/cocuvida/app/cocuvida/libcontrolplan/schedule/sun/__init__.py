@@ -1,9 +1,5 @@
 from cocuvida.timehandle import isodates
 
 
-class Entry:
-    def __init__(self, sun: dict):
-        self.s = sun
-
-    async def generate_states(self, isodate: str):
-        raise Exception('MethodNotImplemented')
+async def generate_states(schedule_sun_entry: dict, isodate: str) -> list:
+    raise Exception('MethodNotImplemented')

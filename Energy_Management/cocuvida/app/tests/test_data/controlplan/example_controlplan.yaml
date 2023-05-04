@@ -30,11 +30,11 @@ target:
   mqtt:
     include_entry: false # enable/disable entry
     entries:
-      # ref key: message being sent -> ref the value as the state so message for that state is sent
-      msgrefa: this is a message being sent for message ref msgrefa
+      # ref key points to the message being sent
+      msgrefa: this is a message being sent referenced with msgrefa
       msgrefb: >
-        this is a multi line message that
-        will be sent for message ref msgrefb
+        this is a multi line message that will
+        be sent by the reference of msgrefb
 
 # MAIN ENTRY 2. CALENDAR FOR OPERATION -> include one or more sub-entries
 calendar:
@@ -126,13 +126,6 @@ schedule: # this is where we define different states for each target and the tim
   # entry 3. elspot price dependent
   elspot:
     include_entry: false
-
-    fixed_operation_time: # will always run at this time
-      include_entry: false
-      entries:
-        # [ time, target, state/value ]
-        - ['03:30', 'shelly', 'on']
-        - ['17:30', 'shelly', 'off']
 
     minimum_operation_time: # at least X minutes a day
       include_entry: false

@@ -1,23 +1,24 @@
+from . import elspot, sun, time
+
+
 class Schedule:
 
-    def __init__(self, schedule: dict):
-        self.s = schedule
+    def __init__(self, schedule_entry: dict):
+        self.schedule_entry = schedule_entry
 
     async def generate_states(self, isodate: str):
-        included_entry = None
-        for entry in self.s:
-            if self.s[entry]['include_entry']:
-                included_entry = entry
-        match included_entry:
+        schedule_entry = None
+        for entry in self.schedule_entry:
+            if self.schedule_entry[entry]['include_entry']:
+                schedule_entry = entry
+        match schedule_entry:
             case 'elspot':
-                from .elspot import Entry
+                return await elspot.generate_states(self.schedule_entry[schedule_entry], isodate)
             case 'sun':
-                from .sun import Entry
+                return await sun.generate_states(self.schedule_entry[schedule_entry], isodate)
             case 'time':
-                from .time import Entry
+                return await time.generate_states(self.schedule_entry[schedule_entry], isodate)
             case None:
                 raise Exception('MissingEntryInSchedule')
             case _:
-                raise Exception('UnknownEntryInSchedule', included_entry)
-        obj = Entry(self.s[included_entry])
-        return await obj.generate_states(isodate)
+                raise Exception('UnknownEntryInSchedule', schedule_entry)

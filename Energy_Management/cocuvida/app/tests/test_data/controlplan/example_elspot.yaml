@@ -1,0 +1,54 @@
+name: 'example_elspot' # used as the plan id and alias
+
+# MAIN ENTRY 1. TARGET DEVICES TO BE OPERATED -> include one or more sub-entries
+target:
+  # each target needs to be implemented as its own module/unit in the application
+
+  exampletarget: # example target that takes values 0-100 (%)
+    include_entry: true # enable/disable entry
+    entries:
+      # some key: some val
+      switch_1: 'switch_1_id'
+      switch_2: 'switch_2_id'
+
+  mqtt:
+    include_entry: false # enable/disable entry
+    entries:
+      # ref key: message being sent -> ref the value as the state so message for that state is sent
+      msgref_ON: turn_ON
+      msgref_OFF: turn_OFF
+
+# MAIN ENTRY 2. CALENDAR FOR OPERATION -> include one or more sub-entries
+calendar:
+
+  # exclude these dates (overrides all other entries)
+  exclude_dates:
+    include_entry: false
+
+  # include these dates (overrides all other entries except exclude_dates)
+  include_dates: 
+    include_entry: false
+
+  # include|exclude fixed weekdays for operation
+  weekdays:
+    include_entry: true
+    monday: true
+    tuesday: true
+    wednesday: true
+    thursday: true
+    friday: true
+    saturday: true
+    sunday: true
+
+# MAIN ENTRY 3. SCHEDULE FOR OPERATION
+schedule:
+  elspot:
+    include_entry: true
+
+    minimum_operation_time: # at least X quarterhours a day (1 hour = 4 quarterhours)
+      include_entry: true
+      entries:
+        # [ quarterhours, target, non operation state ]
+        - ['8', 'exampletarget', 'off']
+        - ['8', 'mqtt', 'msgref_OFF']
+

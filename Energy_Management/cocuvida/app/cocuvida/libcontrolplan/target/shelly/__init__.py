@@ -7,7 +7,7 @@ VALID_STATES = ['on', 'off', 'toggle']
 async def get_valid_states() -> list:
     return VALID_STATES
 
-async def shelly_publish(target_entry: dict, state_value: str, aiohttp_session: aiohttp.ClientSession) -> bool:
+async def publish(target_entry: dict, state_value: str, aiohttp_session: aiohttp.ClientSession) -> bool:
     if state_value not in VALID_STATES:
         raise Exception('InvalidState', state_value)
 
