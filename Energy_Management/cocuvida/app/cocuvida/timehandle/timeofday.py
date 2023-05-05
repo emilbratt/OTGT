@@ -50,7 +50,7 @@ def total_seconds_elapsed_today() -> int:
     return subtracted.total_seconds()
 
 
-# FIXME: change parameter for the two functions below (instead of taking two INtime_now, take a str with "HH:MM")
+# FIXME: change parameter for the two functions below (instead of taking two INTs, take a str with "HH:MM")
 def is_passed_time(hour: int, minute: int) -> bool:
     '''
       pass hour (0-23) and minute (0-59)

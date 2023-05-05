@@ -94,11 +94,13 @@ async def metadata_dayahead(elspot_region: dict) -> dict:
             low fluctuation  -> many weights close to 10
             flat price curve -> all weights will be 10
 
-            quick summary
-                weight = 2.5   ->  price =  25% of max price
-                weight = 5     ->  price =  50% of max price
-                weight = 7.5   ->  price =  75% of max price
-
+            quick summary for weight levels (an approximation):
+                10  ->  >90% of max price
+                7   ->   70% of max price
+                5   ->   50% of max price
+                2   ->   20% of max price
+                1   ->   10% of max price
+                0   ->  <10% of max price
         '''
         _max_ = data['max']
         _min_ = data['min']

@@ -115,3 +115,12 @@ def time_from_timestamp(timestamp: str) -> str:
     '''
     date_obj = datetime.fromisoformat(timestamp)
     return date_obj.strftime('%H:%M:%S')
+
+def add_minutes_to_timestamp(timestamp: str, minutes: int):
+    '''
+      pass timestamp as 'YYYY-MM-DD HH:MM:SS' and minutes as int
+      returns same timestamp format, but with adjusted minutes
+    '''
+    date_obj = datetime.fromisoformat(timestamp)
+    date_obj = date_obj + timedelta(minutes=minutes)
+    return date_obj.strftime('%Y-%m-%d %H:%M:%S')

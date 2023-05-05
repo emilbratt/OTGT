@@ -12,11 +12,12 @@ class ControlPlan:
         self.schedule = dict()
         self.target = dict()
 
-    async def load_controlplan(self, controlplan: dict) -> None:
+    async def load_controlplan(self, controlplan: dict) -> str:
         plan_name = controlplan['name']
         self.calendar[plan_name] = Calendar(controlplan['calendar'])
         self.schedule[plan_name] = Schedule(controlplan['schedule'])
         self.target[plan_name]   = Target(controlplan['target'])
+        return plan_name
 
     async def valid_state_types(self, states: list) -> bool:
         raise Exception('MethodNotImplemented')
@@ -52,7 +53,10 @@ class ControlPlan:
             row.append(state_status)
         return states
 
-    async def publish_state(self, plan_name: str, target_type: str, state_value: str,) -> bool:
+    async def target_is_included(self, plan_name: str, target_type: str):
+        return await self.target[plan_name].is_included(target_type)
+
+    async def publish_state(self, plan_name: str, target_type: str, state_value: str) -> bool:
         if self.target == {}:
             raise Exception('NoControlplanError: run ControlplanParser.load_controlplan(controlplan) before anything else')
 

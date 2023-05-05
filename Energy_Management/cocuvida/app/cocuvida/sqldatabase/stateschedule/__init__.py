@@ -23,6 +23,7 @@ async def insert_states_from_generator(rows: list) -> str:
         action = 'insert'
     except Exception as e:
         action = f'ERROR: {__file__} {type(e)} {e}'
+        print(action)
     finally:
         cnxn.close()
         return action

@@ -37,15 +37,15 @@ async def dayahead():
             elif elspot_obj.download_ok:
                 elspot_processed_data = await elspot_obj.process_dayahead(elspot_raw_data)
                 if not elspot_obj.process_ok:
-                    print('ERROR: processing of elspot raw data failed')
+                    print('ERROR: processing failed for elspot raw data')
                 elif elspot_obj.process_ok:
                     sql_result = await sql_elspot.insert_raw_elspot(elspot_raw_data)
                     if not sql_result:
-                        print('ERROR: elspot dayahead raw SQL insert failed')
-                    for region_specific_data in elspot_processed_data.values():
-                        sql_result = await sql_elspot.insert_processed_elspot(region_specific_data)
+                        print('ERROR: SQL insert failed for elspot dayahead raw data')
+                    for elspot_region in elspot_processed_data.values():
+                        sql_result = await sql_elspot.insert_processed_elspot(elspot_region)
                         if not sql_result:
-                            region = region_specific_data['region']
-                            print(f'ERROR: elspot dayahead processed SQL insert failed for {region}')
+                            region = elspot_region['region']
+                            print(f'ERROR: SQL insert failed for elspot dayahead processed region {region}')
 
         await asyncio.sleep(seconds.until_next_hour())

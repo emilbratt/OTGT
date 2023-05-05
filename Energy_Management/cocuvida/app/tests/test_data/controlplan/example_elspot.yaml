@@ -14,9 +14,11 @@ target:
   mqtt:
     include_entry: false # enable/disable entry
     entries:
-      # ref key: message being sent -> ref the value as the state so message for that state is sent
-      msgref_ON: turn_ON
-      msgref_OFF: turn_OFF
+      # state: message that is sent for that state
+      level_max: '{"device": "some_device", "level": "max"}'
+      level_mid: '{"device": "some_device", "level": "mid"}'
+      level_low: '{"device": "some_device", "level": "low"}'
+      level_off: '{"device": "some_device", "level": "off"}'
 
 # MAIN ENTRY 2. CALENDAR FOR OPERATION -> include one or more sub-entries
 calendar:
@@ -45,18 +47,43 @@ schedule:
   elspot:
     include_entry: true
 
-    water_heater:
-      # the water heater entry will run the target during the cheapest hours avoiding to many hours in-between off-states
-      include_entry: true
-      entries:
-        # target [ min operation time per day (min), operation state, non-operation state ]
-        exampletarget: [ '120', 'on', 'off']
-        mqtt: ['240', 'turn_ON', 'msgref_OFF']
+    # SCHEDULE PLANS
+    lowest_price_switch:
+    # binary states: active and inactive
+    # will operate: at least once every day
+    # active when prices at the lowest
+      exampletarget:
+        # PLAN OPTIONS
+        operation_time: '300' # fixed operation time (in minutes) for when state is "active_state"
+        active_state: 'on' # operation state - when elspot price is lower -> this state is active
+        inactive_state: 'off' # non-operation state - when elspot price is higher -> this state is active
 
+    # water_heater_switch:
+    # # binary states: active and inactive
+    # # will operate: minimum 2 times everyday with
+    # # only active during the cheapest hours (avoids non operation state for to long)
+    #   exampletarget:
+    #     # PLAN OPTIONS
+    #     operation_time: '720' # fixed operation time (in minutes) for when state is "active_state"
+    #     active_state: 'on' # operation state - when elspot price is lower -> this state is active
+    #     inactive_state: 'off' # non-operation state - when elspot price is higher -> this state is active
+    
+    # minimum_weight_level:
+    # # leveled states: multiple states with one for each weight number + an "inactive state"
+    # # will operate: might not operate every day, much decided by price_threshold
+    # # weight level 0 - 10 where 0 = lowest price and 10 is max price, 
+    # # example: only charging if prices are below threshold and increase charging level if prices are even lower
+    #   mqtt:
+    #     # only add state if price is below threshold
+    #     price_threshold: '70' # if price above threshold or no match in weight_levels, set state using inactive_state
+    #     inactive_state: 'level_off'
+    #     weight_levels: # added states are tied to weight levels consecutively from 0 -> 10
+    #       - 'level_max' # weight level 0
+    #       - 'level_max' # weight level 1
+    #       - 'level_max' # weight level 2
+    #       - 'level_mid' # weight level 3
+    #       - 'level_mid' # weight level 4
+    #       - 'level_low' # weight level 5
+    #       - 'level_low' # weight level 6
+    #       # adding more entries would include 7, 8, 9 and 10
 
-    below_average_switch:
-      include_entry: false
-      entries:
-        # [ target, min operation time per day (min), operation state, non-operation state ]
-        - ['exampletarget', '120', 'on', 'off']
-        - ['mqtt', '240', 'turn_ON', 'msgref_OFF']

@@ -52,17 +52,19 @@ def test_controlplan(self, file_ref: str, operation_date: str):
             state_time = row[3]
             rowid = row[5]
             # only run "dummy" publish using exampletarget
-            if target_type == 'exampletarget':
-                res = asyncio.run(cp.publish_state(plan_name, target_type, state_value))
-                if res:
-                    # published -> 1
+            target_included = asyncio.run(cp.target_is_included(plan_name, target_type))
+            if target_included:
+                was_published = asyncio.run(cp.publish_state(plan_name, target_type, state_value))
+                if was_published:
                     state_status = sql_stateschedule.STATUS_ENUMS.index('published')
-                else:
-                    # not publish -> 3
-                    state_status = sql_stateschedule.STATUS_ENUMS.index['not published']
-                # state_status should evaluates to 1 -> published
-                self.assertTrue(state_status == 1)
+                    self.assertTrue(state_status == 1)
+                if not was_published:
+                    state_status = sql_stateschedule.STATUS_ENUMS.index('publish failed')
+                    self.assertTrue(state_status == 3)
+            if not target_included:
+                state_status = sql_stateschedule.STATUS_ENUMS.index('target disabled')
+                self.assertTrue(state_status == 2)
 
-                # update state_status to 1 -> published to DB
-                res = asyncio.run(sql_stateschedule.update_state_status_by_rowid(rowid, state_status))
-                self.assertTrue(res == 'update')
+            # update state_status to -> published to DB
+            res = asyncio.run(sql_stateschedule.update_state_status_by_rowid(rowid, state_status))
+            self.assertTrue(res == 'update')

@@ -6,7 +6,7 @@ class Schedule:
     def __init__(self, schedule_entry: dict):
         self.schedule_entry = schedule_entry
 
-    async def generate_states(self, isodate: str):
+    async def generate_states(self, isodate: str) -> list:
         schedule_entry = None
         for entry in self.schedule_entry:
             if self.schedule_entry[entry]['include_entry']:
