@@ -32,8 +32,9 @@ async def generate_states(schedule_elspot_entry: dict, isodate: str) -> list:
                 timestamp = row[1]
                 _row = [target, state, timestamp]
                 if _row not in states:
-                    # identical entry happened on a 25 hour day test
-                    # two entries with time 02:00 were generated
+                    # FIXME: handle 25 hour days
+                    # ..identical entry happened on a 25 hour day test
+                    # ..two entries with time 02:00 were generated
                     states.append(_row)
 
     return states
