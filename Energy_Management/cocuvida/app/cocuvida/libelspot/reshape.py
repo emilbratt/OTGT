@@ -102,7 +102,7 @@ async def reshape_dayahead(response_text: str) -> dict:
                 elif not row['IsExtraRow']:
                     # here is also where the increase in resolution happens (hour 4x -> quarters)
                     for j in range(4):
-                        # work out timestamp for each 15 minutes
+                        # work out time of day by adding 15, 30 or 45 minutes if needed
                         start = str(start_hour) + ':' + str(j * 15).zfill(2)
                         if j == 3:
                             end = str(end_hour) + ':00'
@@ -120,7 +120,6 @@ async def reshape_dayahead(response_text: str) -> dict:
                         regions[region]['resolution'] += 1
                         regions[region]['prices'].append(price)
 
-
         ret_regions = {}
         # check if any regions have invalid price values
         for name in regions:
@@ -134,5 +133,5 @@ async def reshape_dayahead(response_text: str) -> dict:
 
         return ret_regions
     except:
-        print('ERROR: failed to extract elspot data')
+        print('ERROR: failed to process elspot data')
         return {}

@@ -7,9 +7,6 @@ class Elspot:
         you can however import parts of this library and call functions as you see fit
     '''
     def __init__(self):
-        '''
-            pass the currency you want to work with (EUR, NOK, SEK, ..)
-        '''
         self.download_ok = False
         self.plot_ok = False
         self.process_ok = False
