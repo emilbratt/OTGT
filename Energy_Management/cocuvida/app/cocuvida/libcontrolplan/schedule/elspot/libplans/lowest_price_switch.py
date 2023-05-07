@@ -12,10 +12,8 @@ async def generate(plan_options: dict, elspot_data: dict) -> list:
     '''
     ISODATE = elspot_data['date']
     OPERATION_TIME = int(plan_options['operation_time'])
-    all_indexes = elspot_data['resolution']
-    operation_indexs = OPERATION_TIME // 15
-    non_operating_indexes = all_indexes - operation_indexs
-    remaining_minutes = OPERATION_TIME % 15
+    OPERATION_INDEXS = OPERATION_TIME // 15
+    REMAINING_MINUTES = OPERATION_TIME % 15
     
     # sort elspot price data based on the price from lowest to highest
     sorted_price_array = sorted(elspot_data['prices'], key=lambda x: x['value'], reverse=False)
@@ -24,16 +22,16 @@ async def generate(plan_options: dict, elspot_data: dict) -> list:
     for index in range(elspot_data['resolution']):
         timeofday = sorted_price_array[index]['time_start']
         state_timestamp = f'{ISODATE} {timeofday}'
-        # keep track on how many minutes from 00:00 until 23:59 has been recorded (also used to sort array)
+        # keep track on how many minutes have been recorded scheduled (also used to sort array back to time value)
         minute_index = sorted_price_array[index]['index'] * 15
 
-        if index < operation_indexs:
+        if index < OPERATION_INDEXS:
             states.append([minute_index, plan_options['active_state'], state_timestamp])
-        elif index == operation_indexs:
+        elif index == OPERATION_INDEXS:
             states.append([minute_index, plan_options['active_state'], state_timestamp])
-            end = isodates.add_minutes_to_timestamp(state_timestamp, remaining_minutes)
-            states.append([minute_index+remaining_minutes, plan_options['inactive_state'], end])
-        elif index > operation_indexs:
+            end = isodates.add_minutes_to_timestamp(state_timestamp, REMAINING_MINUTES)
+            states.append([minute_index+REMAINING_MINUTES, plan_options['inactive_state'], end])
+        elif index > OPERATION_INDEXS:
             states.append([minute_index, plan_options['inactive_state'], state_timestamp])
 
     # using the minute_index to order the states by time
