@@ -14,11 +14,12 @@ target:
   mqtt:
     include_entry: false # enable/disable entry
     entries:
-      # state: message that is sent for that state
-      level_max: '{"device": "some_device", "level": "max"}'
-      level_mid: '{"device": "some_device", "level": "mid"}'
-      level_low: '{"device": "some_device", "level": "low"}'
-      level_off: '{"device": "some_device", "level": "off"}'
+      # <state> : <message that is sent when state is called>
+      lev_max:  '{"desc": "max charging",    "level": "max"}'
+      lev_high: '{"desc": "high charging",   "level": "high"}'
+      lev_mid:  '{"desc": "normal charging", "level": "mid"}'
+      lev_low:  '{"desc": "low charging",    "level": "low"}'
+      lev_off:  '{"desc": "no charging",     "level": "off"}'
 
 # MAIN ENTRY 2. CALENDAR FOR OPERATION -> include one or more sub-entries
 calendar:
@@ -28,7 +29,7 @@ calendar:
     include_entry: false
 
   # include these dates (overrides all other entries except exclude_dates)
-  include_dates: 
+  include_dates:
     include_entry: false
 
   # include|exclude fixed weekdays for operation
@@ -49,14 +50,35 @@ schedule:
 
     # SCHEDULE PLANS
     lowest_price_switch:
-    # binary states: active and inactive
-    # will operate: at least once every day
-    # active when prices at the lowest
+    # states: 2 - active and inactive
+    # will operate: yes - at least once every day
       exampletarget:
         # PLAN OPTIONS
-        operation_time: '300' # fixed operation time (in minutes) for when state is "active_state"
+        operation_time: '800' # fixed operation time (in minutes) for when state is "active_state"
         active_state: 'on' # operation state - when elspot price is lower -> this state is active
         inactive_state: 'off' # non-operation state - when elspot price is higher -> this state is active
+
+    minimum_weight_level: # weight 0 = lowest price, weight 10 = max price, but there is more to it than that, read libelspot impl.
+    # states: 11 - one for each weight number + an "inactive state"
+    # will operate: maybe - might not operate every day, much decided by "below_price"
+    # example: only charge a battery energy storage solution if prices are below threshold and increase charging level if weight levels are low
+      mqtt:
+        # only add state if price is below threshold
+        below_price: '120' # only add states for weight levels if price is below, else state = inactive_state
+        inactive_state: 'lev_off'
+        weight_levels: # if only part of the weight levels are set, set value "null" for the remaining levels
+          # weight level: <state>
+          0: 'lev_max'
+          1: 'lev_max'
+          2: 'lev_high'
+          3: 'lev_high'
+          4: 'lev_high'
+          5: 'lev_mid'
+          6: 'lev_mid'
+          7: 'lev_mid'
+          8: 'lev_low'
+          9: 'lev_low'
+          10: 'lev_low'
 
     # water_heater_switch:
     # # binary states: active and inactive
@@ -67,23 +89,3 @@ schedule:
     #     operation_time: '720' # fixed operation time (in minutes) for when state is "active_state"
     #     active_state: 'on' # operation state - when elspot price is lower -> this state is active
     #     inactive_state: 'off' # non-operation state - when elspot price is higher -> this state is active
-    
-    # minimum_weight_level:
-    # # leveled states: multiple states with one for each weight number + an "inactive state"
-    # # will operate: might not operate every day, much decided by price_threshold
-    # # weight level 0 - 10 where 0 = lowest price and 10 is max price, 
-    # # example: only charging if prices are below threshold and increase charging level if prices are even lower
-    #   mqtt:
-    #     # only add state if price is below threshold
-    #     price_threshold: '70' # if price above threshold or no match in weight_levels, set state using inactive_state
-    #     inactive_state: 'level_off'
-    #     weight_levels: # added states are tied to weight levels consecutively from 0 -> 10
-    #       - 'level_max' # weight level 0
-    #       - 'level_max' # weight level 1
-    #       - 'level_max' # weight level 2
-    #       - 'level_mid' # weight level 3
-    #       - 'level_mid' # weight level 4
-    #       - 'level_low' # weight level 5
-    #       - 'level_low' # weight level 6
-    #       # adding more entries would include 7, 8, 9 and 10
-
