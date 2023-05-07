@@ -4,7 +4,7 @@ name: 'example_elspot' # used as the plan id and alias
 target:
   # each target needs to be implemented as its own module/unit in the application
 
-  exampletarget: # example target that takes values 0-100 (%)
+  exampletarget: # example target for testing
     include_entry: true # enable/disable entry
     entries:
       # some key: some val
@@ -49,43 +49,44 @@ schedule:
     include_entry: true
 
     # SCHEDULE PLANS
-    lowest_price_switch:
-    # states: 2 - active and inactive
-    # will operate: yes - at least once every day
-      exampletarget:
-        # PLAN OPTIONS
-        operation_time: '800' # fixed operation time (in minutes) for when state is "active_state"
-        active_state: 'on' # operation state - when elspot price is lower -> this state is active
-        inactive_state: 'off' # non-operation state - when elspot price is higher -> this state is active
 
-    minimum_weight_level: # weight 0 = lowest price, weight 10 = max price, but there is more to it than that, read libelspot impl.
-    # states: 11 - one for each weight number + an "inactive state"
-    # will operate: maybe - might not operate every day, much decided by "below_price"
-    # example: only charge a battery energy storage solution if prices are below threshold and increase charging level if weight levels are low
-      mqtt:
-        # only add state if price is below threshold
-        below_price: '120' # only add states for weight levels if price is below, else state = inactive_state
-        inactive_state: 'lev_off'
-        weight_levels: # if only part of the weight levels are set, set value "null" for the remaining levels
-          # weight level: <state>
-          0: 'lev_max'
-          1: 'lev_max'
-          2: 'lev_high'
-          3: 'lev_high'
-          4: 'lev_high'
-          5: 'lev_mid'
-          6: 'lev_mid'
-          7: 'lev_mid'
-          8: 'lev_low'
-          9: 'lev_low'
-          10: 'lev_low'
-
-    # water_heater_switch:
-    # # binary states: active and inactive
-    # # will operate: minimum 2 times everyday with
-    # # only active during the cheapest hours (avoids non operation state for to long)
+    # lowest_price_switch:
+    # # states: 2 - active and inactive
+    # # will operate: yes - at least once every day
     #   exampletarget:
     #     # PLAN OPTIONS
-    #     operation_time: '720' # fixed operation time (in minutes) for when state is "active_state"
+    #     operation_time: '800' # fixed operation time (in minutes) for when state is "active_state"
     #     active_state: 'on' # operation state - when elspot price is lower -> this state is active
     #     inactive_state: 'off' # non-operation state - when elspot price is higher -> this state is active
+
+    # minimum_weight_level: # weight 0 = lowest price, weight 10 = max price, but there is more to it than that, read libelspot impl.
+    # # states: 11 - one for each weight number + an "inactive state"
+    # # will operate: maybe - might not operate every day, much decided by "below_price"
+    # # example: only charge a battery energy storage solution if prices are below threshold and increase charging level if weight levels are low
+    #   mqtt:
+    #     # PLAN OPTIONS
+    #     below_price: '120' # only add states for weight levels if price is below, else state = inactive_state
+    #     inactive_state: 'lev_off'
+    #     weight_levels: # if only part of the weight levels are set, set value "null" for the remaining levels
+    #       # weight level: <state>
+    #       0: 'lev_max'
+    #       1: 'lev_max'
+    #       2: 'lev_high'
+    #       3: 'lev_high'
+    #       4: 'lev_high'
+    #       5: 'lev_mid'
+    #       6: 'lev_mid'
+    #       7: 'lev_mid'
+    #       8: 'lev_low'
+    #       9: 'lev_low'
+    #       10: 'lev_low'
+
+    water_heater_switch:
+    # states: 2 - active and inactive
+    # will operate: everyday avoiding long inactive periods
+    # parts of day: minimum of 60 minutes active state one for each part (00-06, 06-12, 12-18, 18-24)
+      exampletarget:
+        # PLAN OPTIONS
+        operation_time: '715' # minimum 240 -> fixed operation time in minutes for when state is "active_state"
+        active_state: 'on'
+        inactive_state: 'off'

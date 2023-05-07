@@ -3,7 +3,7 @@ from cocuvida.timehandle import isodates
 
 async def generate(plan_options: dict, elspot_data: dict) -> list:
     '''
-        plan options are structured like:
+        plan options
         {
             operation_time: minutes,
             active_state: state,
@@ -15,7 +15,7 @@ async def generate(plan_options: dict, elspot_data: dict) -> list:
     OPERATION_INDEXS = OPERATION_TIME // 15
     REMAINING_MINUTES = OPERATION_TIME % 15
     
-    # sort elspot price data based on the price from lowest to highest
+    # sort elspot prices based on price from lowest to highest
     sorted_price_array = sorted(elspot_data['prices'], key=lambda x: x['value'], reverse=False)
     states = []
     # append all the active states first, as they fit with the lowest prices, then the inactive ones

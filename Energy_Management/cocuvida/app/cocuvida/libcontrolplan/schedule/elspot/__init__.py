@@ -21,10 +21,10 @@ async def generate_states(schedule_elspot_entry: dict, isodate: str) -> list:
         return []
 
     states = []
-    for plan_name in entries:
-        entrydata = schedule_elspot_entry[plan_name]
+    for state_plan in entries:
+        entrydata = schedule_elspot_entry[state_plan]
         for target, plan_options in entrydata.items():
-            result = await plans.generate(plan_name, plan_options, elspot_data)
+            result = await plans.generate(state_plan, plan_options, elspot_data)
             if result == []:
                 continue
             for row in result:
@@ -33,8 +33,8 @@ async def generate_states(schedule_elspot_entry: dict, isodate: str) -> list:
                 _row = [target, state, timestamp]
                 if _row not in states:
                     # FIXME: handle 25 hour days
-                    # ..identical entry happened on a 25 hour day test
-                    # ..two entries with time 02:00 were generated
+                    # ..identical entry happens on a 25 hour day
+                    # ..two entries with time 02:MM might be generated
                     states.append(_row)
 
     return states

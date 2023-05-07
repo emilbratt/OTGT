@@ -1,25 +1,24 @@
-from cocuvida.timehandle import isodates
-
-
 async def generate(plan_options: dict, elspot_data: dict) -> list:
     '''
-        plan options are structured like:
+        plan options
         {
-            below_price: only set states if prices is below, else use inactive state
-            inactive_state: '<some_inactive_state>',
+            below_price: '<some_price>'
+            inactive_state: '<some_inactive_state>'
             weight_levels:
-                0: '<some_state>'
-                1: '<some_state>'
-                2: '<some_state>'
-                3: '<some_state>'
-                4: '<some_state>'
-                5: '<some_state>'
-                6: '<some_state>'
-                7: '<some_state>'
-                8: null
-                9: null
-                10: null
+                0: '<some_state>',
+                1: '<some_state>',
+                2: '<some_state>',
+                3: '<some_state>',
+                4: '<some_state>',
+                5: '<some_state>',
+                6: '<some_state>',
+                7: '<some_state>',
+                8: '<some_state>',
+                9: '<some_state>',
+                10: '<some_state>'
         }
+        below_price is used as a threshold to only allow weight_levels states to be set if the price for that weight level is below it
+        otherwise the inactive state is used
 
         weight_levels is used to define states based on weight level
         you can use the same state for multiple levels if need be

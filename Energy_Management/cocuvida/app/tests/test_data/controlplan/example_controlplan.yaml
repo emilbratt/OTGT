@@ -4,7 +4,7 @@ name: 'example_controlplan' # used as the plan id and alias
 target:
   # each target needs to be implemented as its own module/unit in the application
 
-  exampletarget: # example target that takes values 0-100 (%)
+  exampletarget: # example target for testing
     include_entry: true # enable/disable entry
     entries:
       # some key: some val

@@ -1,5 +1,3 @@
-from cocuvida.timehandle import isodates
-
 from .calendar import Calendar
 from .schedule import Schedule
 from .target import Target
