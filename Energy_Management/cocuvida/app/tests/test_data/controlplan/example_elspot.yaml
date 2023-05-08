@@ -13,6 +13,7 @@ target:
 
   mqtt:
     include_entry: false # enable/disable target
+    topic: 'cocuvida/example_elspot'
     entries:
       # <state> : <message that is sent when state is called>
       lev_max:  '{"desc": "max charging",    "level": "max"}'
@@ -26,27 +27,34 @@ calendar:
 
   # exclude these dates (overrides all other entries)
   exclude_dates:
-    include_entry: false
+    include_entry: false # enable/disable calendar option
 
   # include these dates (overrides all other entries except exclude_dates)
   include_dates:
-    include_entry: false
+    include_entry: false # enable/disable calendar option
 
-  # include|exclude fixed weekdays for operation
-  weekdays:
+  # eexclude fixed weekdays for operation (takes precedence over include_weekdays)
+  exclude_weekdays:
+    include_entry: false
+    entries:
+      - 'sunday'
+
+  # include fixed weekdays for operation (will only be included if not excluded in any of the other entries)
+  include_weekdays:
     include_entry: true
-    monday: true
-    tuesday: true
-    wednesday: true
-    thursday: true
-    friday: true
-    saturday: true
-    sunday: true
+    entries:
+      - 'monday'
+      - 'tuesday'
+      - 'wednesday'
+      - 'thursday'
+      - 'friday'
+      - 'saturday'
+      - 'sunday'
 
 # MAIN ENTRY 3. SCHEDULE FOR OPERATION
 schedule:
   elspot:
-    include_entry: true
+    include_entry: true # enable/disable schedule
 
     # SCHEDULE PLANS
 

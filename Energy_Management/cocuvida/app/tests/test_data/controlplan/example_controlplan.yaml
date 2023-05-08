@@ -29,6 +29,7 @@ target:
   # e.g. topic for this controlplan will be set to -> "cocuvida/controlplan/example_controlplan"
   mqtt:
     include_entry: false # enable/disable target
+    topic: 'cocuvida/example_controlplan'
     entries:
       # ref key points to the message being sent
       msgrefa: this is a message being sent referenced with msgrefa
@@ -41,20 +42,21 @@ calendar:
 
   # entry 1. exclude these dates (overrides all other entries)
   exclude_dates:
-    include_entry: true
-    entries: # '--MM-DD' for every year | 'YYYY-MM-DD' for specific year
-      - '2022-06-01'
+    include_entry: false
+    entries:
+      - '--03-18' # this will set every March 18. every year as included
+      - '2021-06-17' # this will set June 17. only in year 2021 year as included
 
   # entry 2. include these dates (overrides all other entries except exclude_dates)
   include_dates: 
     include_entry: true
-    entries: # '--MM-D' for every year | 'YYYY-MM-DD' for specific year
-      - '--03-17'
-      - '2022-06-17'
+    entries:
+      - '--03-17' # this will set every March 17. every year as included
+      - '2022-06-17' # this will set June 17. only in year 2022 year as included
 
   # NOT IMPLEMENTED YET - entry 3. include|exclude non fixed date holidays (overrides weekdays)
   holidays:
-    include_entry: true
+    include_entry: false
     palm_sunday: true
     maundy_thursday: true # skjeartorsdag
     good_friday: true # langfredag
@@ -62,16 +64,23 @@ calendar:
     easter_sunday: true # foerste paaskedag
     easter_monday: true # andre paaskedag
 
-  # entry 4. include|exclude fixed weekdays for operation
-  weekdays:
+  # entry 4. exclude fixed weekdays for operation (takes precedence over include_weekdays)
+  exclude_weekdays:
+    include_entry: false
+    entries:
+      - 'sunday'
+
+  # entry 5. include fixed weekdays for operation (will only be included if not excluded in any of the other entries)
+  include_weekdays:
     include_entry: true
-    monday: true
-    tuesday: true
-    wednesday: true
-    thursday: true
-    friday: true
-    saturday: true
-    sunday: true
+    entries:
+      - 'monday'
+      - 'tuesday'
+      - 'wednesday'
+      - 'thursday'
+      - 'friday'
+      - 'saturday'
+      - 'sunday'
 
 
 # MAIN ENTRY 3. SCHEDULE FOR OPERATION -> include ONLY one sub-entry (time, sun or elspot)
@@ -79,7 +88,7 @@ schedule: # this is where we define different states for each target and the tim
 
   # entry 1. time dependent
   time: # can include multiple entries for multiple ON/OFF states during the day
-    include_entry: true
+    include_entry: true # enable/disable schedule
     entries:
       # [ time, target, state/value ]
       - ['11:00', 'shelly', 'on']
@@ -91,7 +100,7 @@ schedule: # this is where we define different states for each target and the tim
 
   # entry 2. astro (sun) dependent
   sun: # NOTE: remember to include coordinates
-    include_entry: false
+    include_entry: false # enable/disable schedule
     latitude: '59.911491'
     Longitude: '10.757933'
 
@@ -125,7 +134,7 @@ schedule: # this is where we define different states for each target and the tim
 
   # entry 3. elspot price dependent
   elspot:
-    include_entry: false
+    include_entry: false # enable/disable schedule
 
     minimum_operation_time: # at least X minutes a day
       include_entry: false

@@ -1,5 +1,6 @@
 aiofiles
 aiohttp
+aioshelly
 matplotlib
 numpy
 paho-mqtt

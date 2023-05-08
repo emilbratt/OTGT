@@ -1,3 +1,5 @@
+from cocuvida.timehandle import isodates
+
 from .calendar import Calendar
 from .schedule import Schedule
 from .target import Target
@@ -12,9 +14,20 @@ class ControlPlan:
 
     async def load_controlplan(self, controlplan: dict) -> str:
         plan_name = controlplan['name']
-        self.calendar[plan_name] = Calendar(controlplan['calendar'])
-        self.schedule[plan_name] = Schedule(controlplan['schedule'])
-        self.target[plan_name]   = Target(controlplan['target'])
+        # target entry must always be included
+        if 'target' not in controlplan:
+            raise Exception('NoTargetInControlplan',plan_name )
+        calendar_entry = {}
+        schedule_entry = {}
+        target_entry = controlplan['target']
+        if 'calendar' in controlplan:
+            calendar_entry = controlplan['calendar']
+        if 'schedule' in controlplan:
+            schedule_entry = controlplan['schedule']
+
+        self.calendar[plan_name] = Calendar(calendar_entry)
+        self.schedule[plan_name] = Schedule(schedule_entry)
+        self.target[plan_name]   = Target(target_entry)
         return plan_name
 
     async def valid_state_types(self, states: list) -> bool:
@@ -32,7 +45,10 @@ class ControlPlan:
             return False
         if await self.calendar[plan_name].is_included_date(isodate):
             return True
-        if await self.calendar[plan_name].is_included_weekday(isodate):
+        weekday = isodates.weekday_name_from_isodate(isodate)
+        if await self.calendar[plan_name].is_excluded_weekday(weekday):
+            return False
+        if await self.calendar[plan_name].is_included_weekday(weekday):
             return True
         return False
 
@@ -43,7 +59,7 @@ class ControlPlan:
         states = await self.schedule[plan_name].generate_states(isodate)
         for row in states:
             target_type = row[0]
-            if await self.target[plan_name].is_included(target_type):
+            if await self.target[plan_name].target_enabled(target_type):
                 state_status = 0 # target enabled (state will be published)
             else:
                 state_status = 2 # target disabled (state will NOT be published)
@@ -51,8 +67,8 @@ class ControlPlan:
             row.append(state_status)
         return states
 
-    async def target_is_included(self, plan_name: str, target_type: str):
-        return await self.target[plan_name].is_included(target_type)
+    async def target_enabled(self, plan_name: str, target_type: str):
+        return await self.target[plan_name].target_enabled(target_type)
 
     async def publish_state(self, plan_name: str, target_type: str, state_value: str) -> bool:
         if self.target == {}:
@@ -60,3 +76,6 @@ class ControlPlan:
 
         res = await self.target[plan_name].publish_state(target_type, state_value)
         return res
+
+    async def list_targets(self, plan_name: str) -> list:
+        return await self.target[plan_name].list_targets()

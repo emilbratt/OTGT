@@ -7,8 +7,11 @@ class Schedule:
         self.schedule_entry = schedule_entry
 
     async def generate_states(self, isodate: str) -> list:
+        if self.schedule_entry == {}:
+            return []
         schedule_entry = None
         for entry in self.schedule_entry:
+            # only one entry is allowed, we grab the first one that is enabled
             if self.schedule_entry[entry]['include_entry']:
                 schedule_entry = entry
         match schedule_entry:

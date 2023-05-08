@@ -21,6 +21,7 @@ GENERATED_PLOT_REGIONS = [
 BUTTON_TEST_SITE_CONTROLPLAN_PLAN_NAME = [
     ['/test?testsite=controlplans&plan_name=example_controlplan', 'example_controlplan'],
     ['/test?testsite=controlplans&plan_name=example_elspot', 'example_elspot'],
+    ['/test?testsite=controlplans&plan_name=test_uploaded_controlplan', 'test_uploaded_controlplan'],
 ]
 
 BUTTON_TEST_SITE_ELSPOT_REGION = [

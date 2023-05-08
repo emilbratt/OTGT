@@ -18,20 +18,28 @@ class Requirements(unittest.TestCase):
 
     # check if all python dependencies are installed
     def test_import_requirements(self):
-        from tests import requirements_test
-        requirements_test.check_modules(self)
+        from tests.requirements_test import check_modules
+        check_modules(self)
 
 
 class ControlPlan(unittest.TestCase):
 
     # check if we can generate states from test control_plan
     def test_example_controlplan(self):
-        from tests import controlplan_test
-        controlplan_test.test_controlplan(self, file_ref='example_controlplan', operation_date='2022-12-01')
-        controlplan_test.test_controlplan(self, file_ref='example_elspot', operation_date='2022-10-30')
-        controlplan_test.test_controlplan(self, file_ref='example_elspot', operation_date='2022-12-01')
-        controlplan_test.test_controlplan(self, file_ref='example_elspot', operation_date='2023-03-26')
-        controlplan_test.test_controlplan(self, file_ref='example_elspot', operation_date='2023-04-10')
+        from tests.controlplan_test import example_controlplan
+        example_controlplan(self, file_ref='example_controlplan', operation_date='2022-12-01')
+        example_controlplan(self, file_ref='example_elspot', operation_date='2022-10-30')
+        example_controlplan(self, file_ref='example_elspot', operation_date='2022-12-01')
+        example_controlplan(self, file_ref='example_elspot', operation_date='2023-03-26')
+        example_controlplan(self, file_ref='example_elspot', operation_date='2023-04-10')
+
+    # start the web service and upload a controlplan named "test_uploaded_controlplan"
+    # if it exists, it will be tested
+    def test_uploaded_controlplan(self):
+        from tests.controlplan_test import uploaded_controlplan
+        uploaded_controlplan(self)
+
+
 
 # class ElspotTest(unittest.TestCase):
 

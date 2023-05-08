@@ -68,6 +68,8 @@ async def select_control_plan_by_plan_name(plan_name: str) -> dict:
     cursor.execute(QUERIES['select_control_plan_by_plan_name'], [plan_name])
     res = cursor.fetchone()
     cnxn.close()
+    if res == None:
+        return {}
     return yaml_safe_load(res[0])
 
 async def select_all_control_plans() -> dict:

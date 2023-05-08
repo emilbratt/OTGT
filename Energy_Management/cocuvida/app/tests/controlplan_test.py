@@ -3,18 +3,21 @@ import unittest
 
 import yaml
 
-from cocuvida.libcontrolplan import ControlPlan
-from cocuvida.sqldatabase import (controlplans as sql_controlplans,
-                                  stateschedule as sql_stateschedule)
+from cocuvida import libcontrolplan
+from cocuvida.sqldatabase import controlplans as sql_controlplans
+from cocuvida.sqldatabase import stateschedule as sql_stateschedule
+from cocuvida.timehandle import isodates
 
 FILES = {
     'example_controlplan': 'tests/test_data/controlplan/example_controlplan.yaml',
     'example_elspot': 'tests/test_data/controlplan/example_elspot.yaml',
 }
 
+TEST_UPLOADED_CONTROLPLAN_NAME = 'test_uploaded_controlplan'
+
 
 # these should match the generated states from the controlplan in ./test_data/controlplan
-def test_controlplan(self: unittest.TestCase, file_ref: str, operation_date: str):
+def example_controlplan(self: unittest.TestCase, file_ref: str, operation_date: str):
     with open(FILES[file_ref]) as f:
         raw_content = f.read()
         controlplan = yaml.safe_load(raw_content)
@@ -32,16 +35,14 @@ def test_controlplan(self: unittest.TestCase, file_ref: str, operation_date: str
         res = asyncio.run(sql_controlplans.insert_control_plan(raw_content))
         self.assertTrue(res == 'insert')
 
-        cp = ControlPlan()
+        cp = libcontrolplan.ControlPlan()
         asyncio.run(cp.load_controlplan(controlplan))
 
         # this should be an operating day
         res = asyncio.run(cp.is_operating_date(plan_name, operation_date))
         self.assertTrue(res)
 
-        # the generated states for the operation date should match the hardcoded ones
         generated_states = asyncio.run(cp.generate_states(plan_name, operation_date))
-
         # insert the generated states to DB
         res = asyncio.run(sql_stateschedule.insert_states_from_generator(generated_states))
         self.assertTrue(res == 'insert')
@@ -54,7 +55,7 @@ def test_controlplan(self: unittest.TestCase, file_ref: str, operation_date: str
             state_time = row[3]
             rowid = row[5]
             # only run "dummy" publish using exampletarget
-            target_included = asyncio.run(cp.target_is_included(plan_name, target_type))
+            target_included = asyncio.run(cp.target_enabled(plan_name, target_type))
             if target_included:
                 was_published = asyncio.run(cp.publish_state(plan_name, target_type, state_value))
                 if was_published:
@@ -70,3 +71,27 @@ def test_controlplan(self: unittest.TestCase, file_ref: str, operation_date: str
             # update state_status to -> published to DB
             res = asyncio.run(sql_stateschedule.update_state_status_by_rowid(rowid, state_status))
             self.assertTrue(res == 'update')
+
+def uploaded_controlplan(self):
+    plan_name = TEST_UPLOADED_CONTROLPLAN_NAME
+    plan_data = asyncio.run(sql_controlplans.select_control_plan_by_plan_name(plan_name))
+    if plan_data == {}:
+        return True
+
+    from tests.libtest import targets
+    cp = libcontrolplan.ControlPlan()
+    asyncio.run(cp.load_controlplan(plan_data))
+    res = asyncio.run(cp.is_operating_date(plan_name, isodates.today()))
+
+    # generate and insert the generated states to DB
+    generated_states = asyncio.run(cp.generate_states(plan_name, isodates.today()))
+    res = asyncio.run(sql_stateschedule.insert_states_from_generator(generated_states))
+    self.assertTrue(res == 'insert')
+
+    # test publishing to targets found in controlplan
+    for target_entry in plan_data['target']:
+        match target_entry:
+            case 'mqtt':
+                asyncio.run(targets.mqtt.publish_state(plan_data['target'][target_entry]))
+            case 'shelly':
+                asyncio.run(targets.shelly.publish_state(plan_data['target'][target_entry]))
