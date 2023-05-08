@@ -40,7 +40,6 @@ class ControlPlan(unittest.TestCase):
         uploaded_controlplan(self)
 
 
-
 # class ElspotTest(unittest.TestCase):
 
 #     # check if we can process elspot prices for 23, 24 and 25 hour days (dst)

@@ -21,4 +21,4 @@ async def publish_state(target_entry: dict):
     '''
     if not target_entry['include_entry']:
         return True
-    print('publish mqtt', MQTT_TEST_STATE)
+    return True

@@ -6,7 +6,7 @@ from cocuvida.libcontrolplan.target.shelly import TargetShelly
 from .const import SHELLY_TEST_STATE
 
 
-async def publish_state(target_entry: dict):
+async def publish_state(target_entry: dict) -> bool:
     '''
         target_entry for shelly
         {
@@ -24,7 +24,6 @@ async def publish_state(target_entry: dict):
     if not target_entry['include_entry']:
         return True
 
-    init = False
     async with aiohttp.ClientSession() as aiohttp_session:
         target_obj = TargetShelly(aiohttp_session)
         await target_obj.load_target_entry(target_entry)
@@ -36,4 +35,6 @@ async def publish_state(target_entry: dict):
 
         results = await asyncio.gather(*publish_tasks,return_exceptions=True)
         for result in results:
-            continue    
+            continue
+
+    return True
