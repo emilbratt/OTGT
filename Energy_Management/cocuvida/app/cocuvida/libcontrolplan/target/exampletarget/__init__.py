@@ -1,3 +1,7 @@
+from .target import TargetExampleTarget
+
+
+# simple publish function that can be called without instanciating the target
 async def publish(target_entry: dict, state_value: str) -> bool:
     '''
         this is just an example target, we always return True

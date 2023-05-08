@@ -19,9 +19,7 @@ class Target:
             case 'mqtt':
                 res = await mqtt.publish(self.target_entry['mqtt'], state_value)
             case 'shelly':
-                timeout = aiohttp.ClientTimeout(total=5)
-                async with aiohttp.ClientSession(timeout=timeout) as aiohttp_session:
-                    res = await shelly.publish(self.target_entry['shelly'], state_value, aiohttp_session)
+                res = await shelly.publish(self.target_entry['shelly'], state_value)
             case _:
                 raise Exception('UnknownTargetType', target_type)
 
