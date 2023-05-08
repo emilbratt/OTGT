@@ -1,5 +1,5 @@
 from cocuvida.sqldatabase.controlplans import get_stringio_control_plan_by_name
-from cocuvida.sqldatabase.stateschedule import select_states_today_for_plan_name
+from cocuvida.sqldatabase.stateschedule import select_all_states_today_for_plan_name
 
 from cocuvida.web.templates import forms, tables
 
@@ -58,13 +58,12 @@ class View:
     async def form_options(self):
         self.html_forms += await forms.controlplan_options()
 
-    async def show_control_plan_data(self, plan_name: str):
-        plan_data = await get_stringio_control_plan_by_name(plan_name)
+    async def show_control_plan_data(self, plan_data: str):
         self.html_control_plan += b'<p>Control Plan</p><pre>' + plan_data + b'</pre><hr>'
 
-    async def show_state_schedule(self, plan_name: str):
-        res = await select_states_today_for_plan_name(plan_name)
-        self.html_state_schedule += await tables.state_schedule(res)
+    async def show_state_schedule(self, schedule: list):
+        #res = await select_all_states_today_for_plan_name(plan_name)
+        self.html_state_schedule += await tables.state_schedule(schedule)
 
     async def download_control_plan_data(self, plan_name: str):
         self.file_control_plan = await get_stringio_control_plan_by_name(plan_name)

@@ -1,7 +1,9 @@
+from .GET import controller as get_controller
+
+
 async def loader(method: str) -> object:
     match method:
         case 'GET':
-            from .GET import controller
+            return get_controller
         case _:
             return None
-    return controller
