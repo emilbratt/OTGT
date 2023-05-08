@@ -1,4 +1,6 @@
 import asyncio
+import unittest
+
 import yaml
 
 from cocuvida.libcontrolplan import ControlPlan
@@ -12,7 +14,7 @@ FILES = {
 
 
 # these should match the generated states from the controlplan in ./test_data/controlplan
-def test_controlplan(self, file_ref: str, operation_date: str):
+def test_controlplan(self: unittest.TestCase, file_ref: str, operation_date: str):
     with open(FILES[file_ref]) as f:
         raw_content = f.read()
         controlplan = yaml.safe_load(raw_content)

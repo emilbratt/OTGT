@@ -1,7 +1,8 @@
 import importlib
+import unittest
 
 
-def check_modules(self):
+def check_modules(self: unittest.TestCase):
     self.assertIsNotNone(importlib.util.find_spec('aiofiles'))
     self.assertIsNotNone(importlib.util.find_spec('aiohttp'))
     self.assertIsNotNone(importlib.util.find_spec('paho'))

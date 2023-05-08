@@ -1,2 +1,3 @@
 class TargetShelly:
-    pass
+    def __init__(self, user: str, pwd: str):
+        pass

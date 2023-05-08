@@ -1,4 +1,6 @@
 import asyncio
+import unittest
+
 import json
 
 from cocuvida import libelspot
@@ -18,7 +20,7 @@ FILES = {
 }
 
 
-def process_elspot(self, file_ref: str, expected_resolution: int):
+def process_elspot(self: unittest.TestCase, file_ref: str, expected_resolution: int):
     '''
         The entire year except for 2 days consists of 24 hours.
         For the remaining 2 we have either 23 or 25 depending on wether we are
