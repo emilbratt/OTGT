@@ -31,8 +31,6 @@ async def results(view: object, query_string: dict):
         paragraph += '<strong>no</strong>'
     await view.add_paragraph(paragraph)
 
-    # # this should be an operating day
-
     all_rows = []
     for isodate in TEST_DATES:
         rows = await sql_stateschedule.select_all_states_for_date_and_plan_name(isodate, plan_name)
