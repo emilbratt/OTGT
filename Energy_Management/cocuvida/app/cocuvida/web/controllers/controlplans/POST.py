@@ -34,7 +34,8 @@ async def controller(scope: dict, receive: object) -> View:
         case 'download':
             plan_name = await form_obj.load_string('plan_name')
             if plan_name != None:
-                await view.download_control_plan_data(plan_name)
+                plan_data = await sql_controlplans.get_stringio_control_plan_by_name(plan_name)
+                await view.download_control_plan_data(plan_data)
 
         case 'delete':
             plan_name = await form_obj.load_string('plan_name')

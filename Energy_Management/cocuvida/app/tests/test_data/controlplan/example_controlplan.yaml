@@ -5,7 +5,7 @@ target:
   # each target needs to be implemented as its own module/unit in the application
 
   exampletarget: # example target for testing
-    include_entry: true # enable/disable entry
+    include_entry: true # enable/disable target
     entries:
       # some key: some val
       knob_1: '192.168.1.134'
@@ -13,7 +13,7 @@ target:
 
   # shelly switches
   shelly: # valid states are on, off or toggle
-    include_entry: false # enable/disable entry
+    include_entry: false # enable/disable target
     # http auth (it is required, for security reasons.. so please set this on all shelly devices)
     user: admin
     password: password
@@ -28,7 +28,7 @@ target:
   # cocuvida application uses the name of this controlplan for topic
   # e.g. topic for this controlplan will be set to -> "cocuvida/controlplan/example_controlplan"
   mqtt:
-    include_entry: false # enable/disable entry
+    include_entry: false # enable/disable target
     entries:
       # ref key points to the message being sent
       msgrefa: this is a message being sent referenced with msgrefa

@@ -5,14 +5,14 @@ target:
   # each target needs to be implemented as its own module/unit in the application
 
   exampletarget: # example target for testing
-    include_entry: true # enable/disable entry
+    include_entry: true # enable/disable target
     entries:
       # some key: some val
       switch_1: 'switch_1_id'
       switch_2: 'switch_2_id'
 
   mqtt:
-    include_entry: false # enable/disable entry
+    include_entry: false # enable/disable target
     entries:
       # <state> : <message that is sent when state is called>
       lev_max:  '{"desc": "max charging",    "level": "max"}'

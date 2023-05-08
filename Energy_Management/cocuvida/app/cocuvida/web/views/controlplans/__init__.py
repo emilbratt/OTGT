@@ -1,6 +1,3 @@
-from cocuvida.sqldatabase.controlplans import get_stringio_control_plan_by_name
-from cocuvida.sqldatabase.stateschedule import select_all_states_today_for_plan_name
-
 from cocuvida.web.templates import forms, tables
 
 
@@ -62,11 +59,10 @@ class View:
         self.html_control_plan += b'<p>Control Plan</p><pre>' + plan_data + b'</pre><hr>'
 
     async def show_state_schedule(self, schedule: list):
-        #res = await select_all_states_today_for_plan_name(plan_name)
         self.html_state_schedule += await tables.state_schedule(schedule)
 
-    async def download_control_plan_data(self, plan_name: str):
-        self.file_control_plan = await get_stringio_control_plan_by_name(plan_name)
+    async def download_control_plan_data(self, plan_data: str):
+        self.file_control_plan = plan_data
         self.headers[b'content-type'] = b'application/x-yaml'
 
     async def un_authorized(self):
