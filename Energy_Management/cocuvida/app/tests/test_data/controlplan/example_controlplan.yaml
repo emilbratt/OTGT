@@ -25,27 +25,36 @@ target:
       light_b_basement_1: ['192.168.1.145', '1']
 
   # entry 2. MQTT subscribers
-  # cocuvida application uses the name of this controlplan for topic
-  # e.g. topic for this controlplan will be set to -> "cocuvida/controlplan/example_controlplan"
-  mqtt: # will use client id cocuvida
+  mqtt:
     include_entry: false # enable/disable target
-    user: user
-    password: password
-    host: '192.168.1.11'
-    port: '1883'
-    client_id: 'cocuvida_example_controlplan'
-    entries:
-      alias_1:
+    username: '<user>'
+    password: '<password>'
+    host: '<host>'
+    port: '<port>'
+    client_id: '<client_id>'
+    keep_alive: '<seconds>'
+    tls: null
+    will: null
+    transport: 'tcp'
+    # states must be declared (state = an mqtt message in this context)
+    states:
+      simple_message: # this is the name of the 1st state
         qos: '0'
-        topic: 'topic/for/alias_1'
-        message: 'a single line message for alias_1'
-      alias_2:
+        retain: false
+        message: 'this is a simple message'
+      multi_line_message: # this is the name of the 2nd state
         qos: '0'
-        topic: 'topic/for/alias_2'
+        retain: false
         message: >
-          this is a multi
-          line message
-          for alias_2
+          this is a
+          multi line
+          message
+    entries:
+      # on state publish, every topic listed here will receive the message
+      topic_alias_a: 'topic/for/alias_a'
+      topic_alias_b: 'another/topic/for/alias_b'
+
+
 
 # MAIN ENTRY 2. CALENDAR FOR OPERATION -> include one or more sub-entries
 calendar:
@@ -78,6 +87,12 @@ calendar:
   exclude_weekdays:
     include_entry: false
     entries:
+      - 'monday'
+      - 'tuesday'
+      - 'wednesday'
+      - 'thursday'
+      - 'friday'
+      - 'saturday'
       - 'sunday'
 
   # entry 5. include fixed weekdays for operation (will only be included if not excluded in any of the other entries)
@@ -105,8 +120,8 @@ schedule: # this is where we define different states for each target and the tim
       - ['12:00', 'shelly', 'off']
       - ['12:00', 'exampletarget', '60']
       - ['17:30', 'shelly', 'toggle']
-      - ['17:30', 'mqtt', 'alias_1']
-      - ['18:30', 'mqtt', 'alias_2']
+      - ['17:30', 'mqtt', 'simple_message']
+      - ['18:30', 'mqtt', 'multi_line_message']
 
   # entry 2. astro (sun) dependent
   sun: # NOTE: remember to include coordinates
@@ -125,8 +140,8 @@ schedule: # this is where we define different states for each target and the tim
       include_entry: false
       entries:
         # [ minutes (+|-), target, state/value ]
-        - ['15', 'mqtt', 'sleep']
-        - ['-15', 'mqtt', 'tight']
+        - ['15', 'mqtt', 'simple_message']
+        - ['-15', 'mqtt', 'multi_line_message']
 
     above: # when sun is above altitude (from -90 to 90)
       include_entry: false

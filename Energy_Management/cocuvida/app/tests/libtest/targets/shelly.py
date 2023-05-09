@@ -3,8 +3,6 @@ import asyncio
 
 from cocuvida.libcontrolplan.target.shelly import TargetShelly
 
-from .const import SHELLY_TEST_STATE
-
 
 async def publish_state(target_entry: dict) -> bool:
     '''
@@ -33,7 +31,7 @@ async def publish_state(target_entry: dict) -> bool:
             task = target_obj.publish_state(alias, 'toggle')
             publish_tasks.append(task)
 
-        results = await asyncio.gather(*publish_tasks,return_exceptions=True)
+        results = await asyncio.gather(*publish_tasks, return_exceptions=True)
         for result in results:
             continue
 

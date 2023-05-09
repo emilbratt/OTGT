@@ -14,9 +14,6 @@ from aioshelly.rpc_device import RpcDevice, WsServer
 
 from .const import COAP_PORT, WS_PORT
 
-coap_context = COAP()
-ws_context = WsServer()
-
 
 class TargetShelly:
     def __init__(self, aiohttp_session: aiohttp.ClientSession):
@@ -60,26 +57,6 @@ class TargetShelly:
             self.devices[alias]['gen'] = gen
             self.devices[alias]['relay_id'] = relay_id
             self.devices[alias]['device'] = device
-
-    async def load_relay(self, alias: str, relay_id: str, host: str, user: str, pwd: str, init: bool) -> None:
-        self.devices[alias] = {}
-        self.devices[alias]['relay_id'] = relay_id
-        shelly_info = await aioshelly_get_info(self.aiohttp_session, host)
-        if 'gen' in shelly_info:
-            gen = shelly_info.get('gen') # 2nd generation shelly devices broadcast their generation
-        else:
-            gen = 1 # 1st generation shelly devices do not broadcast their generation
-        options = ConnectionOptions(host, user, pwd)
-        self.devices[alias]['gen'] = gen
-        if gen == 1:
-            await coap_context.initialize(COAP_PORT)
-            device = await BlockDevice.create(self.aiohttp_session, coap_context, options, init)
-        elif gen == 2:
-            await ws_context.initialize(WS_PORT, WS_API_URL)
-            device = await RpcDevice.create(self.aiohttp_session, ws_context, options, init)
-        else:
-            raise ShellyError("Unknown Gen")
-        self.devices[alias]['device'] = device
 
     async def publish_state(self, alias: str, state: str) -> bool:
         relay = self.devices[alias]['relay_id']

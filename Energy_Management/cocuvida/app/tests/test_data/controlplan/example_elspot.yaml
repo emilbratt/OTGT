@@ -1,63 +1,58 @@
 name: 'example_elspot' # used as the plan id and alias
 
-# MAIN ENTRY 1. TARGET DEVICES TO BE OPERATED -> include one or more sub-entries
 target:
-  # each target needs to be implemented as its own module/unit in the application
-
-  exampletarget: # example target for testing
-    include_entry: true # enable/disable target
+  exampletarget:
+    include_entry: true
     entries:
-      # some key: some val
       switch_1: 'switch_1_id'
       switch_2: 'switch_2_id'
 
-  mqtt: # will use client id cocuvida
-    include_entry: false # enable/disable target
-    user: user
-    password: password
-    host: '192.168.1.11'
-    port: '1883'
-    client_id: 'cocuvida_example_elspot'
-    entries:
+  mqtt:
+    include_entry: false
+    username: '<user>'
+    password: '<password>'
+    host: '<host>'
+    port: '<port>'
+    client_id: '<client_id>'
+    keep_alive: '<seconds>'
+    tls: null
+    will: null
+    transport: 'tcp'
+    states:
       lev_max:
         qos: '0'
-        topic: 'topic/for/publish'
+        retain: false
         message: '{"desc": "max charging", "level": "max"}'
       lev_high:
         qos: '0'
-        topic: 'topic/for/publish'
+        retain: false
         message: '{"desc": "high charging", "level": "high"}'
       lev_mid:
         qos: '0'
-        topic: 'topic/for/publish'
+        retain: false
         message: '{"desc": "normal charging", "level": "mid"}'
       lev_low:
         qos: '0'
-        topic: 'topic/for/publish'
+        retain: false
         message: '{"desc": "low charging", "level": "low"}'
       lev_off:
         qos: '0'
-        topic: 'topic/for/publish'
+        retain: true
         message: '{"desc": "no charging", "level": "off"}'
+    entries:
+      some_topic: 'cocuvida/example_elspot'
 
-# MAIN ENTRY 2. CALENDAR FOR OPERATION -> include one or more sub-entries
+
 calendar:
-
-  # exclude these dates (overrides all other entries)
   exclude_dates:
-    include_entry: false # enable/disable calendar option
+    include_entry: false
 
-  # include these dates (overrides all other entries except exclude_dates)
   include_dates:
-    include_entry: false # enable/disable calendar option
+    include_entry: false
 
-  # eexclude fixed weekdays for operation (takes precedence over include_weekdays)
   exclude_weekdays:
     include_entry: false
-    entries:
-      - 'sunday'
 
-  # include fixed weekdays for operation (will only be included if not excluded in any of the other entries)
   include_weekdays:
     include_entry: true
     entries:
@@ -69,10 +64,10 @@ calendar:
       - 'saturday'
       - 'sunday'
 
-# MAIN ENTRY 3. SCHEDULE FOR OPERATION
+
 schedule:
   elspot:
-    include_entry: true # enable/disable schedule
+    include_entry: true
 
     # SCHEDULE PLANS
 
