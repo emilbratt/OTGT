@@ -1,44 +1,77 @@
-# mosquitto mqtt broker
+## mosquitto - the mqtt broker
 
-### preparing and running mosquitto container
+### documentation and man pages 
+* [mosquitto](https://mosquitto.org/man/mosquitto-8.html)
+* [mosquitto_pub](https://mosquitto.org/man/mosquitto_pub-1.html)
+* [mosquitto_sub](https://mosquitto.org/man/mosquitto_sub-1.html)
+* [MQTT](https://mosquitto.org/man/mqtt-7.html)
+* [mosquitto man page home](https://mosquitto.org/man/)
+
+## Setup
 1. cd into this directory
-
-2. run setup.sh (will eventually run docker-compose up -d)
+2. run setup.sh
 
 ## handy commands for configuring mosquitto
 * read more about the mosquitto.conf here: https://mosquitto.org/man/mosquitto-conf-5.html
-Start services
+
+### Start services (as daemon, or omit "-d" for log output)
 ```
 docker-compose up -d
 ```
 
-start only mosquitto
+### start only mosquitto
 ```
 docker-compose up -d mqtt_mosquitto
 ```
 
-add user and password for mosquitto
+### add user and password for mosquitto
 ```
 docker-compose exec mosquitto mosquitto_passwd -b /mosquitto/config/password.txt <user> <password>
 ```
 
-delete user for mosquitto
+### delete user for mosquitto
 ```
 docker-compose exec mosquitto mosquitto_passwd -D /mosquitto/config/password.txt <username>
 ```
 
-## example publishing a message with the mosquitto_pub command
+### mosquitto_pub example: publish a message with the mosquitto_pub command
 ```
 mosquitto_pub  --host 127.0.0.1 --username "myuser" --pw "mypassword" --retain --debug --qos 1 --topic "mytopic" --message "this is my message"
 ```
 
-## example subscribing to topic with the mosquitto_sub command
+### mosquitto_sub example: subscribe to a topic with the mosquitto_sub command
 ```
 mosquitto_sub --host 127.0.0.1 --username "myuser" --pw "mypassword" --topic "mytopic"
 ```
 
-## about mqtt messages
-* when mqtt client publishs a message, 3 things must be included:
+## debugging
+### for subscribing to everything
+```
+mosquitto_sub --host <host> --username <user> --pw <pw> --topic "#"
+```
+
+### the mqtt broker reports convenient info in the $SYS topic
+```
+mosquitto_sub --host <host> --username <user> --pw <pw> --topic "$SYS/#"
+```
+
+### get number of persisted messages
+```
+mosquitto_sub --host <host> --username <user> --pw <pw> --topic "$SYS/broker/store/messages/count"
+```
+
+### get number of persisted bytes
+```
+mosquitto_sub --host <host> --username <user> --pw <pw> --topic "$SYS/broker/store/messages/bytes"
+```
+
+### read latest log output (provided the log-path /mosquitto/log/mosquitto.log)
+```
+tail /mosquitto/log/mosquitto.log
+```
+
+## MQTT design
+### 3 things must be included when a client publishes a message:
 1. Topic
   - used to filter messages so each one is only delivered to recipients it concerns
   - only ASCII characters
@@ -84,27 +117,6 @@ mosquitto_sub --host 127.0.0.1 --username "myuser" --pw "mypassword" --topic "my
   - if subscription from a new client is made, the message will be sent to that client
   - use when subscribed client cannot wait until next message is published
 
-## about wills
+### about wills
 when client connects to broker, it may inform that it has a "will"
 the will is a message that it wants the broker to send when client disconnects unexpectedly
-
-## debugging
-for subscribing to everything
-```
-mosquitto_sub --host <host> --username <user> --pw <pw> --topic "#"
-```
-
-the mqtt broker reports convenient info in the $SYS topic
-```
-mosquitto_sub --host <host> --username <user> --pw <pw> --topic "$SYS/#"
-```
-
-get number of persisted messages
-```
-mosquitto_sub --host <host> --username <user> --pw <pw> --topic "$SYS/broker/store/messages/count"
-```
-
-get number of persisted bytes
-```
-mosquitto_sub --host <host> --username <user> --pw <pw> --topic "$SYS/broker/store/messages/bytes"
-```
