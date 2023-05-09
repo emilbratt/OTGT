@@ -8,8 +8,8 @@ target:
     include_entry: true # enable/disable target
     entries:
       # some key: some val
-      knob_1: '192.168.1.134'
-      knob_2: '192.168.1.135'
+      knob_1: 'some value for knob 1'
+      knob_2: 'some value for knob 2'
 
   # shelly switches
   shelly: # valid states are on, off or toggle
@@ -27,15 +27,25 @@ target:
   # entry 2. MQTT subscribers
   # cocuvida application uses the name of this controlplan for topic
   # e.g. topic for this controlplan will be set to -> "cocuvida/controlplan/example_controlplan"
-  mqtt:
+  mqtt: # will use client id cocuvida
     include_entry: false # enable/disable target
-    topic: 'cocuvida/example_controlplan'
+    user: user
+    password: password
+    host: '192.168.1.11'
+    port: '1883'
+    client_id: 'cocuvida_example_controlplan'
     entries:
-      # ref key points to the message being sent
-      msgrefa: this is a message being sent referenced with msgrefa
-      msgrefb: >
-        this is a multi line message that will
-        be sent by the reference of msgrefb
+      alias_1:
+        qos: '0'
+        topic: 'topic/for/alias_1'
+        message: 'a single line message for alias_1'
+      alias_2:
+        qos: '0'
+        topic: 'topic/for/alias_2'
+        message: >
+          this is a multi
+          line message
+          for alias_2
 
 # MAIN ENTRY 2. CALENDAR FOR OPERATION -> include one or more sub-entries
 calendar:
@@ -94,9 +104,9 @@ schedule: # this is where we define different states for each target and the tim
       - ['11:00', 'shelly', 'on']
       - ['12:00', 'shelly', 'off']
       - ['12:00', 'exampletarget', '60']
-      - ['12:00', 'mqtt', 'msgrefa']
-      - ['13:00', 'mqtt', 'msgrefb']
       - ['17:30', 'shelly', 'toggle']
+      - ['17:30', 'mqtt', 'alias_1']
+      - ['18:30', 'mqtt', 'alias_2']
 
   # entry 2. astro (sun) dependent
   sun: # NOTE: remember to include coordinates
@@ -135,33 +145,3 @@ schedule: # this is where we define different states for each target and the tim
   # entry 3. elspot price dependent
   elspot:
     include_entry: false # enable/disable schedule
-
-    minimum_operation_time: # at least X minutes a day
-      include_entry: false
-      entries:
-        # [ minutes, target, state/value ]
-        - ['120', 'shelly', 'on'] # will set switch OFF after 120 minutes
-        - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
-
-    minimum_operation_time_day_part: # at least X minutes for Y part of the day
-      include_entry: false
-      post_midnight: # from 00 to 06
-        include_entry: false
-        entries:
-          # [ minutes, target, state/value ]
-          - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
-      before_midday: # from 06 to 12
-        include_entry: false
-        entries:
-          # [ minutes, target, state/value ]
-          - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
-      post_midday: # from 12 to 18
-        include_entry: false
-        entries:
-          # [ minutes, target, state/value ]
-          - ['45', 'percent', '30'] # will set percent 0 after 45 minutes
-      before_midnight: # from 18 to 00
-        include_entry: false
-        entries:
-          # [ minutes, target, state/value ]
-          - ['45', 'percent', '30'] # will set percent 0 after 45 minutes

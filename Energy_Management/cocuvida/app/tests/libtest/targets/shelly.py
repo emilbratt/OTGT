@@ -19,7 +19,7 @@ async def publish_state(target_entry: dict) -> bool:
                 ...
         }
     
-        will try to publish the state in SHELLY_TEST_STATE to all shellies listed in "entries"
+        will try to publish a toggle state to all shellies listed in "entries"
     '''
     if not target_entry['include_entry']:
         return True
@@ -30,7 +30,7 @@ async def publish_state(target_entry: dict) -> bool:
 
         publish_tasks = []
         for alias in target_entry['entries']:
-            task = target_obj.publish_state(alias, SHELLY_TEST_STATE)
+            task = target_obj.publish_state(alias, 'toggle')
             publish_tasks.append(task)
 
         results = await asyncio.gather(*publish_tasks,return_exceptions=True)
