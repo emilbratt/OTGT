@@ -117,6 +117,18 @@ tail /mosquitto/log/mosquitto.log
   - if subscription from a new client is made, the message will be sent to that client
   - use when subscribed client cannot wait until next message is published
 
-### about wills
+### wills (when client disconnects)
 when client connects to broker, it may inform that it has a "will"
 the will is a message that it wants the broker to send when client disconnects unexpectedly
+
+### clean sessions (durable/non-durable clients)
+when to use
+  - used if client only publish messages
+  - used for none durable clients
+  - broker does not store undelivered messages
+  - broker does not store client information (client id etc.)
+when to not use
+  - for durable cients
+  - used if client must receive (almost) all messages
+  - clients using QoS level 1 or 2 will get stored messages from brker
+  - broker keeps undelivered messages (delivered messages are still removed)
