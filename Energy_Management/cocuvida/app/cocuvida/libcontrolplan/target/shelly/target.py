@@ -18,9 +18,9 @@ from .const import COAP_PORT, WS_PORT
 class TargetShelly:
     def __init__(self, aiohttp_session: aiohttp.ClientSession):
         self.aiohttp_session = aiohttp_session
-        self.devices = {}
+        self.entries = {}
 
-    async def load_target_entry(self, target_entry: dict) -> None:
+    async def load_target_entry(self, target_entry: dict) -> bool:
         init = True
         coap_context = COAP()
         await coap_context.initialize(COAP_PORT)
@@ -31,44 +31,43 @@ class TargetShelly:
         for alias, entry in target_entry['entries'].items():
             host = entry[0]
             relay_id = entry[1]
-            shelly_info = await aioshelly_get_info(self.aiohttp_session, host)
-            if 'gen' in shelly_info:
-                gen = shelly_info.get('gen') # 2nd generation shelly devices broadcast their generation
-            else:
-                gen = 1 # 1st generation shelly devices do not broadcast their generation
             options = ConnectionOptions(host, user, pwd)
             try:
+                shelly_info = await aioshelly_get_info(self.aiohttp_session, host)
+                if 'gen' in shelly_info:
+                    gen = shelly_info.get('gen') # 2nd generation shelly devices broadcast their generation
+                else:
+                    gen = 1 # 1st generation shelly devices do not broadcast their generation
                 if gen == 1:
                     device = await BlockDevice.create(self.aiohttp_session, coap_context, options, init)
                 elif gen == 2:
                     device = await RpcDevice.create(self.aiohttp_session, ws_context, options, init)
-                else:
-                    raise ShellyError("Unknown Gen")
             except FirmwareUnsupported as err:
-                print(f"Device firmware not supported, error: {repr(err)}")
-                return
+                print(f'Error: Device firmware not supported, {repr(err)}')
+                return False
             except InvalidAuthError as err:
-                print(f"Invalid or missing authorization, error: {repr(err)}")
-                return
+                print(f'Error: Invalid or missing authorization, {repr(err)}')
+                return False
             except DeviceConnectionError as err:
-                print(f"Error connecting to {options.ip_address}, error: {repr(err)}")
-                return
-            self.devices[alias] = {}
-            self.devices[alias]['gen'] = gen
-            self.devices[alias]['relay_id'] = relay_id
-            self.devices[alias]['device'] = device
+                print(f'Error: host {options.ip_address}, {repr(err)}')
+                return False
+            self.entries[alias] = {}
+            self.entries[alias]['gen'] = gen
+            self.entries[alias]['relay_id'] = relay_id
+            self.entries[alias]['device'] = device
+        return True
 
     async def publish_state(self, alias: str, state: str) -> bool:
-        relay = self.devices[alias]['relay_id']
+        relay = self.entries[alias]['relay_id']
 
         # just use http for now
-        if self.devices[alias]['gen'] == 1:
+        if self.entries[alias]['gen'] == 1:
             path = f'relay/{relay}'
             params = {'turn': state}
-            await self.devices[alias]['device'].http_request('get', path, params)
+            await self.entries[alias]['device'].http_request('get', path, params)
             return True
 
-        elif self.devices[alias]['gen'] == 2:
+        elif self.entries[alias]['gen'] == 2:
             params = { 'params': {"id": relay} }
             match state:
                 case 'toggle':
@@ -79,7 +78,7 @@ class TargetShelly:
                 case 'off':
                     params['method'] = 'Switch.Set'
                     params['params']['on'] = False
-            await self.devices[alias]['device'].call_rpc('post', params)
+            await self.entries[alias]['device'].call_rpc('post', params)
             return True
 
         return False

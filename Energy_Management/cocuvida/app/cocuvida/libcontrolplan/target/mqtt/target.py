@@ -15,19 +15,24 @@ class TargetMQTT:
         self.will = None
         self.transport = None
 
-    async def load_target_entry(self, target_entry: dict) -> None:
-        self.auth['username'] = target_entry['username']
-        self.auth['password'] = target_entry['password']
-        self.host = target_entry['host']
-        self.port = int(target_entry['port'])
-        self.client_id = target_entry['client_id']
-        self.states = target_entry['states']
-        self.tls = target_entry['tls']
-        self.keep_alive = int(target_entry['keep_alive'])
-        self.will = target_entry['will']
-        self.transport = target_entry['transport']
-        for alias, entry in target_entry['entries'].items():
-            self.entries[alias] = entry
+    async def load_target_entry(self, target_entry: dict) -> bool:
+        try:
+            self.auth['username'] = target_entry['username']
+            self.auth['password'] = target_entry['password']
+            self.host = target_entry['host']
+            self.port = int(target_entry['port'])
+            self.client_id = target_entry['client_id']
+            self.states = target_entry['states']
+            self.tls = target_entry['tls']
+            self.keep_alive = int(target_entry['keep_alive'])
+            self.will = target_entry['will']
+            self.transport = target_entry['transport']
+            for alias, entry in target_entry['entries'].items():
+                self.entries[alias] = entry
+        except KeyError:
+            print(f'ERROR: target_entry mqtt is not valid')
+            return False
+        return True
 
     async def publish_state(self, alias: str, state: str) -> bool:
         try:
