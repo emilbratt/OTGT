@@ -3,7 +3,6 @@ from cocuvida.environment import env_ini_get
 from .routes import route
 
 
-# this is the entrypoint for uvicorn when called on startup
 async def app(scope: dict, receive: object, send: object):
     try:
         path = scope['path']
@@ -13,8 +12,7 @@ async def app(scope: dict, receive: object, send: object):
         return None
     await route(scope, receive, send)
 
-# the function to call if starting uvicorn via script (not via cli)
-def run_web():
+async def run_web():
     import uvicorn
     print('WEB START')
     port = env_ini_get('cocuvida', 'port')
@@ -27,4 +25,4 @@ def run_web():
         loop='asyncio',
     )
     server = uvicorn.Server(config)
-    server.run()
+    await server.serve()

@@ -44,6 +44,7 @@ async def dayahead_date():
             tomorrow = await sql_elspot.select_processed_for_date(isodates.today_plus_days(1))
             await _generate(elspot_obj, tomorrow)
 
+        print('ELSPOT plot.dayahead_date() sleep until next quarterhour')
         await asyncio.sleep(seconds.until_next_quarter_hour())
 
 async def dayahead_live():
@@ -72,4 +73,5 @@ async def dayahead_live():
             elspot_processed = await sql_elspot.select_processed_for_date(date_today)
 
         await _generate(elspot_obj, elspot_processed)
+        print('ELSPOT plot.dayahead_live() sleep until next quarterhour')
         await asyncio.sleep(seconds.until_next_quarter_hour())

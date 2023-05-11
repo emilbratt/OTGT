@@ -47,5 +47,6 @@ async def dayahead():
                         if not sql_result:
                             region = elspot_region['region']
                             print(f'ERROR: SQL insert failed for elspot dayahead processed region {region}')
+        print('ELSPOT download.dayahead() sleep until next hour')
 
         await asyncio.sleep(seconds.until_next_hour())

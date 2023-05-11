@@ -29,8 +29,9 @@ async def app():
         await pubstates.update_controlplans()
         await pubstates.publish_current_states()
 
+        print('CONTROLPLAN sleep until next minute')
         sleep_time = seconds.until_next_minute()
         await asyncio.sleep(sleep_time)
 
-def run_controlplan() -> None:
-    asyncio.run(app())
+async def run_controlplan() -> None:
+    await app()

@@ -1,20 +1,20 @@
+import asyncio
 import sys
-import threading
 
-from cocuvida.sqldatabase import scripts
-from cocuvida.web import run_web
-from cocuvida.controlplan import run_controlplan
 from cocuvida.elspot import run_elspot
-
+from cocuvida.controlplan import run_controlplan
+from cocuvida.web import run_web
+from cocuvida.sqldatabase import scripts
 
 SERVICES = {
-    'web': 'start uvicorn web backend',
-    'elspot': 'start elspot download and process daempon',
-    'controlplan': 'start controlplan process daemon',
-    'all': 'start all the above',
+    'web': 'uvicorn web service',
+    'elspot': 'elspot service',
+    'controlplan': 'controlplan service',
+    'all': 'all of the above',
 }
 
-def init() -> None :
+
+def init_database() -> None :
     scripts.run('create_tables.sql')
 
 def list_services(service: str) -> None:
@@ -28,32 +28,29 @@ def main() -> int:
     if len(sys.argv) > 1:
         service = sys.argv[1]
 
-    init()
+    init_database()
 
-    # run selected service or run all
-    match service:
-        case 'web':
-            run_web()
-        case 'elspot':
-            run_elspot()
-        case 'controlplan':
-            run_controlplan()
-        case 'all':
-            uvc = threading.Thread(target=run_web, daemon=True)
-            cpl = threading.Thread(target=run_controlplan, daemon=True)
-            els = threading.Thread(target=run_elspot, daemon=True)
-            uvc.start()
-            cpl.start()
-            els.start()
-            uvc.join()
-            cpl.join()
-            els.join()
-        case _:
-            list_services(service)
-            return 1
-
-    return 0
-
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        match service:
+            case 'controlplan':
+                asyncio.ensure_future(run_controlplan())
+            case 'elspot':
+                asyncio.ensure_future(run_elspot())
+            case 'web':
+                asyncio.ensure_future(run_web())
+            case 'all':
+                asyncio.ensure_future(run_controlplan())
+                asyncio.ensure_future(run_elspot())
+                asyncio.ensure_future(run_web())
+            case _:
+                list_services(service)
+                return 1
+        loop.run_forever()
+    finally:
+        loop.close()
+        return 0
 
 if __name__ == '__main__':
     sys.exit(main())
