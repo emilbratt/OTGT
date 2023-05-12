@@ -18,14 +18,14 @@ from .const import COAP_PORT, WS_PORT
 class TargetShelly:
     def __init__(self, aiohttp_session: aiohttp.ClientSession):
         self.aiohttp_session = aiohttp_session
+        self.coap_context = COAP()
+        self.ws_context = WsServer()
         self.entries = {}
 
     async def load_target_entry(self, target_entry: dict) -> bool:
-        init = True
-        coap_context = COAP()
-        await coap_context.initialize(COAP_PORT)
-        ws_context = WsServer()
-        await ws_context.initialize(WS_PORT, WS_API_URL)
+        init = False
+        await self.coap_context.initialize(COAP_PORT)
+        await self.ws_context.initialize(WS_PORT, WS_API_URL)
         user = target_entry['user']
         pwd = target_entry['password']
         for alias, entry in target_entry['entries'].items():
@@ -39,9 +39,9 @@ class TargetShelly:
                 else:
                     gen = 1 # 1st generation shelly devices do not broadcast their generation
                 if gen == 1:
-                    device = await BlockDevice.create(self.aiohttp_session, coap_context, options, init)
+                    device = await BlockDevice.create(self.aiohttp_session, self.coap_context, options, init)
                 elif gen == 2:
-                    device = await RpcDevice.create(self.aiohttp_session, ws_context, options, init)
+                    device = await RpcDevice.create(self.aiohttp_session, self.ws_context, options, init)
             except FirmwareUnsupported as err:
                 print(f'Error: Device firmware not supported, {repr(err)}')
                 return False
@@ -49,7 +49,7 @@ class TargetShelly:
                 print(f'Error: Invalid or missing authorization, {repr(err)}')
                 return False
             except DeviceConnectionError as err:
-                print(f'Error: host {options.ip_address}, {repr(err)}')
+                print(f'Error: Shelly host {options.ip_address}, {repr(err)}')
                 return False
             self.entries[alias] = {}
             self.entries[alias]['gen'] = gen
@@ -82,3 +82,7 @@ class TargetShelly:
             return True
 
         return False
+
+    async def close(self):
+        self.coap_context.close()
+        self.ws_context.close()

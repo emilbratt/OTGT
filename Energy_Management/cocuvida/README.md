@@ -17,9 +17,13 @@ python -m cocuvida controlplan
 
 ### Running cocuvida inside docker
 cd to OTGT/Energy_Management/cocuvida
-#### run all services
+#### run all services (normal)
 ```
 docker-compose up cocuvida
+```
+#### run all services (test)
+```
+docker-compose up cocuvida_all
 ```
 #### run a specific service (example starts the web "cocuvida_web" container)
 ```
@@ -36,9 +40,9 @@ python -m tests
 ```
 python -m tests Environment
 ```
-#### test one method only - for example Envrinoment.test_cocuvida
+#### test one method only - for example Envrinoment.test_environment_cocuvida
 ```
-python -m tests Environment.test_cocuvida
+python -m tests Environment.test_environment_cocuvida
 ```
 
 ### Testing inside docker

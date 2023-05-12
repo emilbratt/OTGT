@@ -13,9 +13,12 @@ ENV_INI.read(PATH_ENVIRONMENT_DOT_INI)
 
 # load values from envitonment.ini
 def env_ini_get(section: str, key: str):
-    section = ENV_INI[section]
-    env = section[key].strip('"')
-    return env
+    try:
+        section = ENV_INI[section]
+        env = section[key].strip('"')
+        return env
+    except KeyError:
+        return None
 
 # load values from shell envars
 def env_var_get(envar: str) -> str:

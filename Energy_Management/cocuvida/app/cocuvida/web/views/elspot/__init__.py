@@ -1,8 +1,3 @@
-from urllib.parse import urlparse, urlencode
-
-from cocuvida.sqldatabase import elspot as sql_elspot
-from cocuvida.timehandle import isodates
-
 from cocuvida.web.templates import buttons, tables, plots
 
 
@@ -49,23 +44,12 @@ class View:
         self.html_plot = bytes()
         self.http_code = 200
 
-    async def list_elspot_regions(self):
-        regions = await sql_elspot.list_elspot_regions()
-        rows = []
-        for region in regions:
-            mapped = {'region': region}
-            qs = urlencode(mapped)
-            rows.append([f'/elspot?{qs}', region])
+    async def list_elspot_regions(self, rows: list):
         self.html_buttons = await buttons.horizontal(rows)
         self.html_buttons += b'<hr>'
 
-    async def show_plot(self, region: str):
-        plot_svg = await sql_elspot.select_plot_live_for_region(region)
-        if plot_svg != '':
-            self.html_plot += await plots.elspot(plot_svg)
-        plot_svg = await sql_elspot.select_plot_for_date_and_region(isodates.today_plus_days(1), region)
-        if plot_svg != '':
-            self.html_plot += await plots.elspot(plot_svg)
+    async def show_plot(self, plot_svg: str):
+        self.html_plot += await plots.elspot(plot_svg)
 
     async def send(self, send: object) -> None:
         headers = []

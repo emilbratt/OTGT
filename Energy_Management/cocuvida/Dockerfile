@@ -11,4 +11,4 @@ COPY ./requirements.txt /requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /requirements.txt
 WORKDIR /OTGT/Energy_Management/cocuvida/app
 
-CMD ["python", "-m", "cocuvida", "all"]
+CMD ["python", "-m", "cocuvida"]

@@ -1,11 +1,9 @@
 import asyncio
-import unittest
-
 import json
+import unittest
 
 from cocuvida import libelspot
 from cocuvida.sqldatabase import elspot as sql_elspot
-from cocuvida.timehandle import isodates
 
 FILES = {
     # this is the most "normal" case of elspot prices (nothing out of the ordinary here..)
@@ -40,27 +38,18 @@ def process_elspot(self: unittest.TestCase, file_ref: str, expected_resolution: 
     '''
     with open(FILES[file_ref]) as f:
         raw_elspot = f.read()
-        # insert raw into database
+
+        # INSERT RAW ELSPOT DATA INTO DATABASE
         asyncio.run(sql_elspot.insert_raw_elspot(raw_elspot))
 
-        # RESHAPE ELSPOT
-        processed_elspot = asyncio.run(libelspot.reshape.reshape_dayahead(raw_elspot))
-        # check if resoultion checks out
+        # PROCESS ELSPOT
+        elspot_obj = libelspot.Elspot()
+        processed_elspot = asyncio.run(elspot_obj.process_dayahead(raw_elspot))
         self.assertTrue(processed_elspot['Molde']['resolution'] == expected_resolution)
 
         # INSERT PROCESSED ELSPOT INTO DATABASE
         for elspot_data in processed_elspot.values():
             # insert reshaped versions for each region into database
-            res = asyncio.run(sql_elspot.insert_processed_elspot(elspot_data))
-            self.assertTrue(res)
-
-        # ADD METADATA TO PROCESSED ELSPOT (IN A NEW LIST AS WELL)
-        for elspot_region, elspot_data in processed_elspot.items():
-            processed_elspot[elspot_region] = asyncio.run(libelspot.metadata.metadata_dayahead(elspot_data))
-
-        # INSERT PROCESSED ELSPOT (WITH ADDED METADATA) INTO DATABASE
-        for elspot_data in processed_elspot.values():
-            # this will update the previous processed elspot prices
             res = asyncio.run(sql_elspot.insert_processed_elspot(elspot_data))
             self.assertTrue(res)
 
@@ -73,14 +62,14 @@ def process_elspot(self: unittest.TestCase, file_ref: str, expected_resolution: 
                     generate_plot_for[elspot_region] = True
 
                     # GENERATE NORMAL DATE PLOT
-                    plot = asyncio.run(libelspot.plots.plot_dayahead_date(elspot_data))
+                    plot = asyncio.run(elspot_obj.plot_dayahead_date(elspot_data))
                     res = asyncio.run(sql_elspot.insert_plot_date(elspot_data['region'], elspot_data['date'], plot))
                     self.assertTrue(res)
 
                     # GENERATE LIVE PLOT (THIS INCLUDES THE TIME OF DAY MARKER)
                     if elspot_data['date'] == '2023-03-26':
                         # only one live plot can be stored at once, so we only generate for one date
-                        plot = asyncio.run(libelspot.plots.plot_dayahead_live(elspot_data))
+                        plot = asyncio.run(elspot_obj.plot_dayahead_live(elspot_data))
                         res = asyncio.run(sql_elspot.insert_plot_live(elspot_data['region'], plot))
                         self.assertTrue(res)
 

@@ -26,4 +26,5 @@ async def publish_state(target_entry: dict, state_value: str) -> bool:
             if not result:
                 res = False
 
+        await target_obj.close()
         return res

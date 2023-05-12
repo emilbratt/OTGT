@@ -35,4 +35,6 @@ async def publish_state(target_entry: dict) -> bool:
         for result in results:
             continue
 
+        await target_obj.close()
+
     return True

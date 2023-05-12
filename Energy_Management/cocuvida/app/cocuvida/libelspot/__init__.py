@@ -1,3 +1,5 @@
+from cocuvida.timehandle import isodates, unix
+
 from . import download, metadata, reshape, plots
 
 
@@ -6,6 +8,9 @@ class Elspot:
         this is an interface to simplify the interaction for this library
         you can however import parts of this library and call functions as you see fit
     '''
+    # class variables
+    live_plots = dict()
+
     def __init__(self):
         self.download_ok = False
         self.plot_ok = False
@@ -56,4 +61,16 @@ class Elspot:
         plot = await plots.plot_dayahead_live(region_data)
         if plot != '':
             self.plot_ok = True
+            region = region_data['region']
+            # update class variable
+            self.live_plots[region] = {'unix_timestamp': unix.timestamp(), 'plot': plot}
         return plot
+
+    @classmethod
+    async def get_plot_dayahead_live(cls, region: str) -> str:
+        if region in cls.live_plots:
+            unix_timestamp = cls.live_plots[region]['unix_timestamp']
+            seconds_diff = unix.timestamp() - unix_timestamp
+            if seconds_diff < 1000: # newer than 16-ish minutes means it is recent enough
+                return cls.live_plots[region]['plot']
+        return ''

@@ -73,6 +73,26 @@ services:
         source: ../../
         target: /OTGT
 
+  cocuvida_all:
+    init: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cocuvida_all
+    hostname: cocuvida_all
+    user: cocuvida
+    command: 'python -u -m cocuvida all'
+    environment:
+      TZ: Europe/Oslo
+      COCUVIDA_TESTING: true
+    restart: 'no'
+    ports:
+      - 8087:8087
+    volumes:
+      - type: bind
+        source: ../../
+        target: /OTGT
+
   cocuvida:
     init: true
     build:

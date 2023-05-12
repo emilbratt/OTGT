@@ -8,11 +8,6 @@ class Environment(unittest.TestCase):
         from tests import environment_test
         environment_test.cocuvida(self)
 
-    # check if we have configured cocuvida
-    def test_environment_mqtt(self):
-        from tests import environment_test
-        environment_test.mqtt(self)
-
 
 class Requirements(unittest.TestCase):
 
@@ -40,15 +35,15 @@ class ControlPlan(unittest.TestCase):
         uploaded_controlplan(self)
 
 
-# class ElspotTest(unittest.TestCase):
+class ElspotTest(unittest.TestCase):
 
-#     # check if we can process elspot prices for 23, 24 and 25 hour days (dst)
-#     def test_processelspot(self):
-#         from tests import elspot_test
-#         elspot_test.process_elspot(self, file_ref='23', expected_resolution=92)
-#         elspot_test.process_elspot(self, file_ref='25', expected_resolution=100)
-#         elspot_test.process_elspot(self, file_ref='normal', expected_resolution=96)
-#         elspot_test.process_elspot(self, file_ref='negative', expected_resolution=96)
+    # check if we can process elspot prices for 23, 24 and 25 hour days (dst)
+    def test_processelspot(self):
+        from tests import elspot_test
+        elspot_test.process_elspot(self, file_ref='23', expected_resolution=92)
+        elspot_test.process_elspot(self, file_ref='25', expected_resolution=100)
+        elspot_test.process_elspot(self, file_ref='normal', expected_resolution=96)
+        elspot_test.process_elspot(self, file_ref='negative', expected_resolution=96)
 
 
 if __name__ == '__main__':

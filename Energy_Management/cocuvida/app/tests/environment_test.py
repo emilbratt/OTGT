@@ -1,28 +1,60 @@
 import unittest
 
-from cocuvida.environment import env_ini_get, env_var_get
+from cocuvida.environment import env_ini_get
 
-VALID_CURRENCY_LIST = ('NOK', 'EUR')
+# options in environment.ini
+ENVIRONMENT_OPTIONS = (
+    'host',
+    'port',
+    'secret',
+    'elspot_currency',
+    'elspot_region',
+    'elspot_plot_y_max',
+    'elspot_plot_y_step',
+)
+
+VALID_CURRENCIES = ('NOK', 'EUR', 'SEK', 'DKK')
+
+VALID_REGIONS = (
+    'Bergen',
+    'DK1',
+    'DK2',
+    'EE',
+    'FI',
+    'Kr.sand',
+    'LT',
+    'LV',
+    'Molde',
+    'Oslo',
+    'SE1',
+    'SE2',
+    'SE3',
+    'SE4',
+    'SYS',
+    'Tr.heim',
+    'Tromsø',
+)
 
 
-# if new configurations are implemented in app
-# ..make sure they are also listed here
 def cocuvida(self: unittest.TestCase):
-    # COCUVIDA configuration
-    self.assertFalse(env_ini_get(section='cocuvida', key='host') == "INSERT")
-    self.assertFalse(env_ini_get(section='cocuvida', key='port') == "INSERT")
-    self.assertFalse(env_ini_get(section='cocuvida', key='secret') == "INSERT")
+    # check if all options are present
+    check = True
+    missing = []
+    for optoin in ENVIRONMENT_OPTIONS:
+        if env_ini_get(section='cocuvida', key=optoin) == None:
+            check = False
+            missing.append(optoin)
+    if check == False:
+        print('ERROR: Mising environment.ini options')
+        print('[cocuvida]')
+        for m in missing:
+            print(f'  {m}')
+    self.assertTrue(check)
 
     # validate elspot_currency
     currency = env_ini_get(section='cocuvida', key='elspot_currency')
-    self.assertTrue(currency in VALID_CURRENCY_LIST)
+    self.assertTrue(currency in VALID_CURRENCIES)
 
-    # envar COCUVIDA_TESTING should be true (in production it is false or not set)
-    self.assertTrue(env_var_get('COCUVIDA_TESTING'))
-
-def mqtt(self: unittest.TestCase):
-    # MQTT configuration
-    self.assertFalse(env_ini_get(section='mqtt', key='host') == "INSERT")
-    self.assertFalse(env_ini_get(section='mqtt', key='port') == "INSERT")
-    self.assertFalse(env_ini_get(section='mqtt', key='user') == "INSERT")
-    self.assertFalse(env_ini_get(section='mqtt', key='password') == "INSERT")
+    # validate elspot_region
+    region = env_ini_get(section='cocuvida', key='elspot_region')
+    self.assertTrue(region in VALID_REGIONS)

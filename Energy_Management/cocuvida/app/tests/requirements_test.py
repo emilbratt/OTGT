@@ -1,14 +1,28 @@
 import importlib
 import unittest
 
+REQUIREMENTS = (
+    'aiofiles',
+    'aiohttp',
+    'paho',
+    'streaming_form_data',
+    'uvicorn',
+    'uvloop',
+    'yaml',
+    'matplotlib',
+    'numpy',
+)
+
 
 def check_modules(self: unittest.TestCase):
-    self.assertIsNotNone(importlib.util.find_spec('aiofiles'))
-    self.assertIsNotNone(importlib.util.find_spec('aiohttp'))
-    self.assertIsNotNone(importlib.util.find_spec('paho'))
-    self.assertIsNotNone(importlib.util.find_spec('streaming_form_data'))
-    self.assertIsNotNone(importlib.util.find_spec('uvicorn'))
-    self.assertIsNotNone(importlib.util.find_spec('uvloop'))
-    self.assertIsNotNone(importlib.util.find_spec('yaml'))
-    self.assertIsNotNone(importlib.util.find_spec('matplotlib'))
-    self.assertIsNotNone(importlib.util.find_spec('numpy'))
+    check = True
+    missing = []
+    for requirement in REQUIREMENTS:
+        if importlib.util.find_spec(requirement) == None:
+            check = False
+            missing.append(requirement)
+    if check == False:
+        print('ERROR: Mising modules')
+        for m in missing:
+            print(f' - {m}')
+    self.assertTrue(check)
