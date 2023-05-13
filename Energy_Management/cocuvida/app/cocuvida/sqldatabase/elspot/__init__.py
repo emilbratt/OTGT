@@ -109,23 +109,24 @@ async def insert_processed_elspot(elspot_data: dict) -> bool:
     '''
     insert_query = '''
         INSERT INTO elspot_processed
-            (elspot_data, elspot_date, elspot_region)
+            (elspot_data, last_updated, elspot_date, elspot_region)
         VALUES
-            (?, ?, ?)
+            (?, ?, ?, ?)
     '''
     update_query = '''
         UPDATE elspot_processed
-        SET elspot_data = ?
+        SET elspot_data = ?, last_updated = ?
         WHERE elspot_date = ? AND elspot_region = ?
     '''
     elspot_date = elspot_data['date']
     elspot_region = elspot_data['region']
     elspot_data = json.dumps(elspot_data)
-    res = insert_one(insert_query, [elspot_data, elspot_date, elspot_region])
+    last_updated = unix.int_timestamp()
+    res = insert_one(insert_query, [elspot_data, last_updated, elspot_date, elspot_region])
     if res == 'insert':
         return True
     if res == 'IntegrityError':
-        res = update(update_query, [elspot_data, elspot_date, elspot_region])
+        res = update(update_query, [elspot_data, last_updated, elspot_date, elspot_region])
         if res == 'update':
             return True
         elif 'DatabaseError':
@@ -149,7 +150,7 @@ async def insert_plot_date(region: str, isodate: str, plot: str) -> bool:
         SET plot_data = ?, last_updated = ?
         WHERE plot_date = ? AND plot_region = ?
     '''
-    last_updated = unix.timestamp()
+    last_updated = unix.int_timestamp()
     res = insert_one(insert_query, [plot, last_updated, isodate, region])
     if res == 'insert':
         return True

@@ -31,7 +31,7 @@ async def insert_control_plan(control_plan: str) -> str:
     insert_query = 'INSERT INTO control_plans (plan_name, plan_data, last_updated) VALUES (?, ?, ?)'
     update_query = 'UPDATE control_plans  SET plan_data = ?, last_updated = ?  WHERE plan_name = ?'
     action = str()
-    timestamp = unix.timestamp()
+    last_updated = unix.int_timestamp()
     try:
         # load name and at the same time check if YAML parasble before inserting
         plan_name = yaml_safe_load(control_plan)['name']
@@ -41,13 +41,13 @@ async def insert_control_plan(control_plan: str) -> str:
     cnxn = connect()
     cursor = cnxn.cursor()
     try:
-        cursor.execute(insert_query, [plan_name, control_plan, timestamp])
+        cursor.execute(insert_query, [plan_name, control_plan, last_updated])
         cnxn.commit()
         action = 'insert'
     except:
         try:
             # if insert failed, most likely constraint -> update table instead
-            cursor.execute(update_query, [control_plan, timestamp, plan_name])
+            cursor.execute(update_query, [control_plan, last_updated, plan_name])
             cnxn.commit()
             action = 'update'
         except Exception as e:
@@ -106,11 +106,11 @@ async def delete_control_plan(plan_name: str) -> str:
         cnxn.close()
         return action
 
-async def select_latest_modification_time() -> str:
+async def select_latest_modification_time() -> int:
     query = 'SELECT last_updated FROM control_plans ORDER BY last_updated DESC LIMIT 1'
     res = select_one_no_param(query)
     if res == None:
-        # return timestamp (new controlplans will have a newer timestamp anyway)
-        return isodates.timestamp_now()
+        # return 0 (new controlplans will have a value much higher anyway)
+        return 0
     else:
-        return res[0]
+        return int(res[0])

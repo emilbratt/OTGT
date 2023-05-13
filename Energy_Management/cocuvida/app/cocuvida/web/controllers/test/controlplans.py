@@ -18,6 +18,7 @@ async def results(view: object, query_string: dict):
     plan_name = query_string.get('plan_name')[0]
     plan_data = await sql_controlplans.select_control_plan_by_plan_name(plan_name)
     if plan_data == {}:
+        await view.add_paragraph(f'Controlplan {plan_name} does not exist')
         return view
 
     cp = ControlPlan()
