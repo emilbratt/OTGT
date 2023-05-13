@@ -8,7 +8,7 @@ from cocuvida.timehandle import isodates, seconds, timeofday
 from .validate import plot_for_date_and_region_generated
 
 
-async def dayahead_date():
+async def dayahead_date(elspot_obj: libelspot.Elspot):
     '''
         step 1.
             load processed elspot for yesterday, today and tomorrow from sql-table -> elspot_plot_date
@@ -34,7 +34,6 @@ async def dayahead_date():
                     if not res:
                         print(f'ERROR: saving dayahead plot date to database failed for {region} {isodate}')
 
-    elspot_obj = libelspot.Elspot()
     while True:
         today = await sql_elspot.select_processed_for_date(isodates.today())
         yesterday = await sql_elspot.select_processed_for_date(isodates.today_plus_days(-1))
@@ -46,7 +45,7 @@ async def dayahead_date():
 
         await asyncio.sleep(seconds.until_next_quarter_hour())
 
-async def dayahead_live():
+async def dayahead_live(elspot_obj: libelspot.Elspot):
     '''
         every 15 minute
             1. on new day or if no data loaded, (re)load todays elspot data
@@ -58,7 +57,6 @@ async def dayahead_live():
             if not elspot_obj.plot_ok:
                 print(f'ERROR: generating dayahead plot failed for {region} {isodate}')
 
-    elspot_obj = libelspot.Elspot()
     date_today = isodates.today()
     elspot_processed = await sql_elspot.select_processed_for_date(date_today)
     while True:

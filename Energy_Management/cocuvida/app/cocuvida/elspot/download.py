@@ -8,7 +8,7 @@ from cocuvida.timehandle import seconds, timeofday
 from .validate import dayahead_today_downloaded, dayahead_tomorrow_downloaded
 
 
-async def dayahead():
+async def dayahead(elspot_obj: libelspot.Elspot):
     '''
         step 1.
             check if elspot is downloaded and if not, download it
@@ -21,7 +21,6 @@ async def dayahead():
         ..repeat
     '''
     currency = env_ini_get(section='cocuvida', key='elspot_currency')
-    elspot_obj = libelspot.Elspot()
     while True:
         # todays elspot is served from nordpool until 13:00
         # tomorrows elspot is served from nordpool after 13:00
