@@ -1,7 +1,7 @@
 import json
 
 from cocuvida.sqldatabase import select_one, select_all, select_all_no_param, insert_one, update, delete
-from cocuvida.timehandle import isodates
+from cocuvida.timehandle import isodates, unix
 
 
 async def list_elspot_regions() -> list:
@@ -149,7 +149,7 @@ async def insert_plot_date(region: str, isodate: str, plot: str) -> bool:
         SET plot_data = ?, last_updated = ?
         WHERE plot_date = ? AND plot_region = ?
     '''
-    last_updated = isodates.timestamp_now_round('second')
+    last_updated = unix.timestamp()
     res = insert_one(insert_query, [plot, last_updated, isodate, region])
     if res == 'insert':
         return True

@@ -1,7 +1,7 @@
 from yaml import safe_load as yaml_safe_load
 from io import StringIO
 
-from cocuvida.timehandle import isodates
+from cocuvida.timehandle import isodates, unix
 from cocuvida.sqldatabase import connect, select_all, select_one_no_param
 
 
@@ -31,7 +31,7 @@ async def insert_control_plan(control_plan: str) -> str:
     insert_query = 'INSERT INTO control_plans (plan_name, plan_data, last_updated) VALUES (?, ?, ?)'
     update_query = 'UPDATE control_plans  SET plan_data = ?, last_updated = ?  WHERE plan_name = ?'
     action = str()
-    timestamp = isodates.timestamp_now_round('second')
+    timestamp = unix.timestamp()
     try:
         # load name and at the same time check if YAML parasble before inserting
         plan_name = yaml_safe_load(control_plan)['name']

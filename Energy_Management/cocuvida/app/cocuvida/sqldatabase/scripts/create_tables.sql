@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS elspot_processed (
   elspot_date   DATETIME NOT NULL,
   elspot_data   JSON NOT NULL,
   elspot_region TEXT NOT NULL,
-  last_updated  TIMESTAMP DEFAULT (DATETIME('now', 'localtime')) NOT NULL, -- iso timestamp YYYY-MM-DDTHH:MM
+  last_updated  INT DEFAULT ( CAST(STRFTIME('%s','now', 'localtime') AS INT) ) NOT NULL, -- iso timestamp YYYY-MM-DDTHH:MM
   UNIQUE (elspot_date, elspot_region)
 );
 -- PLOT PRICES FOR SPECIFIC DATE FROM PROCESSED ELSPOT DATA
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS elspot_plot_date (
   plot_date    DATETIME NOT NULL,
   plot_data    TEXT NOT NULL, -- RAW SVG STRING
   plot_region  TEXT NOT NULL,
-  last_updated TIMESTAMP DEFAULT (DATETIME('now', 'localtime')) NOT NULL, -- iso timestamp YYYY-MM-DDTHH:MM
+  last_updated INT DEFAULT ( CAST(STRFTIME('%s','now', 'localtime') AS INT) ) NOT NULL, -- iso timestamp YYYY-MM-DDTHH:MM
   UNIQUE (plot_date, plot_region)
 );
 
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS elspot_plot_date (
 CREATE TABLE IF NOT EXISTS control_plans (
   plan_name    TEXT NOT NULL PRIMARY KEY,
   plan_data    TEXT NOT NULL, -- HOLDS RAW YAML STRING
-  last_updated TIMESTAMP DEFAULT (DATETIME('now', 'localtime')) NOT NULL -- iso timestamp YYYY-MM-DDTHH:MM
+  last_updated INT DEFAULT ( CAST(STRFTIME('%s','now', 'localtime') AS INT) ) NOT NULL -- iso timestamp YYYY-MM-DDTHH:MM
 );
 -- STORE FUTURE (GENERATED) AND PAST (HISTORY) STATE VALUES
 CREATE TABLE IF NOT EXISTS state_schedule (
