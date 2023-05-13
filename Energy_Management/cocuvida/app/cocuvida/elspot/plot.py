@@ -44,7 +44,6 @@ async def dayahead_date():
             tomorrow = await sql_elspot.select_processed_for_date(isodates.today_plus_days(1))
             await _generate(elspot_obj, tomorrow)
 
-        print('ELSPOT plot.dayahead_date() sleep until next quarterhour')
         await asyncio.sleep(seconds.until_next_quarter_hour())
 
 async def dayahead_live():
@@ -58,12 +57,6 @@ async def dayahead_live():
             plot = await elspot_obj.plot_dayahead_live(region_data)
             if not elspot_obj.plot_ok:
                 print(f'ERROR: generating dayahead plot failed for {region} {isodate}')
-            else:
-                region = region_data['region']
-                isodate = region_data['date']
-                res = await sql_elspot.insert_plot_live(region, plot)
-                if not res:
-                    print(f'ERROR: saving dayahead plot live to database failed for {region} {isodate}')
 
     elspot_obj = libelspot.Elspot()
     date_today = isodates.today()
@@ -73,5 +66,4 @@ async def dayahead_live():
             elspot_processed = await sql_elspot.select_processed_for_date(date_today)
 
         await _generate(elspot_obj, elspot_processed)
-        print('ELSPOT plot.dayahead_live() sleep until next quarterhour')
         await asyncio.sleep(seconds.until_next_quarter_hour())

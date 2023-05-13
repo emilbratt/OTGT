@@ -4,21 +4,12 @@ from io import StringIO
 from cocuvida.timehandle import isodates
 from cocuvida.sqldatabase import connect, select_all, select_one_no_param
 
-QUERIES = {
-    'insert_control_plan': 'INSERT INTO control_plans (plan_name, plan_data, last_updated) VALUES (?, ?, ?)',
-    'update_control_plan': 'UPDATE control_plans  SET plan_data = ?, last_updated = ?  WHERE plan_name = ?',
-    'select_control_plan_by_plan_name': 'SELECT plan_data FROM control_plans WHERE plan_name = ?',
-    'select_all_control_plans': 'SELECT plan_data FROM control_plans',
-    'delete_control_plan': 'DELETE FROM control_plans WHERE plan_name = ?',
-    'list_plan_names': 'SELECT plan_name FROM control_plans',
-    'list_plan_names_greater_than_timestamp': 'SELECT plan_name FROM control_plans WHERE last_updated > ?',
-}
-
 
 async def list_plan_names() -> list:
+    query = 'SELECT plan_name FROM control_plans'
     cnxn = connect()
     cursor = cnxn.cursor()
-    cursor.execute(QUERIES['list_plan_names'])
+    cursor.execute(query)
     plan_names = []
     for name in cursor:
         plan_names.append(name[0])
@@ -26,9 +17,10 @@ async def list_plan_names() -> list:
     return plan_names
 
 async def list_plan_names_greater_than_timestamp(timestamp: str) -> list:
+    query = 'SELECT plan_name FROM control_plans WHERE last_updated > ?'
     cnxn = connect()
     cursor = cnxn.cursor()
-    cursor.execute(QUERIES['list_plan_names_greater_than_timestamp'], [timestamp])
+    cursor.execute(query, [timestamp])
     plan_names = []
     for name in cursor:
         plan_names.append(name[0])
@@ -36,6 +28,8 @@ async def list_plan_names_greater_than_timestamp(timestamp: str) -> list:
     return plan_names
 
 async def insert_control_plan(control_plan: str) -> str:
+    insert_query = 'INSERT INTO control_plans (plan_name, plan_data, last_updated) VALUES (?, ?, ?)'
+    update_query = 'UPDATE control_plans  SET plan_data = ?, last_updated = ?  WHERE plan_name = ?'
     action = str()
     timestamp = isodates.timestamp_now_round('second')
     try:
@@ -47,13 +41,13 @@ async def insert_control_plan(control_plan: str) -> str:
     cnxn = connect()
     cursor = cnxn.cursor()
     try:
-        cursor.execute(QUERIES['insert_control_plan'], [plan_name, control_plan, timestamp])
+        cursor.execute(insert_query, [plan_name, control_plan, timestamp])
         cnxn.commit()
         action = 'insert'
     except:
         try:
             # if insert failed, most likely constraint -> update table instead
-            cursor.execute(QUERIES['update_control_plan'], [control_plan, timestamp, plan_name])
+            cursor.execute(update_query, [control_plan, timestamp, plan_name])
             cnxn.commit()
             action = 'update'
         except Exception as e:
@@ -63,9 +57,10 @@ async def insert_control_plan(control_plan: str) -> str:
         return action
 
 async def select_control_plan_by_plan_name(plan_name: str) -> dict:
+    query = 'SELECT plan_data FROM control_plans WHERE plan_name = ?'
     cnxn = connect()
     cursor = cnxn.cursor()
-    cursor.execute(QUERIES['select_control_plan_by_plan_name'], [plan_name])
+    cursor.execute(query, [plan_name])
     res = cursor.fetchone()
     cnxn.close()
     if res == None:
@@ -73,9 +68,10 @@ async def select_control_plan_by_plan_name(plan_name: str) -> dict:
     return yaml_safe_load(res[0])
 
 async def select_all_control_plans() -> dict:
+    query = 'SELECT plan_data FROM control_plans'
     cnxn = connect()
     cursor = cnxn.cursor()
-    cursor.execute(QUERIES['select_all_control_plans'])
+    cursor.execute(query)
     plans = {}
     for row in cursor:
         plan_data = yaml_safe_load(row[0])
@@ -85,9 +81,10 @@ async def select_all_control_plans() -> dict:
     return plans
 
 async def get_stringio_control_plan_by_name(plan_name: str) -> object:
+    query = 'SELECT plan_data FROM control_plans WHERE plan_name = ?'
     cnxn = connect()
     cursor = cnxn.cursor()
-    cursor.execute(QUERIES['select_control_plan_by_plan_name'], [plan_name])
+    cursor.execute(query, [plan_name])
     res = cursor.fetchone()[0]
     cnxn.close()
     file_object = StringIO(res)
@@ -96,10 +93,11 @@ async def get_stringio_control_plan_by_name(plan_name: str) -> object:
     return file_data
 
 async def delete_control_plan(plan_name: str) -> str:
+    query = 'DELETE FROM control_plans WHERE plan_name = ?'
     cnxn = connect()
     cursor = cnxn.cursor()
     try:
-        cursor.execute(QUERIES['delete_control_plan'], [plan_name])
+        cursor.execute(query, [plan_name])
         cnxn.commit()
         action = 'delete'
     except Exception as e:

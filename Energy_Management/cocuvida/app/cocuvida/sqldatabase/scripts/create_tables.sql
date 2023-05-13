@@ -22,13 +22,6 @@ CREATE TABLE IF NOT EXISTS elspot_plot_date (
   last_updated TIMESTAMP DEFAULT (DATETIME('now', 'localtime')) NOT NULL, -- iso timestamp YYYY-MM-DDTHH:MM
   UNIQUE (plot_date, plot_region)
 );
--- LIVE PLOT PRICES (WITH X VERTICAL LINE MARKER) FROM PROCESSED ELSPOT DATA
-CREATE TABLE IF NOT EXISTS elspot_plot_live (
-  plot_data    TEXT NOT NULL, -- RAW SVG STRING
-  plot_region  TEXT NOT NULL,
-  last_updated TIMESTAMP DEFAULT (DATETIME('now', 'localtime')) NOT NULL, -- iso timestamp YYYY-MM-DDTHH:MM
-  UNIQUE (plot_region)
-);
 
 /*
   - CONTROL-PLAN TABLES -

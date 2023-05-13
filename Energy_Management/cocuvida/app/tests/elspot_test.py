@@ -22,14 +22,15 @@ def process_elspot(self: unittest.TestCase, file_ref: str, expected_resolution: 
     '''
         The entire year except for 2 days consists of 24 hours.
         For the remaining 2 we have either 23 or 25 depending on wether we are
-        moving from summer to winter-time or from winter to summer-time.
+        moving from summer to winter-time e.g. DST to STD
+        ..or from winter to summer-time e.g. STD to DST.
 
         This test uses elspot data fetched from https://www.nordpoolgroup.com/api/marketdata/page/10.
         One version for each of the 3 cases (23, 24 and 25 hours).
 
         By future-proofing we also split each hour up into 4 quarters.
-        We are moving from hourly to quarterly resolution e.g. 15 minutes metering.
-        See https://www.statnett.no/en/for-stakeholders-in-the-power-industry/system-operation/the-power-market/quarterly-resolution-and-the-energy-markets/
+        In the future we will move from hourly to quarterly resolution
+        ..see https://www.statnett.no/en/for-stakeholders-in-the-power-industry/system-operation/the-power-market/quarterly-resolution-and-the-energy-markets/
         The resolution (total N quarters) for the 3 different cases are as follows:
             23h = 92 indexes  -> 23 x 4
             24h = 96 indexes  -> 24 x 4
@@ -70,8 +71,6 @@ def process_elspot(self: unittest.TestCase, file_ref: str, expected_resolution: 
                     if elspot_data['date'] == '2023-03-26':
                         # only one live plot can be stored at once, so we only generate for one date
                         plot = asyncio.run(elspot_obj.plot_dayahead_live(elspot_data))
-                        res = asyncio.run(sql_elspot.insert_plot_live(elspot_data['region'], plot))
-                        self.assertTrue(res)
 
         # this checks if select regions actually where processed
         for region in generate_plot_for:

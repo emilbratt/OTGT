@@ -1,13 +1,13 @@
 import sqlite3
-from os import path
 
 from cocuvida.sqldatabase import DATABASE_FILE
 
+SCRIPT_PATH = './cocuvida/sqldatabase/scripts/'
 
-def run(script: str) -> str:
-    sciript_dir = path.dirname(path.realpath(__file__))
+
+def run(sql_file: str) -> str:
     res = str()
-    with open(path.join(sciript_dir, script), 'r') as f:
+    with open(SCRIPT_PATH + sql_file, 'r') as f:
         cnxn = sqlite3.connect(DATABASE_FILE)
         try:
             cursor = cnxn.cursor()

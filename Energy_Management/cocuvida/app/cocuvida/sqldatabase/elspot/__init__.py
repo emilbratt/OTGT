@@ -39,7 +39,7 @@ async def select_processed_for_date_and_region(isodate: str, region: str) -> dic
         return {}
     return json.loads(res[0])
 
-async def select_elspot_raw_data_for_date(isodate: str) -> str:
+async def select_elspot_raw_for_date(isodate: str) -> str:
     query = '''
         SELECT elspot_data
         FROM elspot_raw
@@ -177,38 +177,3 @@ async def plot_for_date_and_region_exist(region: str, isodate: str) -> bool:
     '''
     res = select_one(query, [region, isodate])
     return (res[0] == 1)
-
-async def insert_plot_live(region: str, plot: str) -> bool:
-    '''
-        the 2nd parameter "plot" is a string containing an SVG
-    '''
-    insert_query = '''
-        INSERT INTO elspot_plot_live
-            (plot_data, last_updated, plot_region)
-        VALUES
-            (?, ?, ?)
-    '''
-    update_query = '''
-        UPDATE elspot_plot_live
-        SET plot_data = ?, last_updated = ?
-        WHERE plot_region = ?
-    '''
-    last_updated = isodates.timestamp_now_round('second')
-    res = insert_one(insert_query, [plot, last_updated, region])
-    if res == 'insert':
-        return True
-    if res == 'IntegrityError':
-        res = update(update_query, [plot, last_updated, region])
-        if res == 'update':
-            return True
-    return False
-
-async def select_plot_live_for_region(region: str) -> str:
-    query = '''
-    SELECT plot_data FROM elspot_plot_live
-    WHERE plot_region = ? AND DATE(last_updated) = ?
-    '''
-    res = select_one(query, [region, isodates.today()])
-    if res == None:
-        return ''
-    return res[0]
