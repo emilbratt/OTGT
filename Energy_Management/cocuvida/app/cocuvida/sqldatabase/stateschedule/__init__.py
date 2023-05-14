@@ -1,7 +1,7 @@
 from cocuvida.sqldatabase import connect, select_all
 from cocuvida.timehandle import isodates
 
-STATUS_ENUMS = ['not published', 'published', 'target disabled', 'publish failed']
+STATUS_ENUMS = ('not published', 'published', 'target disabled', 'publish failed')
 
 
 async def insert_states_from_generator(rows: list) -> str:
@@ -24,6 +24,8 @@ async def insert_states_from_generator(rows: list) -> str:
     except Exception as e:
         action = f'ERROR: {__file__} {type(e)} {e}'
         print(action)
+        for r in rows:
+            print(r)
     finally:
         cnxn.close()
         return action

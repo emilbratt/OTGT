@@ -8,27 +8,40 @@ from .target import Target
 class ControlPlan:
 
     def __init__(self):
+        self.plan_names = set()
         self.calendar = dict()
         self.schedule = dict()
         self.target = dict()
 
-    async def load_controlplan(self, controlplan: dict) -> str:
+    async def load_controlplan(self, controlplan: dict) -> bool:
         plan_name = controlplan['name']
         # target entry must always be included
         if 'target' not in controlplan:
             raise Exception('NoTargetInControlplan',plan_name )
+
         calendar_entry = {}
         schedule_entry = {}
-        target_entry = controlplan['target']
         if 'calendar' in controlplan:
             calendar_entry = controlplan['calendar']
         if 'schedule' in controlplan:
             schedule_entry = controlplan['schedule']
-
         self.calendar[plan_name] = Calendar(calendar_entry)
         self.schedule[plan_name] = Schedule(schedule_entry)
-        self.target[plan_name]   = Target(target_entry)
-        return plan_name
+
+        target_entry = controlplan['target']
+        self.target[plan_name] = Target(target_entry)
+        self.plan_names.add(plan_name)
+        return True
+
+    async def unload_controlplan(self, plan_name: str) -> bool:
+        self.plan_names.discard(plan_name)
+        self.calendar.pop(plan_name)
+        self.schedule.pop(plan_name)
+        self.target.pop(plan_name)
+        return True
+
+    async def get_plan_names(self):
+        return self.plan_names
 
     async def valid_state_types(self, states: list) -> bool:
         raise Exception('MethodNotImplemented')
