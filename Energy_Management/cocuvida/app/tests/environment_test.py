@@ -40,10 +40,10 @@ def cocuvida(self: unittest.TestCase):
     # check if all options are present
     check = True
     missing = []
-    for optoin in ENVIRONMENT_OPTIONS:
-        if env_ini_get(section='cocuvida', key=optoin) == None:
+    for option in ENVIRONMENT_OPTIONS:
+        if env_ini_get(section='cocuvida', key=option) == None:
             check = False
-            missing.append(optoin)
+            missing.append(option)
     if check == False:
         print('ERROR: Mising environment.ini options')
         print('[cocuvida]')
