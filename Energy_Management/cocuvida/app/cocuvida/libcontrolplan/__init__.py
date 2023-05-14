@@ -71,13 +71,7 @@ class ControlPlan:
 
         states = await self.schedule[plan_name].generate_states(isodate)
         for row in states:
-            target_type = row[0]
-            if await self.target[plan_name].target_enabled(target_type):
-                state_status = 0 # target enabled (state will be published)
-            else:
-                state_status = 2 # target disabled (state will NOT be published)
             row.insert(0, plan_name)
-            row.append(state_status)
         return states
 
     async def target_enabled(self, plan_name: str, target_type: str):

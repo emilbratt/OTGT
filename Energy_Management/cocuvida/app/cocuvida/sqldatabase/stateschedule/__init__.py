@@ -10,9 +10,9 @@ async def insert_states_from_generator(rows: list) -> str:
     '''
     query = '''
         INSERT INTO state_schedule
-            (plan_name, target_type, state_value, state_time, state_status)
+            (plan_name, target_type, state_value, state_time)
         VALUES
-            (?, ?, ?, ?, ?)
+            (?, ?, ?, ?)
     '''
     action = str()
     cnxn = connect()

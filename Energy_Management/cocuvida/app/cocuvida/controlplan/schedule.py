@@ -65,11 +65,14 @@ class Schedule:
             state_value = row[2]
             state_time = row[3]
             rowid = row[4]
-            published = await self.cp_obj.publish_state(plan_name, target_type, state_value)
-            if published:
-                context = 'published'
+            if not await self.cp_obj.target_enabled(plan_name, target_type):
+                context = 'target disabled'
             else:
-                context = 'published failed'
+                published = await self.cp_obj.publish_state(plan_name, target_type, state_value)
+                if published:
+                    context = 'published'
+                else:
+                    context = 'published failed'
             state_status = sql_stateschedule.STATUS_ENUMS.index(context)
             await sql_stateschedule.update_state_status_by_rowid(rowid, state_status)
-            print(f'CONTROLPLAN: {context} {plan_name} {target_type} {state_value}')
+            print(f'CONTROLPLAN: {context} {plan_name} {target_type} {state_value} {state_time}')
