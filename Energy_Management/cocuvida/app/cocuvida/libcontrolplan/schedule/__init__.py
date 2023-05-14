@@ -1,5 +1,7 @@
 from . import elspot, sun, time
 
+from .const import IMPLEMENTED_SCHEULE_ENTRIES
+
 
 class Schedule:
 
@@ -10,10 +12,9 @@ class Schedule:
         if self.schedule_entry == {}:
             return []
         schedule_entry = None
-        for entry in self.schedule_entry:
-            # only one entry is allowed, we grab the first one that is enabled
-            if self.schedule_entry[entry]['include_entry']:
-                schedule_entry = entry
+        for schedule in IMPLEMENTED_SCHEULE_ENTRIES:
+            if schedule in self.schedule_entry:
+                schedule_entry = schedule
         match schedule_entry:
             case 'elspot':
                 return await elspot.generate_states(self.schedule_entry[schedule_entry], isodate)

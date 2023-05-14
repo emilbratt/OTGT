@@ -21,8 +21,7 @@ async def generate(plan_options: dict, elspot_data: dict) -> list:
         otherwise the inactive state is used
 
         weight_levels is used to define states based on weight level
-        you can use the same state for multiple levels if need be
-        setting the value to NULL will just force the use of the inactive_state
+        you can use the same state for multiple levels if need be and
 
         NOTE:
             it is not guaranteed that weight levels less than 10 occours,
@@ -37,7 +36,6 @@ async def generate(plan_options: dict, elspot_data: dict) -> list:
     # sort elspot prices based on weight level from lowest to highest
     sorted_price_array = sorted(elspot_data['prices'], key=lambda x: x['weight'], reverse=False)
     states = []
-
     for index in range(elspot_data['resolution']):
         # keep track on how many minutes have been recorded scheduled (also used to sort array back to time value)
         minute_index = sorted_price_array[index]['index'] * 15

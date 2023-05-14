@@ -9,8 +9,8 @@ from cocuvida.sqldatabase import stateschedule as sql_stateschedule
 from cocuvida.timehandle import isodates
 
 FILES = {
-    'example_controlplan': 'tests/test_data/controlplan/example_controlplan.yaml',
-    'example_elspot': 'tests/test_data/controlplan/example_elspot.yaml',
+    'example_time_schedule': 'tests/test_data/controlplan/example_time_schedule.yaml',
+    'example_elspot_schedule': 'tests/test_data/controlplan/example_elspot_schedule.yaml',
 }
 
 TEST_UPLOADED_CONTROLPLAN_NAME = 'test_uploaded_controlplan'

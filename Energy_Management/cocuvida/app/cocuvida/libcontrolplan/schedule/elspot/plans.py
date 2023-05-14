@@ -1,9 +1,9 @@
 from . import libplans
 
 
-async def generate(state_plan: str, plan_options: dict, elspot_data: dict) -> list:
+async def generate(elspot_plan: str, plan_options: dict, elspot_data: dict) -> list:
     states = []
-    match state_plan:
+    match elspot_plan:
         case 'lowest_price_switch':
             states = await libplans.lowest_price_switch.generate(plan_options, elspot_data)
         case 'minimum_weight_level':
@@ -11,5 +11,5 @@ async def generate(state_plan: str, plan_options: dict, elspot_data: dict) -> li
         case 'water_heater_switch':
             states = await libplans.water_heater_switch.generate(plan_options, elspot_data)
         case _:
-            print(f'ERRPR: the elspot plan {state_plan} is not imlpemented')
+            print(f'ERRPR: the elspot plan {elspot_plan} is not imlpemented')
     return states

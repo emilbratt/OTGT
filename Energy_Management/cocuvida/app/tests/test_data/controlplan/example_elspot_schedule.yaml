@@ -1,4 +1,4 @@
-name: 'example_elspot' # used as the plan id and alias
+name: 'example_elspot_schedule' # used as the plan id and alias
 
 target:
   exampletarget:
@@ -67,8 +67,6 @@ calendar:
 
 schedule:
   elspot:
-    include_entry: true
-
     # SCHEDULE PLANS
 
     # lowest_price_switch:
