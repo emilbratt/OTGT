@@ -72,7 +72,7 @@ class Schedule:
                 if published:
                     context = 'published'
                 else:
-                    context = 'published failed'
+                    context = 'publish failed'
             state_status = sql_stateschedule.STATUS_ENUMS.index(context)
             await sql_stateschedule.update_state_status_by_rowid(rowid, state_status)
             print(f'CONTROLPLAN: {context} {plan_name} {target_type} {state_value} {state_time}')

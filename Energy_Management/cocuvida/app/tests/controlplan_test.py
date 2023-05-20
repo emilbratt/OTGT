@@ -83,7 +83,11 @@ def uploaded_controlplan(self):
     asyncio.run(cp.load_controlplan(plan_data))
     res = asyncio.run(cp.is_operating_date(plan_name, isodates.today()))
 
-    # generate and insert the generated states to DB
+    # delete all states in DB for today if exist
+    res = asyncio.run(sql_stateschedule.delete_states_for_plan_name_and_date(plan_name, isodates.today()))
+    self.assertTrue(res == 'delete')
+
+    # generate and insert generated states to DB
     generated_states = asyncio.run(cp.generate_states(plan_name, isodates.today()))
     res = asyncio.run(sql_stateschedule.insert_states_from_generator(generated_states))
     self.assertTrue(res == 'insert')

@@ -17,14 +17,17 @@ async def publish_state(target_entry: dict, state_value: str) -> bool:
     publish_tasks = []
     async with aiohttp.ClientSession() as aiohttp_session:
         target_obj = TargetShelly(aiohttp_session)
-        await target_obj.load_target_entry(target_entry)
-        for alias in target_entry['entries']:
-            task = target_obj.publish_state(alias, state_value)
-            publish_tasks.append(task)
-        results = await asyncio.gather(*publish_tasks, return_exceptions=True)
-        for result in results:
-            if not result:
-                res = False
+        loaded = await target_obj.load_target_entry(target_entry)
+        if not loaded:
+            res = False
+        if loaded:
+            for alias in target_entry['entries']:
+                task = target_obj.publish_state(alias, state_value)
+                publish_tasks.append(task)
+            results = await asyncio.gather(*publish_tasks, return_exceptions=True)
+            for result in results:
+                if not result:
+                    res = False
 
         await target_obj.close()
-        return res
+    return res
