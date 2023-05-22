@@ -5,7 +5,7 @@ from cocuvida.timehandle import seconds
 from .schedule import Schedule
 
 
-async def run():
+async def run() -> None:
     schedule_obj = Schedule()
     while True:
         await schedule_obj.load_new_controlplans()

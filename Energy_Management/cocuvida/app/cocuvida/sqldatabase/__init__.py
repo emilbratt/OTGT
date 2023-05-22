@@ -5,7 +5,7 @@ DATABASE_FILE = 'data.sqlite'
 # use connet() when granularity is of concern
 # use the other functions when simplicity is wanted
 
-def connect() -> object:
+def connect() -> sqlite3.connect:
     cnxn = sqlite3.connect(DATABASE_FILE)
     return cnxn
 

@@ -1,5 +1,5 @@
-from yaml import safe_load as yaml_safe_load
 from io import StringIO
+from yaml import safe_load as yaml_safe_load
 
 from cocuvida.timehandle import isodates, unix
 from cocuvida.sqldatabase import connect, select_all, select_one_no_param

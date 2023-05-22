@@ -3,7 +3,7 @@ import asyncio
 from . import worker
 
 
-async def app():
+async def app() -> None:
     print('CONTROLPLAN START')
     asyncio.ensure_future(worker.run())
 

@@ -5,7 +5,7 @@ from cocuvida import libelspot
 from . import download, plot
 
 
-async def app():
+async def app() -> None:
     print('ELSPOT START')
     elspot_obj = libelspot.Elspot()
     asyncio.ensure_future(download.dayahead(elspot_obj))
