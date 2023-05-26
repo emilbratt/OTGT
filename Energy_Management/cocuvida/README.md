@@ -19,15 +19,15 @@ python -m cocuvida controlplan
 cd to OTGT/Energy_Management/cocuvida
 #### run all services (normal)
 ```
-docker-compose up cocuvida
+docker compose up cocuvida
 ```
 #### run all services (test)
 ```
-docker-compose up cocuvida_all
+docker compose up cocuvida_all
 ```
 #### run a specific service (example starts the web "cocuvida_web" container)
 ```
-docker-compose up cocuvida_web
+docker compose up cocuvida_web
 ```
 
 ### Testing on host machine
@@ -49,7 +49,7 @@ python -m tests Environment.test_environment_cocuvida
 cd to OTGT/Energy_Management/cocuvida
 #### run all tests
 ```
-docker-compose up cocuvida_test
+docker compose up cocuvida_test
 ```
 
 ### Developing Web Component
@@ -58,8 +58,8 @@ cd into OTGT/Energy_Management/cocuvida/app
 ```
 uvicorn --port 8087 --reload cocuvida.web:app
 ```
-#### Starting ASGI server with docker-compose (will use uvloop instead of asyncio for event loops)
+#### Starting ASGI server with docker compose (will use uvloop instead of asyncio for event loops)
 cd to OTGT/Energy_Management/cocuvida
 ```
-docker-compose up cocuvida_web
+docker compose up cocuvida_web
 ```
