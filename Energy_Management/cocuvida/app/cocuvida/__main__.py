@@ -35,15 +35,15 @@ def main() -> int:
         asyncio.set_event_loop(loop)
         match service:
             case 'controlplan':
-                asyncio.ensure_future(run_controlplan())
+                loop.create_task(run_controlplan())
             case 'elspot':
-                asyncio.ensure_future(run_elspot())
+                loop.create_task(run_elspot())
             case 'web':
-                asyncio.ensure_future(run_web())
+                loop.create_task(run_web())
             case 'all':
-                asyncio.ensure_future(run_controlplan())
-                asyncio.ensure_future(run_elspot())
-                asyncio.ensure_future(run_web())
+                loop.create_task(run_controlplan())
+                loop.create_task(run_elspot())
+                loop.create_task(run_web())
             case _:
                 list_services(service)
                 return 1
