@@ -8,8 +8,6 @@ OTGT/Energy_Management/
   |
   ├── cocuvida/ -> controlling currents and visualizing data (our IoT application)
   |
-  ├── elprice/ -> fetching and processing elspot prices
-  |
   ├── homeassistant/ -> the Home Assistant core
   |
   └── mosqutito/ -> IoT messaging (mosqutito mqtt-broker)

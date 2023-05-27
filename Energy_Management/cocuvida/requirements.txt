@@ -3,7 +3,6 @@ aiohttp
 aioshelly
 matplotlib
 numpy
-redis
 paho-mqtt
 pyyaml
 streaming-form-data
