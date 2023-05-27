@@ -18,6 +18,23 @@ services:
         source: ../../
         target: /OTGT
 
+  cocuvida_tools:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cocuvida_tools
+    hostname: cocuvida_tools
+    user: cocuvida
+    command: 'python -u -m tools'
+    environment:
+      TZ: Europe/Oslo
+      COCUVIDA_TESTING: true
+    restart: 'no'
+    volumes:
+      - type: bind
+        source: ../../
+        target: /OTGT
+
   cocuvida_web:
     build:
       context: .

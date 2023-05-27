@@ -1,10 +1,11 @@
-# Overview for cocuvida
-THIS DIRECTORY IS STILL UNDER DEVELOPEMENT
-
-### Dependencies
+# Cocuvida  - (Co)ntrolling (Cu)rrents and (Vi)sualizing (Da)ta
+#### this app is under developement
+As of now, it is not in a working state
+#### Dependencies
 All external Python dependencies are listed in requirements.txt
 
-### Running cocuvida on host machine
+## Run Cocuvida
+### On host machine
 cd to OTGT/Energy_Management/cocuvida/app
 #### run all services
 ```
@@ -14,14 +15,13 @@ python -m cocuvida
 ```
 python -m cocuvida controlplan
 ```
-
-### Running cocuvida inside docker
+### Inside docker
 cd to OTGT/Energy_Management/cocuvida
 #### run all services (normal)
 ```
 docker compose up cocuvida
 ```
-#### run all services (test)
+#### run all services for developing or testing
 ```
 docker compose up cocuvida_all
 ```
@@ -30,7 +30,8 @@ docker compose up cocuvida_all
 docker compose up cocuvida_web
 ```
 
-### Testing on host machine
+## Developing
+### Unit-Testing on host machine
 cd to OTGT/Energy_Management/cocuvida/app
 #### run all tests
 ```
@@ -44,22 +45,32 @@ python -m tests Environment
 ```
 python -m tests Environment.test_environment_cocuvida
 ```
-
-### Testing inside docker
+### Unit-Testing inside docker
 cd to OTGT/Energy_Management/cocuvida
-#### run all tests
+#### will run all tests
 ```
 docker compose up cocuvida_test
 ```
-
-### Developing Web Component
+### Developing Web Component (includes setting sane arguments like auto-reloading..)
 #### Starting ASGI server on host machine
 cd into OTGT/Energy_Management/cocuvida/app
 ```
-uvicorn --port 8087 --reload cocuvida.web:app
+uvicorn --lifespan on --log-level debug --use-colors --port 8087 --host 0.0.0.0 --reload cocuvida.web:app
 ```
 #### Starting ASGI server with docker compose (will use uvloop instead of asyncio for event loops)
 cd to OTGT/Energy_Management/cocuvida
 ```
 docker compose up cocuvida_web
+```
+
+### Using Tools
+#### Tooling on host machine
+cd to OTGT/Energy_Management/cocuvida/app
+```
+python -m tools
+```
+#### Tooling inside docker
+cd into OTGT/Energy_Management/cocuvida
+```
+docker compose up cocuvida_tools
 ```
