@@ -13,3 +13,6 @@ async def dayahead_tomorrow_downloaded() -> bool:
 async def plot_for_date_and_region_generated(region: str, isodate: str) -> bool:
     res = await sql_elspot.plot_for_date_and_region_exist(region, isodate)
     return res
+
+async def elspot_has_metadata(region_data: dict) -> bool:
+    return region_data['metadata']

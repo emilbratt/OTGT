@@ -1,11 +1,10 @@
 import asyncio
 
 from cocuvida import libelspot
-from cocuvida.environment import env_ini_get
 from cocuvida.sqldatabase import elspot as sql_elspot
 from cocuvida.timehandle import isodates, seconds, timeofday
 
-from .validate import plot_for_date_and_region_generated
+from . import validate
 
 
 async def dayahead_date(elspot_obj: libelspot.Elspot):
@@ -24,15 +23,16 @@ async def dayahead_date(elspot_obj: libelspot.Elspot):
         for region_data in elspot_processed:
             region = region_data['region']
             isodate = region_data['date']
-            is_generated = await plot_for_date_and_region_generated(region, isodate)
+            is_generated = await validate.plot_for_date_and_region_generated(region, isodate)
             if not is_generated:
-                plot = await elspot_obj.plot_dayahead_date(region_data)
-                if not elspot_obj.plot_ok:
-                    print(f'ERROR: generating dayahead plot failed for {region} {isodate}')
-                else:
-                    res = await sql_elspot.insert_plot_date(region, isodate, plot)
-                    if not res:
-                        print(f'ERROR: saving dayahead plot date to database failed for {region} {isodate}')
+                if await validate.elspot_has_metadata(region_data):
+                    plot = await elspot_obj.plot_dayahead_date(region_data)
+                    if not elspot_obj.plot_ok:
+                        print(f'ERROR: generating dayahead plot failed for {region} {isodate}')
+                    else:
+                        res = await sql_elspot.insert_plot_date(region, isodate, plot)
+                        if not res:
+                            print(f'ERROR: saving dayahead plot date to database failed for {region} {isodate}')
 
     while True:
         today = await sql_elspot.select_processed_for_date(isodates.today())
@@ -53,9 +53,10 @@ async def dayahead_live(elspot_obj: libelspot.Elspot):
     '''
     async def _generate(elspot_obj: libelspot.Elspot, elspot_processed: list) -> None:
         for region_data in elspot_processed:
-            plot = await elspot_obj.plot_dayahead_live(region_data)
-            if not elspot_obj.plot_ok:
-                print(f'ERROR: generating dayahead plot failed for {region} {isodate}')
+            if await validate.elspot_has_metadata(region_data):
+                plot = await elspot_obj.plot_dayahead_live(region_data)
+                if not elspot_obj.plot_ok:
+                    print(f'ERROR: generating dayahead plot failed for {region} {isodate}')
 
     date_today = isodates.today()
     elspot_processed = await sql_elspot.select_processed_for_date(date_today)
