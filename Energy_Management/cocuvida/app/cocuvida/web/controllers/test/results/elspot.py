@@ -4,12 +4,13 @@ from cocuvida.sqldatabase import elspot as sql_elspot
 from .const import (
     TEST_DATES,
     GENERATED_PLOT_REGIONS,
-    BUTTON_TEST_SITE_ELSPOT_REGION,
+    BUTTON_TEST_RESULTS_ELSPOT_REGION,
 )
 
 
-async def results(view: object, query_string: dict):
-    await view.buttons(BUTTON_TEST_SITE_ELSPOT_REGION)
+async def page(view: object, query_string: dict):
+    await view.title('Test results for elspot data')
+    await view.buttons(BUTTON_TEST_RESULTS_ELSPOT_REGION)
     if 'region' not in query_string.keys():
         return view
 

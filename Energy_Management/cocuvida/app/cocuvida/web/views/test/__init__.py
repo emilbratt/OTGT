@@ -1,4 +1,4 @@
-from cocuvida.web.templates import buttons, tables, plots, tables
+from cocuvida.web.templates import buttons, forms, plots, tables
 
 
 class View:
@@ -29,14 +29,27 @@ class View:
     def __init__(self):
         self.html_head = bytes()
         self.headers = {b'content-type': b'text/html'}
-        self.html_title = b'<p>Cocuvida Test Results</p><hr>'
+        self.html_title = b'<p>Cocuvida Test and Debugging</p><hr>'
         self.html_not_testing_env = bytes()
         self.html_paragraph = bytes()
         self.html_buttons = bytes()
-        self.html_prices = bytes()
+        self.html_forms = bytes()
         self.html_plot = bytes()
+        self.html_prices = bytes()
         self.html_state_schedule = bytes()
         self.http_code = 200
+
+    async def title(self, title: str) -> None:
+        self.html_title = f'<p>{title}</p><hr>'.encode()
+
+    async def form_upload_elspot_dayahead(self) -> None:
+        self.html_forms += await forms.upload_elspot_dayahead()
+
+    async def form_select_elspot_dayahead(self) -> None:
+        self.html_forms += await forms.select_elspot_dayahead()
+
+    async def form_download_elspot_dayahead(self) -> None:
+        self.html_forms += await forms.download_elspot_dayahead()
 
     async def not_testing_instance(self) -> None:
         self.http_code = 404
@@ -84,9 +97,9 @@ class View:
             'more_body': True
         })
         html_body_parts = [
-            self.html_title, self.html_not_testing_env, self.html_buttons,
-            self.html_paragraph, self.html_prices, self.html_plot,
-            self.html_state_schedule
+            self.html_title, self.html_buttons, self.html_not_testing_env,
+            self.html_forms, self.html_paragraph, self.html_prices,
+            self.html_plot, self.html_state_schedule
         ]
         for body in html_body_parts:
             await send({

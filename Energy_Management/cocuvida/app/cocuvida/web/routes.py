@@ -11,16 +11,22 @@ async def route(scope: dict, receive: object, send: object) -> None:
     match route:
         case '/':
             from .controllers.home import loader
-        case '/elspot':
-            from .controllers.elspot import loader
-        case '/test':
-            from .controllers.test import loader
-        case '/favicon.ico':
-            from .controllers.favicon import loader
         case '/controlplans':
             from .controllers.controlplans import loader
+        case '/elspot':
+            from .controllers.elspot import loader
+        case '/favicon.ico':
+            from .controllers.favicon import loader
         case '/plot':
             from .controllers.plot import loader
+        case '/test':
+            from .controllers.test import loader
+        case '/test/results':
+            from .controllers.test.results import loader
+        case '/test/modules':
+            from .controllers.test.modules import loader
+        case '/test/modules/libelspot':
+            from .controllers.test.modules.libelspot import loader
         case _:
             await page_not_found(send)
             return None

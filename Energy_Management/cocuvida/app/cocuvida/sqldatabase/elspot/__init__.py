@@ -39,6 +39,18 @@ async def select_processed_for_date_and_region(isodate: str, region: str) -> dic
         return {}
     return json.loads(res[0])
 
+async def list_elspot_raw_dates() -> list:
+    query = '''
+        SELECT elspot_date
+        FROM elspot_raw
+        ORDER BY elspot_date DESC
+    '''
+    res = select_all_no_param(query)
+    if res == None:
+        return []
+    res = [r[0] for r in res]
+    return res
+
 async def select_elspot_raw_for_date(isodate: str) -> str:
     query = '''
         SELECT elspot_data
@@ -66,7 +78,6 @@ async def insert_raw_elspot(json_string: str) -> bool:
         WHERE elspot_date = ?
     '''
     timstmp = json.loads(json_string)['data']['DataStartdate']
-    #elspot_date = isodates.date_from_timestamp(timstmp)
     date_obj = isodates.date_object_from_timestamp(timstmp)
     elspot_date = date_obj.date()
     res = insert_one(insert_query, [json_string, elspot_date])

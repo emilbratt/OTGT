@@ -77,8 +77,11 @@ async def reshape_dayahead(response_text: str) -> dict:
     # unpack data and assign to its correct region
     try:
         for row in elspot_raw['data']['Rows']:
-            start_hour = row['StartTime'].split('T')[1][:2]
-            end_hour   = row['EndTime'].split('T')[1][:2]
+            start_time = row['StartTime']
+            end_time   = row['EndTime']
+            start_hour = start_time.split('T')[1][:2]
+            end_hour   = end_time.split('T')[1][:2]
+            title_name = row['Name']
             for col in row['Columns']:
                 region = col['Name']
                 value = col['Value']
@@ -96,8 +99,11 @@ async def reshape_dayahead(response_text: str) -> dict:
                         # if this happens -> likely means moving from winter-time to summer-time at 2 AM
                         # ..and that means there wont be any values between 02:00 and 03:00 as this hour is skipped
                         continue
+                    print(f'WARNING LIBELSPOT.reshape: {region} {title_name} value = "{value}" between {start_time} and {end_time}')
+                except:
+                    print(f'WARNING LIBELSPOT.reshape: {region} {title_name} value = "{value}" between {start_time} and {end_time}')
+
                 if row['IsExtraRow']:
-                    title_name = row['Name']
                     regions[region][title_name.lower()] = value
                 elif not row['IsExtraRow']:
                     # here is also where the increase in resolution happens (hour 4x -> quarters)

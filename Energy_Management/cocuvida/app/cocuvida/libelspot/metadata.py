@@ -194,9 +194,16 @@ async def metadata_dayahead(elspot_region: dict) -> dict:
         data['spike'] = spike
         return data
 
-    elspot_region = await _percent(elspot_region)
-    elspot_region = await _diff_factor(elspot_region)
-    elspot_region = await _weight(elspot_region)
-    elspot_region = await _slope(elspot_region)
-    elspot_region = await _spike(elspot_region)
+    elspot_region['metadata'] = False
+    try:
+        elspot_region = await _percent(elspot_region)
+        elspot_region = await _diff_factor(elspot_region)
+        elspot_region = await _weight(elspot_region)
+        elspot_region = await _slope(elspot_region)
+        elspot_region = await _spike(elspot_region)
+        elspot_region['metadata'] = True
+    except TypeError:
+        region = elspot_region['region']
+        isodate = elspot_region['date']
+        print(f'WARNING LIBELSPOT.metadata: metadata failed with type error on elspot region {region} for date {isodate}')
     return elspot_region

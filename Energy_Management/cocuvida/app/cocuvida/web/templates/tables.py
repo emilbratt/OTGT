@@ -13,7 +13,7 @@ async def elspot_processed(elspot_data: dict) -> bytes:
     date = elspot_data['date']
 
     # DATA FOR TABLE 1
-    time_row = f'<td>{date} (hours)</td>'
+    time_row = f'<td>{region} {date} (hours)</td>'
     price_row = f'<td>{currency} {unit}</td>'
     percent_row = f'<td>Percent</td>'
     diff_factor_row = f'<td>Diff Factor</td>'

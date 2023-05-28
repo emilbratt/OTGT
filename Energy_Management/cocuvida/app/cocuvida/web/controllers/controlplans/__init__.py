@@ -1,12 +1,10 @@
-from .GET import controller as get_controller
-from .POST import controller as post_controller
-
+from . import GET, POST
 
 async def loader(method: str) -> object:
     match method:
         case 'GET':
-            return get_controller
+            return GET.controller
         case 'POST':
-            return post_controller
+            return POST.controller
         case _:
             return None
