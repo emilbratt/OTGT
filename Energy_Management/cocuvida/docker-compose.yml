@@ -4,14 +4,13 @@ services:
   cocuvida_test:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: cocuvida_test
     hostname: cocuvida_test
     user: cocuvida
     command: 'python -u -m tests'
     environment:
       TZ: Europe/Oslo
-      COCUVIDA_TESTING: true
     restart: 'no'
     volumes:
       - type: bind
@@ -21,14 +20,13 @@ services:
   cocuvida_tools:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: cocuvida_tools
     hostname: cocuvida_tools
     user: cocuvida
     command: 'python -u -m tools'
     environment:
       TZ: Europe/Oslo
-      COCUVIDA_TESTING: true
     restart: 'no'
     volumes:
       - type: bind
@@ -38,14 +36,13 @@ services:
   cocuvida_web:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: cocuvida_web
     hostname: cocuvida_web
     user: cocuvida
     command: 'uvicorn --lifespan on --log-level debug --use-colors --loop uvloop --port 8087 --host 0.0.0.0 --reload cocuvida.web:app'
     environment:
       TZ: Europe/Oslo
-      COCUVIDA_TESTING: true
     restart: unless-stopped
     ports:
       - 8087:8087
@@ -58,14 +55,13 @@ services:
     init: true
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: cocuvida_elspot
     hostname: cocuvida_elspot
     user: cocuvida
     command: 'python -u -m cocuvida elspot'
     environment:
       TZ: Europe/Oslo
-      COCUVIDA_TESTING: true
     restart: 'no'
     volumes:
       - type: bind
@@ -76,14 +72,13 @@ services:
     init: true
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: cocuvida_controlplan
     hostname: cocuvida_controlplan
     user: cocuvida
     command: 'python -u -m cocuvida controlplan'
     environment:
       TZ: Europe/Oslo
-      COCUVIDA_TESTING: true
     restart: 'no'
     volumes:
       - type: bind
@@ -94,14 +89,13 @@ services:
     init: true
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: cocuvida_all
     hostname: cocuvida_all
     user: cocuvida
     command: 'python -u -m cocuvida all'
     environment:
       TZ: Europe/Oslo
-      COCUVIDA_TESTING: true
     restart: 'no'
     ports:
       - 8087:8087

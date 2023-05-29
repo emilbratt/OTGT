@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  cocuvida_dev:
+    init: true
+    build:
+      context: ./cocuvida
+      dockerfile: Dockerfile.dev
+    container_name: cocuvida_dev
+    hostname: cocuvida_dev
+    user: cocuvida
+    command: 'python -u -m cocuvida'
+    environment:
+      TZ: Europe/Oslo
+    restart: 'no'
+    ports:
+      - 8087:8087
+    volumes:
+      - type: bind
+        source: ../
+        target: /OTGT
+
+  # https://github.com/eclipse/mosquitto/tree/master/docker/generic
+  mosquitto_dev:
+    build:
+      context: ./mosquitto
+      dockerfile: Dockerfile
+    container_name: mosquitto_dev
+    command: 'mosquitto -c /mosquitto-no-auth.conf'
+    ports:
+      - 1883:1883
+      - 9001:9001
+    restart: unless-stopped
+
+  # # https://github.com/Koenkk/zigbee2mqtt/tree/master/docker
+  # # https://www.zigbee2mqtt.io/guide/getting-started/#installation
+  # # https://www.zigbee2mqtt.io/guide/installation/02_docker.html
+  # zigbee2mqtt_dev:
+  #   container_name: zigbee2mqtt_dev
+  #   restart: unless-stopped
+  #   build:
+  #     context: ./zigbee2mqtt
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - /run/udev:/run/udev:ro
+  #   ports:
+  #     - 8088:8088
+  #   environment:
+  #     TZ: Europe/Oslo
+  #   devices:
+  #     - /dev/ttyUSB0:/dev/ttyUSB0
