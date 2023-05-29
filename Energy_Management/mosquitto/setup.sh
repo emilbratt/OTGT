@@ -33,7 +33,7 @@ function _shout_out () {
 
 function _docker_compose_down () {
   _shout_out 'Stopping container if running, ignore warnings'
-  docker-compose down || exit 1
+  docker compose down || exit 1
 }
 
 function _generate_config () {
@@ -95,25 +95,25 @@ function _generate_config () {
 }
 
 function _docker_compose_up () {
-  _shout_out 'Starting mosquitto container with "docker-compose up"'
-  docker-compose up -d || exit 1
+  _shout_out 'Starting mosquitto container with "docker compose up"'
+  docker compose up -d || exit 1
 }
 
 function _add_password () {
   _shout_out 'Set a user and (for the love of god) a strong password for authorising MQTT connections'
   printf 'User: ' ; read user
   read -s -p "Password: " password; echo ''
-  docker-compose exec mosquitto mosquitto_passwd -b $PASSWORD_FILE $user $password || exit 1
+  docker compose exec mosquitto mosquitto_passwd -b $PASSWORD_FILE $user $password || exit 1
 }
 
  function _docker_compose_restart () {
    _shout_out 'Restarting mosquitto with new password settings'
-   docker-compose restart || exit 1
+   docker compose restart || exit 1
 }
 
 function _show_container_info () {
   _shout_out 'Overview of running container'
-  docker-compose ps
+  docker compose ps
 }
 
 function _main () {
