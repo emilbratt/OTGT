@@ -4,16 +4,16 @@ THIS DIRECTORY IS STILL UNDER DEVELOPEMENT AND SERVES AS A GUIDELINE FOR NOW
 
 ### IMPORTANT: before starting select containers
 #### mosquitto
-Make sure to have config ready in /OTGT/Energy_Management/mosquitto/bindmount/config
+Make sure to have config ready in /OTGT/Energy_Management/mosquitto/bindmount/config directory.
 You can create these by cd'ing into /OTGT/Energy_Management/mosquitto and run setup.sh
 #### zigbee2mqtt
-Make sure to have config ready in /OTGT/Energy_Management/zigbee2mqtt/bindmount
-You can create template by cd'ing into /OTGT/Energy_Management/zigbee2mqtt and runnig docker compose up
-After starting and stopping, change the configuration.yaml file to fit your need
+Make sure to have config ready in /OTGT/Energy_Management/zigbee2mqtt/bindmount directory.
+You can create template by cd'ing into /OTGT/Energy_Management/zigbee2mqtt and runnig docker compose up.
+After starting and stopping, edit the configuration.yaml file.
 #### homeassistant
-Make sure to have config ready in /OTGT/Energy_Management/homeassistant/bindmount
-You can create template by cd'ing into /OTGT/Energy_Management/homeassistant and runnig docker compose up
-After starting and stopping, edit the yaml files to match your needs
+Make sure to have config ready in /OTGT/Energy_Management/homeassistant/bindmount directory.
+You can create template by cd'ing into /OTGT/Energy_Management/homeassistant and runnig docker compose up.
+After starting and stopping, edit the yaml files.
 
 ### run containers
 cd to OTGT/Energy_Management
