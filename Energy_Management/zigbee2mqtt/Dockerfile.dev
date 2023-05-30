@@ -1,4 +1,0 @@
-FROM koenkk/zigbee2mqtt:latest
-MAINTAINER Emil <emilbratt@mail.com>
-
-COPY ./configuration.dev.yaml /app/data/configuration.yaml

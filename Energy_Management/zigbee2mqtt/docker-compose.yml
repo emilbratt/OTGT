@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  # # https://github.com/Koenkk/zigbee2mqtt/tree/master/docker
+  # # https://www.zigbee2mqtt.io/guide/getting-started/#installation
+  # # https://www.zigbee2mqtt.io/guide/installation/02_docker.html
+  zigbee2mqtt:
+    container_name: zigbee2mqtt
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./bindmount:/app/data
+      - /run/udev:/run/udev:ro
+    ports:
+      - 8088:8088
+    environment:
+      TZ: Europe/Oslo

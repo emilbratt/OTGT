@@ -14,7 +14,7 @@ services:
 
     # CONFIG FILES
     volumes:
-      - /etc/homeassistant/config:/config
+      - ./bindmount/config:/config
 
     # RESTART POLICY
     restart: unless-stopped

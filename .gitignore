@@ -12,5 +12,7 @@ data.sqlite*
 # swap files used for recovery by Kate Editor
 *.kate-swp
 
-# Energy_Management
+# docker bindmounts
+Energy_Management/homeassistant/bindmount
 Energy_Management/mosquitto/bindmount
+Energy_Management/zigbee2mqtt/bindmount

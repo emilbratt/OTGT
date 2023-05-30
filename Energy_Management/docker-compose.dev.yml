@@ -20,13 +20,29 @@ services:
         source: ../
         target: /OTGT
 
+  homeassistant_dev:
+    container_name: homeassistant_dev
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    environment:
+      TZ: Europe/Oslo
+    volumes:
+      - ./homeassistant/bindmount/config:/config
+    restart: unless-stopped
+    privileged: false
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+
   # https://github.com/eclipse/mosquitto/tree/master/docker/generic
   mosquitto_dev:
     build:
       context: ./mosquitto
       dockerfile: Dockerfile
+    environment:
+      UID: 1000
+      GID: 1000
     container_name: mosquitto_dev
-    command: 'mosquitto -c /mosquitto-no-auth.conf'
+    volumes:
+      - ./mosquitto/bindmount:/mosquitto
     ports:
       - 1883:1883
       - 9001:9001
@@ -35,17 +51,18 @@ services:
   # # https://github.com/Koenkk/zigbee2mqtt/tree/master/docker
   # # https://www.zigbee2mqtt.io/guide/getting-started/#installation
   # # https://www.zigbee2mqtt.io/guide/installation/02_docker.html
-  # zigbee2mqtt_dev:
-  #   container_name: zigbee2mqtt_dev
-  #   restart: unless-stopped
-  #   build:
-  #     context: ./zigbee2mqtt
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - /run/udev:/run/udev:ro
-  #   ports:
-  #     - 8088:8088
-  #   environment:
-  #     TZ: Europe/Oslo
-  #   devices:
-  #     - /dev/ttyUSB0:/dev/ttyUSB0
+  zigbee2mqtt_dev:
+    container_name: zigbee2mqtt_dev
+    restart: unless-stopped
+    build:
+      context: ./zigbee2mqtt
+      dockerfile: Dockerfile
+    volumes:
+      - ./zigbee2mqtt/bindmount:/app/data
+      - /run/udev:/run/udev:ro
+    ports:
+      - 8088:8088
+    environment:
+      TZ: Europe/Oslo
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
