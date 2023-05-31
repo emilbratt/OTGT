@@ -1,7 +1,7 @@
 ## Resources for OTGT and CIP
 
 <pre>
-OTGT/ -> This is the root directory for this repository
+/OTGT/ -> This is the root directory for this repository
   |
   ├── Clients/ -> the "otgt" commandline tool for shell-scripting on client pc's
   |

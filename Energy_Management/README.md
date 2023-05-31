@@ -1,6 +1,4 @@
-# Overview for Energy Management
-
-THIS DIRECTORY IS STILL UNDER DEVELOPEMENT AND SERVES AS A GUIDELINE FOR NOW
+## THIS DIRECTORY IS STILL UNDER DEVELOPEMENT AND SERVES AS A GUIDELINE FOR NOW
 
 ### IMPORTANT: before starting select containers
 #### mosquitto
@@ -38,9 +36,9 @@ Example below..
 docker compose -f docker-compose.prod.yml up mosquitto_prod zigbee2mqtt_prod
 ```
 
-### directory overview
+### Directory Overview
 ```
-OTGT/Energy_Management/
+/OTGT/Energy_Management/
   |
   ├── cocuvida/ -> controlling currents and visualizing data (our IoT application)
   |
