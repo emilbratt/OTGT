@@ -6,18 +6,12 @@ import numpy as np
 from cocuvida.environment import env_ini_get
 from cocuvida.timehandle import timeofday
 
+from . import const
+
 Y_TICK_END_VAL = int(env_ini_get(section='cocuvida', key='elspot_plot_y_max'))
 Y_TICK_STEP_VAL = int(env_ini_get(section='cocuvida', key='elspot_plot_y_step'))
 Y_TICK_START_VAL = 0
 Y_TICKS = [n for n in range(Y_TICK_START_VAL, Y_TICK_END_VAL+1, Y_TICK_STEP_VAL)]
-
-PLOT_STYLE = 'dark_background'
-
-COLOUR_YELLOW = '#FFFF6B'
-COLOUR_APPLE_RED = '#FFAAAA'
-COLOUR_LIGHT_RED = '#FFCCCC'
-COLOUR_LIGHT_GREEN = '#BBFFBB'
-COLOUR_ICE_BLUE = '#BBFFFF'
 
 
 async def plot_dayahead_date(elspot_region) -> str:
@@ -28,7 +22,7 @@ async def plot_dayahead_date(elspot_region) -> str:
         # likely dataset without prices, for some regions this occur
         return ''
 
-    plt.style.use(PLOT_STYLE)
+    plt.style.use(const.PLOT_STYLE)
     title = elspot_region['region'] + ' ' + elspot_region['date'] + ' ' + elspot_region['unit']
     plt.title(title, y=1.0, pad=3, fontsize=14)
     plt.tight_layout()
@@ -36,13 +30,13 @@ async def plot_dayahead_date(elspot_region) -> str:
     for index in value_index:
         price = int(elspot_region['prices'][index]['value'])
         if price == int(elspot_region['max']):
-            use_colour = COLOUR_APPLE_RED
+            use_colour = const.COLOUR_APPLE_RED
         elif price == int(elspot_region['min']):
-            use_colour = COLOUR_ICE_BLUE
+            use_colour = const.COLOUR_ICE_BLUE
         elif price > int(elspot_region['average']):
-            use_colour = COLOUR_LIGHT_RED
+            use_colour = const.COLOUR_LIGHT_RED
         elif price <= int(elspot_region['average']):
-            use_colour = COLOUR_LIGHT_GREEN
+            use_colour = const.COLOUR_LIGHT_GREEN
         bars[index].set_width(0.7)
         bars[index].set_color(use_colour)
 
@@ -76,7 +70,7 @@ async def plot_dayahead_live(elspot_region) -> str:
         # likely dataset without prices, for some regions this occur
         return ''
 
-    plt.style.use(PLOT_STYLE)
+    plt.style.use(const.PLOT_STYLE)
     title = elspot_region['region'] + ' Now: ' + elspot_region['date'] + ' ' + elspot_region['unit']
     plt.title(title, y=1.0, pad=3, fontsize=14)
     plt.tight_layout()
@@ -86,13 +80,13 @@ async def plot_dayahead_live(elspot_region) -> str:
     for index in value_index:
         price = int(elspot_region['prices'][index]['value'])
         if price == int(elspot_region['max']):
-            use_colour = COLOUR_APPLE_RED
+            use_colour = const.COLOUR_APPLE_RED
         elif price == int(elspot_region['min']):
-            use_colour = COLOUR_ICE_BLUE
+            use_colour = const.COLOUR_ICE_BLUE
         elif price > int(elspot_region['average']):
-            use_colour = COLOUR_LIGHT_RED
+            use_colour = const.COLOUR_LIGHT_RED
         elif price <= int(elspot_region['average']):
-            use_colour = COLOUR_LIGHT_GREEN
+            use_colour = const.COLOUR_LIGHT_GREEN
         bars[index].set_width(0.7)
         bars[index].set_color(use_colour)
         time_start = elspot_region['prices'][index]['time_start']

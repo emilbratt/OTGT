@@ -1,6 +1,9 @@
 import json
 
+from . import const
 
+
+# FIXME: modularize and improve this extracting method
 async def reshape_dayahead(response_text: str) -> dict:
     '''
     pass the serialised json as the elspot_raw parameter
@@ -49,14 +52,7 @@ async def reshape_dayahead(response_text: str) -> dict:
     regions = {}
     try:
         currency = elspot_raw['currency']
-        match currency:
-            case 'NOK':
-                unit = 'øre/kWh'
-            case 'EUR':
-                unit = 'E.cent/kWh'
-            case _:
-                unit = elspot_raw['data']['Units'][0]
-
+        unit = const.CURRENCY_UNITS[currency]
         for row in elspot_raw['data']['Rows'][0]['Columns']:
             region_name = row['Name']
             region_struct = {
@@ -68,7 +64,8 @@ async def reshape_dayahead(response_text: str) -> dict:
                 'min': False,
                 'average': False,
                 'resolution': 0,
-                'prices': []
+                'metadata': False,
+                'prices': [],
             }
             regions[region_name] = region_struct
     except:
@@ -88,20 +85,14 @@ async def reshape_dayahead(response_text: str) -> dict:
                 value = value.replace(' ', '')
                 value = value.replace(',', '.')
                 try:
-                    value = float(value)
-                    match unit:
-                        case 'øre/kWh'|'E.cent/kWh':
-                            value = round(value*0.1)
-                        case _:
-                            value = round(value)
+                    float_value = float(value)
+                    value = round(float_value*0.1)
                 except ValueError:
+                    # FIXME: handle logic for value error as this will affect controlplans using the elspot schedule
                     if start_hour == '02':
-                        # if this happens -> likely means moving from winter-time to summer-time at 2 AM
-                        # ..and that means there wont be any values between 02:00 and 03:00 as this hour is skipped
+                        # If this happens when time is '02:00' then it is likely a "from winter-time to summer-time" scenario.
+                        # That means there wont be any values between 02:00 and 03:00 as this hour is skipped so we skip this row
                         continue
-                    print(f'WARNING LIBELSPOT.reshape: {region} {title_name} value = "{value}" between {start_time} and {end_time}')
-                except:
-                    print(f'WARNING LIBELSPOT.reshape: {region} {title_name} value = "{value}" between {start_time} and {end_time}')
 
                 if row['IsExtraRow']:
                     regions[region][title_name.lower()] = value
