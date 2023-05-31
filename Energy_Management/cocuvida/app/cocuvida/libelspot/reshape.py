@@ -46,7 +46,7 @@ async def reshape_dayahead(response_text: str) -> dict:
     try:
         elspot_raw = json.loads(response_text)
     except:
-        print('ERROR: failed to load JSON from response_text')
+        print('ERROR libelsopt.reshape: failed to load JSON from response_text')
         return {}
 
     regions = {}
@@ -69,7 +69,7 @@ async def reshape_dayahead(response_text: str) -> dict:
             }
             regions[region_name] = region_struct
     except:
-        print('ERROR: failed to create region_struct')
+        print('ERROR libelsopt.reshape: failed to create region_struct')
         return {}
     # unpack data and assign to its correct region
     try:
@@ -130,5 +130,5 @@ async def reshape_dayahead(response_text: str) -> dict:
 
         return ret_regions
     except:
-        print('ERROR: failed to process elspot data')
+        print('ERROR libelsopt.reshape: failed to process elspot data')
         return {}
