@@ -51,7 +51,8 @@ cd to OTGT/Energy_Management/cocuvida
 ```
 docker compose up cocuvida_test
 ```
-### Developing Web Component (includes setting sane arguments like auto-reloading..)
+### Developing modules starting only the web service (execute and see results via web-view)
+* this will start the web service with COCUVIDA_TESTING=true allowing you to visit the /test endpoint
 #### Starting ASGI server on host machine
 cd into OTGT/Energy_Management/cocuvida/app
 ```
