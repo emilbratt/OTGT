@@ -23,7 +23,7 @@ async def controller(scope: dict, receive: object) -> View:
     qs = parse_qs(qs, keep_blank_values=False, encoding='utf-8', separator='&')
 
     if 'testsite' not in qs:
-        await view.title('Test results')
+        await view.title(__file__)
         return view
 
     site = qs.get('testsite')[0]
@@ -34,4 +34,3 @@ async def controller(scope: dict, receive: object) -> View:
             view = await controlplans.page(view, qs)
 
     return view
-

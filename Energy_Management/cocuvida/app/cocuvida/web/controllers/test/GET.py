@@ -12,6 +12,7 @@ async def controller(scope: dict, receive: object) -> View:
         await view.not_testing_instance()
         return view
 
+    await view.title(__file__)
     await view.buttons(BUTTON_TEST_SITE_HOME)
-    return view
 
+    return view

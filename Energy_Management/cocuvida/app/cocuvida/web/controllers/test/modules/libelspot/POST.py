@@ -12,7 +12,7 @@ async def controller(scope: dict, receive: object) -> View:
         await view.not_testing_instance()
         return view
 
-    await view.title('Test libelspot')
+    await view.title(__file__)
     form_obj = FormDataParser(scope, receive)
     submit_value =  await form_obj.load_string('submit')
     match submit_value:

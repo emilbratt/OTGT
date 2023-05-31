@@ -10,6 +10,6 @@ async def controller(scope: dict, receive: object) -> View:
         await view.not_testing_instance()
         return view
 
-    await view.title('Test libelspot')
+    await view.title(__file__)
     view = await forms.show(view)
     return view

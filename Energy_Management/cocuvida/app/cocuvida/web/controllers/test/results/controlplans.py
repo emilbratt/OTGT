@@ -10,7 +10,7 @@ from .const import (
 
 
 async def page(view: object, query_string: dict):
-    await view.title('Test results for controlplans')
+    await view.title(__file__)
     await view.buttons(BUTTON_TEST_RESULTS_CONTROLPLAN_PLAN_NAME)
     if 'plan_name' not in query_string.keys():
         return view
