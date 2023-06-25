@@ -18,6 +18,7 @@ function set_cwd () {
   cd $(dirname "$0")
   # if this script is not in CWD, something went wrong
   [[ -f otgt ]] || return 1
+  echo "Called from: $(pwd)"
   return 0
 }
 
