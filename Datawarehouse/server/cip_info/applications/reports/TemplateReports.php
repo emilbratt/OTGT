@@ -30,6 +30,8 @@ class TemplateReports extends Template {
     th {
       background-color: $this->colour_header_background;
       height: 32px;
+      position: sticky;
+      top: 0;
     }
     #th_no_hyperlink {
       border: 1px solid $this->colour_default_text;
