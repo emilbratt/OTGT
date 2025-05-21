@@ -274,8 +274,8 @@ class Soldout extends Reports {
         $article_id = $row['article_id'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
-        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
-        $article = CharacterConvert::utf_to_norwegian($row['article']);
+        $brand = CharacterConvert::iso_8859_1_to_utf_8($row['brand']);
+        $article = CharacterConvert::iso_8859_1_to_utf_8($row['article']);
         $quantity = $row['stock_quantity'];
         $location = $row['location'];
         $last_imported = $row['lastimported'];
@@ -372,8 +372,8 @@ class Imported extends Reports {
         $article_id = $row['article_id'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
 
-        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
-        $article = CharacterConvert::utf_to_norwegian($row['article']);
+        $brand = CharacterConvert::iso_8859_1_to_utf_8($row['brand']);
+        $article = CharacterConvert::iso_8859_1_to_utf_8($row['article']);
         $import_qty = $row['import_qty'];
         $stock_quantity = $row['stock_quantity'];
         $location = $row['location'];
@@ -470,9 +470,9 @@ class SalesHistory extends Reports {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
         $article_id = $row['article_id'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
-        $seller_name = CharacterConvert::utf_to_norwegian($row['seller_name']);
-        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
-        $article = CharacterConvert::utf_to_norwegian($row['article']);
+        $seller_name = CharacterConvert::iso_8859_1_to_utf_8($row['seller_name']);
+        $brand = CharacterConvert::iso_8859_1_to_utf_8($row['brand']);
+        $article = CharacterConvert::iso_8859_1_to_utf_8($row['article']);
         $soldqty = $row['soldqty'];
         $location = $row['location'];
         $salesdate = $row['salesdate'];
@@ -581,8 +581,8 @@ class NotSoldLately extends Reports {
       foreach ($this->database->cnxn->query($query->get()) as $row) {
         $article_id = $row['article_id'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
-        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
-        $article = CharacterConvert::utf_to_norwegian($row['article']);
+        $brand = CharacterConvert::iso_8859_1_to_utf_8($row['brand']);
+        $article = CharacterConvert::iso_8859_1_to_utf_8($row['article']);
         $lastsold = $row['lastsold'];
         $stock_quantity = $row['stock_quantity'];
         $location = $row['location'];
@@ -787,7 +787,7 @@ class Brand extends Reports {
       $this->template->script_filter_row_button('0', 'Skriv her for å søke ', $auto_focus = true);
       $this->template->table_full_width_start();
       foreach ($this->database->result as $row) {
-        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
+        $brand = CharacterConvert::iso_8859_1_to_utf_8($row['brand']);
         $hyperlink_row->link_redirect('reports/brand/' . $row['brand_id']);
         $this->template->table_row_start();
         $this->template->table_row_value($brand, $hyperlink_row->url);
@@ -817,7 +817,7 @@ class Brand extends Reports {
     $this->database->select_single_row($query->get());
     if ($this->database->result) {
       $this->brand = $this->database->result['brand'];
-      $this->brand = CharacterConvert::utf_to_norwegian($this->brand);
+      $this->brand = CharacterConvert::iso_8859_1_to_utf_8($this->brand);
       return;
     }
     $this->brand = false;
@@ -897,7 +897,7 @@ class Brand extends Reports {
       $hyperlink_row = new HyperLink();
       foreach ($this->database->result as $row) {
         $article_id = $row['article_id'];
-        $article_name = CharacterConvert::utf_to_norwegian($row['article_name']);
+        $article_name = CharacterConvert::iso_8859_1_to_utf_8($row['article_name']);
         $stock_quantity = $row['stock_quantity'];
         $manual_adjustment_total = $row['manual_adjustment_total'];
         $sales_total = $row['sales_total'];

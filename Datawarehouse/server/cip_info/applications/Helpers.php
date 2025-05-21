@@ -52,7 +52,7 @@ class UserAgent {
 
 class CharacterConvert {
 
-  public static function utf_to_norwegian ($string) {
+  public static function iso_8859_1_to_utf_8 ($string) {
     return mb_convert_encoding($string, "UTF-8", "ISO-8859-1");
   }
 

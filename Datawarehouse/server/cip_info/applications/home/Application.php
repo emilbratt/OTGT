@@ -202,15 +202,15 @@ class Home {
     $this->database_retail->select_single_row($this->query_retail->get());
     if ($this->database_retail->result) {
       $price = $this->database_retail->result['price'];
-      $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
-      $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
+      $brand = CharacterConvert::iso_8859_1_to_utf_8($this->database_retail->result['brand']);
+      $article = CharacterConvert::iso_8859_1_to_utf_8($this->database_retail->result['article']);
       $this->hyperlink->link_redirect_query('find/byarticle', 'article_id', $this->database_retail->result['article_id']);
       $_l = $brand . ' - ' . $article;
       if (strlen($brand) < 2 or $brand == null) {
         $_l = $article;
       }
       $soldqty = $this->database_retail->result['soldqty'];
-      $salesperson = CharacterConvert::utf_to_norwegian($this->database_retail->result['salesperson']);
+      $salesperson = CharacterConvert::iso_8859_1_to_utf_8($this->database_retail->result['salesperson']);
       $time = $this->database_retail->result['time'];
       $price = number_format($price, 2, ',', '.');
       $this->template->second_title('Største salg i dag til kr. ' . $price);
@@ -239,8 +239,8 @@ class Home {
       foreach ($this->database_retail->result as $row) {
         $article_id = $row['article_id'];
         $this->hyperlink->link_redirect_query('find/byarticle', 'article_id', $article_id);
-        $brand = CharacterConvert::utf_to_norwegian($row['brand']);
-        $article = CharacterConvert::utf_to_norwegian($row['article']);
+        $brand = CharacterConvert::iso_8859_1_to_utf_8($row['brand']);
+        $article = CharacterConvert::iso_8859_1_to_utf_8($row['article']);
         $this->template->table_row_start();
         $this->template->table_row_value('| ' . $row['seller']);
         $this->template->table_row_value('| ' . $row['time']);
@@ -265,7 +265,7 @@ class Home {
       $this->template->table_row_end();
       foreach ($this->database_retail->result as $row) {
         $this->template->table_row_start();
-        $this->template->_table_row_value('| ' . CharacterConvert::utf_to_norwegian($row['brand']), 'left');
+        $this->template->_table_row_value('| ' . CharacterConvert::iso_8859_1_to_utf_8($row['brand']), 'left');
         $this->template->_table_row_value('| ' . $row['articles_imported'], 'left');
         $this->template->table_row_end();
       }
@@ -288,7 +288,7 @@ class Home {
       $this->template->table_row_end();
       foreach ($this->database_retail->result as $row) {
         $this->template->table_row_start();
-        $this->template->_table_row_value('| ' . CharacterConvert::utf_to_norwegian($row['salesperson']), 'left');
+        $this->template->_table_row_value('| ' . CharacterConvert::iso_8859_1_to_utf_8($row['salesperson']), 'left');
         $this->template->_table_row_value('| ' . $row['article_count'], 'left');
         $this->template->_table_row_value('| ' . $row['total'] . ' kr.', 'left');
         $this->template->table_row_end();

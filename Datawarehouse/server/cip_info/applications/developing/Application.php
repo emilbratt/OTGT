@@ -88,7 +88,7 @@ class Developing {
       array_push($this->fields, $field);
       switch ($this->utf_convert) {
         case true;
-          $this->template->table_row_header(CharacterConvert::utf_to_norwegian($field));
+          $this->template->table_row_header(CharacterConvert::iso_8859_1_to_utf_8($field));
           break;
         case false;
           $this->template->table_row_header($field);
@@ -103,7 +103,7 @@ class Developing {
       for ($j = 0; $j < $this->field_count; $j++) {
         switch ($this->utf_convert) {
           case true;
-            $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row[$this->fields[$j]]));
+            $this->template->table_row_value(CharacterConvert::iso_8859_1_to_utf_8($row[$this->fields[$j]]));
             break;
           case false;
             $this->template->table_row_value($row[$this->fields[$j]]);

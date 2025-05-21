@@ -222,8 +222,8 @@ class BySearch extends Find {
         $barcode = $row['barcode'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
+        $this->template->table_row_value(CharacterConvert::iso_8859_1_to_utf_8($row['brand']));
+        $this->template->table_row_value(CharacterConvert::iso_8859_1_to_utf_8($row['article']), $hyperlink_row->url);
         $this->template->table_row_value($row['stock_quantity']);
         $this->template->table_row_value($row['location'], $hyperlink_row->url);
         $this->template->table_row_value($row['supplyid'] . ' // ' . $barcode);
@@ -307,8 +307,8 @@ class ByShelf extends Find {
         $barcode = $row['barcode'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']), $hyperlink_row->url);
+        $this->template->table_row_value(CharacterConvert::iso_8859_1_to_utf_8($row['brand']));
+        $this->template->table_row_value(CharacterConvert::iso_8859_1_to_utf_8($row['article']), $hyperlink_row->url);
         $this->template->table_row_value($row['stock_quantity']);
         $this->template->table_row_value($row['location'], $hyperlink_row->url);
         $this->template->table_row_value($row['supplyid'] . ' // ' . $barcode);
@@ -373,9 +373,9 @@ class ByArticle extends Find {
     if ($this->database_retail->result) {
       $this->template->css_article_info();
       $article_id = $this->database_retail->result['article_id'];
-      $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
-      $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
-      $category = CharacterConvert::utf_to_norwegian($this->database_retail->result['category']);
+      $brand = CharacterConvert::iso_8859_1_to_utf_8($this->database_retail->result['brand']);
+      $article = CharacterConvert::iso_8859_1_to_utf_8($this->database_retail->result['article']);
+      $category = CharacterConvert::iso_8859_1_to_utf_8($this->database_retail->result['category']);
       $price = $this->database_retail->result['price'];
       $stock_quantity = $this->database_retail->result['stock_quantity'];
       $retail_location = $this->database_retail->result['location'];
@@ -551,8 +551,8 @@ class ArticleMovement extends Find {
     $this->database_retail->select_single_row($query->get());
     if ($this->database_retail->result) {
       $article_id = $this->database_retail->result['article_id'];
-      $brand = CharacterConvert::utf_to_norwegian($this->database_retail->result['brand']);
-      $article = CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
+      $brand = CharacterConvert::iso_8859_1_to_utf_8($this->database_retail->result['brand']);
+      $article = CharacterConvert::iso_8859_1_to_utf_8($this->database_retail->result['article']);
       $quantity = $this->database_retail->result['stock_quantity'];
       $supplyid = $this->database_retail->result['supplyid'];
     } else {

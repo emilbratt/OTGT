@@ -159,7 +159,7 @@ class Home extends Placement {
       $_SESSION['articles'] = array();
     }
     $id = $this->database_retail->result['article_id'];
-    $name= CharacterConvert::utf_to_norwegian($this->database_retail->result['article']);
+    $name = CharacterConvert::iso_8859_1_to_utf_8($this->database_retail->result['article']);
     $_SESSION['articles'][$_POST['barcode']] = ['id' => $id, 'name' => $name];
   }
 
@@ -263,8 +263,8 @@ class FromImported extends Placement {
         $article_id = $row['article_id'];
         $hyperlink_row->link_redirect_query('find/byarticle', 'article_id', $article_id);
         $this->template->table_row_start();
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['brand']));
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($row['article']));
+        $this->template->table_row_value(CharacterConvert::iso_8859_1_to_utf_8($row['brand']));
+        $this->template->table_row_value(CharacterConvert::iso_8859_1_to_utf_8($row['article']));
         $this->template->table_row_value_update_location_input($row['location'], $article_id);
         $this->template->table_row_end();
       }
@@ -320,8 +320,8 @@ class NewestPlacements extends Placement {
         $query_retail = null;
         $hyperlink->link_redirect_query('find/byarticle', 'article_id', $row['article_id']);
         $this->template->table_row_start();
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($brand), $hyperlink->url);
-        $this->template->table_row_value(CharacterConvert::utf_to_norwegian($article), $hyperlink->url);
+        $this->template->table_row_value(CharacterConvert::iso_8859_1_to_utf_8($brand), $hyperlink->url);
+        $this->template->table_row_value(CharacterConvert::iso_8859_1_to_utf_8($article), $hyperlink->url);
         $this->template->table_row_value($row['stock_location'], $hyperlink->url);
         $this->template->table_row_value($row['format_timestamp'], $hyperlink->url);
         $this->template->table_row_end();
