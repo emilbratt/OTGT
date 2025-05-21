@@ -102,6 +102,11 @@ class QueryRetail {
     if ($string == '') {
       return;
     }
+
+    // Currently there is one brand named S'well, which has a single qoute character.
+    // We add an extra ' so that the first ' will escape the second '.
+    $string = str_replace("'", "''", $string);
+
     $this->check_illegal_word($string);
     if ( $this->has_where() ) {
       $this->query .= <<<EOT
