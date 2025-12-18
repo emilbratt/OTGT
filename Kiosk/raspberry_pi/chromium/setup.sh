@@ -33,7 +33,7 @@ function system_update () {
 
 function setup_software () {
   # install chromium and x-server
-  sudo apt-get update && sudo apt-get install xorg chromium-browser -y
+  sudo apt-get update && sudo apt-get install xorg chromium -y
 }
 
 function setup_start_command () {

@@ -1,4 +1,4 @@
-exec chromium-browser  \
+exec chromium  \
 --window-position=0,0 \
 --start-fullscreen \
 --kiosk \
