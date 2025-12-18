@@ -12,12 +12,19 @@ sudo apt update && sudo apt install git -y
 sudo raspi-config
 ```
 optional adjustments include:
-setup ssh
-set console autologin
+enable ssh
+enable console autologin
 setup wifi
-set performance options
-advanced options -> opengl
+..
+..
 
 * git clone this repo and navigate to this directory)
+```
+git clone https://github.com/emilbratt/OTGT.git
+```
 
 * run setup.sh as normal user (no sudo or root)
+```
+cd OTGT/Kiosk/raspberry_pi/chromium/
+./setup.sh
+```
