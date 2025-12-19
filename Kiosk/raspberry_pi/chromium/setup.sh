@@ -36,7 +36,12 @@ function setup_start_command () {
   # set startup command for profile
   cat $HOME/.bash_profile | grep -q 'startx'
   if [[ $? -eq 1 ]]; then
-    echo 'if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then startx; fi' >> $HOME/.bash_profile
+    read -p "Disable cursor? [y/N]: "  DISABLE_CURSOR
+    if [[ $DISABLE_CURSOR =~ ^[Yy]$ ]]; then
+        echo 'if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then startx -- -nocursor; fi' >> $HOME/.bash_profile
+    else
+        echo 'if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then startx; fi' >> $HOME/.bash_profile
+    fi
   fi
 }
 
