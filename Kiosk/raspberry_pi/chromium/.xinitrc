@@ -1,3 +1,10 @@
+# disable screensaver
+xset s off
+# disable screen blanking
+xset s noblank
+# disable DPMS (Display Power Management Signaling - power-saving feature of your monitor)
+xset -dpms
+
 exec chromium  \
 --window-position=0,0 \
 --start-fullscreen \
