@@ -4,11 +4,7 @@
 #   Emil Bratt Børsting
 #────────────────────────────────────────────#
 # Description:
-#   automatically setup kiosk running chromium
-#────────────────────────────────────────────#
-# Customization of this script
-#   add dependencies (files) and make sure they
-#   are listed in the DEPENDENCIES variable
+#   installs a kiosk running chromium
 #────────────────────────────────────────────#
 
 function check_internet_connection () {
