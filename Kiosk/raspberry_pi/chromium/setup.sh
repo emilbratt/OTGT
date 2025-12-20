@@ -59,6 +59,12 @@ function transfer_dependencies () {
   sudo cp -f keyboard /etc/default/keyboard
   # copy over the convenience script for checking signal strength
   sudo cp -f wifisignal /usr/local/bin/
+
+  read -p "Do you want to rotate the screen 90 degrees (vertical view)? [y/N]: "  ROTATE_SCREEN
+  if [[ $ROTATE_SCREEN =~ ^[Yy]$ ]]; then
+  # copy over the rotation script
+    sudo cp -f 10-monitor.conf /etc/X11/xorg.conf.d/10-monitor.conf
+  fi
 }
 
 function setup_init_script () {
@@ -68,15 +74,21 @@ function setup_init_script () {
   # insert display resolution
   printf 'write the horizontal pixel width (example: 1920) and Enter: '; read DISPLAY_PIXEL_HORIZONTAL
   printf 'write the vertical pixel heihgt (example: 1080) and Enter: '; read DISPLAY_PIXEL_VERTICAL
-  line_append="--window-size=${DISPLAY_PIXEL_HORIZONTAL},${DISPLAY_PIXEL_VERTICAL} \\"
-  echo $line_append >> $HOME/.xinitrc
+
+  read -p "Did you rotate the screen in the previous step and now mixed up the width and height? If so, do you want to swap horizontal and vertical values? [y/N]: "  SWAP_IT
+  if [[ $SWAP_IT =~ ^[Yy]$ ]]; then
+    line_append="--window-size=${DISPLAY_PIXEL_VERTICAL},${DISPLAY_PIXEL_HORIZONTAL} \\"
+    echo $line_append >> $HOME/.xinitrc
+  else
+    line_append="--window-size=${DISPLAY_PIXEL_HORIZONTAL},${DISPLAY_PIXEL_VERTICAL} \\"
+    echo $line_append >> $HOME/.xinitrc
+  fi
 
   # insert url to open on launch
   printf 'write the full URL for chromium to open on boot and press Enter: '; read URL_CHROMIUM
   line_append="'${URL_CHROMIUM}'"
   echo $line_append >> $HOME/.xinitrc
 }
-
 
 check_internet_connection
 setup_hostname
