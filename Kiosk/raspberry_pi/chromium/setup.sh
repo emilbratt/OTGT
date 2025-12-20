@@ -38,9 +38,9 @@ function setup_start_command () {
   if [[ $? -eq 1 ]]; then
     read -p "Disable cursor? [y/N]: "  DISABLE_CURSOR
     if [[ $DISABLE_CURSOR =~ ^[Yy]$ ]]; then
-        echo 'if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then startx -- -nocursor; fi' >> $HOME/.bash_profile
+        echo 'if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then sleep 5; startx -- -nocursor; fi' >> $HOME/.bash_profile
     else
-        echo 'if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then startx; fi' >> $HOME/.bash_profile
+        echo 'if [ -z $DISPLAY ] && [ "$(tty)" = "/dev/tty1" ]; then sleep 5; startx; fi' >> $HOME/.bash_profile
     fi
   fi
 }
