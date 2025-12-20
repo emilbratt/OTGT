@@ -75,7 +75,7 @@ function setup_init_script () {
   printf 'write the horizontal pixel width (example: 1920) and Enter: '; read DISPLAY_PIXEL_HORIZONTAL
   printf 'write the vertical pixel heihgt (example: 1080) and Enter: '; read DISPLAY_PIXEL_VERTICAL
 
-  read -p "Did you rotate the screen in the previous step and now mixed up the width and height? If so, do you want to swap horizontal and vertical values? [y/N]: "  SWAP_IT
+  read -p "Did you rotate the screen and now mixed up the width and height in the previous step? If so, do you want to swap horizontal and vertical values? [y/N]: "  SWAP_IT
   if [[ $SWAP_IT =~ ^[Yy]$ ]]; then
     line_append="--window-size=${DISPLAY_PIXEL_VERTICAL},${DISPLAY_PIXEL_HORIZONTAL} \\"
     echo $line_append >> $HOME/.xinitrc
