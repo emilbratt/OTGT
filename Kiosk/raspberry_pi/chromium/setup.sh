@@ -72,8 +72,8 @@ function setup_init_script () {
   cp -f .xinitrc $HOME/.xinitrc
 
   # insert display resolution
-  printf 'write the horizontal pixel width (example: 1920) and Enter: '; read DISPLAY_PIXEL_HORIZONTAL
-  printf 'write the vertical pixel heihgt (example: 1080) and Enter: '; read DISPLAY_PIXEL_VERTICAL
+  printf 'Write the horizontal pixel width (example: 1920) and Enter: '; read DISPLAY_PIXEL_HORIZONTAL
+  printf 'Write the vertical pixel heihgt (example: 1080) and Enter: '; read DISPLAY_PIXEL_VERTICAL
 
   read -p "Did you rotate the screen and now mixed up the width and height in the previous step? If so, do you want to swap horizontal and vertical values? [y/N]: "  SWAP_IT
   if [[ $SWAP_IT =~ ^[Yy]$ ]]; then
@@ -81,6 +81,13 @@ function setup_init_script () {
     echo $line_append >> $HOME/.xinitrc
   else
     line_append="--window-size=${DISPLAY_PIXEL_HORIZONTAL},${DISPLAY_PIXEL_VERTICAL} \\"
+    echo $line_append >> $HOME/.xinitrc
+  fi
+
+  read -p "Do you want the web-content scaled? (bigger or smaller content) [y/N]: "  SCALE_IT
+  if [[ $SCALE_IT =~ ^[Yy]$ ]]; then
+    read -p "Write preferred scale factor (example: 1.25): "  SCALE_FACTOR
+    line_append="--force-device-scale-factor=${SCALE_FACTOR} \\"
     echo $line_append >> $HOME/.xinitrc
   fi
 
