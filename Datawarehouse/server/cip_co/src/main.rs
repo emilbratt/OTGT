@@ -1,43 +1,26 @@
 #![allow(unused)]
 
-use once_cell::sync::Lazy;
-
-use serde::Deserialize;
-
-#[derive(Debug, Deserialize)]
-pub struct Config {
-    pub port: String,
-    pub address: String,
-    pub retail_db_user: String,
-    pub retail_db_pwd: String,
-    pub use_dummy_data: bool,
-}
-
-pub static CONFIG: Lazy<Config> = Lazy::new(|| {
-    let content = std::fs::read_to_string("config.toml")
-        .expect("Failed to read config.toml");
-
-    toml::from_str(&content)
-        .expect("Invalid config format")
-});
+use cip_co::CONFIG;
 
 use axum::{
     routing::get,
     Router,
 };
 
-mod retail_db;
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    println!("{}", CONFIG.port);
 
-fn main() {
     let db = if CONFIG.use_dummy_data {
         ()
     } else {
-        let db = retail_db::connect(&CONFIG);
+        let db = cip_co::retail_db::connect();
         match db {
             Ok(db) => (),
             Err(e) => panic!("{e:?}"),
         }
     };
+
+    Ok(())
 }
 
 async fn start() {
