@@ -16,3 +16,6 @@ data.sqlite*
 Energy_Management/homeassistant/bindmount
 Energy_Management/mosquitto/bindmount
 Energy_Management/zigbee2mqtt/bindmount
+
+# cip_co
+Datawarehouse/server/cip_co/target/

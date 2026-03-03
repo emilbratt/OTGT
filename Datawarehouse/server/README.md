@@ -11,7 +11,9 @@ OTGT/Datawarehouse/server/
   |
   ├── barcode_generator/ -> request barcodes and QR-codes from JSON data
   |
-  ├── cip_info/ -> main web-ui for interacting with all services
+  ├── cip_info/ -> inventory information and placements
+  |
+  ├── cip_co/ -> create and handle customer orders
   |
   └── spreadsheet_generator/ -> request .xlsx spreadsheet from JSON data
 ```
