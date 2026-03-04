@@ -2,12 +2,11 @@
 
 use std::sync::LazyLock;
 use std::path::Path;
-use serde::Deserialize;
 use toml::Table;
 
 pub mod retail_db;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug)]
 pub struct RetailDB {
     pub db_host: String,
     pub db_port: String,
@@ -16,7 +15,7 @@ pub struct RetailDB {
     pub db_password: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug)]
 pub struct Config {
     pub port: String,
     pub host: String,
@@ -44,25 +43,48 @@ static CONFIG: LazyLock<Config> = LazyLock::new(|| {
 
     let datawarehouse = &table["datawarehouse"];
 
+    let mut port = datawarehouse["cip_co_port"].to_string();
+    let mut host = datawarehouse["cip_co_host"].to_string();
+
+    // strip leading and trailing double qoute.
+    port = port[1..port.len()-1].to_string();
+    host = host[1..host.len()-1].to_string();
+
+
     let retail_db = match table.get("retail") {
         Some(d) => {
-            let mut missing = false;
-            for k in ["db_host", "db_port", "db_name", "db_user", "db_password"] {
-                if d[k].as_str().unwrap() == "INSERT" {
-                    missing = true;
-                }
-            }
+            let mut db_host = d["db_host"].to_string();
+            let mut db_port = d["db_port"].to_string();
+            let mut db_name = d["db_name"].to_string();
+            let mut db_user = d["db_user"].to_string();
+            let mut db_password = d["db_password"].to_string();
+
+            // strip leading and trailing double qoute.
+            db_host = db_host[1..db_host.len()-1].to_string();
+            db_port = db_port[1..db_port.len()-1].to_string();
+            db_name = db_name[1..db_name.len()-1].to_string();
+            db_user = db_user[1..db_user.len()-1].to_string();
+            db_password = db_password[1..db_password.len()-1].to_string();
+
+            let retail_db_conf = RetailDB {
+                db_host,
+                db_port,
+                db_name,
+                db_user,
+                db_password,
+            };
+
+            let missing = [
+                &retail_db_conf.db_host,
+                &retail_db_conf.db_port,
+                &retail_db_conf.db_name,
+                &retail_db_conf.db_user,
+                &retail_db_conf.db_password,
+            ].iter().any(|s| *s == "INSERT");
+
             if missing {
                 None
             } else {
-                let retail_db_conf = RetailDB {
-                    db_host: d["db_host"].to_string(),
-                    db_port: d["db_port"].to_string(),
-                    db_name: d["db_name"].to_string(),
-                    db_user: d["db_user"].to_string(),
-                    db_password: d["db_password"].to_string(),
-                };
-
                 Some(retail_db_conf)
             }
         }
@@ -70,8 +92,8 @@ static CONFIG: LazyLock<Config> = LazyLock::new(|| {
     };
 
     Config {
-        port: datawarehouse["cip_co_port"].to_string(),
-        host: datawarehouse["cip_co_host"].to_string(),
+        port,
+        host,
         retail_db,
     }
 });
