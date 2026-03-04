@@ -1,6 +1,6 @@
 #![allow(unused)]
 
-use cip_co::CONFIG;
+use cip_co::load_config;
 
 use axum::{
     routing::get,
@@ -8,11 +8,13 @@ use axum::{
 };
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("{}", CONFIG.port);
+    let config = load_config();
 
-    let db = if CONFIG.use_dummy_data {
+    let db = if config.retail_db.is_none() {
+        // this is probably when running dev-environment
         ()
     } else {
+        // this is probably when running prod-environment
         let db = cip_co::retail_db::connect();
         match db {
             Ok(db) => (),

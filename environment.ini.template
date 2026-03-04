@@ -16,6 +16,8 @@
   datawarehouse_host = "INSERT"
   cip_info_host = "INSERT"
   cip_info_port = "INSERT"
+  cip_co_host = "INSERT"
+  cip_co_port = "INSERT"
   db_host = "INSERT"
   db_port = "INSERT"
   db_name = "INSERT"

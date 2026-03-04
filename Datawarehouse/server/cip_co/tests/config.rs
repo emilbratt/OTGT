@@ -1,13 +1,13 @@
 #![allow(unused)]
 
-use cip_co::CONFIG;
+use cip_co::load_config;
 
 #[test]
 fn config() {
+    let config = load_config();
+    println!("{:?}", config);
+
     // verify values exist..
-    assert!(!CONFIG.port.is_empty());
-    assert!(!CONFIG.address.is_empty());
-    assert!(!CONFIG.retail_db_user.is_empty());
-    assert!(!CONFIG.retail_db_pwd.is_empty());
-    assert!(CONFIG.use_dummy_data || !CONFIG.use_dummy_data);
+    assert!(!config.port.is_empty());
+    assert!(!config.host.is_empty());
 }
