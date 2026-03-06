@@ -1,5 +1,0 @@
-port = "8085"
-address = "0.0.0.0"
-retail_db_user = "user"
-retail_db_pwd = "pwd"
-use_dummy_data = true

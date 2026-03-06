@@ -43,28 +43,16 @@ static CONFIG: LazyLock<Config> = LazyLock::new(|| {
 
     let datawarehouse = &table["datawarehouse"];
 
-    let mut port = datawarehouse["cip_co_port"].to_string();
-    let mut host = datawarehouse["cip_co_host"].to_string();
-
-    // strip leading and trailing double qoute.
-    port = port[1..port.len()-1].to_string();
-    host = host[1..host.len()-1].to_string();
-
+    let mut port = datawarehouse["cip_co_port"].as_str().unwrap().to_string();
+    let mut host = datawarehouse["cip_co_host"].as_str().unwrap().to_string();
 
     let retail_db = match table.get("retail") {
         Some(d) => {
-            let mut db_host = d["db_host"].to_string();
-            let mut db_port = d["db_port"].to_string();
-            let mut db_name = d["db_name"].to_string();
-            let mut db_user = d["db_user"].to_string();
-            let mut db_password = d["db_password"].to_string();
-
-            // strip leading and trailing double qoute.
-            db_host = db_host[1..db_host.len()-1].to_string();
-            db_port = db_port[1..db_port.len()-1].to_string();
-            db_name = db_name[1..db_name.len()-1].to_string();
-            db_user = db_user[1..db_user.len()-1].to_string();
-            db_password = db_password[1..db_password.len()-1].to_string();
+            let db_host = d["db_host"].as_str().unwrap().to_string();
+            let db_port = d["db_port"].as_str().unwrap().to_string();
+            let db_name = d["db_name"].as_str().unwrap().to_string();
+            let db_user = d["db_user"].as_str().unwrap().to_string();
+            let db_password = d["db_password"].as_str().unwrap().to_string();
 
             let retail_db_conf = RetailDB {
                 db_host,
