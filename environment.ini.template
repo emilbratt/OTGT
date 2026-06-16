@@ -1,17 +1,17 @@
-; replace INSERT with correct values and change filename to environment.ini
-; NOTE: keep values (unless bool) inside double qoutes to avoid errors on special chars
+# replace INSERT with correct values and change filename to environment.ini
+# NOTE: keep values (unless bool) inside double qoutes to avoid errors on special chars
 
-[assets] ; path where we store generated files
+[assets] # path where we store generated files
   webserver = "INSERT"
 
-[retail] ; retail server and database used in our shop
+[retail] # retail server and database used in our shop
   db_host = "INSERT"
   db_port = "INSERT"
   db_name = "INSERT"
   db_user = "INSERT"
   db_password = "INSERT"
 
-[datawarehouse] ; connect to the datawarehouse server and/or database
+[datawarehouse] # connect to the datawarehouse server and/or database
   datawarehouse_ip = "INSERT"
   datawarehouse_host = "INSERT"
   cip_info_host = "INSERT"
@@ -32,12 +32,12 @@
   spreadsheet_generator_host = "INSERT"
   spreadsheet_generator_port = "INSERT"
 
-[nextcloud] ; selfhosted nextcloud server instance
+[nextcloud] # selfhosted nextcloud server instance
   host = "INSERT"
   user_autoreport = "INSERT"
   password_autoreport = "INSERT"
 
-[developement] ; enables the server to behave differently production and dev env.
+[developement] # enables the server to behave differently production and dev env.
   show_errors = false
   show_debug = false
   show_nav_links = false
@@ -57,24 +57,24 @@
   email = "INSERT"
   phone = "INSERT"
 
-[confidential]; extra options for data that might be considered sensitive
+[confidential] # extra options for data that might be considered sensitive
   show = false
   passphrase = "INSERT"
 
-[competitive]; only if employees opts in, we can show competitive data
+[competitive] # only if employees opts in, we can show competitive data
   show = false
 
-[network]; providing access to wifi etc.
+[network] # providing access to wifi etc.
   ssid = "INSERT"
   passphrase = "INSERT"
 
-[mqtt] ; mqtt broker
+[mqtt] # mqtt broker
   host = "INSERT"
   port = "1883"
   user = "INSERT"
   password = "INSERT"
 
-[cocuvida] ; for use within cocuvida and for connecting to cocuvida
+[cocuvida] # for use within cocuvida and for connecting to cocuvida
   host = "INSERT"
   port = "8087"
   secret = "INSERT"
